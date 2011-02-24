@@ -1,7 +1,7 @@
-passwd:     files
-shadow:     files
-group:      files
-hosts:      { ($AccessType eq "off") ? "files" : "files dns" }
+passwd:     files ldap winbind
+shadow:     files ldap winbind
+group:      files ldap winbind
+hosts:      { ($AccessType eq "off") ? "files" : "files dns" } wins
 services:   files
 networks:   files
 protocols:  files
