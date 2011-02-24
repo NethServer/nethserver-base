@@ -1,0 +1,19 @@
+host                        localhost
+base                        { esmith::util::ldapBase ($DomainName); }
+scope                       sub
+timelimit                   50
+pagesize                    20000
+bind_policy                 soft
+pam_lookup_policy           yes
+pam_password                exop
+nss_initgroups_ignoreusers  root,ldap
+nss_schema                  rfc2307bis
+nss_map_attribute           uniqueMember member
+ssl                         no
+ldap_version                3
+pam_filter                  objectclass=posixAccount
+nss_base_passwd             ou=Users,{ esmith::util::ldapBase ($DomainName); }
+nss_base_shadow             ou=Users,{ esmith::util::ldapBase ($DomainName); }
+nss_base_group              ou=Groups,{ esmith::util::ldapBase ($DomainName); }
+tls_checkpeer               no
+
