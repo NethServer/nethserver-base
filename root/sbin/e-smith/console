@@ -1,0 +1,107 @@
+#!/usr/bin/perl -w
+
+#----------------------------------------------------------------------
+# copyright (C) 1999-2006 Mitel Corporation
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#----------------------------------------------------------------------
+package esmith::console;
+
+use strict;
+
+use Locale::gettext;
+use esmith::ConfigDB::unsaved;
+use esmith::console;
+use esmith::console::quitConsole;
+
+my $console = esmith::console->new();
+
+my $db = esmith::ConfigDB::unsaved->open;
+
+my $termType = $db->get_prop('serial-console', 'Terminal') || '';
+my $SystemName = $db->get_value('SystemName');
+my $DomainName = $db->get_value('DomainName');
+
+$ENV{TERM} = $termType if($termType);
+
+system("/bin/sh", "/etc/profile.d/lang.sh");
+
+my %menu2object = ();
+my @args = ();
+my @items = ();
+
+my $menu_dir = "/sbin/e-smith/console-menu-items";
+
+opendir(ITEMS, $menu_dir);
+
+while (defined(my $item = readdir(ITEMS)))
+{
+    next unless -f "$menu_dir/$item";
+
+    if ($item =~ /([\w\.]+)/)
+    {
+	$item = $1;
+    }
+    else
+    {
+	warn "Don't know what to do with $menu_dir/$item\n";
+	next;
+    }
+
+    my $obj = require "$menu_dir/$item";
+
+    push @items, $obj;
+}
+
+close ITEMS;
+
+my $number = 1;
+
+foreach my $item (sort { $a->order <=> $b->order } @items)
+{
+    next if ($item->order < 0);
+    push @args, $number . '.', gettext($item->name);
+    $menu2object{$number++ . "."} = $item;
+}
+ 
+my $quit = esmith::console::quitConsole->new;
+while (1)
+{
+    #----------------------------------------
+    # Reload the configuration from file
+    #----------------------------------------
+
+    $db->reload;
+
+    my $title = gettext("Server console");
+    $title .= " (${SystemName}.${DomainName})";
+
+    $title .= " " . gettext("** unsaved changes **")
+        if ( $db->get_value('UnsavedChanges') eq 'yes' );
+
+    my ($rc, $choice) = $console->menu_page
+        (
+         title => $title,
+         text  =>
+         gettext("Welcome to the server console!") .
+         "\n\n" .
+         gettext("Use the Arrow and Tab keys to make your selection, then press Enter."),
+         argsref => \@args,
+         left    => gettext("Exit"),
+        );
+
+    $choice = ($rc == 0) ? $menu2object{$choice} : $quit;
+    $choice->doit($console, $db);
+}

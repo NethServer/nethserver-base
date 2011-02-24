@@ -1,0 +1,56 @@
+{
+    # Make sure that dhcpd service is sanely set up, using
+    # legacy values if they are available
+    my $dhcpd = $DB->get('dhcpd');
+    my $status = 'enabled';
+    my $old = $DB->get('DHCPServer');
+    if (defined $old)
+    {
+	$status =  $old->value;
+	$old->delete;
+    }
+    # Define the dhcpd service unless it is already 
+    # defined. Make it enabled, unless $DHCPServer
+    # told us otherwise.
+    $dhcpd ||= $DB->new_record('dhcpd', {
+				type => 'service',
+				status => $status,
+			    });
+    my $oldstart = '0.0.0.65';
+    $old = $DB->get('DHCPServerStart');
+    if (defined $old)
+    {
+	$oldstart =  $old->value;
+	$old->delete;
+    }
+    my $oldend = '0.0.0.250';
+    $old = $DB->get('DHCPServerEnd');
+    if (defined $old)
+    {
+	$oldend =  $old->value;
+	$old->delete;
+    }
+    my $start =  $dhcpd->prop('start') || $oldstart;
+    my $end = $dhcpd->prop('end') || $oldend;
+
+    $start =  esmith::util::IPquadToAddr($start);
+    $end =  esmith::util::IPquadToAddr($end);
+    my $netmask = esmith::util::IPquadToAddr($LocalNetmask);
+    my $localnet = esmith::util::IPquadToAddr($LocalIP) & $netmask;
+
+    # AND-out the host bits from the start and end ips.
+    # And, OR our local network with our start and end host values.
+    $start = $localnet | ($start & ~$netmask);
+    $end = $localnet | ($end & ~$netmask);
+
+    # Make sure that $start is less than $end (might not be if netmask has changed
+    if ($start > $end)
+    {
+	my $temp = $start;
+	$start = $end;
+	$end = $temp;
+    }
+    # Now save new values
+    $dhcpd->merge_props(start => esmith::util::IPaddrToQuad($start),
+			end => esmith::util::IPaddrToQuad($end));
+}

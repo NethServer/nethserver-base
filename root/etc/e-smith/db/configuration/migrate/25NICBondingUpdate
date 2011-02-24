@@ -1,0 +1,8 @@
+{
+    # Remove NICBonding property unless conditions are met
+    return unless defined $InternalInterface{NICBonding};
+    return if($SystemMode eq "serveronly" and 
+        $EthernetDriver1 eq $EthernetDriver2);
+
+    $DB->get('InternalInterface')->delete_prop('NICBonding');
+}

@@ -1,0 +1,130 @@
+#!/bin/sh
+
+# $DIALD_LINK is the name of the link we are connecting.
+# $DIALD_DEVICE is the device we are calling out on.
+
+#CFG_SCRIPTS='/usr/share/diald'
+CFG_SCRIPTS='/etc/diald/scripts'
+CFG_DEVICE='/etc/diald/device.conf'
+CFG_LINK="/etc/diald/link"
+CFG_SEQ='/var/run'
+
+# $DIALD_DEVTYPE is a sanitized version of $DIALD_DEVICE.
+case "$DIALD_DEVICE" in
+	ippp*)	DIALD_DEVTYPE='isdn' ;;
+	isdn*)	DIALD_DEVTYPE='isdn' ;;
+	*)	DIALD_DEVTYPE='modem' ;;
+esac
+
+
+connect()
+{
+	status=0
+
+	# If this device has a dial script we use it to bring up
+	# the physical link.
+	if [ -n "$dial_script"  -a "$dial_script" != '-' ]; then
+		"$CFG_SCRIPTS/$dial_script"
+		status=$?
+		if [ $status -ne 0 ]; then
+			exit $status
+		fi
+	fi
+
+	# If we need to do some form of login when connecting this
+	# link over this device, do it now.
+	if [ -n "$LOGIN"  -a "$LOGIN" != '-' ]; then
+		"$CFG_SCRIPTS/login/$LOGIN"
+		status=$?
+	fi
+
+	# If everything worked we start from the beginning of the
+	# list again next time
+	if [ $status -eq 0 ]; then
+		echo 1 > "$CFG_SEQ/dialdseq.$DIALD_LINK"
+	fi
+
+	exit $status
+}
+
+
+# Save stdin, we need it later if we are dialling a modem.
+exec 9<&0
+
+# Find out what dial script to use on this device.
+exec < "$CFG_DEVICE"
+gotdev=
+while read dev dial_script dial_args
+do
+	# Ignore blank lines and comments.
+	case "$dev" in
+		'#'*|'')
+			continue ;;
+	esac
+
+	if [ "$dev" = "$DIALD_DEVICE" -o "$dev" = "$DIALD_DEVTYPE" ]; then
+		gotdev=1
+		break
+	fi
+done
+if [ -z "$gotdev" ]; then
+	echo "<3>No entry for $DIALD_DEVICE, type $DIALD_DEVTYPE in $CFG_DEVICE"
+	exit 1
+fi
+
+
+seq=0
+if [ -r "$CFG_SEQ/dialdseq.$DIALD_LINK" ]; then
+	seq=`cat "$CFG_SEQ/dialdseq.$DIALD_LINK"`
+fi
+seq=`expr $seq + 1`
+echo $seq > "$CFG_SEQ/dialdseq.$DIALD_LINK"
+
+
+passes=2
+while [ $passes -gt 0 ]; do
+	passes=`expr $passes - 1`
+
+	exec < "$CFG_LINK"
+	dev_type=
+	link_params=
+	base_params=
+	counted=0
+	while read dev_type link_params
+	do
+		# Ignore blank lines and comments.
+		case "$dev_type" in
+			'#'*|'')
+				continue ;;
+		esac
+
+		if [ "$dev_type" = '=' ]; then
+			base_params="$link_params"
+		elif [ "$dev_type" = '+' ]; then
+			base_params="$base_params $link_params"
+		elif [ "$dev_type" = "$DIALD_DEVICE" \
+		-o "$dev_type" = "$DIALD_DEVTYPE" ]; then
+			counted=`expr $counted + 1`
+			seq=`expr $seq - 1`
+			if [ $seq -eq 0 ]; then
+				passes=0
+				exec 0<&9
+				eval "$dial_args $base_params $link_params connect"
+				exit $?
+			fi
+		fi
+	done
+
+	# If no entries match there is a problem
+	if [ $counted -eq 0 ]; then
+		echo "<3>No entry for $DIALD_DEVICE, type $DIALD_DEVTYPE in $CFG_LINK"
+		exit 1
+	fi
+
+	# One or more entries exists, we have just run off the end
+	# of the list so we have to start again from the top.
+	echo 1 > "$CFG_SEQ/dialdseq.$DIALD_LINK"
+	seq=1
+done
+
+exit 1

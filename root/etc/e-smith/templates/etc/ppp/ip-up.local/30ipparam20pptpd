@@ -1,0 +1,3 @@
+    pptpd)
+	/sbin/e-smith/signal-event ip-up.pptpd "$@"
+    			;;

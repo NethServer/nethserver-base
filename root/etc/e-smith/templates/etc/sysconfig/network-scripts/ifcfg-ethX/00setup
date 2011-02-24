@@ -1,0 +1,16 @@
+{
+    die "Need to pass THIS_DEVICE in MORE_DATA\n" unless (defined $THIS_DEVICE);
+
+    $is_internal = (exists $InternalInterface{Name} and
+		    $InternalInterface{Name} eq $THIS_DEVICE );
+    $is_external = (exists $ExternalInterface{Name} and
+		    $ExternalInterface{Name} eq $THIS_DEVICE );
+
+    $ifup_this_device = "no";
+    if ($is_internal || ($is_external && $ExternalInterface{Configuration} eq "static"))
+    {
+	$ifup_this_device = "yes";
+    }
+
+    "";
+}

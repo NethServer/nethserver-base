@@ -1,0 +1,151 @@
+#!/usr/bin/perl -wT
+
+#----------------------------------------------------------------------
+# heading     : Security
+# description : Local networks
+# navigation  : 5000 5300
+#----------------------------------------------------------------------
+#----------------------------------------------------------------------
+# copyright (C) 2002 Mitel Networks Corporation
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 		
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 		
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+# 
+# Technical support for this program is available from Mitel Networks 
+# Please visit our web site www.mitel.com/sme/ for details.
+#----------------------------------------------------------------------
+
+use strict;
+use esmith::FormMagick::Panel::localnetworks;
+
+my $fm = esmith::FormMagick::Panel::localnetworks->new();
+$fm->display();
+
+
+
+=pod
+
+=head1 NAME
+
+localnetworks -- add/remove local networks
+
+=head2 DESCRIPTION
+
+This screen allows the administrator to add or delete local networks.
+
+=begin testing
+
+use esmith::FormMagick::Tester;
+use esmith::TestUtils;
+use esmith::TestUtils;
+use esmith::ConfigDB;
+use esmith::AccountsDB;
+
+my $panel = $Original_File;
+my $ua = esmith::FormMagick::Tester->new();
+
+my $c = esmith::ConfigDB->open();
+my $a = esmith::AccountsDB->open();
+
+is  (mode($panel), '4750',              "Check permissions on script");
+ok  ($ua->get_panel($panel),            "ABOUT TO RUN L10N TESTS");
+is  ($ua->{status}, 200,                "200 OK");
+ok  ($ua->set_language("en-us"),        "Set language to U.S. English");
+ok  ($ua->get_panel($panel),            "Get panel");
+is  ($ua->{status}, 200,                "200 OK");
+like($ua->{content}, qr/Local networks/, "Saw translated form title");
+
+
+# 
+# Testing creating local networks
+#
+
+ok  ($ua->get_panel($panel),            "ABOUT TO TEST CREATING NETWORK");
+ok  ($ua->follow("Click here"),         "Follow 'create network' link");
+is  ($ua->{status}, 200,                "200 OK");
+like($ua->{content}, qr/Add a local network/,   "Saw page title");
+like($ua->{content}, qr/Network address/,       "Saw network address field");
+like($ua->{content}, qr/Subnet mask/,           "Saw subnet mask field");
+like($ua->{content}, qr/Router/,                "Saw router field");
+like($ua->{content}, qr/Add/,                   "Saw add button");
+
+#
+# checking error handling
+#
+
+$ua->field(networkAddress => '10.0.0.10000');
+$ua->field(networkMask    => '10.0.0.10000');
+$ua->click("Add");
+# like($ua->{content}, qr/Invalid network address/,  "Saw network address validation message");
+like($ua->{content}, qr/Invalid subnet mask/,      "Saw submask validation message");
+
+#
+# now let's actually add one
+#
+
+SKIP: {
+
+    skip 10, "Unsafe!" unless destruction_ok();
+
+    ok  ($ua->follow("Click here"),         "ACTUALLY ADDING A NETWORK");
+    $ua->field(networkAddress => '10.0.0.0');
+    $ua->field(networkMask    => '255.255.255.0');
+    $ua->field(networkRouter  => '10.0.0.1');
+    $ua->click("Add");
+    like($ua->{content}, qr/Successfully added network/,  "Saw success message");
+
+    ok  ($ua->follow("Click here"),         "ADDING NETWORK WITH DEFAULT ROUTER");
+    $ua->field(networkAddress => '10.0.0.0');
+    $ua->field(networkMask    => '255.255.255.0');
+
+    ok  ($ua->follow("Remove"),         "REMOVING NETWORK");
+    like($ua->{content}, qr/Are you sure/,  "Saw confirmation message");
+    $ua->click("Remove");
+    like($ua->{content}, qr/Successfully deleted/,  "Saw success message");
+
+}
+
+=end testing
+
+=cut
+
+
+
+__DATA__
+<form title="Local networks" header="/etc/e-smith/web/common/head.tmpl" footer="/etc/e-smith/web/common/foot.tmpl">
+    <page name="First" pre-event="print_status_message()">
+        <description>FIRSTPAGE_DESC</description>
+        <subroutine src="print_network_table()" />
+    </page>
+    <page name="Add" pre-event="turn_off_buttons()" post-event="add_network()">
+        <title>ADD_TITLE</title> 
+        <description>ADD_DESC</description>
+        <field type="text" id="networkAddress" validation="ip_number">
+            <label>NETWORK_ADDRESS</label>
+        </field>
+        <field type="text" id="networkMask" validation="subnet_mask">
+            <label>SUBNET_MASK</label>
+        </field>
+        <field type="text" id="networkRouter" validation="ip_number">
+            <label>ROUTER</label>
+        </field>
+        <subroutine src="print_button('ADD')" />
+    </page>
+    <page name="Remove" post-event="remove_network()">
+        <title>REMOVE_TITLE</title>
+        <description>REMOVE_DESC</description>
+        <subroutine src="show_remove_network_summary()" />
+    </page>
+ 
+</form>

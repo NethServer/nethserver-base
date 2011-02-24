@@ -1,0 +1,9 @@
+{
+    $OUT = '';
+
+    my $status = ${'serial-console'}{status} || 'disabled';
+    return unless $status eq 'enabled';
+
+    my $device = ${'serial-console'}{Device} || 'ttyS0';
+    $OUT .= "$device";
+}

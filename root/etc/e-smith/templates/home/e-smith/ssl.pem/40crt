@@ -1,0 +1,20 @@
+{
+    my $domain = $DomainName || "localdomain";
+    my $hostname = $SystemName || "localhost";
+
+    my $crt = $modSSL{'crt'};
+    unless ($crt)
+    {
+	$crt = "/home/e-smith/ssl.crt/$hostname.$domain.crt";
+	use esmith::templates;
+	esmith::templates::processTemplate({
+	    TEMPLATE_PATH => "/home/e-smith/ssl.crt/crt",
+	    OUTPUT_FILENAME => $crt,
+	    });
+    }
+    open(CRT, $crt) or die "Could not open crt file: $!";
+    my @crt = <CRT>;
+    chomp @crt;
+    $OUT = join "\n", @crt;
+    close CRT;
+}

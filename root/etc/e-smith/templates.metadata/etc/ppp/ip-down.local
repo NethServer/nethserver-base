@@ -1,0 +1,3 @@
+UID="root"
+GID="daemon"
+PERMS=0755

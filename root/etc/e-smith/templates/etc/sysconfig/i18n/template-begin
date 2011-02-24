@@ -1,0 +1,17 @@
+{
+    %settings = ();
+    %order = ();
+    $OUT = "";
+    if (open(I18N, "/etc/sysconfig/i18n"))
+    {
+	my $l = 1;
+	while (<I18N>)
+	{
+	    chomp;
+	    my ($key, $value) = split(/=/, $_, 2);
+	    $settings{$key} = $value;
+	    $order{$l} = $key;
+	    $l++
+	}
+    }
+}

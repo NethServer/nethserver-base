@@ -1,0 +1,6 @@
+{
+	foreach my $user ($DB->get_all_by_prop(EmailForward => 'procmail'))
+    {
+	$user->set_prop('EmailForward','local');
+    }
+}

@@ -1,0 +1,43 @@
+{
+    die "Need to pass THIS_DEVICE in MORE_DATA\n" unless (defined $THIS_DEVICE);
+
+    my $device = $InternalInterface{Name};
+    unless ($device)
+    {
+	warn("Can't determine device name for local network");
+	return "# template expansion error - Can't determine device name for local network";
+    }
+
+    return "# Static routes only on internal interface"
+	unless ($InternalInterface{Name} eq $THIS_DEVICE);
+
+    use esmith::NetworksDB;
+    my $db = esmith::NetworksDB->open_ro;
+    
+    unless ($db)
+    {
+	warn "Could not open networks db\n";
+	return "# template expansion error - Could not open networks db\n";
+    }
+
+    my $index = 0;
+    foreach my $network ($db->networks)
+    {
+	# Skip local network
+	my $system = $network->prop('SystemLocalNetwork') || "no";
+	next if $system eq "yes";
+
+	# Skip anything we don't know how to or don't need to route
+	my $router = $network->prop('Router');
+	next unless $router;
+	next if $router eq "default";
+
+	my $netmask = $network->prop('Mask');
+	my $net = $network->key;
+	$OUT .= "ADDRESS$index=$net\n";
+	$OUT .= "NETMASK$index=$netmask\n";
+	$OUT .= "GATEWAY$index=$router\n";
+	$index++;
+    }
+}
+

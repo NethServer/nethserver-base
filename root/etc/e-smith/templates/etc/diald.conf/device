@@ -1,0 +1,12 @@
+device {
+    my $isdn = $isdn{'status'} || "disabled";
+    if ($isdn eq "enabled")
+    {
+	my $sync = $isdn{'UseSyncPPP'} || "yes";
+	$OUT = ($sync eq "yes") ? "ippp0" : "$DialupModemDevice";
+    }
+    else
+    {
+	$OUT = "$DialupModemDevice";
+    }
+}

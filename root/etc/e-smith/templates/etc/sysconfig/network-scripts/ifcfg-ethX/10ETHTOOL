@@ -1,0 +1,12 @@
+{
+    my $this_device;
+
+    $this_device = \%InternalInterface if $is_internal;
+    $this_device = \%ExternalInterface if $is_external;
+    return unless $this_device;
+
+    my $ethtool_options = $this_device->{EthtoolOpts};
+    return unless $ethtool_options;
+
+    return "ETHTOOL_OPTS=\"$ethtool_options\"";
+}

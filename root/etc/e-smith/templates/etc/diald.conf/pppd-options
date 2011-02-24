@@ -1,0 +1,18 @@
+{
+    $OUT = "";
+    my $isdn = $isdn{'status'} || "disabled";
+    my $sync = $isdn{'UseSyncPPP'} || "yes";
+    return if ($isdn eq "enabled" && $sync eq "yes");
+
+    $OUT .= "pppd-options name \"$DialupUserAccount\" noauth noipdefault ";
+    if ($DialupModemDevice eq '/dev/ttyI0')
+    {
+	$OUT .= "sync ";
+    }
+    my $debug = $diald{debug} || $diald{Debug} || "no";
+    if ($debug eq "yes")
+    {
+	$OUT .= "debug ";
+    }
+    $OUT .= "ipparam diald";
+}

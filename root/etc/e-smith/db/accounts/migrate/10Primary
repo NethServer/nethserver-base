@@ -1,0 +1,10 @@
+{
+    # Delete any pre-existing Primary=system record
+    my $p = $DB->get('Primary');
+    return unless defined $p;
+
+    my $type = $p->prop('type');
+    return unless defined $type;
+
+    $p->delete if $type eq 'system';
+}

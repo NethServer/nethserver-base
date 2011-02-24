@@ -1,0 +1,8 @@
+/var/log/diald/accounting.log {
+    weekly
+    rotate 5
+    copytruncate
+    compress
+    notifempty
+    missingok
+}

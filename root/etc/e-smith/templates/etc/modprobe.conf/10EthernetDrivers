@@ -1,0 +1,12 @@
+{
+    @lines = grep { !/^\s*alias\s*eth[01]/ } @lines;
+    if (defined $EthernetDriver1 && $EthernetDriver1 ne "unknown")
+    {
+	push @lines, "alias eth0 ${EthernetDriver1}";
+    }
+    if (defined $EthernetDriver2 && $EthernetDriver2 ne "unknown")
+    {
+	push @lines, "alias eth1 ${EthernetDriver2}";
+    }
+    "";
+}

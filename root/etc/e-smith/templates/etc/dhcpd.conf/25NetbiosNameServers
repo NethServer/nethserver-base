@@ -1,0 +1,5 @@
+{
+    return "" unless $DHCP_WINSServer;
+
+    return "    option netbios-name-servers $DHCP_WINSServer;";
+}

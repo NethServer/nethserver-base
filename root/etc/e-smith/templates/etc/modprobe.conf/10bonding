@@ -1,0 +1,16 @@
+{
+    my $options = ${InternalInterface}{NICBondingOptions} || '';
+    foreach my $line
+	(
+	    "alias bond0 bonding",
+	)
+    {
+	unless (exists $lines{$line})
+	{
+	    push @lines, $line;
+	}
+    }
+    @lines = grep !/^options bond0/, @lines;
+    push @lines, "options bond0 $options" if($options);
+    "";
+}

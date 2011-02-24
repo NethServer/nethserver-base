@@ -1,0 +1,7 @@
+{
+    $OUT .= "";
+    foreach my $line (@lines)
+    {
+	$OUT .= "$line\n";
+    }
+}

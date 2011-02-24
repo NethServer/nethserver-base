@@ -1,0 +1,11 @@
+{ 
+    my $router = (defined $SystemMode && $SystemMode =~ /servergateway/)
+	? $LocalIP :
+	    defined $GatewayIP ? $GatewayIP : undef;
+
+    $OUT = "";
+    if ($router)
+    {
+        $OUT .= "    option routers $router;";
+    }
+}

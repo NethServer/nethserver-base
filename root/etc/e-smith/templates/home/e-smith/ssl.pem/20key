@@ -1,0 +1,21 @@
+{
+    my $domain = $DomainName || "localdomain";
+    my $hostname = $SystemName || "localhost";
+    $OUT = '';
+
+    my $key = $modSSL{'key'};
+    unless ($key)
+    {
+	$key = "/home/e-smith/ssl.key/$hostname.$domain.key";
+	use esmith::templates;
+	esmith::templates::processTemplate({
+	    TEMPLATE_PATH => "/home/e-smith/ssl.key/key",
+	    OUTPUT_FILENAME => $key,
+	    });
+    }
+    open(KEY, $key) or die "Could not open key file: $!";
+    my @key = <KEY>;
+    chomp @key;
+    $OUT = join "\n", @key;
+    close KEY;
+}

@@ -1,0 +1,12 @@
+#! /bin/sh
+
+exec 2>&1
+config=$(/sbin/e-smith/config getprop ExternalInterface Configuration)
+
+if [ -x run.$config ]
+then
+    exec ./run.$config
+fi
+
+echo script run.$config not found - please report this as a bug
+sleep 100

@@ -1,0 +1,9 @@
+# Files in the xinetd.d directory are not used by e-smith
+
+defaults
+\{
+	instances               = 60
+        log_type                = SYSLOG authpriv
+        log_on_success          = HOST PID EXIT DURATION
+        log_on_failure          = HOST USERID
+\}

@@ -1,0 +1,23 @@
+{
+    use esmith::I18N;
+    use Locale::gettext;
+
+    my $i18n = new esmith::I18N;
+    $i18n->setLocale('mdEvent.tmpl');
+
+    my $domain = $conf->get_value("DomainName") || "localhost";
+    my $systemName = $conf->get_value("SystemName") || "SME Server";
+
+    $OUT .= "To: $user\n";
+    $OUT .= "From: \"".  gettext("mdadm monitoring") . "\" <root\@${domain}>\n";
+    $OUT .= "Subject: " . gettext("$event event on") .  " ${device}:${systemName}.${domain}\n\n";
+
+    $OUT .= gettext("This is an automatically generated mail message from mdadm running on").
+        " ${systemName}.${domain}.\n\n";
+
+    $OUT .= gettext("A $event event has been detected on md device").
+        " ${device}.\n\n";
+
+    $OUT .= gettext("Device") . " $member ". gettext("is now an active member of md device") . 
+        " ${device}.\n" if $member;
+}

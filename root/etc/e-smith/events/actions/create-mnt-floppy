@@ -1,0 +1,14 @@
+#! /bin/sh
+# Try to make sure that /mnt/floppy can be mounted
+
+# If the system has been upgraded, there should be an old mount directory
+if [ -d /mnt/floppy ]
+then
+    exit 0
+fi
+
+# Create /mnt if required
+mkdir -p /mnt
+
+# Let's assume that haldaemon will create /media/floppy
+ln -sf /media/floppy /mnt/floppy

@@ -1,0 +1,59 @@
+#!/bin/sh
+
+#----------------------------------------------------------------------
+# copyright (C) 1999-2006 Mitel Networks Corporation
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+# bootstrap-console: Fire up the e-smith-console on this virtual terminal
+#----------------------------------------------------------------------
+
+case $1 in
+start)
+	RUN_BOOTSTRAP_CONSOLE=$(/sbin/e-smith/db configuration getprop bootstrap-console Run)
+
+	if [ "x${RUN_BOOTSTRAP_CONSOLE}" = "xno" ]
+	then
+	    exit 0
+	fi
+	# Make it hard to exit from the console without changing anything
+	/sbin/e-smith/db configuration set UnsavedChanges yes
+
+	while true 
+	do
+	    UNSAVED_CHANGES=$(/sbin/e-smith/db configuration get UnsavedChanges)
+
+	    case ${UNSAVED_CHANGES} in
+		yes) /sbin/e-smith/bootstrap-console console
+		     ;;
+
+		no)  # And now we'd better restart syslog which
+		     # may have been configured before the changes in the
+		     # console
+		     /etc/rc.d/init.d/syslog restart
+		     break
+		     ;;
+	    esac
+	done
+        ;;
+
+    *)
+	echo "Sorry - I don't know how to $0 $1"
+	exit 1
+        ;;
+esac

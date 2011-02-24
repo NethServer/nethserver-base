@@ -1,0 +1,177 @@
+#!/usr/bin/perl -wT
+
+# vim: ft=xml ts=8 sw=4 noet:
+#----------------------------------------------------------------------
+# heading     : Security
+# description : Remote access
+# navigation  : 5000 5200
+#----------------------------------------------------------------------
+#----------------------------------------------------------------------
+# copyright (C) 2002 Mitel Networks Corporation
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 		
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 		
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#----------------------------------------------------------------------
+
+use strict;
+use esmith::FormMagick::Panel::remoteaccess;
+my $f = esmith::FormMagick::Panel::remoteaccess->new();
+$f->display();
+
+=head1 TESTING
+
+
+=begin testing
+
+use esmith::FormMagick::Tester;
+use esmith::TestUtils;
+use esmith::ConfigDB;
+my $panel = 'remoteaccess';
+my $panel_path = "/etc/e-smith/web/functions/".$panel;
+my $ua = esmith::FormMagick::Tester->new();
+
+is  (mode($panel_path), '4750',              "Check permissions on script");
+ok  ($ua->get_panel($panel),            "ABOUT TO RUN L10N TESTS");
+is  ($ua->{status}, 200,                "200 OK");
+like($ua->{content}, qr/FORM_TITLE/,    "Saw untranslated form title");
+ok  ($ua->set_language("en-us"),        "Set language to U.S. English");
+ok  ($ua->get_panel($panel),            "Get panel");
+
+is  ($ua->{status}, 200,                "200 OK");
+
+like($ua->{content}, qr/remote access settings/, "Saw translated form title");
+
+# Testing changes
+
+ok  ($ua->get_panel($panel),            "Testing panel retrieval");
+can_ok($ua, "field");
+ok ($ua->{form}->find_input('FTPAccess'), 'Finding the FTPAccess field');
+ok ($ua->{form}->find_input('sshAccess'), 'Finding the sshAccess field');
+ok ($ua->{form}->find_input('sshPermitRootLogin'), 'Finding the sshPermitRootLogin field');
+ok ($ua->{form}->find_input('sshTCPPort'), 'Finding the sshTCPPort field');
+ok ($ua->{form}->find_input('pptpSessions'), 'Finding the pptpSessions field');
+ok ($ua->{form}->find_input('sshPasswordAuthentication'), 'Finding the sshPasswordAuthentication field');
+ok ($ua->{form}->find_input('FTPLimits'), 'Finding the FTPLimits field');
+ok ($ua->{form}->find_input('TelnetAccess'), 'Finding the TelnetAccess field');
+
+if (destruction_ok()) {
+    $ua->field('FTPAccess' => 'private');
+    $ua->field('sshAccess' => 'public');
+    $ua->field('sshPermitRootLogin' => 'yes');
+    $ua->field('sshTCPPort' => '22');
+    $ua->field('pptpSessions' => '10');
+    $ua->field('sshPasswordAuthentication' => 'yes');
+    $ua->field('FTPLimits' => 'normal');
+    $ua->field('TelnetAccess' => 'private');
+}
+
+ok  ($ua->click("Save"),                "Click Save");
+is  ($ua->{status}, 200,                "200 OK");
+
+like($ua->{content}, qr/settings have been saved/, "Saw validation messages");
+
+# Gotta open this later, so we don't cache stale data
+my $db = esmith::ConfigDB->open;
+
+SKIP: 
+{
+    skip 9, "Unsafe!" unless destruction_ok();
+
+    is($db->get('sshd')->prop('access'), 'public', "We have public ssh");
+    is($db->get('sshd')->prop('PasswordAuthentication'), 'yes', "We have password auth");
+    is($db->get('sshd')->prop('PermitRootLogin'), 'yes', "We have root login");
+    is($db->get('sshd')->prop('TCPPort'), '22', "Got the right tcp port for ssh');    
+    is($db->get('sshd')->prop('status'), 'enabled', "ssh is enabled");
+    
+    is ($db->get('ftp')->prop('access'), 'private', "ftp access is private");
+    is ($db->get('ftp')->prop('accessLimits'), 'normal', "ftp access limits are normal");
+    is ($db->get('pptpd')->prop('sessions') ,'10', "Got the right sesison count for pptp");
+    is ($db->get('pptpd')->prop('status') ,'enabled', "pptp is enabled");
+    is ($db->get('telnet')->prop('access'), 'private', "Private telnet turned on");
+}
+
+=end testing
+
+=cut
+
+__DATA__
+<form title="FORM_TITLE" header="/etc/e-smith/web/common/head.tmpl"
+    footer="/etc/e-smith/web/common/foot.tmpl">
+    <page name="First"  post-event="change_settings()"
+	pre-event="print_status_message()">
+
+        <subroutine src="show_ipsecrw_section()"/>
+
+  	<field type="text" id="pptpSessions" size="3" validation="zero_or_positive()"
+	    value="get_pptp_sessions()">
+	    <label>LABEL_PPTP</label>
+	    <description>DESC_PPTP</description>
+	</field>
+      
+        <subroutine src="show_valid_from_list()"/>
+        <field type="text" id="validFromNetwork" size="15" 
+	    value="" validation="ip_number_or_blank">
+	    <description>DESC_VALID_FROM_ENTRIES</description>
+	    <label>NETWORK</label>
+	</field>
+	<field type="text" id="validFromMask" size="15" 
+	    value="" validation="subnet_mask_or_blank, validate_network_and_mask">
+	    <label>SUBNET_MASK</label>
+	</field>
+        
+        <field type="select" 
+            id="sshAccess" 
+            options=" 'off' => 'NO_ACCESS', 'private' => 'NETWORKS_ALLOW_LOCAL', 'public' => 'NETWORKS_ALLOW_PUBLIC'"
+            value="get_ssh_access()">
+            <label>LABEL_SSH</label>
+            <description>DESC_SSH</description>
+        </field>
+        <field type="select" 
+            id="sshPermitRootLogin" 
+            options=" 'no'=>'NO', 'yes'=>'YES'"
+            value="get_ssh_permit_root_login()">
+            <label>LABEL_SSH_ADMIN</label>
+        </field>
+        <field type="select" 
+            id="sshPasswordAuthentication" 
+            options=" 'no'=>'NO', 'yes'=>'YES'"
+            value="get_ssh_password_auth()">
+            <label>LABEL_SSH_PASSWORD_ACCESS</label>
+        </field>
+        <field type="text" id="sshTCPPort" size="5"
+            validation="zero_or_positive"
+            value="get_ssh_port()">
+            <label>LABEL_SSH_PORT</label>
+        </field>
+
+        <subroutine src="show_ftp_section()"/>
+
+	<subroutine src="show_telnet_section()"/>
+
+        <!-- field type="select" 
+            id="serialConsole" 
+            options="    
+            'disabled' => 'DISABLED' ,
+            'ttyS0' => 'PORT1_ENABLED' ,
+            'ttyS1' => 'PORT2_ENABLED'
+            "
+            value="get_serial_console()">
+
+            <label>LABEL_SERIAL_CONSOLE_ACCESS</label>
+            <description>DESC_SERIAL_CONSOLE_ACCESS</description>
+        </field -->
+
+	<subroutine src="print_button('SAVE')" />
+    </page>
+</form>

@@ -1,0 +1,149 @@
+#!/usr/bin/perl -wT
+
+# vim: ft=xml ts=4 sw=4 et:
+#----------------------------------------------------------------------
+# heading     : Collaboration
+# description : GROUPS
+# navigation  : 2000 2200
+#----------------------------------------------------------------------
+#----------------------------------------------------------------------
+# copyright (C) 2002-2005 Mitel Networks Corporation
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 		
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 		
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+# 
+# Technical support for this program is available from Mitel Networks 
+# Please visit our web site www.mitel.com/sme/ for details.
+#----------------------------------------------------------------------
+
+
+use strict;
+use esmith::FormMagick::Panel::groups;
+my $f = esmith::FormMagick::Panel::groups->new();
+$f->display();
+
+=head1 TESTING
+
+
+=begin testing
+
+use esmith::FormMagick::Tester;
+use esmith::TestUtils;
+use esmith::AccountsDB;
+my $panel = 'groups';
+my $panel_path = "/etc/e-smith/web/functions/".$panel;
+my $ua = esmith::FormMagick::Tester->new();
+
+
+is  (mode($panel_path), '4750',              "Check permissions on script");
+ok  ($ua->get_panel($panel),            "ABOUT TO RUN L10N TESTS");
+is  ($ua->{status}, 200,                "200 OK");
+like($ua->{content}, qr/FORM_TITLE/,    "Saw untranslated form title");
+ok  ($ua->set_language("en"),           "Set language to English");
+ok  ($ua->get_panel($panel),            "Get panel");
+
+is  ($ua->{status}, 200,                "200 OK");
+
+like($ua->{content}, qr/Create, remove, or change/, "Saw translated form title");
+
+# Testing changes
+
+ok  ($ua->get_panel($panel),            "Testing panel retrieval");
+can_ok($ua, "field");
+
+# Destructive testing:
+
+ok ($ua->follow('Click here to create a user group'), "Followed link to create group");
+is  ($ua->{status}, 200,                "200 OK" );
+can_ok($ua, "field");
+ok($ua->field('groupName' => 'aaaaaeve') , "Set GroupName");
+ok($ua->field('groupDesc' => 'sample'), "Set GroupDesc");
+
+if (destruction_ok()) {
+
+ok ($ua->click('Create'), "Clicked create");
+is  ($ua->{status}, 200,                "200 OK" );
+like ($ua->{content}, qr/created user group/, "Saw create success message");
+ok  ($ua->get_panel($panel),            "Get panel");
+like ($ua->{content}, qr/aaaaaeve/, "Saw newly created everygroup link");
+ok ($ua->follow('Modify'),  "modifying aaaaaeve");
+is  ($ua->{status}, 200,                "200 OK ");
+ok ($ua->field('groupDesc' => 'Everyone') , "Set group desc to 'Everyone'");
+
+#putting this in a test fails. why?
+$ua->field('groupMembers' => 'admin');
+ok ($ua->click('Modify'));
+is  ($ua->{status}, 200,                "200 OK");
+like ($ua->{content}, qr/Successfully/, "Saw modification success message");
+ok (my $acct = esmith::AccountsDB->open());
+ok (my $everg = $acct->get('aaaaaeve'), "Got an aaaaaeveg out of the db");
+ok ($everg->prop('Members') eq 'admin', "aaaaaeve has admin as its member");
+
+ok  ($ua->get_panel($panel),            "Get panel");
+like ($ua->{content}, qr/aaaaaeve/, "Saw modified everygroup link");
+ok ($ua->follow('Remove'),  "removing aaaaaeve");
+is  ($ua->{status}, 200,                "200 OK");
+ok ($ua->click('Remove'));
+is  ($ua->{status}, 200,                "200 OK");
+like ($ua->{content}, qr/Successfully/, "Saw removal success message");
+ok  ($ua->get_panel($panel),            "Get panel");
+unlike ($ua->{content}, qr/aaaaaeve/, "Saw no everygroup");
+}
+
+=end testing
+
+=cut
+
+__DATA__
+<form title="FORM_TITLE"  header="/etc/e-smith/web/common/head.tmpl" footer="/etc/e-smith/web/common/foot.tmpl">
+    <page name="First"  pre-event="print_status_message()">
+        <subroutine src="show_initial()"/>
+    </page>
+    <page name="CreateGroup" pre-event="turn_off_buttons()" 
+        post-event="create_group()">
+        <title>CREATE_GROUP</title>
+        <description>GROUP_NAMING</description>
+        <field type="text" id="groupName" 
+            validation="validate_group, validate_group_length, validate_group_naming_conflict">
+            <label>GROUP_NAME</label>
+        </field>
+        <field type="text" id="groupDesc" validation="validate_description">
+            <label>GROUP_DESC</label>
+            <description>GROUP_DESC_EXPL</description>
+        </field>
+        <subroutine src="genUsers()"/>
+        <subroutine src="print_button('ADD')" />
+    </page>
+    <page name="Delete"  pre-event="turn_off_buttons()" 
+        post-event="delete_group()">
+        <title>REMOVE_USER_GROUP</title>
+        <subroutine src="print_group_delete_desc()"/>
+        <subroutine src="print_group_members()"/>
+        <subroutine src="print_ibay_list($acct)"/>
+        <subroutine src="print_button('REMOVE')" />
+    </page>
+    <page name="Modify" pre-event="turn_off_buttons()" 
+        post-event="modify_group()">
+        <title>MODIFY_USER_GROUP</title>
+        <field type="literal" id="groupName" value="$q->param('groupName')">
+            <label>GROUP_NAME</label>
+        </field>
+        <field type="text" id="groupDesc" value="get_description()" 
+            validation="validate_description">
+            <label>GROUP_DESC</label>
+        </field>
+        <subroutine src="genUsers()"/>
+        <subroutine src="print_button('SAVE')" />
+    </page>
+</form>

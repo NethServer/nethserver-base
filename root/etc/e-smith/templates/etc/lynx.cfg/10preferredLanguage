@@ -1,0 +1,6 @@
+{
+    my $language = lc $sysconfig{Language};
+    $language    =~ s/_/-/;
+
+    return "PREFERRED_LANGUAGE:$language";
+}

@@ -1,0 +1,13 @@
+{
+    foreach my $line
+	(
+	    "alias block-major-3 off",
+	)
+    {
+	unless (exists $lines{$line})
+	{
+	    push @lines, $line;
+	}
+    }
+    "";
+}

@@ -1,0 +1,13 @@
+passwd:     files
+shadow:     files
+group:      files
+hosts:      { ($AccessType eq "off") ? "files" : "files dns" }
+services:   files
+networks:   files
+protocols:  files
+rpc:        files
+ethers:     files
+netmasks:   files
+bootparams: files
+automount:  files
+aliases:    files

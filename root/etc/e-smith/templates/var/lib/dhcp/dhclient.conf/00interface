@@ -1,0 +1,4 @@
+{
+    die "Need to pass THIS_DEVICE in MORE_DATA\n" unless (defined $THIS_DEVICE);
+    $OUT = "interface \"$THIS_DEVICE\" \{";
+}

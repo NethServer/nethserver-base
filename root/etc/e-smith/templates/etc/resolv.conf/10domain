@@ -1,0 +1,3 @@
+{ 
+    $OUT .= "domain $DomainName";
+}

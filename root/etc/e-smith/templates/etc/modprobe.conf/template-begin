@@ -1,0 +1,34 @@
+{
+    %lines = ();
+    @lines = ();
+    open (RD, "</etc/modprobe.conf")
+    || warn "Cannot open input file /etc/modprobe.conf: $!\n";
+    while (<RD>)
+    {
+	chop;
+	push @lines, $_;
+	$lines{$_} = 1;
+    }
+    close(RD);
+    my @header = (
+	"#------------------------------------------------------------",
+	"# BE CAREFUL WHEN MODIFYING THIS FILE! It is updated automatically",
+	"# by the SME server software. Various aliases are added and/or",
+	"# deleted by the template processing of the file and white space",
+	"# is removed, but otherwise changes to the file are preserved.",
+	"# For more information, see http://www.e-smith.org/custom/ and",
+	"# the template fragments in /etc/e-smith/templates/etc/modprobe.conf/.",
+	"# ",
+	"# copyright (C) 2002-2005 Mitel Networks Corporation",
+	"#------------------------------------------------------------",
+    );
+    foreach my $line (@header)
+    {
+	# Print the header banner, and delete any of its lines from the
+	# buffer, so that it isn't repeated.
+	my $test = $line;
+	$test =~ tr/()/../; # Avoid special interpretation of () in pattern
+	@lines = grep { !/^$test$/ } @lines;
+	$OUT .= "$line\n";
+    }
+}

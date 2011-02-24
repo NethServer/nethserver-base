@@ -1,0 +1,11 @@
+{
+    foreach my $i (0..15)
+    {
+	my $line = "alias tap${i} off";
+	unless (exists $lines{$line})
+	{
+	    push @lines, $line;
+	}
+    }
+    "";
+}

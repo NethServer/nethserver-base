@@ -1,0 +1,58 @@
+#!/usr/bin/perl -w
+
+#----------------------------------------------------------------------
+# copyright (C) 1999-2005 Mitel Networks Corporation
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 		
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 		
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+# 
+# Technical support for this program is available from Mitel Networks 
+# Please visit our web site www.mitel.com/sme/ for details.
+#----------------------------------------------------------------------
+
+package esmith;
+
+use strict;
+use Errno;
+use esmith::AccountsDB;
+
+my $a = esmith::AccountsDB->open_ro or die "Could not open accounts db";
+
+foreach my $u ($a->users)
+{
+    my $user = $u->key;
+    my $pwset = $u->prop('PasswordSet') || 'no';
+    unless ($pwset eq 'yes')
+    {
+	system("/usr/bin/passwd", "-l", $user) == 0
+	    or warn("Problem locking password for user $user\n");
+
+	system("/usr/bin/smbpasswd", "-d", $user) == 0
+	    or warn("Problem locking smbpassword for user $user\n");
+    }
+}
+
+foreach my $i ($a->ibays)
+{
+    my $ibay = $i->key;
+    my $pwset = $i->prop('PasswordSet') || 'no';
+    my $pwable = $i->prop('Passwordable') || 'yes';
+    unless ($pwable eq 'no' || $pwset eq 'yes')
+    {
+	system("/usr/bin/passwd", "-l", $ibay) == 0
+	    or warn("Problem locking password for i-bay $ibay\n");
+    }
+}
+
+exit(0);

@@ -1,0 +1,110 @@
+#!/usr/bin/perl -wT
+
+#----------------------------------------------------------------------
+# heading     : Administration 
+# description : Reboot or shutdown
+# navigation  : 4000 4700 
+#----------------------------------------------------------------------
+#----------------------------------------------------------------------
+# copyright (C) 2002-2005 Mitel Networks Corporation
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 		
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 		
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#----------------------------------------------------------------------
+
+use strict;
+use esmith::FormMagick::Panel::reboot;
+my $f = esmith::FormMagick::Panel::reboot->new();
+$f->display();
+
+=head1 TESTING
+
+
+=begin testing
+
+use esmith::FormMagick::Tester;
+use esmith::TestUtils;
+use esmith::ConfigDB;
+my $panel = 'reboot';
+my $panel_path = "/etc/e-smith/web/functions/".$panel;
+my $ua = esmith::FormMagick::Tester->new();
+
+
+
+is  (mode($panel_path), '4750',              "Check permissions on script");
+ok  ($ua->get_panel($panel),            "ABOUT TO RUN L10N TESTS");
+is  ($ua->{status}, 200,                "200 OK");
+like($ua->{content}, qr/FORM_TITLE/,    "Saw untranslated form title");
+ok  ($ua->set_language("en-us"),        "Set language to U.S. English");
+ok  ($ua->get_panel($panel),            "Get panel");
+
+is  ($ua->{status}, 200,                "200 OK");
+
+like($ua->{content}, qr/Shutdown or Reboot/, "Saw translated form title");
+
+# Testing changes
+
+ok  ($ua->get_panel($panel),            "Testing reboot");
+can_ok($ua, "field");
+ok  ($ua->{form}->find_input('function'),        "Finding form field");
+#$ua->field("function" => 'reboot');
+#$ua->field("debug" => '1');
+#ok  ($ua->click("Save"),                "Click Save");
+#is  ($ua->{status}, 200,                "200 OK");
+#like($ua->{content}, qr/will begin the reboot/, "Saw validation messages");
+
+
+
+#ok  ($ua->get_panel($panel),            "Testing shutdown");
+#can_ok($ua, "field");
+#ok  ($ua->{form}->find_input('function'),        "Finding form field");
+#$ua->field("function" => 'reboot');
+#$ua->field("debug" => '1');
+
+#ok  ($ua->click("Save"),                "Click Save");
+#is  ($ua->{status}, 200,                "200 OK");
+#like($ua->{content}, qr/will begin the shutdown/, "Saw validation messages");
+
+=end testing
+
+=cut
+
+__DATA__
+<form title="FORM_TITLE" header="/etc/e-smith/web/common/head.tmpl"
+footer="/etc/e-smith/web/common/foot.tmpl">
+    <page name="First"  post-event="change_settings()" pre-event="turn_off_buttons()">
+      <description>DESCRIPTION</description>
+
+      <field type="select" 
+	     id="function" 
+	     options="'shutdown' => 'SHUTDOWN',
+                       'reboot'=> 'REBOOT',
+                       'reconfigure'=> 'RECONFIGURE'"
+	     value="reboot">
+	<label>LABEL_REBOOT</label>
+      </field>
+
+      <subroutine src="print_button('PERFORM')" />
+    </page>
+    <page name="Reboot" pre-event="turn_off_buttons">
+     <description>DESC_REBOOT</description>
+    </page>
+    <page name="Shutdown" pre-event="turn_off_buttons">
+     <description>DESC_SHUTDOWN</description>
+    </page> 
+    <page name="Reconfigure" pre-event="turn_off_buttons">
+     <description>DESC_RECONFIGURE</description>
+    </page> 
+ 
+</form>

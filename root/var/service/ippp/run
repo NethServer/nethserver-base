@@ -1,0 +1,58 @@
+#!/bin/sh
+#
+# Based on /etc/rc.d/init.d/ippp:
+#
+# (C) Copyright 1995-1999  Mike Jagdis <jaggy@purplet.demon.co.uk>
+#
+# The assumption is that dialds are to be used to manage the ippp
+# interfaces. If not the ippp interfaces should be reconfigured
+# afterwards as necessary.
+#
+# This should run before dialds are started and before any attempt
+# is made to reconfigure ippp interfaces differently.
+
+config_file=./config
+
+modprobe hisax
+# TODO should check here for failure!!
+
+# Try and load compression modules before doing
+# anything that might load SLIP/PPP modules.
+# (I don't know why Mike Jagdiss script does this
+
+modprobe bsd_comp ppp_deflate
+
+# Set up this interface for syncPPP over HDLC.
+# Disable the hangup timeout because diald should be
+# managing that.
+ isdnctrl delif ippp0
+ isdnctrl addif ippp0
+ isdnctrl encap ippp0 syncppp
+ isdnctrl l2_prot ippp0 hdlc
+ isdnctrl huptimeout ippp0 0
+ isdnctrl eaz ippp0 ""
+ isdnctrl status ippp0 on
+
+# Explicitly bind the interface to the matching
+# syncPPP manager channel. This is essential if
+# any PPP options are specified. It is arguably
+# convenient when no options are supplied and a
+# single ipppd manages several links too.
+isdnctrl pppbind ippp0 0
+
+# This interface is notavailable for incoming
+# connections.
+isdnctrl secure ippp0 on
+
+ifconfig ippp0 "$LocalIP" \
+    pointopoint 0.0.0.0 \
+    netmask 255.255.255.255 \
+    up
+
+# Diald will add host routes as appropriate. If we
+# let ipppd do it diald may never notice the link
+# come up as a result of an incoming connection
+# where all the traffic is to/from the local
+# system. i.e. our reply must go out via the
+# diald slip proxy.
+exec ipppd ippp0 -detach -hostroute $pppopts

@@ -1,0 +1,242 @@
+<!-- vim: ft=xml ts=8 sw=4 noet:
+-->
+<lexicon lang="en-us">
+    <entry>
+	<base>FORM_TITLE</base>
+	<trans>Change remote access settings</trans>
+    </entry>	
+    <entry>
+	<base>DESCRIPTION</base>
+	<trans>For each of the options below, the private setting allows anyone
+	    from your local network to access your server. The
+	    public setting allows access from anywhere on the Internet. The no
+	    access setting disables access. To understand the security
+	    implications of changing these options from the default settings, you
+	    should read the user's guide section on remote access.
+	</trans>	
+    </entry>
+    <entry>
+	<base>SUCCESS</base>
+	<trans>The new remote access settings have been saved.</trans>
+    </entry>
+    <entry>
+	<base>NO_ACCESS</base>
+	<trans>No Access</trans>
+    </entry>
+    <entry>
+	<base>PASSWORD_LOGIN_PRIVATE</base>
+	<trans>Accept passwords only from local networks</trans>
+    </entry>
+    <entry>
+	<base>PASSWORD_LOGIN_PUBLIC</base>
+	<trans>Accept passwords from anywhere</trans>
+    </entry>
+    <entry>
+	<base>LABEL_TELNET_ACCESS</base>
+	<trans>Telnet access</trans>
+    </entry>
+    <entry>
+	<base>LABEL_FTP_ACCESS</base>
+	<trans>FTP access</trans>
+    </entry>
+    <entry>
+	<base>LABEL_FTP_LOGIN</base>
+	<trans>FTP password access</trans>
+    </entry>
+    <entry>
+	<base>LABEL_PPTP</base>
+	<trans>Number of PPTP clients</trans>
+    </entry>
+    <entry>
+        <base>LABEL_SSH_PORT</base>
+        <trans>TCP Port for secure shell access</trans>
+    </entry>
+    <entry>
+	<base>LABEL_SSH</base>
+	<trans>Secure shell access</trans>
+    </entry>
+    <entry>
+	<base>LABEL_SSH_ADMIN</base>
+	<trans>Allow administrative command line access over secure shell
+	</trans>
+    </entry>
+    <entry>
+	<base>LABEL_SSH_PASSWORD_ACCESS</base>
+	<trans>Allow secure shell access using standard passwords</trans>
+    </entry>
+    <entry>
+	<base>DESC_SSH</base>
+	<trans><![CDATA[ 
+	    <hr class="sectionbar" />
+	    <h2>Secure Shell Settings</h2>You can control
+	    Secure Shell
+	    access to your server.
+	    The public setting should only be enabled by 
+	    experienced administrators 
+	    for remote problem diagnosis and resolution. 
+	    We recommend leaving this
+	    parameter set to "No Access"
+	    unless you have a specific reason to do otherwise.
+	    ]]>
+	</trans>
+    </entry>
+    <entry>
+	<base>DESC_FTP_ACCESS</base>
+	<trans>
+	    <![CDATA[ <hr class="sectionbar" /><h2>FTP Settings</h2>
+	    You can also control <b>FTP</b> access to your server. We
+	    recommend leaving this parameter set to 'no access' unless you
+	    have a specific reason to do otherwise.
+	    <p>
+		Note: these settings limit access to the server and override other 
+		settings, including those for individual information bays.</p>
+	    ]]>
+	</trans>
+    </entry>
+    <entry>
+	<base>DESC_FTP_LOGIN</base>
+	<trans>
+	    <![CDATA[ 
+	    You can also control authenticated FTP access to information
+	    bays and user accounts. We strongly recommend leaving this
+	    parameter set to private unless you have a specific reason to
+	    do otherwise.
+	    <p>
+		Note: a secure shell sftp client can also be used to access the
+		server, if remote access via the secure shell is enabled.
+		This method of access protects the
+		passwords and data of the FTP session, whereas standard FTP
+		provides no protection.</p>
+	    ]]>
+	</trans>
+    </entry>
+    <entry>
+	<base>DESC_PPTP</base>
+	<trans><![CDATA[ <hr class="sectionbar" /><h2>PPTP Settings</h2>
+	    You can allow PPTP access to your server. 
+	    You should leave this feature disabled by setting the value 
+	    to the number 0 unless you require PPTP access.
+	    ]]>
+	</trans>
+    </entry>
+    <entry>
+	<base>VALUE_ZERO_OR_POSITIVE</base>
+	<trans>Value must be zero or a positive integer</trans>
+    </entry>
+    <entry>
+	<base>REMOTE_MANAGEMENT</base>
+	<trans>Remote Management</trans>
+    </entry>
+    <entry>
+	<base>VALIDFROM_DESC</base>
+	<trans>
+	    <![CDATA[ <hr class="sectionbar" /><h2>{$REMOTE_MANAGEMENT}</h2>
+	    <p>It is possible to allow hosts on remote networks to access the
+		server manager by entering those networks here. Use a subnet
+		mask of 255.255.255.255 to limit the access to the specified host.
+		Any hosts within the specified range will be able to access the
+		server manager using HTTPS.</p>
+	    ]]>
+	</trans>
+    </entry>
+    <entry>
+	<base>DESC_VALID_FROM_ENTRIES</base>
+	<trans>To add a new remote management network, 
+	    enter the details below.
+	</trans>
+    </entry>
+    <entry>
+	<base>SUBNET_MASK</base>
+	<trans>Subnet mask</trans>
+    </entry>
+    <entry>
+	<base>NUM_OF_HOSTS</base>
+	<trans>Number of hosts</trans>
+    </entry>
+    <entry>
+	<base>NO_ENTRIES_YET</base>
+	<trans>There are no entries yet</trans>
+    </entry>
+    <entry>
+	<base>INVALID_SUBNET_MASK</base>
+	<trans>Invalid subnet mask</trans>
+    </entry>
+    <entry>
+	<base>ERR_INVALID_PARAMS</base>
+	<trans>Either provide both a network and subnet mask, or leave both
+	    fields blank.
+	</trans>
+    </entry>
+    <entry>
+	<base>ERR_NO_RECORD</base>
+	<trans>Unable to locate httpd-admin record in configuration db</trans>
+    </entry>
+    <entry>
+	<base>Remote access</base>
+	<trans>Remote access</trans>
+    </entry>
+    <entry>
+        <base>LABEL_SERIAL_CONSOLE_ACCESS</base>
+        <trans>Serial console</trans>
+    </entry>
+    <entry>
+        <base>DESC_SERIAL_CONSOLE_ACCESS</base>
+        <trans><![CDATA[ <hr class="sectionbar" /><h2>Serial console</h2>
+            You can allow access to the server console from a terminal
+            connected to a server serial port.]]>
+        </trans>
+    </entry>
+    <entry>
+        <base>PORT1_ENABLED</base>
+        <trans>Enabled on serial port 1</trans>
+    </entry>
+    <entry>
+        <base>PORT2_ENABLED</base>
+        <trans>Enabled on serial port 2</trans>
+    </entry>   
+
+    <entry>
+        <base>LABEL_PPTP_ACCESS</base>
+        <trans>PPTP default user access</trans>
+    </entry>
+    <entry>
+        <base>DESC_TELNET_ACCESS</base>
+        <trans>
+          <![CDATA[ <hr class="sectionbar" /><h2>Telnet Settings</h2>
+          WARNING:  Telnet is currently enabled, but this feature is
+          no longer supported.  Telnet is inherently insecure and should only
+          be used in circumstances where no practical alternative exists. You
+          should change option to {$NO_ACCESS} and use
+          secure shell if remote access is
+          required.  Once disabled, telnet will no longer appear on this 
+          screen.
+          ]]>
+       </trans>
+    </entry>
+    <entry>
+	<base>DESC_IPSECRW</base>
+	<trans><![CDATA[ <h2>IPSEC Client (Roadwarrior) Settings</h2>
+	    You can allow IPSEC client access to your server, authenticated by
+	    digital certificates. You should leave this feature disabled by setting the value 
+	    to the number 0 unless you require IPSEC client access.
+	    ]]>
+	</trans>
+    </entry>
+    <entry>
+	<base>LABEL_IPSECRW_SESS</base>
+	<trans>Number of IPSEC clients</trans>
+    </entry>
+    <entry>
+	<base>DESC_IPSECRW_RESET</base>
+	<trans><![CDATA[If you wish to reset all digital certificates, you
+	    can do so here.<br>Any old certificates will no longer
+	    authenticate against the server, so <b><i>all IPSEC clients will
+	    need to import a new certificate!</i></b>.
+	    ]]>
+	</trans>
+    </entry>
+    <entry>
+	<base>LABEL_IPSECRW_RESET</base>
+	<trans>Reset digital certificates</trans>
+    </entry>
+</lexicon>  

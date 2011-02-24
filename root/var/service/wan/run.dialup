@@ -1,0 +1,13 @@
+#! /bin/sh
+
+ISDN=$(/sbin/e-smith/config getprop isdn status)
+if [ "$ISDN" = "enabled" ]
+then
+    sv u /service/ippp
+    sleep 10
+    # TODO check here that ISDN device is available!!
+fi
+echo 1 > /proc/sys/net/ipv4/ip_forward
+echo 2 > /proc/sys/net/ipv4/ip_dynaddr
+#       echo 7 > /proc/sys/net/ipv4/ip_dynaddr
+exec /usr/sbin/diald -daemon

@@ -1,0 +1,105 @@
+<!-- vim: ft=xml ts=4 sw=4 et
+-->
+<lexicon lang="en-us">
+    <entry>
+        <base>FORM_TITLE</base>
+        <trans>Create, modify, or remove user groups</trans>
+    </entry>	
+    <entry>
+        <base>GROUP_TOO_LONG</base>
+        <trans>Error: group name is too long.The maximum is {$maxLength}
+            characters.</trans>
+    </entry>    
+    <entry>
+        <base>ACCOUNT_CONFLICT</base>
+        <trans>Error: the group "{$group}" can't be created because there is
+            already a {$type} account of that name.</trans>
+    </entry>    
+    <entry>
+        <base>INVALID_GROUP_DESCRIPTION</base>
+        <trans>Error: unexpected or missing characters in group
+            description</trans>
+    </entry>
+    <entry>
+        <base>NO_MEMBERS</base>
+        <trans>Error: no members in group.  Did not create new group.</trans>
+    </entry>
+    <entry>
+        <base>CREATED_GROUP</base>
+        <trans>Successfully created user group</trans>
+    </entry> 
+    <entry>
+        <base>DELETED_GROUP</base>
+        <trans>Successfully removed user group</trans>
+    </entry> 
+    <entry>
+        <base>MODIFIED_GROUP</base>
+        <trans>Successfully modifed user group</trans>
+    </entry>	
+    <entry>
+        <base>CREATE_ERROR</base>
+        <trans>An error occurred while creating user group.</trans>
+    </entry> 
+    <entry>
+        <base>DELETE_ERROR</base>
+        <trans>An error occurred while removing user group.</trans>
+    </entry> 
+    <entry>
+        <base>MODIFY_ERROR</base>
+        <trans>An error occurred while modifying user group.</trans>
+    </entry>	
+    <entry>
+        <base>GROUP_NAMING</base>
+        <trans><![CDATA[
+            The group name should contain only lower-case
+            letters, numbers, hyphens, periods, and underscores, 
+            and should start with a lower-case letter. For 
+            example "sales", "beta5", and "reseller_partners" are
+            all valid group names, but "3rd-event", "Marketing Team"
+            and "lost&found" are not.
+            ]]>
+        </trans>
+    </entry>
+    <entry>
+        <base>GROUP_HAS_MEMBERS</base>
+        <trans>This group contains the following members:</trans>
+    </entry>
+    <entry>
+        <base>NOT_A_GROUP</base>
+        <trans>Error: That is not an existing group account.</trans>
+    </entry>
+    <entry>
+        <base>GROUP_DESC</base>
+        <trans>Brief Description/Windows Group Alias</trans>
+    </entry>
+   <entry>
+        <base>GROUP_DESC_EXPL</base>
+        <trans>Input a brief group description in the field below.  
+               This field also designates the group name viewable by 
+	       Windows clients.</trans>
+   </entry>
+
+
+    <entry>
+        <base>IBAYS_WILL_BE_CHANGED</base>
+        <trans>The following information bays were assigned to this group and
+            will be changed to the Administrator group (you can change them to
+            something else afterward):</trans>
+    </entry>
+    <entry>
+        <base>CONFIRM_DELETE_GROUP</base>
+        <trans><![CDATA[
+            <p><b>Are you sure you wish to remove this group?</b></p>
+            ]]></trans>
+    </entry>
+    <entry>
+        <base>CURRENT_LIST</base>
+        <trans><![CDATA[<p>Current list of User Groups</p>]]></trans>
+    </entry>
+    <entry>
+		<base>DELETE_DESCRIPTION</base>
+       	<trans><![CDATA[
+        You are about to remove the user group "<b>{$group}</b>."
+		]]></trans>
+    </entry>
+</lexicon>  

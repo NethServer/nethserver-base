@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# This is an ugly hack that removes the bonding module during
+# bootstrap-console-save. We do this because we can potentially 
+# change modprobe.conf in the event, but bonding.ko may already
+# be loaded by the time we do (by /etc/rc.sysinit).
+# This means the changes don't take
+# effect unless you reboot (ugh). Removing the module before
+# networking is started causes the module to be reloaded using
+# the new module params.
+
+if grep -q bonding /proc/modules
+then
+  /sbin/rmmod bonding
+fi

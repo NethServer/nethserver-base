@@ -1,0 +1,9 @@
+{
+    # Migrate old servers to new defaults if not customized
+    return unless defined $InternalInterface{NICBondingOptions};
+    if($InternalInterface{NICBondingOptions} eq "miimon=200")
+    {
+        $DB->get('InternalInterface')->set_prop('NICBondingOptions',
+            'miimon=200 mode=active-backup');
+    }
+}

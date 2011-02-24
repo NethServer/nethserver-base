@@ -1,0 +1,5 @@
+{
+    my $e = $syslog{LogAll2VT6} || 'no';
+    $OUT = ($e eq 'yes') ?
+	"# Log everything to /dev/tty6\n*.*\t/dev/tty6" : "";
+}

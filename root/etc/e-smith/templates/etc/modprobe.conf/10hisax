@@ -1,0 +1,25 @@
+{
+    @lines = grep { !/^\s*options\s*hisax/ } @lines;
+    my $hisax_alias = "alias char-major-43 hisax";
+    unless (exists $lines{$hisax_alias})
+    {
+	push @lines, $hisax_alias;
+    }
+    my $hisax = $isdn{'HisaxOptions'} || "";
+    my $type = $isdn{'Type'} || "";
+    my $protocol = $isdn{'Protocol'} || "";
+    if ($type)
+    {
+	$hisax .= " type=$type";
+    }
+    if ($protocol)
+    {
+	$hisax .= " protocol=$protocol";
+    }
+    if ($hisax)
+    {
+	push @lines, "options hisax $hisax";
+    }
+    "";
+}
+

@@ -1,0 +1,17 @@
+{
+    my $mtu = undef;
+    $OUT = '';
+
+    if ($is_internal)
+    {
+        $mtu = $InternalInterface{MTU};
+    }
+    if ($is_external)
+    {
+        $mtu = $ExternalInterface{MTU};
+    }
+    if ($mtu)
+    {
+        $OUT .= "MTU=$mtu";
+    }
+}

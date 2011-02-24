@@ -1,0 +1,4 @@
+#! /bin/sh
+
+echo run.disabled run - please report this as a bug
+sleep 120

@@ -1,0 +1,16 @@
+{
+    foreach my $line
+	(
+	    "alias ppp-compress-18 ppp_mppe",
+	    "alias ppp-compress-21 bsd_comp",
+	    "alias ppp-compress-24 ppp_deflate",
+	    "alias ppp-compress-26 ppp_deflate"
+	)
+    {
+	unless (exists $lines{$line})
+	{
+	    push @lines, $line;
+	}
+    }
+    "";
+}

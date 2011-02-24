@@ -1,0 +1,9 @@
+{
+    # In 5.5 and before we commented out /dev/shm tmpfs entry
+    # We no longer need to do that with the 2.4 kernel
+    @lines = map {
+	m:^#none\s+/dev/shm\s+tmpfs\s+defaults: && s/^#//;
+	$_
+	} @lines;
+    "";
+}

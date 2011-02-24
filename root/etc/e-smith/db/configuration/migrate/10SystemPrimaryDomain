@@ -1,0 +1,46 @@
+{
+    use esmith::DomainsDB;
+
+    my $domain = $DB->get('DomainName');
+    return unless defined $domain; # Can't migrate without domain name
+
+    my $DomainName = $domain->value;
+
+    # Force lower case
+    $DomainName = lc($DomainName);
+    $domain->set_value($DomainName);
+
+    # Force lower case for SystemName as well, while we are at it
+    my $system = $DB->get('SystemName');
+    if ($system)
+    {
+	my $SystemName = lc($system->value);
+	$system->set_value($SystemName);
+    }
+
+    my $domains = esmith::DomainsDB->open ||
+	esmith::DomainsDB->create;
+
+    # And update domains db shadow
+    ($domain) = $domains->get_all_by_prop(SystemPrimaryDomain => 'yes');
+
+    if (defined $domain)
+    {
+       # Nothing to do if it hasn't changed.
+       return if (lc($domain->key) eq "$DomainName");
+
+       # Otherwise we need to delete the old domain
+       $domain->delete;
+    }
+
+    # And create the new.
+    $domain = $domains->get($DomainName) ||
+		    $domains->new_record($DomainName,
+			{
+			    type => 'domain',
+			    Content => 'Primary',
+			    Description => 'Primary domain',
+			    Nameservers => 'localhost',
+			});
+    $domain->merge_props(SystemPrimaryDomain => 'yes', Removable => 'no');
+}

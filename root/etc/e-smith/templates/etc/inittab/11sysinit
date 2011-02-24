@@ -1,0 +1,2 @@
+# System initialization.
+si::sysinit:/etc/rc.d/rc.sysinit

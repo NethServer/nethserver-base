@@ -1,0 +1,37 @@
+#!/bin/sh
+
+/usr/sbin/isdnctrl eaz "$DIALD_DEVICE" "$EAZ_IN"
+/usr/sbin/isdnctrl hangup "$DIALD_DEVICE"
+status=$?
+
+if [ $status -eq 0 ]; then
+	status=1
+	while true
+	do
+		msg=`/sbin/ifconfig "$DIALD_DEVICE" 2>&1`
+		if echo "$msg" | grep 'P-t-P:' > /dev/null 2>&1
+		then
+			# no link yet...
+			WAITTIME=`expr $WAITTIME - 1`
+			if [ $WAITTIME -ge 0 ]; then
+				# still waiting...
+				sleep 1
+			else
+				echo "Timed out - link still up" 1>&2
+				break
+			fi
+		else
+			echo "Link is down" 1>&2
+			status=0
+			break
+		fi
+	done
+else
+    echo "Error return $status from isdnctrl hangup command" 2>&1
+fi
+
+# Set fake IPs for ippp0 device, to help diald
+/sbin/ifconfig "$DIALD_DEVICE" \
+    $(/sbin/e-smith/db configuration get LocalIP) pointopoint 0.0.0.0 \
+  || echo "Error ($?) while forcing ippp0 device down" 2>&1
+exit $status

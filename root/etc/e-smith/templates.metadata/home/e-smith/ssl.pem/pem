@@ -1,0 +1,2 @@
+TEMPLATE_PATH="/home/e-smith/ssl.pem"
+OUTPUT_FILENAME=use esmith::ConfigDB; my $c = esmith::ConfigDB->open_ro; my $s = $c->get('SystemName')->value; my $d = $c->get('DomainName')->value; "/home/e-smith/ssl.pem/$s.$d.pem"

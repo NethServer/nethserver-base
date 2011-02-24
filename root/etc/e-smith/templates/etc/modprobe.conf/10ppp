@@ -1,0 +1,21 @@
+{
+    # Obsolete the aliasing of ppp module name if we find it
+    # We no longer need to use the alias, we use a module
+    # search path instead
+    @lines = grep { !/^alias ppp ppp-4mppe$/ } @lines;
+    foreach my $line
+	(
+	    "alias ppp ppp_generic",
+	    "alias char-major-108 ppp",
+	    "alias /dev/ppp ppp",
+	    "alias tty-ldisc-3 ppp_async",
+	    "alias tty-ldisc-14 ppp_synctty",
+	)
+    {
+	unless (exists $lines{$line})
+	{
+	    push @lines, $line;
+	}
+    }
+    "";
+}

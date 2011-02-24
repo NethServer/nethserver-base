@@ -1,0 +1,18 @@
+{
+    my $old = $DB->get('TelnetServerMode');
+    return unless defined $old;
+    my $status = $old->value;
+    $old->delete;
+
+    my %props = (
+	    type => 'service',
+	    'status' => (($status eq 'off') ? 'disabled' : 'enabled'),
+	    access => 'private',
+	);
+    unless ($status =~ /off|on/)
+    {
+	# The other options are public and private.
+	$props{access} = $status;
+    }
+    $DB->new_record('telnet', \%props);
+}

@@ -1,0 +1,133 @@
+#!/usr/bin/perl -w
+
+#----------------------------------------------------------------------
+# copyright (C) 1999-2005 Mitel Networks Corporation
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 		
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 		
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+# 
+# Technical support for this program is available from Mitel Networks 
+# Please visit our web site www.mitel.com/sme/ for details.
+#----------------------------------------------------------------------
+
+package esmith;
+
+use strict;
+use Errno;
+use esmith::ConfigDB;
+use esmith::AccountsDB;
+
+my $conf = esmith::ConfigDB->open_ro
+    or die "Could not open Config DB";
+my $accounts = esmith::AccountsDB->open
+    or die "Could not open accounts DB";
+
+my $event = $ARGV [0];
+my $groupName = $ARGV [1];
+
+#------------------------------------------------------------
+# Create the group
+#------------------------------------------------------------
+
+die "Groupname argument missing." unless defined ($groupName);
+
+my $group = $accounts->get($groupName);
+
+unless ($group && $group->prop('type') eq 'group')
+{
+    die "Account $groupName is not a group account; create group failed.\n";
+}
+
+my $lock = undef;
+my $gid;
+unless ($gid = $group->prop('Gid'))
+{
+    use esmith::lockfile;
+
+    $lock = esmith::lockfile::LockFileOrWait("/home/e-smith/db/accounts");
+    $gid = $accounts->get_next_uid;
+    $group->set_prop('Gid', $gid);
+    unless ($group->prop('Uid'))
+    {
+	$group->set_prop('Uid', $gid);
+    }
+}
+my $uid = $group->prop('Uid');
+my $description = $group->prop('Description') || '';
+
+# Create the user's unique group first
+
+system(
+	"/usr/sbin/groupadd",
+	"-g", $gid,
+	$groupName
+    ) == 0 or die "Failed to create group $groupName.\n";
+
+# Now create the dummy user account
+
+system(
+	"/usr/sbin/useradd",
+	"-u", $uid,
+	"-g", $gid,
+	"-c", $description,
+	"-d",
+	"/home/e-smith",
+	"-s",
+	"/bin/false",
+	"$groupName"
+    ) == 0 or die "Failed to create user $groupName.\n";
+
+# Release lock if we have one
+$lock && esmith::lockfile::UnlockFile($lock);
+
+#------------------------------------------------------------
+# It would be nice if we could simply edit the line in /etc/group
+# and add the list of users, but it's safer to use the "usermod"
+# command. This means that for each desired group member, we have
+# to fetch the current list of that member's groups, add this new
+# group, and update the member's group list.
+#------------------------------------------------------------
+
+my $members = $group->prop('Members') || '';
+my @groupMembers = split (/,/, $members);
+
+# "www" and "admin" are implicit members of all groups
+push @groupMembers, 'admin', 'www';
+
+my $member;
+foreach $member (@groupMembers)
+{
+    # Get a list of this member's supplementary groups, then add the
+    # new group to the list. Finally sort, join and run the usermod
+    # function to update the group list for this member.
+
+    my $cmd = "/usr/bin/id -G -n '$member'";
+    my $groups = `$cmd 2>/dev/null`; 
+    if ($? != 0)
+    {
+	die "Failed to get supplementary group list for $member.\n";
+    }
+    chomp ($groups);
+
+    my @groupList = split (/\s+/, $groups);
+    @groupList = grep (!/^$member$/, @groupList);
+    push @groupList, $groupName;
+
+    $groups = join (',', sort (@groupList));
+
+    system("/usr/sbin/usermod", "-G", "$groups", "$member") == 0
+	or die "Failed to modify supplementary group list for $member.\n";
+}
+
+exit (0);

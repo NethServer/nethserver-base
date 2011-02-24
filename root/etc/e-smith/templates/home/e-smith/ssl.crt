@@ -1,0 +1,105 @@
+{
+    use constant KEYLIFEINDAYS => 365;
+    use Date::Parse;
+    use Cwd;
+    my $here = getcwd;
+
+    my $FQDN = "$SystemName.$DomainName";
+    my $commonName = $modSSL{CommonName} || $FQDN;
+    my $crt = "/home/e-smith/ssl.crt/$FQDN.crt";
+    my $key = "/home/e-smith/ssl.key/$FQDN.key";
+    my $defaultCity = $ldap{defaultCity};
+    my $defaultCompany = $ldap{defaultCompany};
+    my $defaultDepartment = $ldap{defaultDepartment};
+    my $email = "admin\@$DomainName";
+
+    # crop fields that are too long for X509:
+    $defaultCity = substr($defaultCity, 0, 128); 
+    $defaultCompany = substr($defaultCompany, 0, 64); 
+    $defaultDepartment = substr($defaultDepartment, 0, 64); 
+    $email = substr($email, 0, 64);
+    $commonName = substr($commonName, 0, 64);
+
+    if ( -f $crt )
+    {
+        my $expire = `openssl x509 -enddate -noout -in $crt`;
+        $expire =~ s/^notAfter=//;
+        $expire = str2time($expire);
+        my $ttl_days = ($expire - time()) / 60 / 60 / 24;
+
+        if ( $ttl_days > 2 ) {
+            my $expected_issuer = '/C=--' .
+                              '/ST=----';
+            $expected_issuer .= '/L=' . ($defaultCity ? $defaultCity : 'Newbury');
+            $expected_issuer .= '/O=' . ($defaultCompany ? $defaultCompany : 'My Company Ltd');
+            $expected_issuer .= "/OU=$defaultDepartment" if $defaultDepartment;
+            $expected_issuer .= "/CN=$commonName" .
+                                  "/emailAddress=$email";
+            my $issuer = `openssl x509 -issuer -noout -in $crt`;
+            chomp $issuer;
+            $issuer =~ s/^issuer= //;
+            if ($issuer eq $expected_issuer)
+	    {
+	        # Old key file is still good. Read it out - processTemplate will work
+	        # out that it hasn't changed, and leave the old one in place
+	        open(C, "$crt") or die "Couldn't open crt file: $!";
+	        my @crt = <C>;
+	        chomp @crt;
+	        $OUT = join "\n", @crt;
+	        close(C);
+	        return;
+	    }
+	}
+    }
+    # go to somewhere private and safe where we can run programs
+    # as root
+    unless (-e "/tmp/ssl")
+    {
+	mkdir "/tmp/ssl", 0700;
+    }
+    chdir "/tmp/ssl" or die "Couldn't change to secure directory: $!";
+
+    $SIG{ALRM} = sub { die "whoops, $program pipe broke" };
+
+    unless (open(SSL,"-|"))
+    {
+	my $pid = open(RSACERT, "|-");
+	if ($pid)
+	{
+	    # parent
+
+	    foreach (
+		    "--",
+		    "----",
+		    "$defaultCity",
+		    "$defaultCompany",
+		    "$defaultDepartment",
+		    "$commonName",
+		    "$email"
+		    )
+	    {
+		print RSACERT "$_\n";
+	    }
+	    close(RSACERT) || die "RSACERT kid exited $?";
+	    exit (0);
+	}
+	else
+	{
+	    # child
+	    exec("/usr/bin/openssl",
+		qw(req -new -key),
+		$key,
+		qw(-sha1 -x509 -days), KEYLIFEINDAYS,
+		qw(-set_serial), time(),
+		)
+		    || die "can't exec program: $!";
+	    # NOTREACHED
+	}
+    }
+    while (<SSL>)
+    {
+	$OUT .= $_;
+    }
+    close(SSL) or die "Closing openssl pipe reported: $!";
+    chdir $here;
+}

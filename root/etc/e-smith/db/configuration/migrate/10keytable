@@ -1,0 +1,6 @@
+{
+    unlink "/etc/rc.d/rc7.d/S75keytable";
+    my $keytable = $DB->get('keytable');
+    return unless $keytable;
+    $keytable->delete;
+}

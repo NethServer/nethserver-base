@@ -1,0 +1,9 @@
+{
+    $OUT = "";
+    return unless ($InternalInterface{Name} eq "bond0");
+    if ($THIS_DEVICE =~ /eth[01]/)
+    {
+	$OUT .= "MASTER=bond0\n";
+	$OUT .= "SLAVE=yes";
+    }
+}

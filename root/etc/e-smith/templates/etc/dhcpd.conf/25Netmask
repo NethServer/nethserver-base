@@ -1,0 +1,1 @@
+    option subnet-mask          { $LocalNetmask };

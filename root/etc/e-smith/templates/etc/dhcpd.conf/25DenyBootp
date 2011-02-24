@@ -1,0 +1,4 @@
+{
+     my $bootp = $dhcpd{'Bootp'} || 'deny';
+     $OUT = "$bootp bootp;";
+}

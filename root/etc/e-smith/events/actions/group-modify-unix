@@ -1,0 +1,126 @@
+#!/usr/bin/perl -w
+
+#----------------------------------------------------------------------
+# copyright (C) 2002-2005 Mitel Networks Corporation
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 		
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 		
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+# 
+# Technical support for this program is available from Mitel Networks 
+# Please visit our web site www.mitel.com/sme/ for details.
+#----------------------------------------------------------------------
+
+package esmith;
+
+use strict;
+use Errno;
+use esmith::ConfigDB;
+use esmith::AccountsDB;
+
+my $c = esmith::ConfigDB->open_ro || die "Couldn't open config db\n";
+my $a = esmith::AccountsDB->open_ro || die "Couldn't open accounts db\n";
+
+my $event = shift || die "Event name arg missing\n";;
+my @groups;
+
+if ($event eq 'post-upgrade')
+{
+    @groups = $a->groups;
+}
+else
+{
+    die "Group name arg missing\n" unless scalar @ARGV;
+    @groups = map { $a->get($_); } @ARGV;
+}
+foreach my $group (@groups)
+{
+    my $groupName = $group->key;
+    unless ($group->prop('type') eq 'group')
+    {
+	warn "Account $groupName is not a group account.\n";
+	next;
+    }
+    my %properties = $group->props;
+
+    #------------------------------------------------------------
+    # Modify the group. We do it the hard way - by removing all the
+    # current group members and adding the new ones (rather than
+    # deleting the group and recreating it). That guarantees that
+    # we keep the same group ID so that files associated with this
+    # group are unaffected.
+    #------------------------------------------------------------
+
+    my $groupDesc = $properties{'Description'}
+	if (defined $properties{'Description'});
+
+    system("/usr/sbin/usermod", "-c", "$groupDesc", "$groupName") == 0
+	or die "Failed to modify group description for $groupName.\n";
+
+    my ($name, $passwd, $gid, $members) = getgrnam ($groupName);
+    my @oldMembers = split (/\s+/, $members);
+    my @newMembers = split (/,/, $properties {'Members'});
+
+    # "admin" and "www" are implicit members of all groups
+    push @newMembers, qw(www admin);
+
+    my (%oldMembers, %newMembers);
+
+    my $member;
+    foreach $member (@newMembers)
+    {
+	$newMembers{$member} = 1;
+    }
+    foreach $member (@oldMembers)
+    {
+	$oldMembers{$member} = 1;
+    }
+    my (@addMembers, @delMembers);
+
+    foreach $member (@newMembers, @oldMembers)
+    {
+	# skip this member if not being added or removed
+	next if ($oldMembers{$member} and $newMembers{$member});
+	# This next step is redundant!
+	next if (!$oldMembers{$member} and !$newMembers{$member});
+
+	# We need to add or remove this member from the group
+	# Get the supplementary group list for the member we are adding or
+	# deleting.
+	my $cmd = "/usr/bin/id -G -n '$member'";
+	my $groups = `$cmd 2>/dev/null`; 
+	if ($? != 0)
+	{
+	    die "Failed to get supplementary group list for $member.\n";
+	}
+	chomp ($groups);
+
+	my @groupList = split (/\s+/, $groups);
+	@groupList = grep (!/^$member$/, @groupList);
+
+	if ($oldMembers{$member})
+	{
+	    @groupList = grep (!/^$groupName$/, @groupList);
+	}
+	else
+	{
+	    push @groupList, $groupName;
+	}
+	$groups = join (',', sort (@groupList));
+
+	system("/usr/sbin/usermod", "-G", "$groups", "$member") == 0
+	    or die "Failed to modify supplementary group list for $member.\n";
+    }
+}
+
+exit (0);

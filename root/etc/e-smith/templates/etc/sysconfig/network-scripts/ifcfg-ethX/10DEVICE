@@ -1,0 +1,3 @@
+{
+    return "DEVICE=$THIS_DEVICE";
+}

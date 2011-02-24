@@ -1,0 +1,8 @@
+{
+# /etc/smartd.conf
+
+# Sample configuration file for smartd.  See man 5 smartd.conf.
+# Home page is: http://smartmontools.sourceforge.net
+
+"DEVICESCAN -a $smartd{email} $smartd{directive} -I 190 -I 194";
+}

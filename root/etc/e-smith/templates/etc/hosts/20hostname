@@ -1,0 +1,5 @@
+{ 
+    $OUT .= "$LocalIP\t";
+    $OUT .= " ${SystemName}.${DomainName}";
+    $OUT .= " ${SystemName}";
+}

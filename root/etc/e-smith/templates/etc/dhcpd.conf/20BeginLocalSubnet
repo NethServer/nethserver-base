@@ -1,0 +1,8 @@
+{
+    my $ipaddrBits  = esmith::util::IPquadToAddr ($LocalIP);
+    my $netmaskBits = esmith::util::IPquadToAddr ($LocalNetmask);
+
+    local $network   = esmith::util::IPaddrToQuad ($ipaddrBits & $netmaskBits);
+  
+    $OUT .= "subnet $network netmask $LocalNetmask\n\{";
+}

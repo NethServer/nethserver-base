@@ -1,0 +1,4 @@
+if [ "$reason" = "BOUND" ]
+then
+    /sbin/e-smith/signal-event ip-change "$new_ip_address"
+fi

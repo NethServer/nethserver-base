@@ -1,0 +1,3 @@
+{
+    $DB->hosts_allow_spec('oidentd', 'in.identd');
+}
