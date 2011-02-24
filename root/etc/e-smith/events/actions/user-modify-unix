@@ -64,7 +64,7 @@ foreach my $u (@users)
     #------------------------------------------------------------
     unless ($shell eq $new_shell)
     {
-	system("/usr/sbin/usermod", '-s', "$new_shell", $userName) == 0
+	system("/usr/sbin/lusermod", '-s', "$new_shell", $userName) == 0
 	    or die "Failed to modify shell of account $userName.\n";
     }
 
@@ -78,7 +78,7 @@ foreach my $u (@users)
 
     unless ($comment eq $new_comment)
     {
-	system("/usr/sbin/usermod", "-c", "$first $last", $userName) == 0
+	system("/usr/sbin/lusermod", "-c", "$first $last", $userName) == 0
 	    or die "Failed to modify comment of account $userName.\n";
     }
 }

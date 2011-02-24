@@ -64,7 +64,7 @@ my $shell = $acct->prop('Shell') || '/usr/bin/rssh';
 # Create the user's unique group first
 
 system(
-	"/usr/sbin/groupadd",
+	"/usr/sbin/lgroupadd",
 	"-g",
 	$gid,
 	$userName
@@ -73,13 +73,11 @@ system(
 # Now create the user account
 
 system(
-	"/usr/sbin/useradd",
+	"/usr/sbin/luseradd",
 	"-u", $uid,
 	"-g", $uid,
 	"-c", "$first $last",
 	"-d", "/home/e-smith/files/users/$userName",
-	"-G", "shared",
-	"-m",
 	"-k", "/etc/e-smith/skel/user",
 	"-s", "$shell",
 	$userName
@@ -92,9 +90,12 @@ $lock && esmith::lockfile::UnlockFile($lock);
 
 chmod 0700, "/home/e-smith/files/users/$userName";
 
-system("/usr/bin/passwd", "-l", "$userName")
+system("/usr/sbin/lgroupmod","-M","$userName","shared")
+   and warn("Could not add $userName uset to shared group\n");
+
+system("/usr/sbin/lusermod", "-L", "$userName")
     and warn("Could not lock password for $userName\n");
-system("/usr/bin/smbpasswd", "-a", "-d", "$userName")
-    and warn("Could not lock smb password for $userName\n");;
+# TODO system("/usr/bin/smbpasswd", "-a", "-d", "$userName")
+#    and warn("Could not lock smb password for $userName\n");;
 
 exit (0);

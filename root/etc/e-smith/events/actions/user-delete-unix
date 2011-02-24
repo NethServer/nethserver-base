@@ -38,7 +38,7 @@ die "Username argument missing." unless defined ($userName);
 
 esmith::util::cancelUserPassword ($userName);
 
-my $discard = `/usr/sbin/userdel -r '$userName'`;
+my $discard = `/usr/sbin/luserdel -r '$userName'`;
 if ($? != 0)
 {
     die "Failed to delete account $userName.\n";

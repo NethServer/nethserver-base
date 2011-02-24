@@ -35,7 +35,7 @@ foreach my $u ($a->users)
     my $pwset = $u->prop('PasswordSet') || 'no';
     unless ($pwset eq 'yes')
     {
-	system("/usr/bin/passwd", "-l", $user) == 0
+	system("/usr/sbin/lusermod", "-L", $user) == 0
 	    or warn("Problem locking password for user $user\n");
 
 	system("/usr/bin/smbpasswd", "-d", $user) == 0
@@ -50,7 +50,7 @@ foreach my $i ($a->ibays)
     my $pwable = $i->prop('Passwordable') || 'yes';
     unless ($pwable eq 'no' || $pwset eq 'yes')
     {
-	system("/usr/bin/passwd", "-l", $ibay) == 0
+	system("/usr/sbin/lpasswd", "-L", $ibay) == 0
 	    or warn("Problem locking password for i-bay $ibay\n");
     }
 }

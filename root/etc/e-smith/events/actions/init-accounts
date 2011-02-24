@@ -27,19 +27,21 @@ use Errno;
 use esmith::util;
 
 # create group "shared" if not already present
-system(qw(/usr/sbin/groupadd -r shared)) unless getgrnam("shared");
+system(qw(/usr/sbin/lgroupadd -r shared)) unless getgrnam("shared");
 
 # Create other required groups and users
-system(qw(/usr/sbin/groupadd -g 21 -r -f slocate))
+system(qw(/usr/sbin/lgroupadd -g 21 -r slocate))
     unless getgrnam("slocate");
-system(qw(/usr/sbin/useradd -u 38 -s /sbin/nologin -d /etc/ntp ntp))
+system(qw(/usr/sbin/luseradd -u 38 -s /sbin/nologin -d /etc/ntp ntp))
     unless (getpwnam("ntp"));
 
 
 # create user "admin" if not already present;
 if ( !getpwnam("admin") )
 {
-    `/usr/sbin/useradd -c 'e-smith administrator' -d /home/e-smith -G root,shared -M -s /sbin/e-smith/console admin`;
+    `/usr/sbin/luseradd -c 'e-smith administrator' -d /home/e-smith -M -s /sbin/e-smith/console admin`;
+    `/usr/sbin/lgroupmod -M admin shared`
+    `/usr/sbin/lgroupmod -M admin root`
 }
 else
 {
@@ -50,12 +52,13 @@ else
     # admin.
     #--------------------------------------------------
     
-    my $cmd = "/usr/bin/id -G -n admin";
+    my $cmd = "/usr/sbin/lid -n admin";
     my $groups = `$cmd 2>/dev/null`; 
     if ($? != 0)
     {
 	die "Failed to get supplementary group list for admin.\n";
     }
+    $groups =~ s/^\s+//; #left trim
     chomp ($groups);
 
     my @groupList = split (/\s+/, $groups);
@@ -76,12 +79,16 @@ else
     # Run usermod command to update group list for admin.
     #--------------------------------------------------
 
-    $groups = join (',', sort (@groupList));
-    $cmd = "/usr/sbin/usermod -c 'e-smith administrator' -d /home/e-smith -G '$groups' -s /sbin/e-smith/console admin";
+    $cmd = "/usr/sbin/usermod -c 'e-smith administrator' -d /home/e-smith -s /sbin/e-smith/console admin";
     `$cmd`;
     if ($? != 0)
     {
 	die "Failed to change shell and modify supplementary group list for admin.\n";
+    }
+    foreach $group (@groupList)
+    {
+	system("/usr/sbin/lgroupmod -M admin $group") == 0
+           or die "Failed adding admin user to group $group\n";
     }
 }
 
@@ -92,7 +99,7 @@ else
 `/bin/grep '^public:' /etc/passwd`;
 if ($? != 0)
 {
-    `/usr/sbin/useradd  -c 'e-smith guest' -d /home/e-smith -G shared -M -s /bin/false public`;
+    `/usr/sbin/luseradd  -c 'e-smith guest' -d /home/e-smith -g shared -M -s /bin/false public`;
 }
 
 #--------------------------------------------------
@@ -103,7 +110,7 @@ if ($? != 0)
 `/bin/grep '^www:' /etc/passwd`;
 if ($? != 0)
 {
-    `/usr/sbin/useradd -c 'e-smith web server' -d /home/e-smith -G shared -M -s /bin/false www`;
+    `/usr/sbin/luseradd -c 'e-smith web server' -d /home/e-smith -g shared -M -s /bin/false www`;
 }
 else
 {
@@ -113,11 +120,12 @@ else
     # First get list of existing groups for www.
     #--------------------------------------------------
     
-    my $groups = `/usr/bin/id -G -n www 2>/dev/null`; 
+    my $groups = `/usr/sbin/lid -n www 2>/dev/null`; 
     if ($? != 0)
     {
 	die "Failed to get supplementary group list for www.\n";
     }
+    $groups =~ s/^\s+//; #left trim
     chomp ($groups);
 
     my @groupList = split (/\s+/, $groups);
@@ -136,19 +144,24 @@ else
     # Run usermod command to update group list for www.
     #--------------------------------------------------
 
-    $groups = join (',', sort (@groupList));
     `/usr/sbin/usermod -c 'e-smith web server' -d /home/e-smith -G '$groups' -s /bin/false www`;
     if ($? != 0)
     {
 	die "Failed to modify supplementary group list for www.\n";
     }
+    foreach $group (@groupList)
+    {
+        system("/usr/sbin/lgroupmod -M www $group") == 0
+           or die "Failed adding www user to group $group\n";
+    }
+
 }
 
 
 # delete unwanted user accounts
 foreach my $user (qw(halt shutdown sync))
 {
-    `/usr/sbin/userdel $user` if getpwnam($user);
+    `/usr/sbin/luserdel $user` if getpwnam($user);
 }
 
 

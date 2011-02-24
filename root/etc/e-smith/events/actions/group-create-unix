@@ -69,7 +69,7 @@ my $description = $group->prop('Description') || '';
 # Create the user's unique group first
 
 system(
-	"/usr/sbin/groupadd",
+	"/usr/sbin/lgroupadd",
 	"-g", $gid,
 	$groupName
     ) == 0 or die "Failed to create group $groupName.\n";
@@ -77,7 +77,7 @@ system(
 # Now create the dummy user account
 
 system(
-	"/usr/sbin/useradd",
+	"/usr/sbin/luseradd",
 	"-u", $uid,
 	"-g", $gid,
 	"-c", $description,
@@ -108,26 +108,10 @@ push @groupMembers, 'admin', 'www';
 my $member;
 foreach $member (@groupMembers)
 {
-    # Get a list of this member's supplementary groups, then add the
-    # new group to the list. Finally sort, join and run the usermod
-    # function to update the group list for this member.
+    # Add member to new group
 
-    my $cmd = "/usr/bin/id -G -n '$member'";
-    my $groups = `$cmd 2>/dev/null`; 
-    if ($? != 0)
-    {
-	die "Failed to get supplementary group list for $member.\n";
-    }
-    chomp ($groups);
-
-    my @groupList = split (/\s+/, $groups);
-    @groupList = grep (!/^$member$/, @groupList);
-    push @groupList, $groupName;
-
-    $groups = join (',', sort (@groupList));
-
-    system("/usr/sbin/usermod", "-G", "$groups", "$member") == 0
-	or die "Failed to modify supplementary group list for $member.\n";
+    system("/usr/sbin/lgroupmod","-M","$member","$group")
+       or die "Failed to modify supplementary group list for $member.\n";
 }
 
 exit (0);
