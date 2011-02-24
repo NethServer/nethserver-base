@@ -1,0 +1,35 @@
+[import]
+login_defs = /etc/login.defs
+default_useradd = /etc/default/useradd
+
+[defaults]
+crypt_style = md5
+modules = ldap
+create_modules = ldap
+
+[userdefaults]
+LU_USERNAME = %n
+LU_GIDNUMBER = %u
+
+[groupdefaults]
+LU_GROUPNAME = %n
+
+[files]
+
+[shadow]
+
+[ldap]
+server = localhost
+basedn = dc={ esmith::util::ldapBase ($DomainName); }
+userBranch = ou=Users
+groupBranch = ou=Groups
+binddn = cn=root,{ esmith::util::ldapBase ($DomainName); }
+password = { esmith::util::LdapPassword (); }
+user = root
+authuser = root
+bindtype = simple
+
+[krb5]
+
+[sasl]
+
