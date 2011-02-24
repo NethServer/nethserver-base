@@ -9,6 +9,9 @@ auth        required      pam_env.so
     return unless $status eq 'enabled';
     $OUT .= "auth        required      pam_abl.so config=/etc/security/pam_abl.conf";
 }
-auth        sufficient    pam_unix.so likeauth nullok
+auth        sufficient    pam_unix.so likeauth nullok 
+auth        sufficient    pam_unix.so nullok try_first_pass
+auth        requisite     pam_succeed_if.so uid >= 500 quiet
+auth        sufficient    pam_ldap.so use_first_pass
 auth        required      pam_deny.so
 

@@ -1,5 +1,6 @@
 account     required      pam_unix.so broken_shadow
-account     sufficient    pam_succeed_if.so uid < 100 quiet
+account     sufficient    pam_succeed_if.so uid < 500 quiet
+account     [default=bad success=ok user_unknown=ignore] pam_ldap.so
 account     required      pam_permit.so
 {
     my $status = $pam_tally{status} || 'disabled';
