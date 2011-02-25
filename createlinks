@@ -207,6 +207,9 @@ foreach my $file (qw(
 	/etc/pam.d/passwd
 	/etc/pam.d/pwauth
 	/etc/security/pam_abl.conf
+	/etc/libuser.conf
+	/etc/openldap/ldap.conf 
+	/etc/ldap.conf
     ))
 {
     templates2events($file, qw(console-save bootstrap-console-save));
@@ -291,6 +294,7 @@ event_link("init-reload", $event, "90");
 
 safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/wan");
 safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/dhcpd");
+safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/ldap");
 
 #--------------------------------------------------
 # actions for bootstrap-console-save event
@@ -541,6 +545,7 @@ my %service2order =
     smartd    	=> "40",
     acpid    	=> "44",
     dhcpd    	=> "65",
+    ldap    	=> "95",
     messagebus 	=> "97",
     haldaemon  	=> "98",
     'local'    	=> "99",
