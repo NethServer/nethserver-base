@@ -20,7 +20,7 @@ LU_GROUPNAME = %n
 
 [ldap]
 server = localhost
-basedn = dc={ esmith::util::ldapBase ($DomainName); }
+basedn = { esmith::util::ldapBase ($DomainName); }
 userBranch = ou=Users
 groupBranch = ou=Groups
 binddn = cn=root,{ esmith::util::ldapBase ($DomainName); }
