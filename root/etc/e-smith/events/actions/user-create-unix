@@ -95,7 +95,8 @@ system("/usr/sbin/lgroupmod","-M","$userName","shared")
 
 system("/usr/sbin/lusermod", "-L", "$userName")
     and warn("Could not lock password for $userName\n");
-# TODO system("/usr/bin/smbpasswd", "-a", "-d", "$userName")
-#    and warn("Could not lock smb password for $userName\n");;
+
+system("/usr/bin/smbpasswd", "-a", "-d", "$userName")
+    and warn("Could not lock smb password for $userName\n");;
 
 exit (0);
