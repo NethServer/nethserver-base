@@ -32,7 +32,7 @@ foreach my $user ($accounts->get_all_by_prop(type => 'user', PasswordSet => 'yes
     if(($expires eq 'yes') and (($user->prop("PassExpires") || 'yes') ne 'no'))
     {
         print "Setting chage for user: $userName\n";
-        system("/usr/bin/chage",
+        system("/usr/sbin/lchage",
             "-m", $conf->get_prop("passwordstrength", "MinPassAge") || "0",
             "-M", $conf->get_prop("passwordstrength", "MaxPassAge") || "180",
             "-W", $conf->get_prop("passwordstrength", "PassWarning") || "7",
@@ -41,7 +41,7 @@ foreach my $user ($accounts->get_all_by_prop(type => 'user', PasswordSet => 'yes
     else
     {
         print "Unsetting chage for user: $userName\n";
-        system(qw(/usr/bin/chage -m 0 -M 99999 -W 7), $userName);
+        system(qw(/usr/sbin/lchage -m 0 -M 99999 -W 7), $userName);
     }
 }
 

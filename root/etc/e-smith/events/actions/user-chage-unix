@@ -43,7 +43,7 @@ my $expires = $conf->get_prop("passwordstrength", "PassExpires") || 'yes';
 
 if ($expires eq 'yes')
 {
-    system("/usr/bin/chage",
+    system("/usr/sbin/lchage",
         "-m", $conf->get_prop("passwordstrength", "MinPassAge") || "0",
         "-M", $conf->get_prop("passwordstrength", "MaxPassAge") ||  "180",
         "-W", $conf->get_prop("passwordstrength", "PassWarning") || "7",

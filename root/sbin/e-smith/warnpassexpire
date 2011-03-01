@@ -43,7 +43,7 @@ sub getUserInChageWarning()
 
         $ENV{'LANG'} = 'C'; # chage will use english months names
         
-        foreach my $line (qx(/usr/sbin/chage -l $userName))
+        foreach my $line (qx(/usr/sbin/lchage -l $userName))
         {
             if($line =~ m/Password Expires\W*:\W*(\w+)\W+(\d+)\W+(\d+)/i)
             {
