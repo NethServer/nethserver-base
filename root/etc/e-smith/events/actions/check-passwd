@@ -1,0 +1,32 @@
+use Authen::PAM;
+use POSIX qw(ttyname);
+
+exit 1 unless (defined $ARGV[0] && defined $ARGV[1]);
+
+our $userName = $ARGV[0];
+our $password = $ARGV[1];
+$tty_name = ttyname(fileno(STDIN));
+
+ref($pamh = new Authen::PAM('login', $userName, \&my_conv_func))
+|| die "Error code $pamh during PAM init!";
+
+$res = $pamh->pam_set_item(PAM_TTY(), $tty_name);
+$res = $pamh->pam_authenticate;
+exit 1 unless $res == PAM_SUCCESS();
+exit 0;
+
+sub my_conv_func {
+   my @res;
+   while ( @_ ) {
+      my $code = shift;
+      my $msg = shift;
+      my $ans = "";
+
+      $ans = $userName if ($code == PAM_PROMPT_ECHO_ON() );
+      $ans = $password if ($code == PAM_PROMPT_ECHO_OFF() );
+     
+      push @res, (PAM_SUCCESS(),$ans);
+   }
+   push @res, PAM_SUCCESS();
+   return @res;
+}
