@@ -66,13 +66,12 @@ sub lock_user
 
 sub bad_password_users
 {
-    my $smbpasswd = IO::File->new("/etc/samba/smbpasswd", '<')
-        or die "Can't open smbpasswd: $OS_ERROR\n";
+    open (PDB, "/usr/bin/pdbedit -Lw |");
 
     my @users;
 
     SMBPASSWD:
-    while (my $smb_entry = <$smbpasswd>)
+    while (my $smb_entry = <PDB>)
     {
         my ($user, $uid, $lanman_hash, $nt_hash, @rest) 
             = split /:/, $smb_entry;
@@ -86,6 +85,6 @@ sub bad_password_users
         }
     }
 
-    $smbpasswd->close;
+    close PDB;
     return @users;
 }
