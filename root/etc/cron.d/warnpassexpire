@@ -1,0 +1,2 @@
+# Send email reminders about change the password
+42 0 * * *   root /sbin/e-smith/warnpassexpire

@@ -573,3 +573,9 @@ safe_symlink("daemontools", "root/etc/rc.d/init.d/raidmonitor");
 
 safe_symlink("run.dhclient", "root/var/service/wan/run.DHCPHostname");
 safe_symlink("run.dhclient", "root/var/service/wan/run.DHCPEthernetAddress");
+
+# linkf from nethprivacy
+event_link("user-chage-unix", "user-create", "20");
+event_link("initialize-users-chage", "post-upgrade", "20");
+event_link("initialize-users-chage", "bootstrap-console-save", "20");
+
