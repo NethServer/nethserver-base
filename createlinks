@@ -307,6 +307,7 @@ templates2events("/home/e-smith/ssl.pem/pem", $event);
 event_link("rmmod-bonding", $event, "10");
 event_link("user-lock-passwd", $event, "15");
 event_link("set-hostname", $event, "10");
+event_link("initialize-users-chage", $event, "20");
 event_link("conf-modules", $event, "30");
 event_link("conf-startup", $event, "60");
 event_link("conf-routes", $event, "89");
@@ -397,6 +398,7 @@ event_link("user-lock-passwd", $event, "15");
 event_link("group-modify-unix", $event, "15");
 event_link("user-modify-unix", $event, "15");
 event_link("update-passwd", $event, "20");
+event_link("initialize-users-chage",  $event, "20");
 event_link("count-active-user-accounts", $event, "25");
 event_link("conf-modules", $event, "30");
 event_link("create-mnt-floppy", $event, "50");
@@ -426,6 +428,7 @@ safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/dhcpd");
 $event = "user-create";
 
 event_link("user-create-unix", $event, "04");
+event_link("user-chage-unix", $event, "20");
 event_link("count-active-user-accounts", $event, "25");
 event_link("user-group-modify", $event, "85");
 
@@ -568,14 +571,24 @@ foreach my $service (keys %service2order)
     service_link_enhanced($service, $service2order{$service}, 1);
 }
 
+
+#--------------------------------------------------
+# actions for nethserver-base-update event
+#--------------------------------------------------
+$event = "nethserver-base-update";
+event_link("initialize-users-chage", $event, "20");
+safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/ldap");
+templates2events("/etc/ldap.conf", $event);
+templates2events("/etc/openldap/ldap.conf", $event);
+templates2events("/etc/pam.d/system-auth", $event);
+templates2events("/etc/nsswitch.conf", $event);
+templates2events("/etc/libuser.conf", $event);
+
+
+
 # Set up links to daemontools.
 safe_symlink("daemontools", "root/etc/rc.d/init.d/raidmonitor");
 
 safe_symlink("run.dhclient", "root/var/service/wan/run.DHCPHostname");
 safe_symlink("run.dhclient", "root/var/service/wan/run.DHCPEthernetAddress");
-
-# linkf from nethprivacy
-event_link("user-chage-unix", "user-create", "20");
-event_link("initialize-users-chage", "post-upgrade", "20");
-event_link("initialize-users-chage", "bootstrap-console-save", "20");
 
