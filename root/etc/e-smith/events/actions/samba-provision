@@ -105,16 +105,6 @@ sambaGroupType: 2
 displayName: Domain Computers
 description: Domain Computers
 
-dn: cn=Administrators,ou=Groups,$ldapSuffix
-objectClass: posixGroup
-objectClass: sambaGroupMapping
-gidNumber: 544
-cn: Administrators
-sambaSID: $sid-544
-sambaGroupType: 5
-displayName: Administrators
-description: Administrators
-
 END
 ;
 
