@@ -1,0 +1,113 @@
+#!/usr/bin/perl -w
+
+use esmith::util;
+use esmith::ConfigDB;
+use File::Temp qw(tempfile);
+
+my $db = esmith::ConfigDB->open_ro;
+my $DomainName = $db->get("DomainName")->value;
+my $passwordstrength = $db->get("passwordstrength") or die("Can't read password policy");
+my $MinPassAge = $passwordstrength->prop("MinPassAge") || 0;
+my $MaxPassAge = $passwordstrength->prop("MaxnPassAge") || 180;
+my $Workgroup = $db->get("smb")->prop("Workgroup") or die("Can't get Workgroup name");
+
+my $ldapSuffix =  esmith::util::ldapBase ($DomainName);
+my $sid = `/usr/bin/net getlocalsid | /bin/cut -d':' -f2`;
+$sid =~ s/^\s+//;
+$sid =~ s/\s+$//;
+
+die("Can't read samba loca lsid") unless ($sid ne "");
+
+$ldif = <<END
+dn: sambaDomainName=$Workgroup,$ldapSuffix
+sambaDomainName: $Workgroup
+sambaSID: $sid
+sambaAlgorithmicRidBase: 50000
+objectClass: sambaDomain
+sambaNextUserRid: 50000
+sambaMinPwdLength: 5
+sambaPwdHistoryLength: 0
+sambaLogonToChgPwd: 0
+sambaMaxPwdAge: $MaxPassAge
+sambaMinPwdAge: $MinPassAge
+sambaLockoutDuration: 30
+sambaLockoutObservationWindow: 30
+sambaLockoutThreshold: 0
+sambaForceLogoff: -1
+sambaRefuseMachinePwdChange: 0
+sambaNextRid: 50000
+
+dn: ou=idmap,$ldapSuffix
+objectClass: top
+objectClass: organizationalUnit
+ou: idmap
+
+dn: ou=computers,$ldapSuffix
+objectClass: top
+objectClass: organizationalUnit
+ou: computers
+
+dn: cn=Domain Admins,ou=Groups,$ldapSuffix
+objectClass: posixGroup
+objectClass: sambaGroupMapping
+gidNumber: 512
+cn: Domain Admins
+sambaSID: $sid-512
+sambaGroupType: 2
+displayName: Domain Admins
+description: Domain Administrators
+
+dn: cn=Domain Users,ou=Groups,$ldapSuffix
+objectClass: posixGroup
+objectClass: sambaGroupMapping
+gidNumber: 513
+cn: Domain Users
+sambaSID: $sid-513
+sambaGroupType: 2
+displayName: Domain Users
+description: Domain Users 
+
+dn: cn=Domain Guests,ou=Groups,$ldapSuffix
+objectClass: posixGroup
+objectClass: sambaGroupMapping
+gidNumber: 514
+cn: Domain Guests
+sambaSID: $sid-514
+sambaGroupType: 2
+displayName: Domain Guests
+description: Domain Guests
+
+dn: cn=Domain Computers,ou=Groups,$ldapSuffix
+objectClass: posixGroup
+objectClass: sambaGroupMapping
+gidNumber: 515
+cn: Domain Computers
+sambaSID: $sid-515
+sambaGroupType: 2
+displayName: Domain Computers
+description: Domain Computers
+
+dn: cn=Administrators,ou=Groups,$ldapSuffix
+objectClass: posixGroup
+objectClass: sambaGroupMapping
+gidNumber: 544
+cn: Administrators
+sambaSID: $sid-544
+sambaGroupType: 5
+displayName: Administrators
+description: Administrators
+
+END
+;
+
+$tmp_fh = new File::Temp( UNLINK => 1 );
+print $tmp_fh $ldif ;
+$filename = "$tmp_fh";
+
+$ldapPassword = esmith::util::LdapPassword();
+system("ldapadd", "-c", "-x", "-D", "cn=root,$ldapSuffix", "-w", "$ldapPassword", "-f", "$filename" ) == 0
+   or die ("Can't load samba provision ldif");
+
+
+system("smbpasswd", "-w", "$ldapPassword") == 0
+   or die ("Can't save ldap password in sambapasswd");

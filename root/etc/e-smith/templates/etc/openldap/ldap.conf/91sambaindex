@@ -1,0 +1,6 @@
+index  displayName               eq,subinitial
+index  sambaSID eq,sub
+index  sambaSIDList eq
+index  sambaPrimaryGroupSID eq
+index  sambaDomainName eq
+index  sambaGroupType eq

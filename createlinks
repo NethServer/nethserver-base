@@ -577,6 +577,7 @@ foreach my $service (keys %service2order)
 #--------------------------------------------------
 $event = "nethserver-base-update";
 event_link("initialize-users-chage", $event, "20");
+event_link("samba-provision", $event, "25");
 safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/ldap");
 templates2events("/etc/ldap.conf", $event);
 templates2events("/etc/openldap/ldap.conf", $event);
