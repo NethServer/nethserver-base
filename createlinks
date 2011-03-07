@@ -581,6 +581,7 @@ event_link("samba-provision", $event, "25");
 safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/ldap");
 templates2events("/etc/ldap.conf", $event);
 templates2events("/etc/openldap/ldap.conf", $event);
+templates2events("/etc/openldap/slapd.conf", $event);
 templates2events("/etc/pam.d/system-auth", $event);
 templates2events("/etc/nsswitch.conf", $event);
 templates2events("/etc/libuser.conf", $event);
