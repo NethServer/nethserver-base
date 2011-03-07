@@ -33,7 +33,7 @@ esmith::util::serviceControl
    BACKGROUND => 'false',
 ) || die("Couldn't restart ldap");
 
-sleep 2; #wait for ldap
+sleep 5; #wait for ldap
 
 
 $ldif = <<END
@@ -125,7 +125,3 @@ $filename = "$tmp_fh";
 $ldapPassword = esmith::util::LdapPassword();
 system("ldapadd", "-c", "-x", "-D", "cn=root,$ldapSuffix", "-w", "$ldapPassword", "-f", "$filename" ) == 0
    or die ("Can't load samba provision ldif");
-
-
-system("smbpasswd", "-w", "$ldapPassword") == 0
-   or die ("Can't save ldap password in sambapasswd");
