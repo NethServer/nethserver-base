@@ -16,7 +16,7 @@ my $sid = `/usr/bin/net getlocalsid | /bin/cut -d':' -f2`;
 $sid =~ s/^\s+//;
 $sid =~ s/\s+$//;
 
-die("Can't read samba loca lsid") unless ($sid ne "");
+die("Can't read samba local sid") unless ($sid ne "");
 
 # Prepare ldap expanding templates and restarting the service
 foreach my $filename (qw(/etc/openldap/slapd.conf /etc/openldap/ldap.conf))
