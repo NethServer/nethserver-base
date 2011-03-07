@@ -26,6 +26,10 @@ use strict;
 use Errno;
 use esmith::util;
 
+my $group;
+my $groups;
+my @groupList;
+
 # create group "shared" if not already present
 system(qw(/usr/sbin/lgroupadd -r shared)) unless getgrnam("shared");
 
@@ -40,8 +44,8 @@ system(qw(/usr/sbin/luseradd -u 38 -s /sbin/nologin -d /etc/ntp ntp))
 if ( !getpwnam("admin") )
 {
     `/usr/sbin/luseradd -c 'e-smith administrator' -d /home/e-smith -M -s /sbin/e-smith/console admin`;
-    `/usr/sbin/lgroupmod -M admin shared`
-    `/usr/sbin/lgroupmod -M admin root`
+    `/usr/sbin/lgroupmod -M admin shared`;
+    `/usr/sbin/lgroupmod -M admin root`;
 }
 else
 {
@@ -53,7 +57,7 @@ else
     #--------------------------------------------------
     
     my $cmd = "/usr/sbin/lid -n admin";
-    my $groups = `$cmd 2>/dev/null`; 
+    $groups = `$cmd 2>/dev/null`; 
     if ($? != 0)
     {
 	die "Failed to get supplementary group list for admin.\n";
@@ -61,7 +65,7 @@ else
     $groups =~ s/^\s+//; #left trim
     chomp ($groups);
 
-    my @groupList = split (/\s+/, $groups);
+    @groupList = split (/\s+/, $groups);
 
     #--------------------------------------------------
     # Modify group list to make sure "root" and "shared"
@@ -120,7 +124,7 @@ else
     # First get list of existing groups for www.
     #--------------------------------------------------
     
-    my $groups = `/usr/sbin/lid -n www 2>/dev/null`; 
+    $groups = `/usr/sbin/lid -n www 2>/dev/null`; 
     if ($? != 0)
     {
 	die "Failed to get supplementary group list for www.\n";
@@ -128,7 +132,7 @@ else
     $groups =~ s/^\s+//; #left trim
     chomp ($groups);
 
-    my @groupList = split (/\s+/, $groups);
+    @groupList = split (/\s+/, $groups);
 
     #--------------------------------------------------
     # Modify group list to make sure "admin" and "shared"
@@ -144,7 +148,7 @@ else
     # Run usermod command to update group list for www.
     #--------------------------------------------------
 
-    `/usr/sbin/usermod -c 'e-smith web server' -d /home/e-smith -G '$groups' -s /bin/false www`;
+    `/usr/sbin/usermod -c 'e-smith web server' -d /home/e-smith -s /bin/false www`;
     if ($? != 0)
     {
 	die "Failed to modify supplementary group list for www.\n";
