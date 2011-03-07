@@ -18,6 +18,24 @@ $sid =~ s/\s+$//;
 
 die("Can't read samba loca lsid") unless ($sid ne "");
 
+# Prepare ldap expanding templates and restarting the service
+foreach my $filename (qw(/etc/openldap/slapd.conf /etc/openldap/ldap.conf))
+{
+   esmith::templates::processTemplate({
+      TEMPLATE_PATH => $filename,
+      OUTPUT_FILENAME => $filename,
+   });
+}
+esmith::util::serviceControl
+(
+   NAME   => 'ldap',
+   ACTION => 'restart',
+   BACKGROUND => 'false',
+) || die("Couldn't restart ldap");
+
+sleep 2; #wait for ldap
+
+
 $ldif = <<END
 dn: sambaDomainName=$Workgroup,$ldapSuffix
 sambaDomainName: $Workgroup
