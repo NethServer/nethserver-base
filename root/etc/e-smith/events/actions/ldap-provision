@@ -34,9 +34,7 @@ $ldif = <<END
 dn: sambaDomainName=$ServerName,$ldapSuffix
 sambaDomainName: $ServerName
 sambaSID: $sid
-sambaAlgorithmicRidBase: 50000
 objectClass: sambaDomain
-sambaNextUserRid: 50000
 sambaMinPwdLength: 5
 sambaPwdHistoryLength: 0
 sambaLogonToChgPwd: 0
@@ -47,7 +45,6 @@ sambaLockoutObservationWindow: 30
 sambaLockoutThreshold: 0
 sambaForceLogoff: -1
 sambaRefuseMachinePwdChange: 0
-sambaNextRid: 50000
 
 dn: ou=idmap,$ldapSuffix
 objectClass: top
