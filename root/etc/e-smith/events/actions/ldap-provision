@@ -59,7 +59,8 @@ objectClass: top
 objectClass: organizationalUnit
 ou: computers
 
-bjectClass: posixGroup
+dn: cn=admin,ou=Groups,$ldapSuffix
+objectClass: posixGroup
 objectClass: sambaGroupMapping
 gidNumber: 101
 cn: admin
@@ -68,7 +69,8 @@ sambaGroupType: 2
 displayName: Domain Admins
 description: Domain Administrators
 
-bjectClass: posixGroup
+dn: cn=shared,ou=Groups,$ldapSuffix
+objectClass: posixGroup
 objectClass: sambaGroupMapping
 gidNumber: 500
 cn: shared
