@@ -70,6 +70,12 @@ system(
 	$userName
     ) == 0 or die "Failed to create group $userName.\n";
 
+# Add samba group
+my $ntgroup = $first.' '.$last;
+$ntgroup = $userName unless ($ntgroup ne ' ');
+system("/usr/bin/net", "groupmap", "add", "rid=$uid", "unixgroup=$userName", "ntgroup=$ntgroup", "type=domain") or warn("Can't create samba group");
+
+
 # Now create the user account
 
 system(
