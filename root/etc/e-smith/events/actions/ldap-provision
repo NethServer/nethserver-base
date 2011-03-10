@@ -20,22 +20,6 @@ $sid =~ s/\s+$//;
 
 die("Can't read samba local sid") unless ($sid ne "");
 
-# Prepare ldap expanding templates and restarting the service
-foreach my $filename (qw(/etc/openldap/slapd.conf /etc/openldap/ldap.conf))
-{
-   esmith::templates::processTemplate({
-      TEMPLATE_PATH => $filename,
-      OUTPUT_FILENAME => $filename,
-   });
-}
-esmith::util::serviceControl
-(
-   NAME   => 'ldap',
-   ACTION => 'restart',
-   BACKGROUND => 'false',
-) || die("Couldn't restart ldap");
-
-
 my $ldap;
 my $maxTries = 0;
 while(!($ldap = Net::LDAP->new('localhost'))) { # wait for ldap, max 10 seconds
@@ -123,7 +107,7 @@ sambaGroupType: 5
 displayName: Administrators
 description: Administrators
 
-dn: uid=nobody,ou=Users,dc=nethdev,dc=it
+dn: uid=nobody,ou=Users,$ldapSuffix
 uid: nobody
 gecos: nobody
 homeDirectory: /home/nobody
@@ -134,7 +118,7 @@ objectClass: shadowAccount
 objectClass: account
 objectClass: sambaSamAccount
 cn: nobody
-sambaSID: S-1-5-21-956731701-2021015701-1969292119-501
+sambaSID: $sid-501
 userPassword:: e0NSWVBUfSEkMSRDdldvYUVNaSRhYVdxaVdFYzBwMGhValhudlVlYXkv
 
 END
