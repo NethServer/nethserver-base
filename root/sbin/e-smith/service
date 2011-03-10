@@ -1,17 +1,8 @@
 #! /bin/sh
-
-runlevel=$(runlevel | cut -d" " -f2)
-
-if [ "$runlevel" = "7" ]
+if ls /etc/rc7.d/S??$1 >/dev/null 2>/dev/null
 then
-    if ls /etc/rc7.d/S??$1 >/dev/null 2>/dev/null
-    then
-       script=$(ls /etc/rc7.d/S??$1 | head -1)
-       exec $script $2
-    fi
-
-    echo "'$1' is not a valid service name" 1>&2
-    exit 1
+   script=$(ls /etc/rc7.d/S??$1 | head -1)
+   exec $script $2
 else
-    exec /sbin/service "$@"
+   /etc/init.d/"$@"
 fi
