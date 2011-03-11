@@ -73,7 +73,8 @@ system(
 # Add samba group
 my $ntgroup = $first.' '.$last;
 $ntgroup = $userName unless ($ntgroup ne ' ');
-system("/usr/bin/net", "groupmap", "add", "rid=$uid", "unixgroup=$userName", "ntgroup=$ntgroup", "type=domain") or warn("Can't create samba group");
+system("/usr/bin/net", "groupmap", "add", "rid=$uid", "unixgroup=$userName", "ntgroup=$ntgroup", "type=domain") == 0
+   or warn("Can't create samba group");
 
 
 # Now create the user account
