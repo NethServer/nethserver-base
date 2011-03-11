@@ -72,9 +72,9 @@ foreach my $group (@groups)
     my $oldMembers = join (',', sort (@oldMembersList));
     my $newMembers = $properties {'Members'}; 
 
-    system("/usr/sbin/lgroupmod", "-m", "$oldMembers", "$groupName") == 0
+    system("/usr/sbin/lgroupmod", "-M", "$oldMembers", "$groupName") == 0
         or die "Failed to remove old members from group $groupName.\n";
-    system("/usr/sbin/lgroupmod", "-M", "$newMembers", "$groupName") == 0
+    system("/usr/sbin/lgroupmod", "-m", "$newMembers", "$groupName") == 0
         or die "Failed to add new members from group $groupName.\n";
 }
 
