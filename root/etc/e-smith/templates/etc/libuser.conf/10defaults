@@ -4,7 +4,7 @@ default_useradd = /etc/default/useradd
 
 [defaults]
 crypt_style = md5
-modules = ldap
+modules = files ldap
 create_modules = ldap
 
 [userdefaults]
