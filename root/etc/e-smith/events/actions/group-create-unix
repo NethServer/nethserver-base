@@ -110,7 +110,7 @@ foreach $member (@groupMembers)
 {
     # Add member to new group
 
-    system("/usr/sbin/lgroupmod","-M","$member","$group")
+    system("/usr/sbin/lgroupmod","-M","$member","$groupName") == 0
        or die "Failed to modify supplementary group list for $member.\n";
 }
 
