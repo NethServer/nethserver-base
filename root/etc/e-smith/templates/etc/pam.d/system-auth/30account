@@ -1,9 +1,0 @@
-account     required      pam_unix.so broken_shadow
-account     sufficient    pam_succeed_if.so uid < 500 quiet
-account     [default=bad success=ok user_unknown=ignore] pam_ldap.so
-account     required      pam_permit.so
-{
-    my $status = $pam_tally{status} || 'disabled';
-    return unless $status eq 'enabled';
-    $OUT .= "account     required      pam_tally.so deny=5 reset no_magic_root";
-}
