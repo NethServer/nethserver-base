@@ -293,7 +293,6 @@ event_link("reset-unsavedflag", $event, "95");
 event_link("init-reload", $event, "90");
 
 safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/wan");
-safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/dhcpd");
 safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/ldap");
 
 #--------------------------------------------------
@@ -419,7 +418,6 @@ event_link("reboot", $event, "99");
 
 $event = "remoteaccess-update";
 
-safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/dhcpd");
 
 #--------------------------------------------------
 # actions for user-create event
@@ -547,7 +545,6 @@ my %service2order =
     crond    	=> "40",
     smartd    	=> "40",
     acpid    	=> "44",
-    dhcpd    	=> "65",
     ldap    	=> "95",
     messagebus 	=> "97",
     haldaemon  	=> "98",
@@ -557,18 +554,6 @@ my %service2order =
 foreach my $service (keys %service2order)
 {
     service_link_enhanced($service, $service2order{$service}, 7);
-}
-
-%service2order =
-(
-    dhcpd       => "K35",
-);
-
-foreach my $service (keys %service2order)
-{
-    service_link_enhanced($service, $service2order{$service}, 0);
-    service_link_enhanced($service, $service2order{$service}, 6);
-    service_link_enhanced($service, $service2order{$service}, 1);
 }
 
 
