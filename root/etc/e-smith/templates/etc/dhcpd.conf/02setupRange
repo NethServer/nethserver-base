@@ -1,6 +1,0 @@
-{
-    # Setup start and end of Dynamic IP range. 
-    $startDynamicIPRange = $dhcpd{'start'};
-    $endDynamicIPRange = $dhcpd{'end'};
-    "";
-}

@@ -1,5 +1,0 @@
-{
-    $DHCP_WINSServer = $DB->wins_server;
-
-    "";
-}

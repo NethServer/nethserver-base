@@ -1,8 +1,0 @@
-{
-    my $ipaddrBits  = esmith::util::IPquadToAddr ($LocalIP);
-    my $netmaskBits = esmith::util::IPquadToAddr ($LocalNetmask);
-
-    local $broadcast = esmith::util::IPaddrToQuad ($ipaddrBits | (~ $netmaskBits));
-
-    $OUT .= "    option broadcast-address    $broadcast;";
-}
