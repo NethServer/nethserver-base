@@ -1,7 +1,0 @@
-#! /bin/sh
-
-exec                                    \
-    /usr/local/bin/setuidgid smelog     \
-    /usr/local/bin/multilog t s5000000  \
-    /var/log/wan
-

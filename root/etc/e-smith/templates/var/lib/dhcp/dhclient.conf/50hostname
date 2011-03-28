@@ -1,7 +1,0 @@
-{
-    return unless defined $ExternalInterface;
-    return unless $ExternalInterface{Name} eq $THIS_DEVICE;
-    return unless $ExternalInterface{Configuration} eq "DHCPHostname";
-    $OUT .= "    send host-name \"$DialupUserAccount\";\n";
-    $OUT .= "    send dhcp-client-identifier \"$DialupUserAccount\";";
-}

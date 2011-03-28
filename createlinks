@@ -15,10 +15,6 @@ foreach (qw(pap-secrets chap-secrets))
 }
 
 foreach (qw(
-	/var/lib/dhcp/dhclient-eth0.conf
-	/var/lib/dhcp/dhclient-eth1.conf
-	/var/service/wan/pppoe.pppd.conf
-	/var/service/wan/run.pppoe.conf
 	/etc/ppp/ip-down.local
 	/etc/ppp/ip-up.local
     ))
@@ -28,12 +24,6 @@ foreach (qw(
 	bootstrap-console-save
 	));
 }
-
-safe_symlink("daemontools", "root/etc/rc.d/init.d/wan");
-service_link_enhanced("wan", "S37", "7");
-service_link_enhanced("wan", "K90", "6");
-service_link_enhanced("wan", "K90", "0");
-service_link_enhanced("wan", "K90", "1");
 
 # conf-dialup
 foreach (qw(
@@ -64,7 +54,6 @@ foreach (qw(
     /etc/hosts
     /etc/resolv.conf
     /etc/sysctl.conf
-    /var/service/wan/dhclient.config
     ))
 {
     templates2events($_, qw(console-save bootstrap-console-save));
@@ -292,7 +281,6 @@ event_link("conf-startup", $event, "60");
 event_link("reset-unsavedflag", $event, "95");
 event_link("init-reload", $event, "90");
 
-safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/wan");
 safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/ldap");
 
 #--------------------------------------------------
@@ -409,7 +397,6 @@ event_link("copy-anaconda-logs", $event, "90");
 
 $event = "reboot";
 
-safe_symlink("stop", "root/etc/e-smith/events/$event/services2adjust/wan");
 event_link("reboot", $event, "99");
 
 #--------------------------------------------------
@@ -575,6 +562,4 @@ templates2events("/etc/libuser.conf", $event);
 # Set up links to daemontools.
 safe_symlink("daemontools", "root/etc/rc.d/init.d/raidmonitor");
 
-safe_symlink("run.dhclient", "root/var/service/wan/run.DHCPHostname");
-safe_symlink("run.dhclient", "root/var/service/wan/run.DHCPEthernetAddress");
 

@@ -1,5 +1,0 @@
-{
-# memory limit to catch any memory leak before it kills the system
-    my $mlimit = $pppoe{Mlimit} || '25000000';
-    $OUT = "PPPD_MLIMIT=$mlimit";
-}

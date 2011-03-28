@@ -46,8 +46,6 @@
     my $dhcpcd = $DB->get("dhcpcd");
     $dhcpcd->delete if $dhcpcd;
 
-    my $wan = $DB->get("wan") || $DB->new_record("wan", {type => 'service'});
-
     my $mode = $DB->get_value("SystemMode") || "servergateway";
     my $bonding = $internal->prop('NICBonding') || "disabled";
 
@@ -80,10 +78,8 @@
     if ( $mode eq "serveronly" )
     {
         $external->merge_props(Configuration => 'disabled', Name => 'none');
-        $wan->merge_props(status => 'disabled');
         return;
     }
-    $wan->merge_props(status => 'enabled');
 
     my $pppoe_status = $DB->get_prop('pppoe', 'status') || "disabled";
     my $access_type = $DB->get_value('AccessType') || "unknown";
