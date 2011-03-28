@@ -1,9 +1,0 @@
-{
-    # Ensure that pppoe module can be autoloaded
-    my $line = "alias net-pf-24 pppoe";
-    unless (exists $lines{$line})
-    {
-	push @lines, $line;
-    }
-    "";
-}

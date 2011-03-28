@@ -1,8 +1,0 @@
-    *)
-	case $NEWIP in
-	$EXTERNALIP)	;; # No ip change - short-circuit 
-	*)			/sbin/e-smith/signal-event ip-change $4
-	esac
-
-	/sbin/e-smith/signal-event ip-up "$@"
-    			;;

@@ -1,4 +1,0 @@
-# Set the umask to create world readable files by default - we 
-# inherit umask of 077, it seems
-umask 022
-

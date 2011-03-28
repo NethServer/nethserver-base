@@ -1,6 +1,0 @@
-'ABORT' 'BUSY'
-'ABORT' 'ERROR'
-'ABORT' 'NO CARRIER'
-'ABORT' 'NO DIALTONE'
-'ABORT' 'Invalid Login'
-'ABORT' 'Login incorrect'
