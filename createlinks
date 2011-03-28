@@ -4,42 +4,6 @@ use esmith::Build::CreateLinks  qw(:all);
 
 templates2events("/etc/sysconfig/i18n", qw(post-install post-upgrade));
 
-# ppp-conf-users
-
-foreach (qw(pap-secrets chap-secrets))
-{
-    templates2events("/etc/ppp/$_", qw(
-	    bootstrap-console-save
-	    console-save
-	    remoteaccess-update));
-}
-
-foreach (qw(
-	/etc/ppp/ip-down.local
-	/etc/ppp/ip-up.local
-    ))
-{
-    templates2events("$_", qw(
-	console-save
-	bootstrap-console-save
-	));
-}
-
-# conf-dialup
-foreach (qw(
-    /etc/sysconfig/network-scripts/ifcfg-ppp0
-    /etc/sysconfig/network-scripts/chat-ppp0
-    /etc/ppp/ip-up.local
-    /etc/ppp/ip-down.local
-    /etc/diald.conf
-    /etc/diald.filter
-    /etc/diald/link
-    /var/service/ippp/config
-    /etc/ppp/ioptions
-    ))
-{
-    templates2events($_, qw(console-save bootstrap-console-save));
-}
 
 # conf-networking
 
