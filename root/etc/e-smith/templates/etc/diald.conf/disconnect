@@ -1,9 +1,0 @@
-{
-    $OUT = "";
-    my $isdn = $isdn{'status'} || "disabled";
-    my $sync = $isdn{'UseSyncPPP'} || "yes";
-    if ($isdn eq "enabled" && $sync eq "yes")
-    {
-	$OUT = "disconnect /etc/diald/scripts/disconnect";
-    }
-}

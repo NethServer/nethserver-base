@@ -1,6 +1,0 @@
-{
-    my $faillimit = $diald{DialFailLimit};
-    $OUT = defined $faillimit ?
-	"dial-fail-limit $faillimit" :
-	"#dial-fail-limit/diald{DialFailLimit} is not defined";
-}

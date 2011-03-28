@@ -1,1 +1,0 @@
-redial-backoff-start { $diald{RedialBackoffStart} || "3" }
