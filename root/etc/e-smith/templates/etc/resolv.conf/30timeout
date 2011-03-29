@@ -1,8 +1,0 @@
-{
-    # The default resolver timeout of five seconds is way too
-    # short for modem dial-on-demand links
-    $OUT = ($SystemMode =~ 'servergateway' &&
-		$AccessType eq 'dialup' &&
-		$DialupModemDevice =~ /ttyS/) ?
-	    "options timeout:50" : "";
-}
