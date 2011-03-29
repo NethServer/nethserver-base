@@ -1,5 +1,18 @@
 { 
     $OUT .= "$LocalIP\t";
-    $OUT .= " ${SystemName}.${DomainName}";
+    $OUT .= "${SystemName}.${DomainName}";
     $OUT .= " ${SystemName}";
+   
+    use esmith::HostsDB;
+    my $hdb = esmith::HostsDB->open_ro() || return;
+
+    foreach $host ($hdb->hosts)
+    {
+        my $HostType = $host->prop('HostType');
+        next unless (defined($HostType) && ($HostType eq 'Self'));
+
+        $OUT .= " ".$host->key;
+    }
+    undef;      # We need a return value
+
 }
