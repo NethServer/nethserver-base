@@ -1690,7 +1690,7 @@ DHCP_SERVER:
     unless ((($start & $netmask) == $localnet) &&
 	    (($end & $netmask) == $localnet))
     {
-	my $dhcpLeases = "/var/lib/dhcp/dhcpd.leases";
+	my $dhcpLeases = "/var/lib/misc/dnsmasq.leases";
 	open (WR, ">$dhcpLeases")
 	    or die gettext("Can't open output file"),
 		" $dhcpLeases", ": $!\n";
@@ -1899,16 +1899,14 @@ DNS_FORWARDER:
 #------------------------------------------------------------
 
 {
-    my $primary = $db->get_prop('dnscache', 'Forwarder') || '';
+    my $primary = $db->get_prop('dnsmasq', 'Forwarder') || '';
     ($rc, $choice) = $console->input_page
         (
          title => gettext("Corporate DNS server address"),
          text  =>
-         gettext("If this server does not have access to the Internet, or you have special requirements for DNS resolution, enter the DNS server IP address here.") . 
+         gettext("The server is capable of resolving all its own domain hosts and all DHCP assigned ip, if the DHCP server is enabled.") . 
          "\n\n" .
-         gettext("This field should be left blank unless you have a specific reason to configure another DNS server.") .
-         "\n\n" .
-         gettext("You should not enter the address of your ISP's DNS servers here, as the server is capable of resolving all Internet DNS names without this additional configuration."),
+         gettext("You should enter the address of your ISP's DNS servers here to resolve all other domains."),
          value   => $primary
         );
 
@@ -1921,18 +1919,18 @@ DNS_FORWARDER:
     {
         if ( isValidIP($choice) )
         {
-            $db->set_prop('dnscache', 'Forwarder', cleanIP($choice));
+            $db->set_prop('dnsmasq', 'Forwarder', cleanIP($choice));
             goto QUERY_SAVE_CONFIG;
         }
         elsif ($choice =~ /^\s*$/)
         {
-            $db->delete_prop('dnscache', 'Forwarder');
+            $db->delete_prop('dnsmasq', 'Forwarder');
             goto QUERY_SAVE_CONFIG;
         }
     }
     else
     {
-        $db->delete_prop('dnscache', 'Forwarder');
+        $db->delete_prop('dnsmasq', 'Forwarder');
         goto QUERY_SAVE_CONFIG;
     }
 
