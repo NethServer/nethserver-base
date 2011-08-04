@@ -1,8 +1,0 @@
-#! /bin/sh
-if ls /etc/rc7.d/S??$1 >/dev/null 2>/dev/null
-then
-   script=$(ls /etc/rc7.d/S??$1 | head -1)
-   exec $script $2
-else
-   /etc/init.d/"$@"
-fi
