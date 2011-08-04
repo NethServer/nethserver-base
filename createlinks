@@ -490,7 +490,6 @@ my %service2order =
     cpuspeed   	=> "06",
     'bootstrap-console'	=> "10",
     raidmonitor => "15",
-    apmd	=> "26",
     network  	=> "37",
     irqbalance 	=> "39",
     crond    	=> "40",
@@ -504,7 +503,7 @@ my %service2order =
 
 foreach my $service (keys %service2order)
 {
-    service_link_enhanced($service, $service2order{$service}, 7);
+    #service_link_enhanced($service, $service2order{$service}, 7);
 }
 
 
@@ -521,9 +520,5 @@ templates2events("/etc/pam.d/system-auth", $event);
 templates2events("/etc/nsswitch.conf", $event);
 templates2events("/etc/libuser.conf", $event);
 
-
-
-# Set up links to daemontools.
-safe_symlink("daemontools", "root/etc/rc.d/init.d/raidmonitor");
 
 

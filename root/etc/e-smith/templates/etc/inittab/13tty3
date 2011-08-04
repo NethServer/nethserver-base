@@ -1,1 +1,0 @@
-{ -f "/proc/xen/xenbus" && ! -f "/proc/xen/xsd_kva" ? "#" : "" }3:23457:respawn:/sbin/mingetty tty3
