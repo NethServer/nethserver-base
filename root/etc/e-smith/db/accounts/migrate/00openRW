@@ -1,4 +1,0 @@
-{
-    use esmith::AccountsDB;
-    $DB = esmith::AccountsDB->open;
-}

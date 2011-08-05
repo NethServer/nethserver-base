@@ -1,5 +1,0 @@
-{
-    use esmith::DomainsDB;
-    $DB = esmith::DomainsDB->open;
-}
-

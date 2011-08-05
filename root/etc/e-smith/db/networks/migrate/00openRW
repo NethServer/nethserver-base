@@ -1,4 +1,0 @@
-{
-    use esmith::NetworksDB;
-    $DB = esmith::NetworksDB->open;
-}
