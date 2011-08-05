@@ -1,3 +1,0 @@
-#! /bin/bash
-
-exec /etc/e-smith/events/actions/update-dns
