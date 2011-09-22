@@ -154,33 +154,40 @@ templates2events("/etc/hosts.allow", qw(
 	email-update
 	remoteaccess-update
 	));
+
+#foreach my $file (qw(
+#        /etc/pam.d/login
+#	/etc/pam.d/system-auth
+#	/etc/pam.d/passwd
+#	/etc/pam.d/pwauth
+#	/etc/security/pam_abl.conf
+#	/etc/libuser.conf
+#	/etc/openldap/ldap.conf 
+#	/etc/ldap.conf
+#    ))
 foreach my $file (qw(
-        /etc/pam.d/login
-	/etc/pam.d/system-auth
-	/etc/pam.d/passwd
-	/etc/pam.d/pwauth
-	/etc/security/pam_abl.conf
-	/etc/libuser.conf
-	/etc/openldap/ldap.conf 
-	/etc/ldap.conf
+        /etc/libuser.conf
+        /etc/openldap/ldap.conf 
+        /etc/ldap.conf
     ))
+
 {
     templates2events($file, qw(console-save bootstrap-console-save));
 }
 
 # conf-userlists
 
-foreach (qw(users.allow accounts.allow accounts.deny))
-{
-    templates2events("/etc/e-smith/pam/$_", qw(
-	bootstrap-console-save
-	ibay-create
-	ibay-delete
-	user-create
-	user-delete
-	password-modify
-	));
-}
+#foreach (qw(users.allow accounts.allow accounts.deny))
+#{
+#    templates2events("/etc/e-smith/pam/$_", qw(
+#	bootstrap-console-save
+#	ibay-create
+#	ibay-delete
+#	user-create
+#	user-delete
+#	password-modify
+#	));
+#}
 
 # fstab-conf
 
@@ -516,8 +523,8 @@ safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/ldap");
 templates2events("/etc/ldap.conf", $event);
 templates2events("/etc/openldap/ldap.conf", $event);
 templates2events("/etc/openldap/slapd.conf", $event);
-templates2events("/etc/pam.d/system-auth", $event);
-templates2events("/etc/nsswitch.conf", $event);
+#templates2events("/etc/pam.d/system-auth", $event);
+#templates2events("/etc/nsswitch.conf", $event);
 templates2events("/etc/libuser.conf", $event);
 
 
