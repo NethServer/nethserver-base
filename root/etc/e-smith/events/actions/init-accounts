@@ -100,7 +100,7 @@ else
 # create user "public" if not already present
 #--------------------------------------------------
 
-`/usr/sbin/lid public`;
+`/usr/sbin/lid public 2>/dev/null`;
 if ($? != 0)
 {
     `/usr/sbin/luseradd  -c 'e-smith guest' -d /home/e-smith -g shared -M -s /bin/false public`;
@@ -111,7 +111,7 @@ if ($? != 0)
 # "e-smith private web server" (used to just say "e-smith web server")
 #--------------------------------------------------
 
-`/usr/sbin/lid www`;
+`/usr/sbin/lid www 2>/dev/null`;
 if ($? != 0)
 {
     `/usr/sbin/luseradd -c 'e-smith web server' -d /home/e-smith -g shared -M -s /bin/false www`;
