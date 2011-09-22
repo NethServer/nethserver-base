@@ -31,6 +31,22 @@ while(!($ldap = Net::LDAP->new('localhost'))) { # wait for ldap, max 10 seconds
 
 
 $ldif = <<END
+dn: $ldapSuffix
+objectClass: top
+objectClass: dcObject
+objectClass: organization
+o: $ServerName
+
+dn: ou=Users,$ldapSuffix
+objectClass: top
+objectClass: organizationalUnit
+ou: Users
+
+dn: ou=Groups,$ldapSuffix
+objectClass: top
+objectClass: organizationalUnit
+ou: Groups
+
 dn: sambaDomainName=$ServerName,$ldapSuffix
 sambaDomainName: $ServerName
 sambaSID: $sid
@@ -46,12 +62,12 @@ sambaLockoutThreshold: 0
 sambaForceLogoff: -1
 sambaRefuseMachinePwdChange: 0
 
-dn: ou=idmap,$ldapSuffix
+dn: ou=Idmap,$ldapSuffix
 objectClass: top
 objectClass: organizationalUnit
 ou: idmap
 
-dn: ou=computers,$ldapSuffix
+dn: ou=Computers,$ldapSuffix
 objectClass: top
 objectClass: organizationalUnit
 ou: computers
@@ -126,6 +142,8 @@ END
 $tmp_fh = new File::Temp( UNLINK => 1 );
 print $tmp_fh $ldif ;
 $filename = "$tmp_fh";
+
+# print "ldapadd -c -x -D cn=root,$ldapSuffix -w $ldapPassword -f $filename\n";
 
 system("ldapadd", "-c", "-x", "-D", "cn=root,$ldapSuffix", "-w", "$ldapPassword", "-f", "$filename" ) == 0
    or die ("Can't load samba provision ldif");
