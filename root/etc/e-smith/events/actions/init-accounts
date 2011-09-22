@@ -83,7 +83,7 @@ else
     # Run usermod command to update group list for admin.
     #--------------------------------------------------
 
-    $cmd = "/usr/sbin/usermod -c 'e-smith administrator' -d /home/e-smith -s /sbin/e-smith/console admin";
+    $cmd = "/usr/sbin/lusermod -c 'e-smith administrator' -d /home/e-smith -s /sbin/e-smith/console admin";
     `$cmd`;
     if ($? != 0)
     {
@@ -100,7 +100,7 @@ else
 # create user "public" if not already present
 #--------------------------------------------------
 
-`/bin/grep '^public:' /etc/passwd`;
+`/usr/sbin/lid public`;
 if ($? != 0)
 {
     `/usr/sbin/luseradd  -c 'e-smith guest' -d /home/e-smith -g shared -M -s /bin/false public`;
@@ -111,7 +111,7 @@ if ($? != 0)
 # "e-smith private web server" (used to just say "e-smith web server")
 #--------------------------------------------------
 
-`/bin/grep '^www:' /etc/passwd`;
+`/usr/sbin/lid www`;
 if ($? != 0)
 {
     `/usr/sbin/luseradd -c 'e-smith web server' -d /home/e-smith -g shared -M -s /bin/false www`;
@@ -148,7 +148,7 @@ else
     # Run usermod command to update group list for www.
     #--------------------------------------------------
 
-    `/usr/sbin/usermod -c 'e-smith web server' -d /home/e-smith -s /bin/false www`;
+    `/usr/sbin/lusermod -c 'e-smith web server' -d /home/e-smith -s /bin/false www`;
     if ($? != 0)
     {
 	die "Failed to modify supplementary group list for www.\n";
