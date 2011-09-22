@@ -1,7 +1,0 @@
-isdn	PHONE='{
-    my $phone = $DialupPhoneNumber || '';
-    $OUT = "$phone";
-}' WAITTIME=10 EAZ_OUT='{
-    my $msn = $isdn{'Msn'} || '';
-    $OUT = "$msn";
-}' EAZ_IN=''
