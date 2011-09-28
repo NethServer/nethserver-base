@@ -55,6 +55,7 @@ unless ($uid = $acct->prop('Uid'))
     $lock = esmith::lockfile::LockFileOrWait("/home/e-smith/db/accounts");
     $uid = $accounts->get_next_uid;
     $acct->set_prop('Uid', $uid);
+    $acct->set_prop('PasswordSet', 'no');
 }
 my $gid = $acct->prop('Gid') || $uid;
 my $first = $acct->prop('FirstName') || '';
