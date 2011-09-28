@@ -1,0 +1,8 @@
+
+include         /etc/openldap/schema/core.schema
+include         /etc/openldap/schema/cosine.schema
+include         /etc/openldap/schema/inetorgperson.schema
+include         /etc/openldap/schema/nis.schema
+include         /etc/openldap/schema/redhat/rfc822-MailMember.schema
+include         /etc/openldap/schema/redhat/autofs.schema
+include         /etc/openldap/schema/mailRelatedObject.schema

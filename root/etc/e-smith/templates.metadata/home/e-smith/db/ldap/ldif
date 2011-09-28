@@ -1,0 +1,2 @@
+TEMPLATE_PATH="/home/e-smith/db/ldap/ldif"
+OUTPUT_FILENAME=use esmith::ConfigDB; my $d = esmith::ConfigDB->open_ro->get('DomainName')->value; "/home/e-smith/db/ldap/$d.ldif"

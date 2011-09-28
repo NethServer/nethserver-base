@@ -1,0 +1,41 @@
+{
+    my @users = $a->users;
+    push (@users,$a->get('admin'));
+    foreach my $user (@users)
+    {
+	my $key = $user->key;
+	my $first = $user->prop('FirstName') || '';
+	my $last = $user->prop('LastName') || '';
+	my $name = "$first $last";
+	my $phone = $user->prop('Phone');
+	my $company = $user->prop('Company');
+	my $dept = $user->prop('Dept');
+	my $city = $user->prop('City');
+	my $street = $user->prop('Street');
+	my $uid = $uid{$key};
+	my $gid = $gid{$key};
+	my $password = $passwd{$key};
+	my $home = $home{$key};
+	my $shell = $shell{$key};
+
+	$OUT .= "\n";
+	$OUT .= utf8("dn: uid=$key,ou=Users,$ldapBase\n");
+	$OUT .= utf8("objectClass: inetOrgPerson\n");
+	$OUT .= utf8("objectClass: posixAccount\n");
+	$OUT .= utf8("uid: $key\n");
+	$OUT .= utf8("cn: $name\n") if $name;
+	$OUT .= utf8("givenName: $first\n") if $first;
+	$OUT .= utf8("sn: $last\n") if $last;
+	$OUT .= utf8("mail: $key\@$DomainName\n");
+	$OUT .= utf8("telephoneNumber: $phone\n") if $phone;
+	$OUT .= utf8("o: $company\n") if $company;
+	$OUT .= utf8("ou: $dept\n") if $dept;
+	$OUT .= utf8("l: $city\n") if $city;
+	$OUT .= utf8("street: $street\n") if $street;
+	$OUT .= utf8("userPassword: $password\n") if $password;
+	$OUT .= utf8("uidNumber: $uid\n") if $uid;
+	$OUT .= utf8("gidNumber: $gid\n") if $gid;
+	$OUT .= utf8("homeDirectory: $home\n") if $home;
+	$OUT .= utf8("loginShell: $shell\n") if $shell;
+    }
+}

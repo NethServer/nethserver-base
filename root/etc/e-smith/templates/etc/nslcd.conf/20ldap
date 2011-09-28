@@ -1,0 +1,9 @@
+uri ldap://localhost/
+base   { esmith::util::ldapBase ($DomainName); }
+base   group  ou=Groups,{ esmith::util::ldapBase ($DomainName); }
+base   passwd ou=Users,{ esmith::util::ldapBase ($DomainName); }
+base   shadow ou=Users,{ esmith::util::ldapBase ($DomainName); }
+binddn cn=root,{ esmith::util::ldapBase ($DomainName); }
+bindpw { esmith::util::LdapPassword (); }
+
+

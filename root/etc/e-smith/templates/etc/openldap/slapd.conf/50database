@@ -1,0 +1,2 @@
+database	bdb
+checkpoint      128 10

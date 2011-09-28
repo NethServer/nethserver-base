@@ -1,0 +1,22 @@
+{
+    foreach ($a->groups)
+    {   
+	my $key = $_->key;
+	my $desc = $_->prop('Description') || '';
+	my $gid = $_->prop('Gid');
+	my @members = split( /,/, ($_->prop('Members') || '') );
+
+	$OUT .= "\n";
+	$OUT .= "dn: cn=$key,ou=Groups,$ldapBase\n";
+	$OUT .= "objectClass: posixGroup\n";
+	$OUT .= "objectClass: mailboxRelatedObject\n";
+	$OUT .= "gidNumber: $gid\n";
+	$OUT .= "cn: $key\n";
+	$OUT .= "description: $desc\n";
+	$OUT .= "mail: $key\@$DomainName\n";
+	foreach my $member (@members){
+	    $OUT .= "memberUid: $member\n";
+	}
+    }
+}
+

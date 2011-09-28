@@ -1,0 +1,5 @@
+# Indices to maintain
+index   objectClass,uid,uidNumber,gidNumber     eq
+index   memberUid                               eq
+index   cn,mail,surname,givenname               eq,subinitial
+

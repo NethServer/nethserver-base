@@ -1,0 +1,5 @@
+access to *
+        by self         read
+        by anonymous    read
+        by *            none
+

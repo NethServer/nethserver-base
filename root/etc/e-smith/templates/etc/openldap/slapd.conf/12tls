@@ -1,0 +1,7 @@
+
+TLSCipherSuite         HIGH:MEDIUM:+SSLv2
+TLSCACertificateFile   /etc/openldap/slapd.pem
+TLSCertificateFile     /etc/openldap/slapd.pem
+TLSCertificateKeyFile  /etc/openldap/slapd.pem
+TLSVerifyClient        never
+

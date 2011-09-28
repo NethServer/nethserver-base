@@ -1,0 +1,8 @@
+#!/bin/bash
+/sbin/e-smith/expand-template /etc/openldap/slapd.conf
+rm -rf /etc/openldap/slapd.d/*
+/usr/sbin/slaptest -f /etc/openldap/slapd.conf -F /etc/openldap/slapd.d
+chown -R ldap:ldap /etc/openldap/slapd.d
+chmod -R 000 /etc/openldap/slapd.d
+chmod -R u+rwX /etc/openldap/slapd.d
+rm -f /etc/openldap/slapd.conf

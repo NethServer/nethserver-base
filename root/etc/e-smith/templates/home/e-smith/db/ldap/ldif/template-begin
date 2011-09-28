@@ -1,0 +1,32 @@
+{
+    use esmith::AccountsDB;
+    use esmith::util;
+
+    $a = esmith::AccountsDB->open_ro;
+    $ldapBase = esmith::util::ldapBase ($DomainName);
+    sub utf8
+    {
+	my $t = shift;
+	utf8::encode($t);
+	return $t;
+    }
+
+    %passwd = ();
+    %uid = ();
+    %gid = ();
+    %home = ();
+    %shell = ();
+    while(my ($key,$pwd,$uid,$gid,
+              undef,undef,undef,
+              $dir,$shell) = getpwent()) {
+
+        $passwd{$key} = "{CRYPT}$pwd";
+        $uid{$key} = $uid;
+        $gid{$key} = $gid;
+        $home{$key} = $dir;
+        $shell{$key} = $shell;
+    }
+    endpwent();
+
+    $OUT = "";
+}
