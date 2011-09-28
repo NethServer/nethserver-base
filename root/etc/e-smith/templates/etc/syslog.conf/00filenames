@@ -1,9 +1,0 @@
-{
-    $messages = "/var/log/messages";
-    $bootlog = "/var/log/boot.log";
-    $secure = "/var/log/secure";
-    $cron = "/var/log/cron";
-    $spooler = "/var/log/spooler";
-    $maillog = "/var/log/maillog";
-    "";
-}

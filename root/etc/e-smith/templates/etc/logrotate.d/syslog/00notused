@@ -1,4 +1,0 @@
-#
-# We do not use logrotate to rotate syslog controlled logfiles,
-# we reconfigure syslog instead. No action required here.
-#

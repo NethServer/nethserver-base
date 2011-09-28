@@ -1,3 +1,0 @@
-set terminal.linux.utf_8_io = 0
-set terminal.xterm.utf_8_io = 0
-set terminal.xterm.m11_hack = 1
