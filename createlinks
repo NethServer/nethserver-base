@@ -427,7 +427,9 @@ event_link("count-active-user-accounts", $event, "25");
 
 $event = "password-modify";
 
+event_link("set-password", $event, "25");
 event_link("count-active-user-accounts", $event, "25");
+event_link("delete-tmp", $event, "90");
 
 #--------------------------------------------------
 # actions for timeserver-update event

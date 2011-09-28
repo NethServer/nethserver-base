@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ $# -ge 3 ]; then
+   EVENT=$1
+   USER=$2
+   FILE=$3
+   /usr/bin/shred -u $FILE 2> /dev/null 
+else
+   echo "Not enough arguments"
+   exit 1
+fi
+
