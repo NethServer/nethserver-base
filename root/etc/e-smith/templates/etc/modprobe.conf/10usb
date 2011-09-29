@@ -1,8 +1,0 @@
-{
-    my $usb_alias = "alias char-major-180 usbcore";
-    unless (exists $lines{$usb_alias})
-    {
-	push @lines, $usb_alias;
-    }
-    "";
-}
