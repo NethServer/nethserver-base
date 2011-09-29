@@ -531,3 +531,41 @@ templates2events("/etc/libuser.conf", $event);
 
 
 
+
+
+foreach (qw(/etc/openldap/ldap.conf /etc/openldap/slapd.conf /etc/openldap/slapd.pem /etc/sysconfig/ldap /etc/nslcd.conf))
+{
+templates2events("$_",
+	qw(
+	    bootstrap-console-save
+	    console-save
+	    ldap-update
+	));
+}
+
+
+#event_link("ldap-update", "group-create", "25");
+#event_link("ldap-delete", "group-delete", "25");
+#event_link("ldap-update", "user-create", "25");
+#event_link("ldap-delete", "user-delete", "25");
+#event_link("ldap-update", "user-lock", "25");
+
+#event_link("ldap-update", "user-modify", "25");
+#event_link("ldap-update", "user-modify-admin", "25");
+#event_link("ldap-update", "group-modify", "25");
+#event_link("ldap-update", "password-modify", "25");
+
+event_link("ldap-dump", "pre-backup", "30");
+
+event_link("ldap-update",   "ldap-update", "80");
+event_link("ldap-update-config",   "ldap-update", "20");
+
+templates2events("/etc/rc.d/init.d/masq", "ldap-update");
+templates2events("/etc/hosts.allow", "ldap-update");
+safe_symlink("restart", "root/etc/e-smith/events/ldap-update/services2adjust/slapd");
+safe_symlink("adjust", "root/etc/e-smith/events/ldap-update/services2adjust/masq");
+safe_symlink("sigusr1", "root/etc/e-smith/events/ldap-update/services2adjust/httpd-e-smith");
+
+event_link("ldap-delete-dumps", "pre-restore", "25");
+
+exit 0;
