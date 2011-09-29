@@ -1,5 +1,0 @@
-{
-    my $status = $pam_tally{status} || 'disabled';
-    return unless $status eq 'enabled';
-    $OUT .= "account     required      pam_tally.so deny=5 reset no_magic_root";
-}

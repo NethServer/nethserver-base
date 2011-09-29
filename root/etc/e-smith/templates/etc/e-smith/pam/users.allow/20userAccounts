@@ -1,6 +1,0 @@
-{
-    use esmith::AccountsDB;
-    my $adb = esmith::AccountsDB->open_ro();
-
-    $OUT = join "\n", map { $_->key; } grep { $_->prop('PasswordSet') eq 'yes' } $adb->users;
-}

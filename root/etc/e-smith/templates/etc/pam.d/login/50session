@@ -1,5 +1,0 @@
-session    { -f "/lib/security/pam_pwdb.so" || 
-             -f "/lib64/security/pam_pwdb.so" ? "required     pam_stack.so service=system-auth" : 
-                                                "include      system-auth" }
-session    required     pam_loginuid.so
-session    optional	pam_console.so

@@ -1,1 +1,0 @@
-session     optional      pam_keyinit.so revoke

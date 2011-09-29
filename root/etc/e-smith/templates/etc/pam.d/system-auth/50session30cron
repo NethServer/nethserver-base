@@ -1,1 +1,0 @@
-session     [success=1 default=ignore] pam_succeed_if.so service in crond quiet use_uid

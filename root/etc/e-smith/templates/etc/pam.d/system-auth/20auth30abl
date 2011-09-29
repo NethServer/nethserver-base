@@ -1,5 +1,0 @@
-{
-    my $status = $pam_abl{status} || 'disabled';
-    return unless $status eq 'enabled';
-    $OUT .= "auth        required      pam_abl.so config=/etc/security/pam_abl.conf";
-}

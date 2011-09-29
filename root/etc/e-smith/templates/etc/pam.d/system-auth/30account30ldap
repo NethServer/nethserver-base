@@ -1,1 +1,0 @@
-account     [default=bad success=ok user_unknown=ignore] pam_ldap.so

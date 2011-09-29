@@ -1,5 +1,0 @@
-{
-    my $status = $pam_tally{status} || 'disabled';
-    return unless $status eq 'enabled';
-    $OUT .= "auth        required      pam_tally.so onerr=fail no_magic_root";
-}
