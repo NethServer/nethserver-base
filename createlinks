@@ -235,12 +235,12 @@ my $event = "console-save";
 
 templates2events("/home/e-smith/ssl.pem/pem", $event);
 event_link("set-hostname", $event, "10");
-event_link("ldap-update-config",  $event, "10");
+event_link("ldap-update-config",  $event, "11");
+event_link("ldap-rename",  $event, "12");
 event_link("conf-modules", $event, "30");
 event_link("conf-startup", $event, "60");
 event_link("reset-unsavedflag", $event, "95");
 event_link("init-reload", $event, "90");
-safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/ldap");
 
 #--------------------------------------------------
 # actions for bootstrap-console-save event
@@ -249,8 +249,9 @@ $event = "bootstrap-console-save";
 
 
 templates2events("/home/e-smith/ssl.pem/pem", $event);
-event_link("ldap-update-config",  $event, "10");
 event_link("set-hostname", $event, "10");
+event_link("ldap-update-config",  $event, "11");
+event_link("ldap-rename",  $event, "12");
 event_link("user-lock-passwd", $event, "15");
 event_link("initialize-users-chage", $event, "20");
 event_link("conf-modules", $event, "30");
@@ -258,7 +259,6 @@ event_link("conf-startup", $event, "60");
 event_link("conf-routes", $event, "89");
 event_link("init-reload", $event, "90");
 event_link("reset-unsavedflag", $event, "95");
-safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/ldap");
 
 
 #--------------------------------------------------
@@ -325,8 +325,9 @@ event_link("conf-routes", $event, "89");
 $event = "post-install";
 
 event_link("rotate_timestamped_logfiles", $event, "05");
-event_link("ldap-update-config",  $event, "04");
-event_link("init-accounts", $event, "05");
+event_link("ldap-update-config",  $event, "06");
+event_link("ldap-rename",  $event, "07");
+event_link("init-accounts", $event, "08");
 event_link("init-passwords", $event, "10");
 event_link("conf-startup", $event, "10");
 event_link("conf-modules", $event, "30");
@@ -340,8 +341,9 @@ safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/ldap");
 $event = "post-upgrade";
 
 event_link("rotate_timestamped_logfiles", $event, "05");
-event_link("ldap-update-config",  $event, "04");
-event_link("init-accounts", $event, "05");
+event_link("ldap-update-config",  $event, "06");
+event_link("ldap-rename",  $event, "07");
+event_link("init-accounts", $event, "08");
 event_link("conf-startup", $event, "10");
 event_link("user-lock-passwd", $event, "15");
 event_link("group-modify-unix", $event, "15");
