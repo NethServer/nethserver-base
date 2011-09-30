@@ -13,6 +13,11 @@ fi
 old=$1
 new=$2
 
+if [ "$old" = "$new" ]; then
+   exit 0
+fi
+
+
 tmp="$(mktemp)"
 
 /usr/sbin/slapcat | /sbin/e-smith/convert_ldif $old $new > $tmp
