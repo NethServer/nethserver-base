@@ -1,0 +1,7 @@
+uri ldap://localhost/
+ssl no
+tls_cacertdir /etc/openldap/cacerts
+rootbinddn cn=Manager,{ esmith::util::ldapBase ($DomainName); }
+pam_password exop
+base { esmith::util::ldapBase ($DomainName); }
+

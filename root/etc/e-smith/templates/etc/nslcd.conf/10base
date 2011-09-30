@@ -125,9 +125,8 @@
 #map    group  cn               groupName
 #map    group  uniqueMember     member
 #map    group  gidNumber        gid
+
 uid nslcd
 gid ldap
-# This comment prevents repeated auto-migration of settings.
 ssl no
-tls_cacertdir /etc/openldap/cacerts
 
