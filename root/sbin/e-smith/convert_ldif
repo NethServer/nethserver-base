@@ -1,0 +1,67 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
+
+use Net::LDAP::LDIF;
+use esmith::util;
+
+my $olddomain = shift;
+my $newdomain = shift;
+
+my $ldif = Net::LDAP::LDIF->new( "/dev/stdin", "r", onerror => 'undef' );
+my $writer = Net::LDAP::LDIF->new("/dev/stdout", "w", onerror => 'undef' );
+
+my $new = esmith::util::ldapBase($newdomain);
+my $old = esmith::util::ldapBase($olddomain);
+
+while( not $ldif->eof())
+{
+    my $entry = $ldif->read_entry();
+    if ($ldif->error())
+    {
+        print "Error msg: ", $ldif->error(), "\n";
+        print "Error lines:\n", $ldif->error_lines(), "\n";
+        next;
+    }
+    next unless $entry;
+    my $dn = $entry->dn;
+    my @object_classes = $entry->get_value('objectClass');
+    my %object_classes = map { $_ => 1 } @object_classes;
+    if ($dn eq $old)
+    {
+        # this is the domain container object - objectClasses will be
+        # 'top' and 'domain'
+        my $dc = $new;
+        $dc =~ s/,.*//g;
+        $dc =~ s/^dc=//;
+        $entry->replace(dc => $dc);
+    }
+    if ($object_classes{group})
+    {
+        # We used to create group entries with invalid objectClass group
+        # - fix these if we find them
+        # possibly not required any more, but harmless
+        @object_classes = grep { $_ ne 'group' } @object_classes;
+        $entry->replace(objectClass => [ @object_classes, 'posixGroup' ] );
+    }
+    # do any other object transformations
+
+    # Update the mail attributes
+    if ($entry->exists('mail')){
+        my @newmails = ();
+        foreach ($entry->get_value('mail')){
+            $_ =~ s/\@$olddomain$/\@$newdomain/;
+            push (@newmails,$_);
+        }
+        $entry->replace(mail => [ @newmails ]);
+    }
+
+    # Update basedb suffix
+    $dn =~ s/$old$/$new/;
+    $entry->dn($dn);
+    $writer->write($entry);
+}
+$ldif->done( );
+
