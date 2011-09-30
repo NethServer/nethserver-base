@@ -1,26 +1,18 @@
 #!/bin/bash
 # This script rename a ldap tree from an old domain (dc) to a new one.
 # The server MUST already be configured with the new domain.
-# Usage:
-#       ldap-rename <old_domain> <new_domain> 
 #      
 
-if [ $# -lt 2 ]; then
-   echo -e "Usage: ldap-rename <old_domain> <new_domain>\n\n\tExample: ldap-rename mycompany.com newcompany.net\n"
-   exit 1
-fi
-
-old=$1
-new=$2
+old=`slapcat 2>/dev/null | head -n1 | awk -F'dc=' '{ print $2 $3 }' | sed 's/,/\./g'` # read old domain from slapcat
+new=`/sbin/e-smith/config get DomainName` # read new domain from db
 
 if [ "$old" = "$new" ]; then
    exit 0
 fi
 
-
 tmp="$(mktemp)"
 
-/usr/sbin/slapcat | /sbin/e-smith/convert_ldif $old $new > $tmp
+/usr/sbin/slapcat 2>/dev/null | /sbin/e-smith/convert_ldif $old $new > $tmp
 service ldap stop
 find /var/lib/ldap -type f | xargs rm -f
 cp /usr/share/doc/openldap-servers-`rpm -q --queryformat='%{VERSION}' openldap-servers`/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
