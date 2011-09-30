@@ -42,6 +42,7 @@ sub set_prop {
 sub delete_prop {
     my ($self, $key, $prop) = @_;
     my $rec = $self->get($key);
+    return unless (defined $rec); # do nothing if the key doesn't exist
     my $current_value = $rec->prop($prop);
     return unless (defined $current_value);
 
