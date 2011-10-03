@@ -1,0 +1,46 @@
+{
+    use esmith::util;
+    use esmith::NetworksDB;
+
+    my $LocalIP = $DB->get('LocalIP');
+    return unless defined $LocalIP;    # Nothing to migrate yet
+    $LocalIP = $LocalIP->value;
+
+    my $LocalNetmask = $DB->get('LocalNetmask');
+    return unless defined $LocalNetmask;
+    $LocalNetmask = $LocalNetmask->value;
+
+    my $ndb = esmith::NetworksDB->open
+      || esmith::NetworksDB->create;
+
+    # And update networks db shadow
+    my ($localnet) = $ndb->get_all_by_prop( SystemLocalNetwork => 'yes' );
+    my ($local_network) =
+      esmith::util::computeNetworkAndBroadcast( $LocalIP, $LocalNetmask );
+    if ( defined $localnet && $localnet->key ne $local_network )
+    {
+
+        # We need to delete the old record
+        $localnet->delete;
+        $localnet = undef;
+    }
+    if ( !defined $localnet )
+    {
+        # We need to convert an existing local network to system network
+        $localnet = $ndb->get($local_network) ||
+          # or we need to create a new system network record
+          $ndb->new_record( $local_network, { type => 'network', } );
+    }
+
+    # Update the netmask while we are at it
+    $localnet->merge_props(
+        SystemLocalNetwork => 'yes',
+        Mask               => $LocalNetmask,
+    );
+
+    # Make sure that localnetwork does not have a leftover
+    # Router property if it was previously an additional
+    # local network. Will fail silently if there is no
+    # Router property
+    $localnet->delete_prop('Router');
+}
