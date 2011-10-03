@@ -184,6 +184,15 @@ templates2events("/etc/nslcd.conf", qw(
     nethserver-base-update
 	));
 
+templates2events("/etc/pam_ldap.conf", qw(
+        console-save
+        bootstrap-console-save
+    post-install
+    post-upgrade
+    nethserver-base-update
+        ));
+
+
 templates2events("/etc/pam_ldap.secret", qw(
 	console-save
 	bootstrap-console-save
