@@ -1,0 +1,123 @@
+#!/usr/bin/perl -w
+
+#----------------------------------------------------------------------
+# copyright (C) 1999, 2000 e-smith, inc.
+#		
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#		
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#		
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+# 
+# Technical support for this program is available from e-smith, inc.
+# For details, please visit our web site at www.e-smith.com or
+# call us on 1 888 ESMITH 1 (US/Canada toll free) or +1 613 564 8000
+#----------------------------------------------------------------------
+
+package esmith;
+
+use strict;
+use Errno;
+use esmith::ConfigDB;
+use esmith::AccountsDB;
+use esmith::util;
+use Net::LDAP;
+
+my $c = esmith::ConfigDB->open_ro;
+my $a = esmith::AccountsDB->open_ro;
+
+
+my $hostname = $c->get('SystemName')  || die("Couldn't determine system name");
+$hostname = $hostname->value;
+
+my $domain = $c->get('DomainName') || die("Couldn't determine domain name");
+$domain = $domain->value;
+
+my $event = shift;
+
+my $userName = shift;
+die "Username argument missing." unless defined ($userName);
+
+my $account = $a->get($userName);
+die "Account $userName not found.\n" unless defined $account;
+
+my $type = $account->prop('type') || "unknown";
+exit (0) if ($type eq 'ibay');
+
+die "Account $userName is not a user or group account; update LDAP entry failed.\n"
+unless (($type eq 'user') || ($type eq 'group') || ($userName eq 'admin'));
+
+#------------------------------------------------------------
+# Update LDAP directory entry. First read LDAP password
+#------------------------------------------------------------
+my $pw = esmith::util::LdapPassword();
+my %uid;
+my %gid;
+my %home;
+my %shell;
+
+while(my ($key,$pwd,$uid,$gid,
+          undef,undef,undef,
+          $home,$shell) = getpwent()) {
+
+    $uid{$key} = $uid;
+    $gid{$key} = $gid;
+}
+endpwent();
+
+#------------------------------------------------------------
+# Update LDAP database entry.
+#------------------------------------------------------------
+my $base = esmith::util::ldapBase ($domain);
+
+my $ldap = Net::LDAP->new('localhost')
+    or die "$@";
+
+$ldap->bind(
+    dn => "cn=Manager,$base",
+    password => $pw
+);
+
+#my $defaultPhone = $l->prop('defaultTelephoneNumber') || '';
+#my $defaultCompany = $l->prop('defaultCompany') || '';
+#my $defaultDept = $l->prop('defaultDepartment') || '';
+#my $defaultCity = $l->prop('defaultCity') || '';
+#my $defaultStreet = $l->prop('defaultStreet') || '';
+
+my @attrs = ();
+my $dn = $base;
+
+$dn = "uid=$userName,ou=People,$base";
+my $email = $account->prop('EmailAlias') || "$userName\@$domain";
+my $phone = $account->prop('Phone') || '';
+my $company = $account->prop('Company') || '';
+utf8::upgrade($company);
+my $dept = $account->prop('Dept') || '';
+utf8::upgrade($dept);
+my $city = $account->prop('City') || '';
+utf8::upgrade($city);
+my $street = $account->prop('Street') || '';
+utf8::upgrade($street);
+
+push @attrs, (mail => $email);
+push @attrs, (telephoneNumber => $phone) unless $phone =~ /^\s*$/;
+push @attrs, (o => $company) unless $company =~ /^\s*$/;
+push @attrs, (ou => $dept) unless $dept =~ /^\s*$/;
+push @attrs, (l => $city) unless $city =~ /^\s*$/;
+push @attrs, (street => $street) unless $street =~ /^\s*$/;
+    
+my %attrs = @attrs;
+
+my $result = $ldap->modify ($dn, replace => \%attrs);
+$result->code && warn "failed to modify entry for $dn: ", $result->error ;
+$ldap->unbind;
+
+exit (0);
