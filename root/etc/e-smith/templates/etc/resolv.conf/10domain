@@ -1,3 +1,6 @@
 { 
     $OUT .= "domain $DomainName";
+    if ( defined($DNSForwarder) ) {
+       $OUT .= "nameserver $DNSForwarder" unless($DNSForwarder eq "");
+    }
 }

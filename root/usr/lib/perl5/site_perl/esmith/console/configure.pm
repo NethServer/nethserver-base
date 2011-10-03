@@ -1899,7 +1899,7 @@ DNS_FORWARDER:
 #------------------------------------------------------------
 
 {
-    my $primary = $db->get_prop('dnsmasq', 'Forwarder') || '';
+    my $primary = $db->get_value('DNSForwarder') || '';
     ($rc, $choice) = $console->input_page
         (
          title => gettext("Corporate DNS server address"),
@@ -1919,18 +1919,18 @@ DNS_FORWARDER:
     {
         if ( isValidIP($choice) )
         {
-            $db->set_prop('dnsmasq', 'Forwarder', cleanIP($choice));
+            $db->set_value('DNSForwarder', cleanIP($choice));
             goto QUERY_SAVE_CONFIG;
         }
         elsif ($choice =~ /^\s*$/)
         {
-            $db->delete_prop('dnsmasq', 'Forwarder');
+            $db->delete('DNSForwarder');
             goto QUERY_SAVE_CONFIG;
         }
     }
     else
     {
-        $db->delete_prop('dnsmasq', 'Forwarder');
+        $db->delete('DNSForwarder');
         goto QUERY_SAVE_CONFIG;
     }
 
