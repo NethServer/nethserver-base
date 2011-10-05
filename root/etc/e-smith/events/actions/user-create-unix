@@ -56,6 +56,8 @@ unless ($uid = $acct->prop('Uid'))
     $uid = $accounts->get_next_uid;
     $acct->set_prop('Uid', $uid);
     $acct->set_prop('PasswordSet', 'no');
+    $acct->set_prop('AllowRSSH', 'no');
+    $acct->set_prop('VPNClientAccess', 'no');
 }
 my $gid = $acct->prop('Gid') || $uid;
 my $first = $acct->prop('FirstName') || '';
