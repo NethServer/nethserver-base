@@ -1998,7 +1998,7 @@ QUERY_SAVE_CONFIG:
 		 gettext("Do you wish to reboot right now?"),
 	);
 
-        goto QUIT unless ($rc == 0);
+        goto QUIT1 unless ($rc == 0);
 
         system("/usr/bin/tput", "clear");
         system("/sbin/e-smith/signal-event", "reboot");
