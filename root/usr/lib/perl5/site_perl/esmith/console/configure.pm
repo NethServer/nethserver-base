@@ -1964,29 +1964,6 @@ QUERY_SAVE_CONFIG:
     }
     else
     {
-        if ($rebootRequired eq "yes")
-        {
-            $db->set_prop("bootstrap-console", "Run", "yes");
-            $db->set_prop("bootstrap-console", "ForceSave", "yes");
-	    ($rc, $choice) = $console->yesno_page
-		(
-		 title   => gettext("Changes will take effect after reboot"),
-		     text =>
-			 gettext("The new configuration will take effect when you reboot the server.") .
-			 "\n\n" .
-			 gettext("Do you wish to reboot right now?"),
-		);
-
-	    return unless ($rc == 0);
-
-	    system("/usr/bin/tput", "clear");
-	    system("/sbin/e-smith/signal-event", "reboot");
-
-	    # A bit of a hack to avoid the console restarting before the
-	    # reboot takes effect.
-
-	    sleep(600);
-        }
         ($rc, $choice) = $console->yesno_page
             (
              title => gettext("Activate configuration changes"),
@@ -2002,18 +1979,35 @@ QUERY_SAVE_CONFIG:
  SAVE_CONFIG:
     #------------------------------------------------------------
     # After saving config we don't need to run it again on the next reboot.
-    $db->set_prop("bootstrap-console", "ForceSave", "no");
-    $db->set_prop("bootstrap-console", "Run", "no");
 
+    $db->set_prop("bootstrap-console", "ForceSave", "no");
     $console->infobox(
            title => gettext("Activating configuration settings"),
            text => gettext("Please stand by while your configuration settings are activated ..."),
           );
-
-    if ($bootstrapConsole eq "yes")
+    
+    if ($self->{bootstrap})
     {
         system("/sbin/e-smith/signal-event", "bootstrap-console-save");
-        goto QUIT1;
+	($rc, $choice) = $console->yesno_page
+	(
+	    title   => gettext("Changes will take effect after reboot"),
+	    text =>
+		 gettext("The new configuration will take effect when you reboot the server.") .
+			 "\n\n" .
+		 gettext("Do you wish to reboot right now?"),
+	);
+
+        goto QUIT unless ($rc == 0);
+
+        system("/usr/bin/tput", "clear");
+        system("/sbin/e-smith/signal-event", "reboot");
+
+        # A bit of a hack to avoid the console restarting before the
+        # reboot takes effect.
+
+        sleep(600);
+        exit (0);
     }
     else
     {
