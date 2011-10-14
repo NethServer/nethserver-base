@@ -147,7 +147,6 @@ safe_symlink("slapd", "root/etc/rc.d/init.d/ldap");
 templates2events("/etc/sysconfig/ldap", qw(
 	console-save
 	bootstrap-console-save
-    post-install
     post-upgrade
     nethserver-base-update
 	));
@@ -155,7 +154,6 @@ templates2events("/etc/sysconfig/ldap", qw(
 templates2events("/etc/openldap/ldap.conf", qw(
 	console-save
 	bootstrap-console-save
-    post-install
     post-upgrade
     nethserver-base-update
 	));
@@ -163,7 +161,6 @@ templates2events("/etc/openldap/ldap.conf", qw(
 templates2events("/etc/openldap/slapd.conf", qw(
 	console-save
 	bootstrap-console-save
-    post-install
     post-upgrade
     nethserver-base-update
 	));
@@ -171,7 +168,6 @@ templates2events("/etc/openldap/slapd.conf", qw(
 templates2events("/etc/libuser.conf", qw(
 	console-save
 	bootstrap-console-save
-    post-install
     post-upgrade
     nethserver-base-update
 	));
@@ -179,7 +175,6 @@ templates2events("/etc/libuser.conf", qw(
 templates2events("/etc/nslcd.conf", qw(
 	console-save
 	bootstrap-console-save
-    post-install
     post-upgrade
     nethserver-base-update
 	));
@@ -187,7 +182,6 @@ templates2events("/etc/nslcd.conf", qw(
 templates2events("/etc/pam_ldap.conf", qw(
         console-save
         bootstrap-console-save
-    post-install
     post-upgrade
     nethserver-base-update
         ));
@@ -196,7 +190,6 @@ templates2events("/etc/pam_ldap.conf", qw(
 templates2events("/etc/pam_ldap.secret", qw(
 	console-save
 	bootstrap-console-save
-    post-install
     post-upgrade
     nethserver-base-update
 	));
@@ -204,7 +197,6 @@ templates2events("/etc/pam_ldap.secret", qw(
 templates2events("/etc/openldap/ldap.conf", qw(
 	console-save
 	bootstrap-console-save
-    post-install
     post-upgrade
     nethserver-base-update
 	));
@@ -212,7 +204,6 @@ templates2events("/etc/openldap/ldap.conf", qw(
 templates2events("/etc/openldap/slapd.pem", qw(
 	console-save
 	bootstrap-console-save
-    post-install
     post-upgrade
     nethserver-base-update
 	));
@@ -334,13 +325,13 @@ event_link("conf-routes", $event, "89");
 $event = "post-install";
 
 event_link("rotate_timestamped_logfiles", $event, "05");
-event_link("ldap-update-config",  $event, "06");
-event_link("ldap-rename",  $event, "07");
+#event_link("ldap-update-config",  $event, "06");
+#event_link("ldap-rename",  $event, "07");
 event_link("init-accounts", $event, "08");
 event_link("init-passwords", $event, "10");
 event_link("conf-startup", $event, "10");
 event_link("conf-modules", $event, "30");
-safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/ldap");
+#safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/ldap");
 
 
 #--------------------------------------------------
