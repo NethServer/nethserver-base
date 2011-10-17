@@ -488,6 +488,16 @@ event_link("ldap-delete-dumps", $event, "25");
 
 
 #--------------------------------------------------
+# actions for ldap-update event
+#--------------------------------------------------
+
+$event = "ldap-update";
+
+event_link("ldap-update", $event, "50");
+
+
+
+#--------------------------------------------------
 # actions for nethserver-base-update event
 #--------------------------------------------------
 $event = "nethserver-base-update";

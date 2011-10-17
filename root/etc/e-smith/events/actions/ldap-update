@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 #----------------------------------------------------------------------
-# copyright (C) 1999, 2000 e-smith, inc.
+# copyright (C) 2011 - Nethsis srl
 #		
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 # call us on 1 888 ESMITH 1 (US/Canada toll free) or +1 613 564 8000
 #----------------------------------------------------------------------
 
+# This script updates organization details according to default values in ldap db entry
+
 package esmith;
 
 use strict;
@@ -35,67 +37,16 @@ my $c = esmith::ConfigDB->open_ro;
 my $a = esmith::AccountsDB->open_ro;
 
 my $l = $c->get('ldap');
-my $status = $l->prop('status') || "disabled";
-unless ($status eq "enabled" )
-{
-    warn "Not running action script $0, LDAP service not enabled!\n";
-    exit(0);
-}
-
-my $hostname = $c->get('SystemName')
-    || die("Couldn't determine system name");
- $hostname = $hostname->value;
 
 my $domain = $c->get('DomainName')
     || die("Couldn't determine domain name");
  $domain = $domain->value;
 
-my @accounts;
-my $account;
-my $event = shift || die "Event name must be specified";
-if ($event eq 'ldap-update')
-{
-    @accounts = ($a->users, $a->groups);
-    push(@accounts, $a->get('admin'));
-}
-else
-{
-    my $userName = shift;
-    die "Username argument missing." unless defined ($userName);
-
-    $account = $a->get($userName);
-    die "Account $userName not found.\n" unless defined $account;
-    my $type = $account->prop('type') || "unknown";
-
-    exit (0) if ($type eq 'ibay');
-
-    die "Account $userName is not a user or group account; " .
-	    "update LDAP entry failed.\n"
-	unless (($type eq 'user') || ($type eq 'group') || ($userName eq 'admin'));
-    @accounts = ($account);
-}
 
 #------------------------------------------------------------
 # Update LDAP directory entry. First read LDAP password
 #------------------------------------------------------------
 my $pw = esmith::util::LdapPassword();
-my %passwd;
-my %uid;
-my %gid;
-my %home;
-my %shell;
-
-while(my ($key,$pwd,$uid,$gid,
-          undef,undef,undef,
-          $home,$shell) = getpwent()) {
-
-    $passwd{$key} = "{CRYPT}$pwd";
-    $uid{$key} = $uid;
-    $gid{$key} = $gid;
-    $home{$key} = $home;
-    $shell{$key} = $shell;
-}
-endpwent();
 
 #------------------------------------------------------------
 # Update LDAP database entry.
@@ -106,99 +57,25 @@ my $ldap = Net::LDAP->new('localhost')
     or die "$@";
 
 $ldap->bind(
-    dn => "cn=root,$base",
+    dn => "cn=Manager,$base",
     password => $pw
 );
 
-my $phone = $l->prop('defaultTelephoneNumber') || '';
+my $phone = $l->prop('defaultPhoneNumber') || '';
 my $company = $l->prop('defaultCompany') || '';
-my $dept = $l->prop('defaultDepartment') || '';
-my $city = $l->prop('defaultCity') || '';
 my $street = $l->prop('defaultStreet') || '';
-foreach my $acct (@accounts)
-{
-    my $key = $acct->key;
-    my $type = $acct->prop('type');
-    next unless ($type eq 'user' || $key eq 'admin' || $type eq 'group');
-    my @attrs = ();
-    my $dn = $base;
-    if (($type eq 'user') || ($key eq 'admin'))
-    {
-	$dn = "uid=$key,ou=Users,$base";
-	my $name = $acct->prop('FirstName') . " " . $acct->prop('LastName');
-	utf8::upgrade($name);
-	my $first = $acct->prop('FirstName') || '';
-	utf8::upgrade($first);
-	my $last = $acct->prop('LastName') || '';
-	utf8::upgrade($last);
-	my $email = $acct->prop('EmailAlias') || "$key\@$domain";
-	my $phone = $acct->prop('Phone') || '';
-	my $company = $acct->prop('Company') || '';
-	utf8::upgrade($company);
-	my $dept = $acct->prop('Dept') || '';
-	utf8::upgrade($dept);
-	my $city = $acct->prop('City') || '';
-	utf8::upgrade($city);
-	my $street = $acct->prop('Street') || '';
-	utf8::upgrade($street);
-	my $password = $passwd{$key} || '';
-	utf8::upgrade($password);
-	my $uid = $uid{$key} || '';
-	my $gid = $gid{$key} || '';
-	my $home = $home{$key} || '';
-	my $shell = $shell{$key} || '';
+#my $dept = $l->prop('defaultDepartment') || '';
+#my $city = $l->prop('defaultCity') || '';
 
-	push @attrs, (objectClass => ['inetOrgPerson', 'posixAccount']);
-	push @attrs, (uid => $key);
-
-	push @attrs, (cn => $name) unless ($name =~ /^\s*$/);
-	push @attrs, (givenName => $first) unless $first =~ /^\s*$/;
-	push @attrs, (sn => $last) unless $last =~ /^\s*$/;
-	push @attrs, (mail => $email);
-	push @attrs, (telephoneNumber => $phone) unless $phone =~ /^\s*$/;
-	push @attrs, (o => $company) unless $company =~ /^\s*$/;
-	push @attrs, (ou => $dept) unless $dept =~ /^\s*$/;
-	push @attrs, (l => $city) unless $city =~ /^\s*$/;
-	push @attrs, (street => $street) unless $street =~ /^\s*$/;
-	push @attrs, (userPassword => $password) unless $password =~ /^\s*$/;
-	push @attrs, (uidNumber => $uid) unless $uid =~ /^\s*$/;
-	push @attrs, (gidNumber => $gid) unless $gid =~ /^\s*$/;
-	push @attrs, (homeDirectory => $home) unless $home =~ /^\s*$/;
-	push @attrs, (loginShell => $shell) unless $shell =~ /^\s*$/;
-    }
-    elsif ($type eq 'group')
-    {
-	$dn = "cn=$key,ou=Groups,$base";
-	my $key = $acct->key;
-	my $desc = $acct->prop('Description') || '';
-	utf8::upgrade($desc);
-	my @members = split(/,/,($acct->prop('Members') || ''));
-	my $gid = $acct->prop('Gid');
-
-	push @attrs, (objectClass => ['posixGroup','mailboxRelatedObject']);
-	push @attrs, (cn => $key);
-	push @attrs, (mail => "$key\@$domain");
-	push @attrs, (gidNumber => $gid);
-	push @attrs, (description => $desc) unless $desc =~ /^\s*$/;
-	push @attrs, (memberUid => \@members) 
-	    unless ((scalar @members == 0) && ($event eq 'group-create'));
-    }
-    if (($event eq 'user-create') || ($event eq 'group-create'))
-    {
-	my $result = $ldap->add ($dn, attr => \@attrs);
-
-	$result->code &&
-	    warn "failed to add entry for $dn: ", $result->error ;
-    }
-    else
-    {
-	my %attrs = @attrs;
-	my $result = $ldap->modify ($dn, replace => \%attrs);
-
-	$result->code &&
-	    warn "failed to modify entry for $dn: ", $result->error ;
-    }
-}
+my @attrs;
+push @attrs, (o => $company);
+push @attrs, (street => $street);
+push @attrs, (telephoneNumber => $phone);
+my %attrs = @attrs;
+my $result = $ldap->modify ($base, replace => \%attrs);
+	
+$result->code &&
+    warn "failed to modify entry for $base: ", $result->error ;
 $ldap->unbind;
 
 exit (0);
