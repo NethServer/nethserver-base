@@ -430,14 +430,6 @@ event_link("count-active-user-accounts", $event, "25");
 event_link("delete-tmp", $event, "90");
 
 #--------------------------------------------------
-# actions for timeserver-update event
-#--------------------------------------------------
-
-$event = "timeserver-update";
-
-safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/crond");
-
-#--------------------------------------------------
 # actions for ip-up event
 #--------------------------------------------------
 
