@@ -1,0 +1,56 @@
+#!/usr/bin/perl -w
+
+#----------------------------------------------------------------------
+# copyright (C) 2001-2006 Mitel Networks Corporation
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 		
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 		
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#----------------------------------------------------------------------
+
+package esmith;
+
+use strict;
+use Errno;
+use esmith::AccountsDB;
+use esmith::ConfigDB;
+use IO::File;
+use English;
+
+my $a = esmith::AccountsDB->open or die "Could not open accounts db";
+my $conf = esmith::ConfigDB->open or die "Could not open configuration db";
+
+my $event = $ARGV [0];
+
+defined $ARGV[1] || die "No user specied";
+my $user = $ARGV[1];
+
+lock_user($user);
+
+exit 0;
+
+sub lock_user
+{
+    my ($userName) = @_;
+    #------------------------------------------------------------
+    # Lock the user account in all authentication databases
+    #------------------------------------------------------------
+
+    my $u = $a->get($userName) or die "No account record for user $userName";
+
+    system("/usr/sbin/lusermod", "-L", $userName) == 0
+        or die "Error running /usr/sbin/lusermod command to lock account $userName";
+    system("/usr/bin/smbpasswd", "-d", $userName) == 0
+        or die "Error running /usr/bin/smbpasswd command to lock account $userName";
+    $u->set_prop('Locked', 'yes');
+}
