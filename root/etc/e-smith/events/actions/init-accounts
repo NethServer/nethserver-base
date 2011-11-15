@@ -75,8 +75,9 @@ else
     @groupList = grep (!/^admin$/, @groupList);
     @groupList = grep (!/^root$/, @groupList);
     @groupList = grep (!/^shared$/, @groupList);
+    @groupList = grep (!/^apache$/, @groupList);
 
-    push @groupList, 'root', 'shared';
+    push @groupList, 'root', 'shared', 'apache';
 
     #--------------------------------------------------
     # Run usermod command to update group list for admin.
@@ -104,6 +105,19 @@ if ($? != 0)
 {
     `/usr/sbin/luseradd  -c 'e-smith guest' -d /home/e-smith -g shared -M -s /bin/false public`;
 }
+
+#--------------------------------------------------
+# Add apache suer to admin and shared groups
+#--------------------------------------------------
+
+`/usr/sbin/lid apache 2>/dev/null`;
+if ($? == 0)
+{
+    `/usr/sbin/lgroupmod  -M apache shared`;
+    `/usr/sbin/lgroupmod  -M apache admin`;
+}
+
+
 
 # delete unwanted user accounts
 foreach my $user (qw(halt shutdown sync))
