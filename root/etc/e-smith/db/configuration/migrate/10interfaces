@@ -1,0 +1,139 @@
+{
+#----------------------------------------------------------------------
+# copyright (C) 1999-2005 Mitel Networks Corporation
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#
+#----------------------------------------------------------------------
+# Migrate old config db singletons into "interface" specifications:
+#
+# DHCPClient=dhi    ExternalInterface=...|Configuration|DHCPHostname
+# DHCPClient=(d|dh| ExternalInterface=...|Configuration|DHCPEthernetAddress
+#
+# EthernetDriver1=eepro100   LocalInterface=...|Name|eth0|Driver|eepro100
+# EthernetDriver2=ne2k-pci   ExternalInterface=...|Name|eth1|Driver|ne2k-pci
+# EthernetDriver2=unknown    ExternalInterface=...|Name|eth0.4094|Driver|unknown
+# ExternalDHCP=off           ExternalInterface=...|Configuration|static
+# ExternalNetmask=255.255.255.0   ExternalInterface=...|Netmask|255.255.255.0
+# GatewayIP=192.168.116.1         ExternalInterface=...|Gateway|192.168.116.1
+# LocalIP=192.168.116.2           LocalInterface=...|IPAddress|192.168.116.2
+# LocalNetmask=255.255.255.0      LocalInterface=...|Netmask|255.255.255.0
+
+    use esmith::util;
+
+    # No need to run this unless we have valid settings
+    return unless $DB->get_value("LocalIP");
+
+    my $internal = $DB->get("InternalInterface") ||
+                   $DB->new_record("InternalInterface", {type => "interface"});
+
+    my $ethernet_assign = $DB->get_value('EthernetAssign') || "normal";
+    my $diald = $DB->get("diald");
+    $diald->delete if $diald;
+
+    my $dhcpcd = $DB->get("dhcpcd");
+    $dhcpcd->delete if $dhcpcd;
+
+    my $wan = $DB->get("wan") || $DB->new_record("wan", {type => 'service'});
+
+    my $mode = $DB->get_value("SystemMode") || "servergateway";
+    my $bonding = $internal->prop('NICBonding') || "disabled";
+
+    my %int_props =
+    (
+        type => "interface",
+        Name => ($mode eq "serveronly") ? 
+		    ($bonding eq "enabled") ? "bond0" : "eth0" :
+			($ethernet_assign eq 'swapped') ? "eth1" : "eth0",
+        Configuration => 'static',
+        Driver => $DB->get_value("EthernetDriver1"),
+        IPAddress => $DB->get_value("LocalIP"),
+        Netmask => $DB->get_value("LocalNetmask")
+    );
+
+    my $vlan = $sysconfig{VlanWAN} || 4094;
+    my $second_interface = $ethernet_assign eq 'swapped' ? 'eth0'
+			    : $DB->get_value("EthernetDriver2") eq "unknown" ?
+				"eth0.$vlan" : "eth1";
+
+    ($int_props{Network}, $int_props{Broadcast}) =
+        esmith::util::computeNetworkAndBroadcast($int_props{IPAddress},
+                                                 $int_props{Netmask} );
+
+    $internal->merge_props(%int_props);
+
+    my $external = $DB->get("ExternalInterface") ||
+        $DB->new_record("ExternalInterface", {type => 'interface'});
+
+    if ( $mode eq "serveronly" )
+    {
+        $external->merge_props(Configuration => 'disabled', Name => 'none');
+        $wan->merge_props(status => 'disabled');
+        return;
+    }
+    $wan->merge_props(status => 'enabled');
+
+    my $pppoe_status = $DB->get_prop('pppoe', 'status') || "disabled";
+    my $access_type = $DB->get_value('AccessType') || "unknown";
+
+    # Get the existing props
+    my %ext_props = $external->props;
+
+    # Delete ones which may no longer apply
+    delete $ext_props{Driver};
+    delete $ext_props{Configuration};
+
+    # Set values which always apply
+    $ext_props{type} = "interface";
+    $ext_props{IPAddress} = $DB->get_value("ExternalIP");
+    $ext_props{Netmask} = $DB->get_value("ExternalNetmask");
+    $ext_props{Gateway} = $DB->get_value("GatewayIP");
+
+    if (defined $ext_props{IPAddress} && defined $ext_props{Gateway})
+    {
+        ($ext_props{Network}, $ext_props{Broadcast}) =
+            esmith::util::computeNetworkAndBroadcast($ext_props{IPAddress},
+                                                $ext_props{Netmask} );
+    }
+
+    $ext_props{Name} = $second_interface;
+    $ext_props{Driver} = $DB->get_value("EthernetDriver2");
+    
+
+    my $external_dhcp = $DB->get_value("ExternalDHCP") || "off";
+
+
+    if ($external_dhcp eq "on")
+    {
+        my $dhcp_config = $DB->get_value("DHCPClient") || "d";
+
+        if ($dhcp_config eq "dhi")
+        {
+            # XXX FIXME - I think this should be "dhcpcd", which
+            # should be a new "service" type and the Hostname/MAC
+            # choice should be a property of that service
+            $ext_props{Configuration} = "DHCPHostname";
+        }
+        else
+        {
+            $ext_props{Configuration} = "DHCPEthernetAddress";
+         }
+    }
+
+    $ext_props{Configuration} ||= "static" ;
+
+    # And write back the changes to the config db
+    $external->merge_props(%ext_props);
+}

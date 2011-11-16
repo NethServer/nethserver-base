@@ -1,0 +1,14 @@
+{
+# Add configuration database entry for TimeZone if there is not one already
+    return if defined $DB->get('TimeZone');
+    if (-l "/etc/localtime")
+    {
+	# get timezone information from the system /etc/localtime
+	my $localtime = readlink "/etc/localtime" || "US/Eastern";
+	# Make a relative link into an absolute one
+	$localtime =~ s:^\.\.::;
+	# Extract timezone from absolute path
+	$localtime =~ s:^/usr/share/zoneinfo/::;
+	$DB->new_record('TimeZone', {type => $localtime});
+    }
+}

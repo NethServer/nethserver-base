@@ -1,0 +1,13 @@
+{
+    # Unswap ethernet assignment unless drivers are the same
+    return unless defined $EthernetAssign
+	&& $EthernetAssign eq 'swapped';
+    $driver1 = $EthernetDriver1 || return;
+    $driver2 = $EthernetDriver2 || return;
+    unless ($driver1 eq $driver2)
+    {
+	$DB->get('EthernetDriver1')->merge_props(type => $driver2);
+	$DB->get('EthernetDriver2')->merge_props(type => $driver1);
+	$DB->get('EthernetAssign')->merge_props(type => 'normal');
+    }
+}

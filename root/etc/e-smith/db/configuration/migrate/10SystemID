@@ -1,0 +1,7 @@
+{
+    use Data::UUID; 
+   
+    my $sysconfig = $DB->get('sysconfig') || $DB->new_record('sysconfig', { type => 'configuration'});
+
+    $sysconfig->prop('SystemID') || $sysconfig->set_prop("SystemID", new Data::UUID->create_str);
+}
