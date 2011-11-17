@@ -498,6 +498,17 @@ $event = "ldap-update";
 event_link("ldap-update", $event, "50");
 
 
+#--------------------------------------------------
+# actions for package-index-update event
+#--------------------------------------------------
+
+$event = "package-index-update";
+
+event_link("initialize-default-databases", $event, "20");
+templates2events("/etc/httpd/conf/httpd.conf", $event);
+templates2events("/home/e-smith/files/ibays/Primary/html/package.html", $event);
+safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/httpd");
+
 
 #--------------------------------------------------
 # actions for nethserver-base-update event
@@ -507,9 +518,6 @@ $event = "nethserver-base-update";
 event_link("ldap-update-config",  $event, "10");
 event_link("initialize-users-chage", $event, "20");
 safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/ldap");
-
-
-
 
 
 
