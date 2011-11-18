@@ -62,7 +62,7 @@ unless ($uid = $acct->prop('Uid'))
 my $gid = $acct->prop('Gid') || $uid;
 my $first = $acct->prop('FirstName') || '';
 my $last = $acct->prop('LastName') || '';
-my $shell = $acct->prop('Shell') || '/usr/bin/rssh';
+my $shell = $acct->prop('Shell') || '/usr/libexec/openssh/sftp-server';
 
 # Create the user's unique group first
 
