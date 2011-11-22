@@ -1,0 +1,35 @@
+#!/usr/bin/perl -w
+package esmith;
+
+use esmith::AccountsDB;
+
+
+=head2 validate_acctName_conflict
+
+Returns 'OK' if the account name doesn't yet exist.  Returns a localised error
+otherwise.
+
+=cut
+
+my $acctName = shift;
+exit 1 unless ($acctName ne "");
+
+my $accountdb = esmith::AccountsDB->open_ro() or exit 1;
+
+my $account = $accountdb->get($acctName);
+my $type;
+
+if (defined $account)
+{
+    $type = $account->prop('type');
+}
+elsif (defined getpwnam($acctName) || defined getgrnam($acctName))
+{
+    $type = "system";
+}
+else
+{
+    exit 0;
+}
+print "An account $acctName already exists: is a '$type' account\n";
+exit 1;

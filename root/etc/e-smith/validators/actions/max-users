@@ -1,0 +1,34 @@
+#!/usr/bin/perl -w
+package esmith;
+
+use esmith::ConfigDB;
+use esmith::AccountsDB;
+
+my $db = esmith::ConfigDB->open_ro() or exit 1;
+my $accountdb = esmith::AccountsDB->open_ro() or exit 1;
+
+
+=head2 checkMaxUsers()
+
+Returns an error message if the current number of users is greater than or
+equal to the sysconfig|MaxUsers property.
+
+Takes the name of the next page to go to if the test succeeds as an argument.
+
+=cut
+
+# Get value of MaxUsers if it exists.
+my $sysconfig = $db->get('sysconfig');
+my $maxUsers = (($sysconfig) ? $sysconfig->prop('MaxUsers') : '') || '';
+my $activeUsers = scalar $accountdb->activeUsers() || 0;
+if ((defined $activeUsers and $maxUsers ne '')
+    and ($activeUsers >= $maxUsers))
+{
+    print "Can't create more than $maxUsers accounts.\n";
+    exit 1;
+}
+else
+{
+    exit 0;
+}
+

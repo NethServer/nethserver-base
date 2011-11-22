@@ -1,0 +1,28 @@
+#!/usr/bin/perl -w
+package esmith;
+
+use esmith::ConfigDB;
+
+=head2 validate_account_length ACCOUNTNAME
+
+returns 'OK' if the account name is shorter than the maximum account name length
+returns 'ACCOUNT_TOO_LONG' otherwise
+
+=cut
+
+my $groupName = shift;
+exit 1 unless ($groupName ne "");
+
+my $db = esmith::ConfigDB->open_ro() or exit 1;
+    
+
+my $maxGroupNameLength = ($db->get('maxGroupNameLength')
+   ? $db->get('maxGroupNameLength')->prop('type')
+   : "") || 32;
+
+if ( length $groupName > $maxGroupNameLength ) {
+    print "'$groupName' is too long. Max length is: $maxGroupNameLength\n"; 
+    exit 1 
+} else {
+    exit 0;
+}

@@ -527,6 +527,21 @@ event_link("initialize-users-chage", $event, "20");
 safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/ldap");
 
 
+#--------------------------------------------------
+# actions for user-name validator
+#--------------------------------------------------
+my $validator = 'user-name';
+validator_link("uniq-account", $validator, 20);
+validator_link("user-length", $validator, 30);
+validator_link("max-users", $validator, 90);
+
+
+#--------------------------------------------------
+# actions for group-name validator
+#--------------------------------------------------
+$validator = 'group-name';
+validator_link("uniq-account", $validator, 20);
+validator_link("group-length", $validator, 30);
 
 
 
