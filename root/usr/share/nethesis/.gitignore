@@ -1,9 +1,0 @@
-Documentation/Metrics/
-Documentation/CodeCoverage/
-Documentation/Api/
-Documentation/*/*.html
-www-NethServer/Documentation
-Nethgui/Cache/*.js
-Nethgui/Cache/*.css
-nbproject/
-*~
