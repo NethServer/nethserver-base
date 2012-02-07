@@ -1,0 +1,57 @@
+[
+    {
+        "Id": 1327570198,
+        "Final": true,
+        "Effect": "ALLOW",
+        "Subject": "admin",
+        "Action": "*",
+        "Resource": "*",
+
+        "Description":
+            "Admin user has no restriction"
+    }
+    ,
+    {
+        "Id": 1327570200,
+        "Effect": "ALLOW",
+        "Subject": ".groups HAS administrators",
+        "Action": "READ OR WRITE",
+        "Resource": "Nethgui\\System\\ConfigurationDatabase:*",
+
+        "Description":
+            "Administrators are allowed to read and modify any database"
+    }
+    ,
+    {
+        "Id": 1328027438,
+        "Effect": "ALLOW",
+        "Subject": ".groups HAS administrators",
+        "Action": "QUERY OR MUTATE OR INSTANTIATE",
+        "Resource": "NethServer\\Module\\*",
+
+        "Description":
+            "Administrators are allowed to read and modify any database"
+    }
+    ,
+    {
+        "Id": 1328028218,
+        "Effect": "ALLOW",
+        "Subject": ".groups HAS managers",
+        "Action": ["QUERY OR MUTATE OR INSTANTIATE", "WRITE"],
+        "Resource": [".category IS Management", "Nethgui\\System\\ConfigurationDatabase:accounts"],
+
+        "Description":
+            "Managers can access modules in Management category and write accounts database"
+    }
+    ,
+    {
+        "Id": 1328028503,
+        "Effect": "ALLOW",
+        "Subject": ".authenticated",
+        "Action": "READ OR INSTANTIATE",
+        "Resource": "Nethgui\\System\\ConfigurationDatabase:* OR NethServer\\Module\\*",
+
+        "Description":
+            "Authenticated users can read any database and instantiate any module"
+    }
+]
