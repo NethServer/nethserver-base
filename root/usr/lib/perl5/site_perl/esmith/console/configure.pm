@@ -406,7 +406,7 @@ SYSTEM_MODE:
     my @args = (
                 #"1.", gettext("Server and gateway"),
                 #"2.", gettext("Private server and gateway"),
-                "1.", gettext("Server-only"),
+                "3.", gettext("Server-only"),
                );
 
     ($rc, $choice) = $console->menu_page
