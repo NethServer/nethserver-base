@@ -73,13 +73,6 @@ system(
 	$userName
     ) == 0 or die "Failed to create group $userName.\n";
 
-# Add samba group
-my $ntgroup = $first.' '.$last;
-$ntgroup = $userName unless ($ntgroup ne ' ');
-system("/usr/bin/net", "groupmap", "add", "rid=$uid", "unixgroup=$userName", "ntgroup=$ntgroup", "type=domain") == 0
-   or warn("Can't create samba group");
-
-
 # Now create the user account
 
 system(
@@ -108,8 +101,5 @@ system("/usr/sbin/lgroupmod","-M","$userName","shared")
 
 system("/usr/sbin/lusermod", "-L", "$userName")
     and warn("Could not lock password for $userName\n");
-
-system("/usr/bin/smbpasswd", "-a", "-d", "$userName")
-    and warn("Could not lock smb password for $userName\n");;
 
 exit (0);
