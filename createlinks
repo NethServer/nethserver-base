@@ -205,6 +205,10 @@ templates2events("/etc/openldap/slapd.pem", qw(
     nethserver-base-update
 	));
 
+templates2events("/etc/selinux/config", qw(
+    post-install
+    post-upgrade
+));
 
 #
 # Set up generic logfile timestamp renaming/symlinking
