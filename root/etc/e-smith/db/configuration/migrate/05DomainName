@@ -1,0 +1,14 @@
+{
+	#
+	# Ensure the database DomainName corresponds 
+	# to the actual system domain name to provide
+	# a consistent default.
+	#
+
+	my $sysDomainName = `hostname -d` || "mycompany.local";
+	my $dbDomainName = $DB->get_value("DomainName") || "";
+
+	if( $sysDomainName ne $dbDomainName ) {
+	    $DB->set_value("DomainName", $sysDomainName);
+	}
+}
