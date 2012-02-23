@@ -1,0 +1,12 @@
+{
+	my $ldap = $DB->get('ldap') or return;
+
+	# migration starts:
+	my $slapd = $DB->get('slapd') || $DB->new_record('slapd', { type => "service" });
+	
+	# merge existing properties:
+	$slapd->merge_props($ldap->props);
+
+	# dispose old service record:
+	$ldap->delete;
+}
