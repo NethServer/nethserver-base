@@ -324,6 +324,7 @@ event_link("conf-routes", $event, "89");
 
 $event = "post-install";
 
+event_link("selinux-adjust", $event, "01");
 event_link("rotate_timestamped_logfiles", $event, "05");
 #event_link("ldap-update-config",  $event, "06");
 #event_link("ldap-rename",  $event, "07");
@@ -340,6 +341,7 @@ event_link("conf-modules", $event, "30");
 
 $event = "post-upgrade";
 
+event_link("selinux-adjust", $event, "01");
 event_link("rotate_timestamped_logfiles", $event, "05");
 event_link("ldap-update-config",  $event, "06");
 event_link("ldap-rename",  $event, "07");
