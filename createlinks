@@ -332,7 +332,7 @@ event_link("init-accounts", $event, "08");
 event_link("init-passwords", $event, "10");
 event_link("conf-startup", $event, "10");
 event_link("conf-modules", $event, "30");
-safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/sldapd");
+safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/slapd");
 
 
 #--------------------------------------------------
@@ -354,7 +354,7 @@ event_link("initialize-users-chage",  $event, "20");
 event_link("count-active-user-accounts", $event, "25");
 event_link("conf-modules", $event, "30");
 event_link("copy-anaconda-logs", $event, "90");
-safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/sldapd");
+safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/slapd");
 
 #--------------------------------------------------
 # actions for reboot event
@@ -525,7 +525,7 @@ $event = "nethserver-base-update";
 
 event_link("ldap-update-config",  $event, "10");
 event_link("initialize-users-chage", $event, "20");
-safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/sldapd");
+safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/slapd");
 
 
 #--------------------------------------------------
