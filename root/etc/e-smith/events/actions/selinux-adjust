@@ -1,6 +1,7 @@
 #!/bin/bash
 
-if [ `getenforce` == 'Enforcing' ]; then
+. /etc/sysconfig/selinux
+
+if [ `getenforce` == 'Enforcing' ] && [ "${SELINUX}" == "permissive" ]; then
         setenforce 0
-        sed -i '/SELINUX/ s/=.*/=permissive/' /etc/selinux/config
 fi

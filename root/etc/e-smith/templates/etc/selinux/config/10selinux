@@ -1,0 +1,7 @@
+# 20120223
+
+# enforcing, permissive, disabled
+SELINUX=permissive
+
+# targeted, mls
+SELINUXTYPE=targeted
