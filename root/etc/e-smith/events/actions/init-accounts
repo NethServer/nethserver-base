@@ -31,21 +31,19 @@ my $groups;
 my @groupList;
 
 # create group "shared" if not already present
-system(qw(/usr/sbin/lgroupadd -r shared)) unless getgrnam("shared");
+system(qw(/usr/sbin/groupadd -r shared)) unless getgrnam("shared");
 
 # Create other required groups and users
-system(qw(/usr/sbin/lgroupadd -g 21 -r slocate))
+system(qw(/usr/sbin/groupadd -g 21 -r slocate))
     unless getgrnam("slocate");
-system(qw(/usr/sbin/luseradd -u 38 -s /sbin/nologin -d /etc/ntp ntp))
+system(qw(/usr/sbin/useradd -u 38 -s /sbin/nologin -d /etc/ntp ntp))
     unless (getpwnam("ntp"));
 
 
 # create user "admin" if not already present;
 if ( !getpwnam("admin") )
 {
-    `/usr/sbin/luseradd -c 'e-smith administrator' -d /home/e-smith -M -s /sbin/e-smith/console admin`;
-    `/usr/sbin/lgroupmod -M admin shared`;
-    `/usr/sbin/lgroupmod -M admin root`;
+    `/usr/sbin/useradd -c 'NethServer administrator' -d /home/e-smith -G root,shared -M -s /sbin/e-smith/console admin`;
 }
 else
 {
@@ -56,13 +54,12 @@ else
     # admin.
     #--------------------------------------------------
     
-    my $cmd = "/usr/sbin/lid -n admin";
+    my $cmd = "/usr/bin/id -G -n admin";
     $groups = `$cmd 2>/dev/null`; 
     if ($? != 0)
     {
 	die "Failed to get supplementary group list for admin.\n";
     }
-    $groups =~ s/^\s+//; #left trim
     chomp ($groups);
 
     @groupList = split (/\s+/, $groups);
@@ -75,54 +72,27 @@ else
     @groupList = grep (!/^admin$/, @groupList);
     @groupList = grep (!/^root$/, @groupList);
     @groupList = grep (!/^shared$/, @groupList);
-    @groupList = grep (!/^apache$/, @groupList);
 
-    push @groupList, 'root', 'shared', 'apache';
+    push @groupList, 'root', 'shared';
 
     #--------------------------------------------------
     # Run usermod command to update group list for admin.
     #--------------------------------------------------
 
-    $cmd = "/usr/sbin/lusermod -c 'e-smith administrator' -d /home/e-smith -s /sbin/e-smith/console admin";
+    $groups = join (',', sort (@groupList));
+    $cmd = "/usr/sbin/usermod -c 'NethServer administrator' -d /home/e-smith -G '$groups' -s /sbin/e-smith/console admin";
     `$cmd`;
     if ($? != 0)
     {
 	die "Failed to change shell and modify supplementary group list for admin.\n";
     }
-    foreach $group (@groupList)
-    {
-	system("/usr/sbin/lgroupmod -M admin $group") == 0
-           or die "Failed adding admin user to group $group\n";
-    }
 }
-
-#--------------------------------------------------
-# create user "public" if not already present
-#--------------------------------------------------
-
-`/usr/sbin/lid public 2>/dev/null`;
-if ($? != 0)
-{
-    `/usr/sbin/luseradd  -c 'e-smith guest' -d /home/e-smith -g shared -M -s /bin/false public`;
-}
-
-#--------------------------------------------------
-# Add apache suer to admin and shared groups
-#--------------------------------------------------
-
-`/usr/sbin/lid apache 2>/dev/null`;
-if ($? == 0)
-{
-    `/usr/sbin/lgroupmod  -M apache shared`;
-    `/usr/sbin/lgroupmod  -M apache admin`;
-}
-
 
 
 # delete unwanted user accounts
 foreach my $user (qw(halt shutdown sync))
 {
-    `/usr/sbin/luserdel $user` if getpwnam($user);
+    `/usr/sbin/userdel $user` if getpwnam($user);
 }
 
 
