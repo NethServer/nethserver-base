@@ -5,8 +5,8 @@
 	# a consistent default.
 	#
 
+	my $dbDomainName = $DB->get_value("DomainName") || return;
 	my $sysDomainName = `hostname -d` || "mycompany.local";
-	my $dbDomainName = $DB->get_value("DomainName") || "";
 
 	chomp($sysDomainName);
 	chomp($dbDomainName);

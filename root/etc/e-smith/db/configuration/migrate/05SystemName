@@ -5,8 +5,8 @@
 	# a consistent default.
 	#
 
+	my $dbSystemName = $DB->get_value("SystemName") || return;
 	my $sysSystemName = `hostname -s` || "myhost";
-	my $dbSystemName = $DB->get_value("SystemName") || "";
 
 	chomp($sysSystemName);
 	chomp($dbSystemName);
