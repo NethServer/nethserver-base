@@ -427,4 +427,21 @@ templates2events("/etc/libuser.conf", qw(
      nethserver-base-update
 ));
 
+#--------------------------------------------------
+# PAM NethServer configuration
+#--------------------------------------------------
+{
+    my @events = qw(
+      post-install
+      console-save
+      bootstrap-console-save
+      post-upgrade
+      nethserver-base-update
+    );
+
+    templates2events("/etc/pam.d/system-auth-nh", @events);
+    event_link("pam-configure", $_, "50") foreach(@events);
+}
+
+
 exit 0;

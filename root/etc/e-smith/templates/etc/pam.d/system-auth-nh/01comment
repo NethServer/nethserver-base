@@ -1,0 +1,9 @@
+#
+# NethServer System Auth*ation settings
+#
+# Copyright (C) 2012 Nethesis srl
+#
+# authconfig generated files are included as substacks
+# see man (5) pam.conf, man (8) authconfig
+#
+
