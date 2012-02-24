@@ -4,8 +4,8 @@ default_useradd = /etc/default/useradd
 
 [defaults]
 crypt_style = sha512
-modules = {$LibUserModules}
-create_modules = {$LibUserCreateModules}
+modules = {$libuser{Modules}}
+create_modules = {$libuser{CreateModules}}
 
 [userdefaults]
 LU_USERNAME = %n
