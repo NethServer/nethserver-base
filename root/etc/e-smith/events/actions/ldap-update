@@ -36,7 +36,7 @@ use Net::LDAP;
 my $c = esmith::ConfigDB->open_ro;
 my $a = esmith::AccountsDB->open_ro;
 
-my $l = $c->get('ldap');
+my $l = $c->get('slapd');
 
 my $domain = $c->get('DomainName')
     || die("Couldn't determine domain name");
