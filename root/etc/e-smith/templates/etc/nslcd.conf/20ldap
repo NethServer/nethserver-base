@@ -1,6 +1,0 @@
-uri ldap://localhost/
-base   { esmith::util::ldapBase ($DomainName); }
-binddn cn=Manager,{ esmith::util::ldapBase ($DomainName); }
-bindpw { esmith::util::LdapPassword (); }
-
-

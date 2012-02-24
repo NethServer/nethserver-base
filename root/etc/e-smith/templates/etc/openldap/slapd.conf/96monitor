@@ -1,5 +1,0 @@
-database monitor
-access to *
-        by dn.exact="cn=root,{ esmith::util::ldapBase ($DomainName); }" read
-        by * none
-

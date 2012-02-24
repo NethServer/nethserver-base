@@ -1,3 +1,0 @@
-{
-    "# LDAP servers\n" . $DB->hosts_allow_spec('ldap', 'slapd')
-}

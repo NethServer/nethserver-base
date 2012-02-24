@@ -1,1 +1,0 @@
-rootdn		"cn=Manager,{ esmith::util::ldapBase ($DomainName); }"

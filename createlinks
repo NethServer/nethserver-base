@@ -138,106 +138,19 @@ templates2events("/etc/hosts.allow", qw(
 
 templates2events("/etc/fstab", qw(post-install post-upgrade));
 
-
-# ldap-conf, libuser and pam
-
-templates2events("/etc/sysconfig/ldap", qw(
-	console-save
-	bootstrap-console-save
-    post-upgrade
-    nethserver-base-update
-	));
-
-templates2events("/etc/openldap/ldap.conf", qw(
-	console-save
-	bootstrap-console-save
-    post-upgrade
-    nethserver-base-update
-	));
-
-templates2events("/etc/openldap/slapd.conf", qw(
-	console-save
-	bootstrap-console-save
-    post-upgrade
-    nethserver-base-update
-	));
-
-templates2events("/etc/libuser.conf", qw(
-	console-save
-	bootstrap-console-save
-    post-upgrade
-    nethserver-base-update
-	));
-
-templates2events("/etc/nslcd.conf", qw(
-	console-save
-	bootstrap-console-save
-    post-upgrade
-    nethserver-base-update
-	));
-
-templates2events("/etc/pam_ldap.conf", qw(
-        console-save
-        bootstrap-console-save
-    post-upgrade
-    nethserver-base-update
-        ));
-
-
-templates2events("/etc/pam_ldap.secret", qw(
-	console-save
-	bootstrap-console-save
-    post-upgrade
-    nethserver-base-update
-	));
-
-templates2events("/etc/openldap/ldap.conf", qw(
-	console-save
-	bootstrap-console-save
-    post-upgrade
-    nethserver-base-update
-	));
-
-templates2events("/etc/openldap/slapd.pem", qw(
-	console-save
-	bootstrap-console-save
-    post-upgrade
-    nethserver-base-update
-	));
-
+# SELINUX settings:
 templates2events("/etc/selinux/config", qw(
     post-install
     post-upgrade
 ));
-
-#
-# Set up generic logfile timestamp renaming/symlinking
-#
-#foreach (qw(
-#    /var/log/messages
-#    /var/log/boot.log
-#    /var/log/secure
-#    /var/log/cron
-#    /var/log/spooler
-#    /var/log/maillog
-#    ))
-#{
-#    safe_touch "root/etc/e-smith/events/logrotate/logfiles2timestamp/$_";
-#    safe_touch "root/etc/e-smith/events/post-install/logfiles2timestamp/$_";
-#    safe_touch "root/etc/e-smith/events/post-upgrade/logfiles2timestamp/$_";
-#}
-
 
 #--------------------------------------------------
 # actions for console-save event
 #--------------------------------------------------
 my $event = "console-save";
 
-
 templates2events("/home/e-smith/ssl.pem/pem", $event);
 event_link("set-hostname", $event, "10");
-event_link("ldap-update-config",  $event, "11");
-event_link("ldap-rename",  $event, "12");
 event_link("conf-modules", $event, "30");
 event_link("conf-startup", $event, "60");
 event_link("reset-unsavedflag", $event, "95");
@@ -248,11 +161,8 @@ event_link("init-reload", $event, "90");
 #--------------------------------------------------
 $event = "bootstrap-console-save";
 
-
 templates2events("/home/e-smith/ssl.pem/pem", $event);
 event_link("set-hostname", $event, "10");
-event_link("ldap-update-config",  $event, "11");
-event_link("ldap-rename",  $event, "12");
 event_link("initialize-users-chage", $event, "20");
 event_link("conf-modules", $event, "30");
 event_link("conf-startup", $event, "60");
@@ -326,13 +236,9 @@ $event = "post-install";
 
 event_link("selinux-adjust", $event, "01");
 event_link("rotate_timestamped_logfiles", $event, "05");
-event_link("ldap-update-config",  $event, "06");
-event_link("ldap-rename",  $event, "07");
 event_link("init-accounts", $event, "08");
 event_link("conf-startup", $event, "10");
 event_link("conf-modules", $event, "30");
-safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/slapd");
-
 
 #--------------------------------------------------
 # actions for post-upgrade event
@@ -342,8 +248,6 @@ $event = "post-upgrade";
 
 event_link("selinux-adjust", $event, "01");
 event_link("rotate_timestamped_logfiles", $event, "05");
-event_link("ldap-update-config",  $event, "06");
-event_link("ldap-rename",  $event, "07");
 event_link("init-accounts", $event, "08");
 event_link("conf-startup", $event, "10");
 event_link("group-modify-unix", $event, "15");
@@ -377,7 +281,6 @@ $event = "remoteaccess-update";
 $event = "user-create";
 
 event_link("user-create-unix", $event, "04");
-event_link("ldap-update-user", $event, "10");
 event_link("user-chage-unix", $event, "20");
 event_link("count-active-user-accounts", $event, "25");
 event_link("user-group-modify", $event, "85");
@@ -401,14 +304,11 @@ event_link("count-active-user-accounts", $event, "25");
 $event = "user-modify";
 
 event_link("user-modify-unix", $event, "15");
-event_link("ldap-update-user", $event, "30");
 event_link("user-group-modify", $event, "85");
-
 
 $event = "user-modify-admin";
 
 event_link("user-modify-unix", $event, "15");
-event_link("ldap-update-user", $event, "30");
 
 #--------------------------------------------------
 # actions for user-lock event
@@ -473,32 +373,6 @@ safe_symlink("reload", "root/etc/e-smith/events/$event/services2adjust/rsyslog")
 $event = "local";
 
 #--------------------------------------------------
-# actions for pre-backup event
-#--------------------------------------------------
-
-$event = "pre-backup";
-
-event_link("ldap-dump", $event, "30");
-
-#--------------------------------------------------
-# actions for pre-restore event
-#--------------------------------------------------
-
-$event = "pre-restore";
-
-event_link("ldap-delete-dumps", $event, "25");
-
-
-#--------------------------------------------------
-# actions for ldap-update event
-#--------------------------------------------------
-
-$event = "ldap-update";
-
-event_link("ldap-update", $event, "50");
-
-
-#--------------------------------------------------
 # actions for package-index-update event
 #--------------------------------------------------
 
@@ -522,7 +396,6 @@ event_link("initialize-users-chage", "password-policy-update", "20");
 #--------------------------------------------------
 $event = "nethserver-base-update";
 
-event_link("ldap-update-config",  $event, "10");
 event_link("initialize-users-chage", $event, "20");
 safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/slapd");
 
