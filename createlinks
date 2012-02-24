@@ -417,5 +417,14 @@ validator_link("uniq-account", $validator, 20);
 validator_link("group-length", $validator, 30);
 
 
+#--------------------------------------------------
+# actions for libuser
+#--------------------------------------------------
+templates2events("/etc/libuser.conf", qw(
+     console-save
+     bootstrap-console-save
+     post-upgrade
+     nethserver-base-update
+));
 
 exit 0;
