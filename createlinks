@@ -257,7 +257,6 @@ event_link("initialize-users-chage",  $event, "20");
 event_link("count-active-user-accounts", $event, "25");
 event_link("conf-modules", $event, "30");
 event_link("copy-anaconda-logs", $event, "90");
-safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/slapd");
 
 #--------------------------------------------------
 # actions for reboot event
@@ -397,7 +396,6 @@ event_link("initialize-users-chage", "password-policy-update", "20");
 $event = "nethserver-base-update";
 
 event_link("initialize-users-chage", $event, "20");
-safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/slapd");
 
 
 #--------------------------------------------------
@@ -432,10 +430,8 @@ templates2events("/etc/libuser.conf", qw(
 #--------------------------------------------------
 {
     my @events = qw(
-      post-install
       console-save
       bootstrap-console-save
-      post-upgrade
       nethserver-base-update
     );
 
