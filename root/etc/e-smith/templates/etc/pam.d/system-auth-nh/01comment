@@ -4,6 +4,6 @@
 # Copyright (C) 2012 Nethesis srl
 #
 # authconfig generated files are included as substacks
-# see man (5) pam.conf, man (8) authconfig
+# see pam.conf(5), authconfig(8)
 #
 

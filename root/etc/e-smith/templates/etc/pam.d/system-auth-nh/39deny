@@ -1,0 +1,2 @@
+password    required      pam_deny.so
+
