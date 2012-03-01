@@ -1,0 +1,20 @@
+#
+# nsswitch.conf - see man 5 nsswitch.conf
+#
+
+passwd:     { $nsswitch{passwd} }
+shadow:     { $nsswitch{shadow} }
+group:      { $nsswitch{group} }
+hosts:      { $nsswitch{hosts} }
+bootparams: { $nsswitch{bootparams} }
+ethers:     { $nsswitch{ethers} }
+netmasks:   { $nsswitch{netmasks} }
+networks:   { $nsswitch{networks} }
+protocols:  { $nsswitch{protocols} }
+rpc:        { $nsswitch{rpc} }
+services:   { $nsswitch{services} }
+netgroup:   { $nsswitch{netgroup} }
+publickey:  { $nsswitch{publickey} }
+automount:  { $nsswitch{automount} }
+aliases:    { $nsswitch{aliases} }
+
