@@ -1,12 +1,10 @@
 {
 	#
-	# Ensure the database DomainName corresponds 
-	# to the actual system domain name to provide
-	# a consistent default.
+	# Initialize database DomainName with current system value
 	#
 
 	my $dbDomainName = $DB->get_value("DomainName") || return;
-	my $sysDomainName = `hostname -d` || "mycompany.local";
+	my $sysDomainName = `hostname -d` || "localdomain";
 
 	chomp($sysDomainName);
 	chomp($dbDomainName);

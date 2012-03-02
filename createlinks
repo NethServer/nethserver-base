@@ -142,6 +142,7 @@ templates2events("/etc/fstab", qw(post-install post-upgrade));
 templates2events("/etc/selinux/config", qw(
     post-install
     post-upgrade
+    bootstrap-console-save
 ));
 
 #--------------------------------------------------
@@ -162,6 +163,7 @@ event_link("init-reload", $event, "90");
 $event = "bootstrap-console-save";
 
 templates2events("/home/e-smith/ssl.pem/pem", $event);
+event_link("selinux-adjust", $event, "10");
 event_link("set-hostname", $event, "10");
 event_link("initialize-users-chage", $event, "20");
 event_link("conf-modules", $event, "30");
@@ -234,9 +236,9 @@ event_link("conf-routes", $event, "89");
 
 $event = "post-install";
 
-event_link("selinux-adjust", $event, "01");
 event_link("rotate_timestamped_logfiles", $event, "05");
 event_link("init-accounts", $event, "08");
+event_link("selinux-adjust", $event, "10");
 event_link("conf-startup", $event, "10");
 event_link("conf-modules", $event, "30");
 
@@ -246,10 +248,10 @@ event_link("conf-modules", $event, "30");
 
 $event = "post-upgrade";
 
-event_link("selinux-adjust", $event, "01");
 event_link("rotate_timestamped_logfiles", $event, "05");
 event_link("init-accounts", $event, "08");
 event_link("conf-startup", $event, "10");
+event_link("selinux-adjust", $event, "10");
 event_link("group-modify-unix", $event, "15");
 event_link("user-modify-unix", $event, "15");
 event_link("update-passwd", $event, "20");
@@ -414,27 +416,14 @@ $validator = 'group-name';
 validator_link("uniq-account", $validator, 20);
 validator_link("group-length", $validator, 30);
 
-
 #--------------------------------------------------
-# actions for libuser
-#--------------------------------------------------
-templates2events("/etc/libuser.conf", qw(
-     console-save
-     bootstrap-console-save
-     post-upgrade
-     nethserver-base-update
-));
-
-#--------------------------------------------------
-# PAM NethServer configuration
+# PAM and libuser configuration
 #--------------------------------------------------
 {
     my @events = qw(
-      console-save
       bootstrap-console-save
-      nethserver-base-update
     );
-
+    templates2events("/etc/libuser.conf", @events);
     templates2events("/etc/pam.d/system-auth-nh", @events);
     event_link("pam-configure", $_, "50") foreach(@events);
 }
