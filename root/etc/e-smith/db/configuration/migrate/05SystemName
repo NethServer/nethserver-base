@@ -1,15 +1,16 @@
 {
-	#
-	# Initialize the database SystemName with current system value
-	#
+    #
+    # Initialize the database SystemName with current system value
+    #
+    
+    my $initialized = $DB->get_value("SystemName");
 
-	my $dbSystemName = $DB->get_value("SystemName") || return;
-	my $sysSystemName = `hostname -s` || "localhost";
+    if($initialized) {
+	# Value has been set, nothing to do.
+	return;
+    }
 
-	chomp($sysSystemName);
-	chomp($dbSystemName);
-
-	if( $sysSystemName ne $dbSystemName ) {
-	    $DB->set_value("SystemName", $sysSystemName);
-	}
+    my $systemName = `hostname -s` || "localhost";    
+    chomp($systemName);   
+    $DB->set_value("SystemName", $systemName);
 }

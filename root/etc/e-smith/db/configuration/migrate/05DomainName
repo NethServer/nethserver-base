@@ -1,15 +1,16 @@
 {
-	#
-	# Initialize database DomainName with current system value
-	#
+    #
+    # Initialize the database DomainName with current system value
+    #
+    
+    my $initialized = $DB->get_value("DomainName");
 
-	my $dbDomainName = $DB->get_value("DomainName") || return;
-	my $sysDomainName = `hostname -d` || "localdomain";
+    if($initialized) {
+	# Value has been set, nothing to do.
+	return;
+    }
 
-	chomp($sysDomainName);
-	chomp($dbDomainName);
-
-	if( $sysDomainName ne $dbDomainName ) {
-	    $DB->set_value("DomainName", $sysDomainName);
-	}
+    my $domainName = `hostname -d` || "localdomain";
+    chomp($domainName);
+    $DB->set_value("DomainName", $domainName);
 }
