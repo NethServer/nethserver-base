@@ -27,7 +27,7 @@ use Nethgui\System\PlatformInterface as Validate;
  *
  * @author Giacomo Sanchietti<giacomo.sanchietti@nethesis.it>
  */
-class Directory extends \Nethgui\Controller\AbstractController
+class Organization extends \Nethgui\Controller\AbstractController
 {
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
@@ -38,16 +38,16 @@ class Directory extends \Nethgui\Controller\AbstractController
     public function initialize()
     {
         parent::initialize();
-        $this->declareParameter('defaulCity', Validate::ANYTHING, array('configuration', 'ldap', 'defaultCity'));
-        $this->declareParameter('defaulCompany', Validate::NOTEMPTY, array('configuration', 'ldap', 'defaultCompany'));
-        $this->declareParameter('defaulDepartment', Validate::ANYTHING, array('configuration', 'ldap', 'defaultDepartment'));
-        $this->declareParameter('defaulPhoneNumber', Validate::ANYTHING, array('configuration', 'ldap', 'defaultPhoneNumber'));
-        $this->declareParameter('defaulStreet', Validate::ANYTHING, array('configuration', 'ldap', 'defaultStreet'));
+        $this->declareParameter('City', Validate::ANYTHING, array('configuration', 'OrganizationContact', 'City'));
+        $this->declareParameter('Company', Validate::NOTEMPTY, array('configuration', 'OrganizationContact', 'Company'));
+        $this->declareParameter('Department', Validate::ANYTHING, array('configuration', 'OrganizationContact', 'Department'));
+        $this->declareParameter('PhoneNumber', Validate::ANYTHING, array('configuration', 'OrganizationContact', 'PhoneNumber'));
+        $this->declareParameter('Street', Validate::ANYTHING, array('configuration', 'OrganizationContact', 'Street'));
     }
 
     protected function onParametersSaved($changes)
     {
-        $this->getPlatform()->signalEvent('ldap-update@post-process');
+        $this->getPlatform()->signalEvent('organization-contact-update@post-process');
     }
 
 }
