@@ -52,6 +52,6 @@ $FW
 try {
     $FW->dispatch($FW->createRequest());
 } catch (\Nethgui\Exception\HttpException $ex) {
-    $FW->printHttpException($ex, TRUE);
+    $FW->printHttpException($ex, FALSE);
 }
 
