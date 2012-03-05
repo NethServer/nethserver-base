@@ -8,9 +8,9 @@
     my $commonName = $modSSL{CommonName} || $FQDN;
     my $crt = "/home/e-smith/ssl.crt/$FQDN.crt";
     my $key = "/home/e-smith/ssl.key/$FQDN.key";
-    my $defaultCity = $ContactDefault{City};
-    my $defaultCompany = $ContactDefault{Company};
-    my $defaultDepartment = $ContactDefault{Department};
+    my $defaultCity = $OrganizationContact{City};
+    my $defaultCompany = $OrganizationContact{Company};
+    my $defaultDepartment = $OrganizationContact{Department};
     my $email = "admin\@$DomainName";
 
     # crop fields that are too long for X509:

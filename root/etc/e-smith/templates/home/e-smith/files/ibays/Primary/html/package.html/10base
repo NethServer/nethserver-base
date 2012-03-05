@@ -42,7 +42,7 @@ body\{background-color:#fff;color:#222;text-align:center;font-family:Arial, sans
 	<div class="column_100">
 		<div id="footer" class="inner">
 			<p>
-				{"$SystemName.$DomainName"} | {"$ContactDefault{Company}"} 
+				{"$SystemName.$DomainName"} | {"$OrganizationContact{Company}"} 
 			</p>
 		</div>
 	</div>
