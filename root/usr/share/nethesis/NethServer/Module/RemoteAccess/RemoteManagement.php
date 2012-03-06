@@ -52,7 +52,7 @@ class RemoteManagement extends \Nethgui\Controller\TableController
         parent::initialize();
     }
 
-    public function onParametersSaved(\Nethgui\Module\ModuleInterface $currentAction, $changes)
+    public function onParametersSaved(\Nethgui\Module\ModuleInterface $currentAction, $changes, $parameters)
     {
         // Detach event to avoid connection-lost during httpd restart:
         $this->getPlatform()->signalEvent('remoteaccess-update@post-response');
