@@ -163,7 +163,7 @@ event_link("init-reload", $event, "90");
 $event = "bootstrap-console-save";
 
 templates2events("/home/e-smith/ssl.pem/pem", $event);
-event_link("selinux-adjust", $event, "10");
+event_link("nethserver-base-selinux-setup", $event, "10");
 event_link("set-hostname", $event, "10");
 event_link("initialize-users-chage", $event, "20");
 event_link("conf-modules", $event, "30");
@@ -238,7 +238,7 @@ $event = "post-install";
 
 event_link("rotate_timestamped_logfiles", $event, "05");
 event_link("init-accounts", $event, "08");
-event_link("selinux-adjust", $event, "10");
+event_link("nethserver-base-selinux-setup", $event, "10");
 event_link("conf-startup", $event, "10");
 event_link("conf-modules", $event, "30");
 
@@ -251,7 +251,7 @@ $event = "post-upgrade";
 event_link("rotate_timestamped_logfiles", $event, "05");
 event_link("init-accounts", $event, "08");
 event_link("conf-startup", $event, "10");
-event_link("selinux-adjust", $event, "10");
+event_link("nethserver-base-selinux-setup", $event, "10");
 event_link("group-modify-unix", $event, "15");
 event_link("user-modify-unix", $event, "15");
 event_link("update-passwd", $event, "20");
@@ -397,6 +397,7 @@ event_link("initialize-users-chage", "password-policy-update", "20");
 #--------------------------------------------------
 $event = "nethserver-base-update";
 
+# XXX: should it be moved into nethserver-directory?
 event_link("initialize-users-chage", $event, "20");
 
 
@@ -416,17 +417,24 @@ $validator = 'group-name';
 validator_link("uniq-account", $validator, 20);
 validator_link("group-length", $validator, 30);
 
+
 #--------------------------------------------------
-# PAM and libuser configuration
+# PAM, libuser, sudoers configuration
 #--------------------------------------------------
 {
     my @events = qw(
-      bootstrap-console-save
+       bootstrap-console-save
+       nethserver-base-update
     );
-    templates2events("/etc/libuser.conf", @events);
-    templates2events("/etc/pam.d/system-auth-nh", @events);
-    event_link("pam-configure", $_, "50") foreach(@events);
-}
 
+    my @templates = qw(
+        /etc/libuser.conf
+        /etc/pam.d/system-auth-nh
+        /etc/sudoers
+    );
+
+    templates2events($_, @events) foreach(@templates);
+    event_link("nethserver-base-pam-setup", $_, "50") foreach(@events);
+}
 
 exit 0;
