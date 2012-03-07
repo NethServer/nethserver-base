@@ -27,6 +27,7 @@ ini_set('display_errors', "1");
 ini_set('html_errors', "0");
 ini_set('default_mimetype', 'text/plain');
 ini_set('default_charset', 'UTF-8');
+setlocale(LC_CTYPE, 'en_US.utf-8');
 
 // If xdebug is loaded, disable xdebug backtraces:
 extension_loaded('xdebug') && xdebug_disable();

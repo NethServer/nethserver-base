@@ -27,6 +27,7 @@ ini_set('display_errors', "1");
 ini_set('html_errors', "0");
 ini_set('default_mimetype', 'text/plain');
 ini_set('default_charset', 'UTF-8');
+setlocale(LC_CTYPE, 'en_US.utf-8');
 
 if(TRUE) {
   header('HTTP/1.1 403 Forbidden');
