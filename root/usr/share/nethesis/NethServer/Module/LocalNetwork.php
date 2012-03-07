@@ -80,7 +80,7 @@ class LocalNetwork extends \Nethgui\Controller\TableController
         return $action->prepareViewForColumnActions($view, $key, $values, $rowMetadata);
     }
 
-    public function onParametersSaved(\Nethgui\Module\ModuleInterface $currentAction, $changes)
+    public function onParametersSaved(\Nethgui\Module\ModuleInterface $currentAction, $changes, $parameters)
     {
         $this->getPlatform()->signalEvent(sprintf('network-%s@post-process', $currentAction->getIdentifier()));
     }
