@@ -435,6 +435,8 @@ validator_link("group-length", $validator, 30);
 
     templates2events($_, @events) foreach(@templates);
     event_link("nethserver-base-pam-setup", $_, "50") foreach(@events);
+
+    safe_symlink("/etc/e-smith/templates-default/template-begin-pam", "root/etc/e-smith/pam.d/system-auth-nh/template-begin");
 }
 
 exit 0;
