@@ -3,12 +3,10 @@
 use strict;
 use Errno;
 use esmith::AccountsDB;
-use esmith::ConfigDB;
 use IO::File;
 use English;
 
 my $a = esmith::AccountsDB->open or die "Could not open accounts db";
-my $conf = esmith::ConfigDB->open or die "Could not open configuration db";
 
 my $event = $ARGV [0];
 my $user = $ARGV[1] || die "No user specified";
@@ -28,8 +26,6 @@ sub unlock_user
 
     system("/usr/sbin/lusermod", "-U", $userName) == 0
         or die "Error running /usr/sbin/lusermod command to lock account $userName";
-    system("/usr/bin/smbpasswd", "-e", $userName) == 0
-        or die "Error running /usr/bin/smbpasswd command to lock account $userName";
     $u->set_prop('Locked', 'no');
 
 }
