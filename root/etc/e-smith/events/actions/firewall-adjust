@@ -32,7 +32,8 @@ foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
     }	
 
     foreach my $proto (qw(tcp udp)) {
-      	my @ports = split(',', $serviceRecord->prop(uc($proto) . 'Ports'));
+      	my @ports = (split(',', $serviceRecord->prop(uc($proto) . 'Ports')), $serviceRecord->prop(uc($proto) . 'Port'));
+
 	foreach my $port (@ports) {
 	    my $command = $actions->{$action};
 
@@ -41,7 +42,7 @@ foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
 	    $command =~ s/%SERVICE/$serviceName/g;
 	    $command =~ s/%ACTION/$action/g;
 
-	    if(!$command) {
+	    if( ! $command || ! $port > 0) {
 		next;
 	    }
 
