@@ -1,0 +1,1 @@
+/bin/sed -i /^--port=%PORT:%PROTO/d /etc/sysconfig/system-config-firewall

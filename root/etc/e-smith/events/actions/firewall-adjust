@@ -1,0 +1,71 @@
+#!/usr/bin/perl
+
+#
+# NethServer
+#
+# Copyright (C) 2012 Nethesis srl
+#
+
+use strict;
+use esmith::ConfigDB;
+use Data::Dumper;
+
+my $event = shift || die("Missing event argument!");
+my $confDb = esmith::ConfigDB->open_ro();
+my $errors = 0;
+
+my $actions = {
+    OPEN => $confDb->get_prop('firewall', 'open'),
+    CLOSE => $confDb->get_prop('firewall', 'close'),
+    APPLY => $confDb->get_prop('firewall', 'apply')
+};
+
+
+foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
+    my $serviceName = $serviceRecord->prop('ServiceFirewallName') || $serviceRecord->key;
+    my $action = '';
+
+    if($serviceRecord->prop('status') eq 'enabled') {
+	$action = 'OPEN';
+    } else {
+	$action = 'CLOSE';
+    }	
+
+    foreach my $proto (qw(tcp udp)) {
+      	my @ports = split(',', $serviceRecord->prop(uc($proto) . 'Ports'));
+	foreach my $port (@ports) {
+	    my $command = $actions->{$action};
+
+	    $command =~ s/%PROTO/$proto/g;
+	    $command =~ s/%PORT/$port/g;
+	    $command =~ s/%SERVICE/$serviceName/g;
+	    $command =~ s/%ACTION/$action/g;
+
+	    if(!$command) {
+		next;
+	    }
+
+	    qx($command);
+
+	    if($? > 0) {
+		warn "FIREWALL-ADJUST: " . $!;
+		$errors ++;
+	    } else {
+		print "firewall-adjust\@$event: $serviceName $action $proto port $port\n";
+	    }
+	}
+    }
+}
+
+my $applyCommand = $actions->{'APPLY'};
+
+if($applyCommand) {
+    qx($applyCommand);
+    if($? != 0) {
+	warn "APPLY: " . $!;
+	$errors ++;
+    }
+}
+
+
+exit($errors > 0 ? 1 : 0);
