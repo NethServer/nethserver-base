@@ -1,0 +1,49 @@
+#!/usr/bin/perl
+
+#
+# NethServer
+#
+# Copyright (C) 2012 Nethesis srl
+#
+
+use strict;
+use esmith::ConfigDB;
+use Data::Dumper;
+
+my $event = shift || die("Missing event argument!");
+my $confDb = esmith::ConfigDB->open_ro();
+my $errors = 0;
+
+my $chkconfig = '/sbin/chkconfig';
+
+foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
+
+    my $serviceName = $serviceRecord->key;
+    my $runLevels = $serviceRecord->prop('Runlevels');
+
+    if( ! defined($runLevels)) {
+	next;
+    }
+
+    $runLevels = join('', split(',', $runLevels));
+
+    if( ! $runLevels =~ m/\d+/ ) {
+	warn "Invalid runlevel specification on service $serviceName: $runLevels";
+	$errors ++;
+	next;
+    }
+
+    if($serviceRecord->prop('status') eq 'enabled') {
+	qx($chkconfig --level $runLevels $serviceName on);
+    } else {
+	qx($chkconfig --level $runLevels $serviceName off);
+    }	
+
+    if($? != 0) {
+	warn "runlevel-adjust: " . $! . "\n";
+	$errors ++;
+    }
+
+}
+
+exit($errors > 0 ? 1 : 0);
