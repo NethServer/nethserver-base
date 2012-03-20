@@ -1,0 +1,16 @@
+{
+    #
+    # Probing for LocalIP 
+    #
+    
+    my $initialized = $DB->get_value("LocalIP");
+
+    if($initialized) {
+	# Value has been set, nothing to do.
+	return;
+    }
+
+    my $ip = `hostname -i` || "127.0.0.1";
+    chomp($ip);
+    $DB->set_value("LocalIP", $ip);
+}
