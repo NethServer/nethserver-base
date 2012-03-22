@@ -1,3 +1,0 @@
-#! /bin/sh
-
-exec /sbin/e-smith/expand-template /home/e-smith/ssl.pem/pem
