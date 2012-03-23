@@ -102,14 +102,16 @@ $lock && esmith::lockfile::UnlockFile($lock);
 my $members = $group->prop('Members') || '';
 my @groupMembers = split (/,/, $members);
 
-# "www" and "admin" are implicit members of all groups
-push @groupMembers, 'admin', 'www';
+# "admin" is implicit member of all groups; "admin" is the first of
+# the list because libuser 0.56 with ldap backend seems to fail
+# silently when asked to remove the first and only one member of a
+# group (Davide Principi <davide.principi@nethesis.it>)
+push 'admin', @groupMembers;
 
 my $member;
 foreach $member (@groupMembers)
 {
     # Add member to new group
-
     system("/usr/sbin/lgroupmod","-M","$member","$groupName") == 0
        or die "Failed to modify supplementary group list for $member.\n";
 }
