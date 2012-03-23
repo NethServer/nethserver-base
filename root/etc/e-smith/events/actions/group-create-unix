@@ -33,6 +33,7 @@ my $conf = esmith::ConfigDB->open_ro
 my $accounts = esmith::AccountsDB->open
     or die "Could not open accounts DB";
 
+my $errors = 0;
 my $event = $ARGV [0];
 my $groupName = $ARGV [1];
 
@@ -64,10 +65,11 @@ unless ($gid = $group->prop('Gid'))
     }
 }
 my $uid = $group->prop('Uid');
-my $description = $group->prop('Description') || '';
+
+# $description must be set, otherwise luseradd will fail. Refs #913
+my $description = $group->prop('Description') || $groupName;
 
 # Create the user's unique group first
-
 system(
 	"/usr/sbin/lgroupadd",
 	"-g", $gid,
@@ -85,7 +87,7 @@ system(
 	"/home/e-smith",
 	"-s",
 	"/bin/false",
-	"$groupName"
+	$groupName
     ) == 0 or die "Failed to create user $groupName.\n";
 
 # Release lock if we have one
@@ -106,14 +108,16 @@ my @groupMembers = split (/,/, $members);
 # the list because libuser 0.56 with ldap backend seems to fail
 # silently when asked to remove the first and only one member of a
 # group (Davide Principi <davide.principi@nethesis.it>)
-push 'admin', @groupMembers;
+unshift @groupMembers, 'admin';
 
 my $member;
 foreach $member (@groupMembers)
 {
     # Add member to new group
-    system("/usr/sbin/lgroupmod","-M","$member","$groupName") == 0
-       or die "Failed to modify supplementary group list for $member.\n";
+    if(system("/usr/sbin/lgroupmod","-M","$member","$groupName") != 0) {
+	warn "Failed to modify supplementary group list for $member.\n";
+	$errors ++;
+    }
 }
 
-exit (0);
+exit ($errors == 0 ? 0 : 1);

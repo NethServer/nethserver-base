@@ -61,20 +61,23 @@ foreach my $group (@groups)
     # group are unaffected.
     #------------------------------------------------------------
 
-    my $groupDesc = $properties{'Description'}
-	if (defined $properties{'Description'});
+    my $groupDesc = $properties{'Description'} || $groupName;
 
-    system("/usr/sbin/lusermod", "-c", "$groupDesc", "$groupName") == 0
+    system("/usr/sbin/lusermod", '-c', $groupDesc, $groupName) == 0
 	or die "Failed to modify group description for $groupName.\n";
 
     my ($name, $passwd, $gid, $members) = getgrnam ($groupName);
-    my @oldMembersList = split (/\s+/, $members);
+
+    # admin user is never removed. This permits lgroupmod to complete
+    # the group modification. lgroupmod fails silently if all members
+    # are removed! Refs #913
+    my @oldMembersList = grep { !/^admin$/ } split (/\s+/, $members);
     my $oldMembers = join (',', sort (@oldMembersList));
     my $newMembers = $properties {'Members'}; 
 
-    system("/usr/sbin/lgroupmod", "-m", "$oldMembers", "$groupName") == 0
+    system("/usr/sbin/lgroupmod", "-m", $oldMembers, $groupName) == 0
         or die "Failed to remove old members from group $groupName.\n";
-    system("/usr/sbin/lgroupmod", "-M", "$newMembers", "$groupName") == 0
+    system("/usr/sbin/lgroupmod", "-M", $newMembers, $groupName) == 0
         or die "Failed to add new members from group $groupName.\n";
 }
 
