@@ -118,6 +118,7 @@ legend button {color: #444; text-decoration: underline; border: none; background
 .DataTable tr.locked td:first-child {color: #777; background: url('../images/lock.png') no-repeat center right }
 .DataTable tr.nopasswd td {color: #888;}
 .DataTable tr.nopasswd td:first-child {color: #777; background: url('../images/key.png') no-repeat center right }
+.DataTable tr.empty  {color: #777; height: 25px}
 /* END DataTable jQuery plugin */
 
 /* BEGIN ObjectPicker Refs #617 */
