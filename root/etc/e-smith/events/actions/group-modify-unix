@@ -28,26 +28,25 @@ use Errno;
 use esmith::ConfigDB;
 use esmith::AccountsDB;
 
-my $c = esmith::ConfigDB->open_ro || die "Couldn't open config db\n";
 my $a = esmith::AccountsDB->open_ro || die "Couldn't open accounts db\n";
 
 my $errors = 0;
 my $event = shift || die "Event name arg missing\n";
 
 # multiple group name arguments are allowed for backward-compatibility
-my @groups = map { $a->get($_); } @ARGV;
+my @groups = @ARGV;
 
 if (scalar(@groups) == 0) {
     warn "Group name is missing, assuming all account db group entries";
-    @groups = $a->groups;
+    @groups = $a->groups();
 } elsif (scalar(@groups) > 1) {
     warn "DEPRECATED: Multiple group name arguments are deprecated!";
 }
 
-foreach my $group (@groups) 
+foreach my $groupName (@groups) 
 {
-    my $groupName = $group->key;
-    unless ($group->prop('type') eq 'group')
+    my $group = $a->get($groupName);
+    if (! $group || $group->prop('type') ne 'group')
     {
 	warn "Account $groupName is not a group account.\n";
 	next;
