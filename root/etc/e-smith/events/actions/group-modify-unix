@@ -64,10 +64,14 @@ foreach my $group (@groups)
 
     my $groupDesc = $properties{'Description'} || $groupName;
 
+    # gecos must be 7bit ASCII/ldap IA5String. Refs #911
+    $groupDesc =~ s/[^\x20-\x7F]//g;
+
     if(system("/usr/sbin/lusermod", '-c', $groupDesc, $groupName) != 0) {
 	warn "Failed to modify group description for $groupName.\n";
 	$errors ++;
     }
+
 
     my ($name, $passwd, $gid, $members) = getgrnam ($groupName);
 
