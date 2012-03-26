@@ -46,4 +46,4 @@ foreach ('shared', $userName)
 
 exit 0 unless (scalar %modified_groups);
 
-event_signal("group-modify", keys %modified_groups);
+event_signal("group-modify", $_) foreach (keys %modified_groups);

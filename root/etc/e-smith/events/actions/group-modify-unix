@@ -31,19 +31,20 @@ use esmith::AccountsDB;
 my $c = esmith::ConfigDB->open_ro || die "Couldn't open config db\n";
 my $a = esmith::AccountsDB->open_ro || die "Couldn't open accounts db\n";
 
-my $event = shift || die "Event name arg missing\n";;
-my @groups;
+my $errors = 0;
+my $event = shift || die "Event name arg missing\n";
 
-if ($event eq 'post-upgrade')
-{
+# multiple group name arguments are allowed for backward-compatibility
+my @groups = map { $a->get($_); } @ARGV;
+
+if (scalar(@groups) == 0) {
+    warn "Group name is missing, assuming all account db group entries";
     @groups = $a->groups;
+} elsif (scalar(@groups) > 1) {
+    warn "DEPRECATED: Multiple group name arguments are deprecated!";
 }
-else
-{
-    die "Group name arg missing\n" unless scalar @ARGV;
-    @groups = map { $a->get($_); } @ARGV;
-}
-foreach my $group (@groups)
+
+foreach my $group (@groups) 
 {
     my $groupName = $group->key;
     unless ($group->prop('type') eq 'group')
@@ -63,8 +64,10 @@ foreach my $group (@groups)
 
     my $groupDesc = $properties{'Description'} || $groupName;
 
-    system("/usr/sbin/lusermod", '-c', $groupDesc, $groupName) == 0
-	or die "Failed to modify group description for $groupName.\n";
+    if(system("/usr/sbin/lusermod", '-c', $groupDesc, $groupName) != 0) {
+	warn "Failed to modify group description for $groupName.\n";
+	$errors ++;
+    }
 
     my ($name, $passwd, $gid, $members) = getgrnam ($groupName);
 
@@ -75,10 +78,15 @@ foreach my $group (@groups)
     my $oldMembers = join (',', sort (@oldMembersList));
     my $newMembers = $properties {'Members'}; 
 
-    system("/usr/sbin/lgroupmod", "-m", $oldMembers, $groupName) == 0
-        or die "Failed to remove old members from group $groupName.\n";
-    system("/usr/sbin/lgroupmod", "-M", $newMembers, $groupName) == 0
-        or die "Failed to add new members from group $groupName.\n";
+    if(system("/usr/sbin/lgroupmod", "-m", $oldMembers, $groupName) != 0) {
+        warn "Failed to remove old members from group $groupName.\n";
+	$errors ++;
+    }
+
+    if(system("/usr/sbin/lgroupmod", "-M", $newMembers, $groupName) != 0) {
+        warn "Failed to add new members from group $groupName.\n";
+	$errors ++;
+    }
 }
 
-exit (0);
+exit ($errors == 0 ? 0 : 1);
