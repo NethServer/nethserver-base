@@ -21,7 +21,6 @@ package esmith;
 use strict;
 use Errno;
 use esmith::AccountsDB;
-use String::Util;
 
 my $event = $ARGV [0];
 my $userName = $ARGV [1];
@@ -75,14 +74,18 @@ foreach my $u (@users)
     #------------------------------------------------------------
     my $first = $u->prop('FirstName') || "";
     my $last = $u->prop('LastName') || "";
-    my $gecos = String::Util::trim(join(' ', $first $last));
+    my $gecos = join(' ', $first, $last);
 
     # gecos must be 7bit ASCII/ldap IA5String. Refs #911
     $gecos =~ s/[^\x20-\x7F]//g;
 
+    # trim starting and ending whitespaces:
+    $gecos =~ s/^\s+//g;
+    $gecos =~ s/\s+$//g;
+
     # NOTE: lusermod ignores empty gecos field modification
     if ($comment ne $gecos) {
-	if(system("/usr/sbin/lusermod", "-c", $gecos, $userName) != 0) {
+	if(system('/usr/sbin/lusermod', '-c', $gecos, $userName) != 0) {
 	    warn "Failed to modify comment of account $userName.\n";
 	}
     }
