@@ -378,22 +378,19 @@ event_link("initialize-users-chage", $event, "20");
 #--------------------------------------------------
 # actions for nethserver-base-update event
 #--------------------------------------------------
-$event = "nethserver-base-update";
-
-event_actions($event, 
+event_actions('nethserver-base-update', 
     "initialize-default-databases"   => "00",
     "nethserver-base-selinux-setup"  => "10",
     "initialize-users-chage"         => "20",
     "nethserver-base-pam-setup"      => "50",
 );
 
-event_templates($event, qw(
+event_templates('nethserver-base-update', qw(
     /etc/hosts
     /etc/selinux/config
     /etc/libuser.conf
     /etc/pam.d/system-auth-nh
     /etc/sudoers
-    /home/e-smith/ssl.pem/pem
 ));
 		
 safe_symlink("/etc/e-smith/templates-default/template-begin-pam", "root/etc/e-smith/templates/etc/pam.d/system-auth-nh/template-begin");		
