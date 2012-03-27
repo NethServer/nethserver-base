@@ -25,17 +25,14 @@ package esmith;
 
 use strict;
 use Errno;
-use esmith::ConfigDB;
 use esmith::AccountsDB;
 
-my $conf = esmith::ConfigDB->open_ro
-    or die "Could not open Config DB";
 my $accounts = esmith::AccountsDB->open
     or die "Could not open accounts DB";
 
 my $errors = 0;
-my $event = $ARGV [0];
-my $groupName = $ARGV [1];
+my $event = shift;
+my $groupName = shift;
 
 #------------------------------------------------------------
 # Create the group
@@ -66,8 +63,6 @@ unless ($gid = $group->prop('Gid'))
 }
 my $uid = $group->prop('Uid');
 
-# $description must be set, otherwise luseradd will fail. Refs #913
-my $description = $group->prop('Description') || $groupName;
 
 # Create the user's unique group first
 system(
@@ -76,48 +71,29 @@ system(
 	$groupName
     ) == 0 or die "Failed to create group $groupName.\n";
 
-# Now create the dummy user account
-
+# Now create the dummy user account. NOTE: `--surname` triggers
+# inetOrgPerson schema in ldapEntry and is required for
+# nethserver-directory to work.
 system(
-	"/usr/sbin/luseradd",
-	"-u", $uid,
-	"-g", $gid,
-	"-c", $description,
-	"-d",
-	"/home/e-smith",
-	"-s",
-	"/bin/false",
-	$groupName
+    "/usr/sbin/luseradd",
+    "-u", $uid,
+    "-g", $gid,
+    '--surname', $groupName,
+    '-d', '/home/e-smith',
+    '-s', '/bin/false',
+    $groupName
     ) == 0 or die "Failed to create user $groupName.\n";
 
 # Release lock if we have one
 $lock && esmith::lockfile::UnlockFile($lock);
 
-#------------------------------------------------------------
-# It would be nice if we could simply edit the line in /etc/group
-# and add the list of users, but it's safer to use the "usermod"
-# command. This means that for each desired group member, we have
-# to fetch the current list of that member's groups, add this new
-# group, and update the member's group list.
-#------------------------------------------------------------
-
-my $members = $group->prop('Members') || '';
-my @groupMembers = split (/,/, $members);
-
-# "admin" is implicit member of all groups; "admin" is the first of
-# the list because libuser 0.56 with ldap backend seems to fail
-# silently when asked to remove the first and only one member of a
-# group (Davide Principi <davide.principi@nethesis.it>)
-unshift @groupMembers, 'admin';
-
-my $member;
-foreach $member (@groupMembers)
-{
-    # Add member to new group
-    if(system("/usr/sbin/lgroupmod","-M","$member","$groupName") != 0) {
-	warn "Failed to modify supplementary group list for $member.\n";
-	$errors ++;
-    }
+# `admin` user is implicit member of all groups; NOTE: libuser 0.56
+# with ldap backend seems to fail silently when asked to remove all
+# the members of a group; admin here ensure the group contains a
+# member at least - Davide Principi <davide.principi@nethesis.it>
+if(system("/usr/sbin/lgroupmod", '-M', 'admin', $groupName) != 0) {
+    warn "Failed to add `admin` user in group `$groupName` members list.\n";
+    $errors ++;
 }
 
 exit ($errors == 0 ? 0 : 1);

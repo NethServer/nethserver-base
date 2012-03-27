@@ -33,7 +33,8 @@ my $a = esmith::AccountsDB->open_ro || die "Couldn't open accounts db\n";
 my $errors = 0;
 my $event = shift || die "Event name arg missing\n";
 
-# multiple group name arguments are allowed for backward-compatibility
+# multiple group name arguments are allowed for
+# backward-compatibility, but produce a warning.
 my @groups = @ARGV;
 
 if (scalar(@groups) == 0) {
@@ -70,7 +71,6 @@ foreach my $groupName (@groups)
 	warn "Failed to modify group description for $groupName.\n";
 	$errors ++;
     }
-
 
     my ($name, $passwd, $gid, $members) = getgrnam ($groupName);
 

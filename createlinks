@@ -179,9 +179,10 @@ templates2events("/etc/selinux/config", qw(
 #--------------------------------------------------
 # actions for group-create event
 #--------------------------------------------------
-$event = "group-create";
-
-event_link("group-create-unix", $event, "04");
+event_actions('group-create', 
+	      "group-create-unix" => "04",
+	      'group-modify-unix' => '20',
+    );
 
 #--------------------------------------------------
 # actions for group-delete event
@@ -301,8 +302,8 @@ $event = "user-modify";
 event_link("user-modify-unix", $event, "15");
 event_link("user-group-modify", $event, "85");
 
-$event = "user-modify-admin";
-event_link("user-modify-unix", $event, "15");
+#$event = "user-modify-admin";
+#event_link("user-modify-unix", $event, "15");
 
 #--------------------------------------------------
 # actions for user-lock event
