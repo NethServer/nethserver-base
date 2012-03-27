@@ -8,7 +8,7 @@
 
 use strict;
 use esmith::ConfigDB;
-use Data::Dumper;
+use NethServer::Service;
 
 my $event = shift || die("Missing event argument!");
 my $confDb = esmith::ConfigDB->open_ro();
@@ -42,6 +42,15 @@ foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
     if($? != 0) {
 	warn "runlevel-adjust: " . $! . "\n";
 	$errors ++;
+	next;
+    }
+
+    # Start the service if is enabled in current runlevel
+    if(NethServer::Service::is_enabled($serviceName)) {
+	if( ! NethServer::Service::start($serviceName)) {
+	    warn "runlevel-adjust: error while starting `$serviceName`\n";
+	    $errors ++;
+	}
     }
 
 }
