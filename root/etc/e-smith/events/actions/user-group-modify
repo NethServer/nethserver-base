@@ -23,27 +23,27 @@
 use strict;
 use esmith::event;
 use esmith::AccountsDB;
-use User::grent;
 
-shift @ARGV;
-my $userName = shift @ARGV or die "Must supply username";
+my $event = shift;
+my $userName = shift or die "Missing user argument!";
+my $accountsDb = esmith::AccountsDB->open() or die "Unable to open accounts db: $!";
 
-my $acctdb = esmith::AccountsDB->open() 
-    or die "Unable to open accounts db: $!";
-
-# Make a list of system groups that this user is a member of
-my ($user, $colon, @old_groups) = split(' ', `/usr/bin/groups $userName`);
-
-# Now add in the list of groups the user is a member of according to
-# the accounts db, and remove duplicates. The do the group-modify
-# actions for all these groups
-my %modified_groups = map { $_, 1 } @old_groups, $acctdb->user_group_list($userName);
-# but omit "shared" and user private group
-foreach ('shared', $userName)
-{
-    delete $modified_groups{$_} if exists $modified_groups{$_};
+# Make a list of account db groups that this user was a member of, according to unix db:
+my @oldGroups = ();
+foreach (split(' ', `/usr/bin/groups $userName`)) {
+    my $type = $accountsDb->get_prop($_, 'type');
+    if(defined $type && $type eq 'group') {
+	push @oldGroups, $_;
+    }
 }
 
-exit 0 unless (scalar %modified_groups);
+# Combine the previous and the current membership sets:
+my %groups = map { $_, 1 } @oldGroups, $accountsDb->user_group_list($userName);
 
-event_signal("group-modify", $_) foreach (keys %modified_groups);
+# Then do the group-modify actions for all groups in the resulting set:
+if(scalar(keys %groups) > 0) {
+    warn 'INFO: update user membership of groups ' . join(', ', keys %groups) . ".\n";
+    event_signal("group-modify", $_) foreach (keys %groups);
+}
+
+
