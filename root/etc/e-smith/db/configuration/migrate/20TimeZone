@@ -20,11 +20,8 @@
     # If all else fails ...
     if( ! defined $timezone ) {
 	$timezone = "UTC";
+	warn "Initializing TimeZone to `$timezone`.\n";
     }
 
-    warn "Initializing TimeZone to `$timezone`.\n";
-
     $DB->new_record('TimeZone')->set_value($timezone);
-
-
 }
