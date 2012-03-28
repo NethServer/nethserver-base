@@ -1,0 +1,30 @@
+{
+    # Add configuration database entry for TimeZone if there is not one already
+    if(defined $DB->get('TimeZone')) {
+	return;
+    }
+
+    my $timezone;
+
+    # Initialise timezone from /etc/sysconfig/clock if not already set
+    if (open(CLOCK, "/etc/sysconfig/clock")) {
+	while(<CLOCK>)	{
+	    $timezone = $1 if /^ZONE="(.*)"/;
+	    last if defined $timezone;
+	}
+	close(CLOCK) or warn("Could not close CLOCK: $!");
+    } else {
+	warn("Could not open /etc/sysconfig/clock: $!");
+    }
+
+    # If all else fails ...
+    if( ! defined $timezone ) {
+	$timezone = "UTC";
+    }
+
+    warn "Initializing TimeZone to `$timezone`.\n";
+
+    $DB->new_record('TimeZone')->set_value($timezone);
+
+
+}
