@@ -51,6 +51,8 @@ foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
 	    warn "runlevel-adjust: error while starting `$serviceName`\n";
 	    $errors ++;
 	}
+    } else {
+	NethServer::Service::stop($serviceName);
     }
 
 }
