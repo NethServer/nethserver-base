@@ -411,4 +411,10 @@ $validator = 'group-name';
 validator_link("uniq-account", $validator, 20);
 validator_link("group-length", $validator, 30);
 
+#--------------------------------------------------
+# Refs #939 tcp/udp port server validator
+#--------------------------------------------------
+validator_link('validate-remote-port', 'remote-port', 10);
+
 exit 0;
+
