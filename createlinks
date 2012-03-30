@@ -419,5 +419,16 @@ validator_link("group-length", $validator, 30);
 #--------------------------------------------------
 validator_link('validate-remote-port', 'remote-port', 10);
 
+
+#--------------------------------------------------
+# nethserver-base-save event
+#--------------------------------------------------
+event_actions('nethserver-base-save',
+	      'firewall-adjust' => '60',
+	      'runlevel-adjust' => '61');
+
+event_templates('nethserver-base-save',
+		'/etc/sysconfig/sshd');
+
 exit 0;
 

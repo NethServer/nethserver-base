@@ -43,7 +43,7 @@ class Ssh extends \Nethgui\Controller\AbstractController
 
     protected function onParametersSaved($changes)
     {
-        $this->getPlatform()->signalEvent('remoteaccess-update@post-response &');
+        $this->getPlatform()->signalEvent('nethserver-base-save@post-process');
     }
 
 }
