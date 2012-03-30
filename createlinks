@@ -383,6 +383,8 @@ event_actions('nethserver-base-update',
     "nethserver-base-selinux-setup"  => "10",
     "initialize-users-chage"         => "20",
     "nethserver-base-pam-setup"      => "50",
+    "firewall-adjust"                => "70",
+    "runlevel-adjust"                => "71",
 );
 
 event_templates('nethserver-base-update', qw(
@@ -391,6 +393,7 @@ event_templates('nethserver-base-update', qw(
     /etc/libuser.conf
     /etc/pam.d/system-auth-nh
     /etc/sudoers
+    /etc/sysconfig/sshd
 ));
 		
 safe_symlink("/etc/e-smith/templates-default/template-begin-pam", "root/etc/e-smith/templates/etc/pam.d/system-auth-nh/template-begin");		

@@ -1,0 +1,3 @@
+# See db configuration getprop sshd TCPPort:
+OPTIONS="-p { $DB->get_prop('sshd', 'TCPPort') }"
+
