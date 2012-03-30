@@ -1,3 +1,4 @@
-# See db configuration getprop sshd TCPPort:
-OPTIONS="-p { $DB->get_prop('sshd', 'TCPPort') }"
+# command-line port setting is overridden by ListenAddress directive
+# in sshd_config.  See sshd_config manpage.
+OPTIONS="-p { $DB->get_prop('sshd', 'TCPPort') || '22' }"
 
