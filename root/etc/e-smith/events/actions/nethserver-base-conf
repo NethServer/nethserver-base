@@ -1,0 +1,23 @@
+#!/usr/bin/perl 
+
+#
+# NethServer Base
+#
+# Copyright (C) 2012 Nethesis srl
+#
+
+use strict;
+
+
+my $errors = 0;
+
+#
+# Fix system-config-firewall
+#
+qx(/bin/sed -i '/^--service=ssh/ d' /etc/sysconfig/system-config-firewall);
+if( $? != 0 ) {
+    warn "Failed to remove ssh service from /etc/sysconfig/system-config-firewall\n";
+    $errors ++;
+}
+
+exit($errors == 0 ? 0 : 1);
