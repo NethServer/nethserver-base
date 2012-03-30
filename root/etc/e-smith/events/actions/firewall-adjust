@@ -11,7 +11,7 @@ use esmith::ConfigDB;
 use Data::Dumper;
 
 my $event = shift || die("Missing event argument!");
-my $confDb = esmith::ConfigDB->open_ro();
+my $confDb = esmith::ConfigDB->open();
 my $errors = 0;
 
 my $actions = {
@@ -23,18 +23,35 @@ my $actions = {
 
 foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
     my $serviceName = $serviceRecord->prop('ServiceFirewallName') || $serviceRecord->key;
-    my $action = '';
+    my $statusAction;
 
-    if($serviceRecord->prop('status') eq 'enabled') {
-	$action = 'OPEN';
+    if($serviceRecord->prop('status') ne 'enabled') {
+	$statusAction = 'CLOSE';
     } else {
-	$action = 'CLOSE';
-    }	
+	$statusAction = 'OPEN';
+    }
 
     foreach my $proto (qw(tcp udp)) {
-      	my @ports = (split(',', $serviceRecord->prop(uc($proto) . 'Ports')), $serviceRecord->prop(uc($proto) . 'Port'));
+      	my @openPorts = grep { $_ > 0 } (split(',', $serviceRecord->prop(uc($proto) . 'Ports')), $serviceRecord->prop(uc($proto) . 'Port'));
 
-	foreach my $port (@ports) {
+	# Read the kill list to find ports to close:
+	my @closePorts = split(',', $serviceRecord->prop('FwAdjust' . uc($proto)));
+
+	# Prepare a unique port list:
+	my %ports = map { $_ => 1 } @openPorts, @closePorts;
+
+	foreach my $port (keys %ports) {
+
+	    my $action;
+
+	    # Close any port not in OPEN list:
+	    if( ! grep { $port == $_ } @openPorts ) {
+		$action = 'CLOSE';
+	    } else {
+		# Let the service status to decide what to do:
+		$action = $statusAction;
+	    }
+
 	    my $command = $actions->{$action};
 
 	    $command =~ s/%PROTO/$proto/g;
@@ -48,14 +65,21 @@ foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
 
 	    qx($command);
 
-	    if($? > 0) {
+	    if( $? != 0 ) {
 		warn "FIREWALL-ADJUST: " . $!;
 		$errors ++;
 	    } else {
 		print "firewall-adjust\@$event: $serviceName $action $proto port $port\n";
 	    }
+	}	
+			       
+        # Update the firewall kill list:
+	if(@openPorts) {
+	    $serviceRecord->set_prop('FwAdjust' . uc($proto), join(',', @openPorts));
+	} else {
+	    $serviceRecord->delete_prop('FwAdjust' . uc($proto));
 	}
-    }
+    }  
 }
 
 my $applyCommand = $actions->{'APPLY'};
