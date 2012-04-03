@@ -151,19 +151,19 @@ templates2events("/etc/selinux/config", qw(
 #--------------------------------------------------
 # actions for console-save event
 #--------------------------------------------------
-# my $event = "console-save";
+my $event = "console-save";
 
 # templates2events("/home/e-smith/ssl.pem/pem", $event);
 # event_link("set-hostname", $event, "10");
 # event_link("conf-modules", $event, "30");
 # event_link("conf-startup", $event, "60");
-# event_link("reset-unsavedflag", $event, "95");
+event_link("reset-unsavedflag", $event, "95");
 # event_link("init-reload", $event, "90");
 
 #--------------------------------------------------
 # actions for bootstrap-console-save event
 #--------------------------------------------------
-# $event = "bootstrap-console-save";
+$event = "bootstrap-console-save";
 
 # templates2events("/home/e-smith/ssl.pem/pem", $event);
 # event_link("nethserver-base-selinux-setup", $event, "10");
@@ -173,7 +173,7 @@ templates2events("/etc/selinux/config", qw(
 # event_link("conf-startup", $event, "60");
 # event_link("conf-routes", $event, "89");
 # event_link("init-reload", $event, "90");
-# event_link("reset-unsavedflag", $event, "95");
+event_link("reset-unsavedflag", $event, "95");
 
 
 #--------------------------------------------------
