@@ -29,7 +29,7 @@ ini_set('default_mimetype', 'text/plain');
 ini_set('default_charset', 'UTF-8');
 setlocale(LC_CTYPE, 'en_US.utf-8');
 
-if(TRUE) {
+if(FALSE) {
   header('HTTP/1.1 403 Forbidden');
   echo "Access denied";
   exit;
@@ -47,11 +47,15 @@ define('NETHGUI_ENABLE_INCLUDE_WIDGET', TRUE);
 // Enable caching:
 define('NETHGUI_ENABLE_HTTP_CACHE_HEADERS', TRUE);
 
+// Disable debug mode (produces more verbose log 
+// output and uses non-minified js & css)
+define('NETHGUI_DEBUG', TRUE);
+
 require_once('../Nethgui/Framework.php');
 
 $FW = new \Nethgui\Framework();
 $FW
-    ->setLogLevel(E_WARNING | E_ERROR)
+    ->setLogLevel(E_WARNING | E_ERROR | E_NOTICE)
     ->registerNamespace(realpath(__DIR__ . '/../NethServer'))
     ->setDefaultModule('Status')
 ;

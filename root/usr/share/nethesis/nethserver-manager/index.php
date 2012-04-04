@@ -41,6 +41,10 @@ define('NETHGUI_ENABLE_INCLUDE_WIDGET', TRUE);
 // Enable caching:
 define('NETHGUI_ENABLE_HTTP_CACHE_HEADERS', TRUE);
 
+// Disable debug mode (produces more verbose log 
+// output and uses non-minified js & css)
+define('NETHGUI_DEBUG', FALSE);
+
 require_once('../Nethgui/Framework.php');
 
 $FW = new \Nethgui\Framework();
