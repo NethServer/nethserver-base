@@ -7,5 +7,4 @@
 
 if [ -r /etc/pam.d/system-auth-nh ]; then
    ln -sf /etc/pam.d/system-auth-nh /etc/pam.d/system-auth
-   ln -sf /etc/pam.d/password-auth-nh /etc/pam.d/password-auth
 fi
