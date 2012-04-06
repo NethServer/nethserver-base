@@ -104,4 +104,6 @@ if(system('/usr/sbin/lusermod', '-L', $userName) != 0) {
     $errors ++;
 }
 
+$acct->set_prop('__state', 'new');
+
 exit ($errors == 0 ? 0 : 1);

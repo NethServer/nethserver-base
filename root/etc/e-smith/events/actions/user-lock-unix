@@ -48,5 +48,6 @@ sub lock_user
 
     system("/usr/sbin/lusermod", "-L", $userName) == 0
         or die "Error running /usr/sbin/lusermod command to lock account $userName";
-    $u->set_prop('Locked', 'yes');
+
+    $u->set_prop('__state', 'locked');
 }

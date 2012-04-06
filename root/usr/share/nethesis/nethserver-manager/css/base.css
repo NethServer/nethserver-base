@@ -114,10 +114,10 @@ legend button {color: #444; text-decoration: underline; border: none; background
 .css_right {position: absolute; top: 0; right: 0}
 .DataTable th.ui-state-default {text-align: left; padding: .5em .3em; cursor: pointer; font-weight: bold; background-color: #E6E6E; color: #002F64; }
 .DataTables_sort_wrapper {position: relative}
-.DataTable tr.locked td {color: #888;}
-.DataTable tr.locked td:first-child {color: #777; background: url('../images/lock.png') no-repeat center right }
-.DataTable tr.nopasswd td {color: #888;}
-.DataTable tr.nopasswd td:first-child {color: #777; background: url('../images/key.png') no-repeat center right }
+.DataTable tr.user-new td {color: #888;}
+.DataTable tr.user-new td:first-child {color: #777; background: url('../images/key.png') no-repeat center right }
+.DataTable tr.user-locked td {color: #888;}
+.DataTable tr.user-locked td:first-child {color: #777; background: url('../images/lock.png') no-repeat center right }
 .DataTable tr.empty  {color: #777; height: 25px}
 /* END DataTable jQuery plugin */
 
