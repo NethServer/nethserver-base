@@ -168,7 +168,6 @@ $event = "bootstrap-console-save";
 # templates2events("/home/e-smith/ssl.pem/pem", $event);
 # event_link("nethserver-base-selinux-setup", $event, "10");
 # event_link("set-hostname", $event, "10");
-# event_link("initialize-users-chage", $event, "20");
 # event_link("conf-modules", $event, "30");
 # event_link("conf-startup", $event, "60");
 # event_link("conf-routes", $event, "89");
@@ -252,7 +251,6 @@ event_link("nethserver-base-selinux-setup", $event, "10");
 #event_link("group-modify-unix", $event, "15");
 #event_link("user-modify-unix", $event, "15");
 #event_link("update-passwd", $event, "20"); # This locks samba and unix passwords on locked accounts
-#event_link("initialize-users-chage",  $event, "20");
 #event_link("count-active-user-accounts", $event, "25");
 #event_link("conf-modules", $event, "30");
 event_link("copy-anaconda-logs", $event, "90");
@@ -278,7 +276,6 @@ event_link("reboot", $event, "99");
 $event = "user-create";
 
 event_link("user-create-unix", $event, "04");
-event_link("user-chage-unix", $event, "20");
 event_link("count-active-user-accounts", $event, "25");
 event_link("user-group-modify", $event, "85");
 
@@ -368,20 +365,12 @@ event_link("set-gateway-ip", $event, "55");
 # templates2events("/home/e-smith/files/ibays/Primary/html/package.html", $event);
 # safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/httpd");
 
-
-#--------------------------------------------------
-# actions for password-policy-update event
-#--------------------------------------------------
-$event = "password-policy-update";
-event_link("initialize-users-chage", $event, "20");
-
 #--------------------------------------------------
 # actions for nethserver-base-update event
 #--------------------------------------------------
 event_actions('nethserver-base-update', 
     "initialize-default-databases"   => "00",
     "nethserver-base-selinux-setup"  => "10",
-    "initialize-users-chage"         => "20",
     "nethserver-base-conf"           => "40",
     "nethserver-base-pam-setup"      => "50",
     "firewall-adjust"                => "70",
