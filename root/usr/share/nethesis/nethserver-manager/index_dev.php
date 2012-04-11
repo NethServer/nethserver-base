@@ -35,9 +35,6 @@ if(FALSE) {
   exit;
 }
 
-// If xdebug is loaded, disable xdebug backtraces:
-extension_loaded('xdebug') && xdebug_disable();
-
 // Disable hashed target names:
 define('NETHGUI_ENABLE_TARGET_HASH', FALSE);
 

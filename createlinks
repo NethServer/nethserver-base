@@ -420,7 +420,5 @@ event_actions('nethserver-base-save',
 event_templates('nethserver-base-save',
 		'/etc/sysconfig/sshd');
 
-safe_symlink("restart", "root/etc/e-smith/events/nethserver-base-save/services2adjust/sshd");
-
 exit 0;
 
