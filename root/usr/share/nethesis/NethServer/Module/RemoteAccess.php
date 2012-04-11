@@ -34,7 +34,7 @@ class RemoteAccess extends \Nethgui\Controller\TabsController
     public function initialize()
     {
         parent::initialize();
-        $this->loadChildren(array('*\RemoteManagement', '*\Ssh'));
+        $this->loadChildrenDirectory();
     }
 
 }
