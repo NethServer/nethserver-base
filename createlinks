@@ -420,5 +420,15 @@ event_actions('nethserver-base-save',
 event_templates('nethserver-base-save',
 		'/etc/sysconfig/sshd');
 
+
+#--------------------------------------------------
+# Refs #1038 expand /etc/hosts template on host 
+# events
+#--------------------------------------------------
+templates2events('/etc/hosts', 
+		 'host-create',
+		 'host-delete',
+		 'host-modify');
+
 exit 0;
 
