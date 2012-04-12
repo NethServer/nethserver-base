@@ -10,7 +10,11 @@
 	return;
     }
 
-    my $domainName = `hostname -d` || "localdomain";
+    my $domainName = qx(hostname) || "localhost.localdomain";
     chomp($domainName);
+
+    # remove everything before the first dot:
+    $domainName =~ s/^[^\.]+\.//;
+
     $DB->set_value("DomainName", $domainName);
 }
