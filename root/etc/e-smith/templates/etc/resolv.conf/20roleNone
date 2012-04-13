@@ -1,0 +1,8 @@
+{ 
+    # Ask the first two NameServers:
+    if($dns{role} eq 'none') {
+        foreach (split ',', $dns{NameServers}, 2) {       
+	    $OUT .= "nameserver $_\n";
+	}
+    }
+}
