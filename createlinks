@@ -334,10 +334,10 @@ event_link("delete-tmp", $event, "90");
 #--------------------------------------------------
 # actions for ip-up event
 #--------------------------------------------------
-
-$event = "ip-up";
-
-event_link("set-gateway-ip", $event, "55");
+#
+#$event = "ip-up";
+#
+#event_link("set-gateway-ip", $event, "55");
 
 #--------------------------------------------------
 # actions for ip-down event
@@ -379,6 +379,7 @@ event_actions('nethserver-base-update',
 
 event_templates('nethserver-base-update', qw(
     /etc/hosts
+    /etc/resolv.conf
     /etc/selinux/config
     /etc/libuser.conf
     /etc/pam.d/system-auth-nh
