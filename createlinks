@@ -2,176 +2,24 @@
 
 use esmith::Build::CreateLinks  qw(:all);
 
-# templates2events("/etc/sysconfig/i18n", qw(post-install post-upgrade));
-
-# conf-networking
-
-# foreach (qw(
-#     /etc/sysconfig/network-scripts/ifcfg-bond0
-#     /etc/sysconfig/network-scripts/ifcfg-eth0
-#     /etc/sysconfig/network-scripts/ifcfg-eth1
-#     /etc/sysconfig/network
-#     /etc/hosts
-#     /etc/resolv.conf
-#     /etc/sysctl.conf
-#     ))
-# {
-#     templates2events($_, qw(console-save bootstrap-console-save));
-# }
-
-
-# conf-other
-
-# templates2events("/etc/crontab",  qw(
-# 	console-save
-# 	bootstrap-console-save
-# 	post-install
-# 	post-upgrade
-# 	email-update
-# 	logrotate
-# 	));
-# templates2events("/etc/mime.types",  qw(
-# 	console-save
-# 	bootstrap-console-save
-# 	post-install
-# 	post-upgrade
-# 	email-update
-# 	logrotate
-# 	));
-# templates2events("/etc/sysconfig/rsyslog",  qw(
-# 	console-save
-# 	bootstrap-console-save
-# 	post-install
-# 	post-upgrade
-# 	));
-# templates2events("/etc/rsyslog.conf",  qw(
-# 	console-save
-# 	bootstrap-console-save
-# 	post-install
-# 	post-upgrade
-# 	));
-
-# conf-routes
-# templates2events("/etc/sysconfig/network-scripts/route-eth0", qw(
-# 	bootstrap-console-save
-# 	network-create
-# 	network-delete
-# 	));
-# templates2events("/etc/sysconfig/network-scripts/route-eth1", qw(
-# 	bootstrap-console-save
-# 	network-create
-# 	network-delete
-# 	));
-
-# conf-security
-
-# templates2events("/etc/securetty", qw(
-# 	console-save
-# 	bootstrap-console-save
-# 	ibay-create
-# 	ibay-delete
-# 	ibay-modify
-# 	ibay-modify-servers
-# 	network-create
-# 	network-delete
-# 	ip-change
-# 	email-update
-# 	remoteaccess-update
-#         nethserver-base-update
-# 	));
-# templates2events("/etc/services", qw(
-# 	console-save
-# 	bootstrap-console-save
-# 	ibay-create
-# 	ibay-delete
-# 	ibay-modify
-# 	ibay-modify-servers
-# 	network-create
-# 	network-delete
-# 	ip-change
-# 	email-update
-# 	remoteaccess-update
-#         nethserver-base-update
-# 	));
-# templates2events("/etc/shells", qw(
-# 	console-save
-# 	bootstrap-console-save
-# 	ibay-create
-# 	ibay-delete
-# 	ibay-modify
-# 	ibay-modify-servers
-# 	network-create
-# 	network-delete
-# 	ip-change
-# 	email-update
-# 	remoteaccess-update
-#         nethserver-base-update
-# 	));
-# templates2events("/etc/hosts.deny", qw(
-# 	console-save
-# 	bootstrap-console-save
-# 	ibay-create
-# 	ibay-delete
-# 	ibay-modify
-# 	ibay-modify-servers
-# 	network-create
-# 	network-delete
-# 	ip-change
-# 	email-update
-# 	remoteaccess-update
-#         nethserver-base-update
-# 	));
-# templates2events("/etc/hosts.allow", qw(
-# 	console-save
-# 	bootstrap-console-save
-# 	ibay-create
-# 	ibay-delete
-# 	ibay-modify
-# 	ibay-modify-servers
-# 	network-create
-# 	network-delete
-# 	ip-change
-# 	email-update
-# 	remoteaccess-update
-#         nethserver-base-update
-# 	));
-
-# # fstab-conf
-# templates2events("/etc/fstab", qw(
-#    post-install 
-#    post-upgrade
-# ));
-
 # SELINUX settings:
 templates2events("/etc/selinux/config", qw(
     post-install
     post-upgrade
 ));
 
+
 #--------------------------------------------------
 # actions for console-save event
 #--------------------------------------------------
 my $event = "console-save";
-
-# templates2events("/home/e-smith/ssl.pem/pem", $event);
-# event_link("set-hostname", $event, "10");
-# event_link("conf-modules", $event, "30");
-# event_link("conf-startup", $event, "60");
 event_link("reset-unsavedflag", $event, "95");
-# event_link("init-reload", $event, "90");
+
 
 #--------------------------------------------------
 # actions for bootstrap-console-save event
 #--------------------------------------------------
 $event = "bootstrap-console-save";
-
-# templates2events("/home/e-smith/ssl.pem/pem", $event);
-# event_link("nethserver-base-selinux-setup", $event, "10");
-# event_link("set-hostname", $event, "10");
-# event_link("conf-modules", $event, "30");
-# event_link("conf-startup", $event, "60");
-# event_link("conf-routes", $event, "89");
-# event_link("init-reload", $event, "90");
 event_link("reset-unsavedflag", $event, "95");
 
 
@@ -183,48 +31,41 @@ event_actions('group-create',
 	      'group-modify-unix' => '20',
     );
 
+
 #--------------------------------------------------
 # actions for group-delete event
 #--------------------------------------------------
 $event = "group-delete";
-
 event_link("group-delete-unix", $event, "15");
+
 
 #--------------------------------------------------
 # actions for group-modify event
 #--------------------------------------------------
 $event = "group-modify";
-
 event_link("group-modify-unix", $event, "15");
+
 
 #--------------------------------------------------
 # actions for halt event
 #--------------------------------------------------
 $event = "halt";
-
 event_link("halt", $event, "70");
 
-#--------------------------------------------------
-# actions for ip-change event
-#--------------------------------------------------
-# $event = "ip-change";
-
-# event_link("set-external-ip", $event, "03");
-# event_link("update-dns", $event, "85");
 
 #--------------------------------------------------
 # actions for network-create event
 #--------------------------------------------------
 # $event = "network-create";
-
 # event_link("conf-routes", $event, "89");
+
 
 #--------------------------------------------------
 # actions for network-delete event
 #--------------------------------------------------
 # $event = "network-delete";
-
 # event_link("conf-routes", $event, "89");
+
 
 #--------------------------------------------------
 # actions for post-install event
@@ -238,22 +79,6 @@ event_link("nethserver-base-selinux-setup", $event, "10");
 #event_link("conf-startup", $event, "10");
 #event_link("conf-modules", $event, "30");
 
-#--------------------------------------------------
-# actions for post-upgrade event
-#--------------------------------------------------
-$event = "post-upgrade";
-
-event_link("initialize-default-databases", $event, "00");
-#event_link("rotate_timestamped_logfiles", $event, "05");
-event_link("init-accounts", $event, "08");
-#event_link("conf-startup", $event, "10");
-event_link("nethserver-base-selinux-setup", $event, "10");
-#event_link("group-modify-unix", $event, "15");
-#event_link("user-modify-unix", $event, "15");
-#event_link("update-passwd", $event, "20"); # This locks samba and unix passwords on locked accounts
-#event_link("count-active-user-accounts", $event, "25");
-#event_link("conf-modules", $event, "30");
-event_link("copy-anaconda-logs", $event, "90");
 
 #--------------------------------------------------
 # actions for reboot event
@@ -272,20 +97,15 @@ event_link("reboot", $event, "99");
 #--------------------------------------------------
 # actions for user-create event
 #--------------------------------------------------
-
 $event = "user-create";
-
 event_link("user-create-unix", $event, "04");
 event_link("count-active-user-accounts", $event, "25");
 event_link("user-group-modify", $event, "85");
 
-
 #--------------------------------------------------
 # actions for user-delete event
 #--------------------------------------------------
-
 $event = "user-delete";
-
 event_link("user-delete-groups-and-pseudonyms", $event, "02");
 event_link("user-delete-unix", $event, "15");
 event_link("count-active-user-accounts", $event, "25");
@@ -305,18 +125,14 @@ event_link("user-group-modify", $event, "85");
 #--------------------------------------------------
 # actions for user-lock event
 #--------------------------------------------------
-
 $event = "user-lock";
-
 event_link("user-lock-unix", $event, "15");
 event_link("count-active-user-accounts", $event, "25");
 
 #--------------------------------------------------
 # actions for user-lock event
 #--------------------------------------------------
-
 $event = "user-unlock";
-
 event_link("user-unlock-unix", $event, "15");
 event_link("count-active-user-accounts", $event, "25");
 
@@ -324,46 +140,11 @@ event_link("count-active-user-accounts", $event, "25");
 #--------------------------------------------------
 # actions for password-modify event
 #--------------------------------------------------
-
 $event = "password-modify";
-
 event_link("set-password", $event, "25");
 event_link("count-active-user-accounts", $event, "25");
 event_link("delete-tmp", $event, "90");
 
-#--------------------------------------------------
-# actions for ip-up event
-#--------------------------------------------------
-#
-#$event = "ip-up";
-#
-#event_link("set-gateway-ip", $event, "55");
-
-#--------------------------------------------------
-# actions for ip-down event
-#--------------------------------------------------
-# $event = "ip-down";
-
-# event_link("isdn-down-notify", $event, "50");
-
-#--------------------------------------------------
-# actions for logrotate event
-#--------------------------------------------------
-# $event = "logrotate";
-
-# event_link("rotate_timestamped_logfiles", $event, "05");
-# event_link("purge-old-logs", $event, "75");
-
-# safe_symlink("reload", "root/etc/e-smith/events/$event/services2adjust/rsyslog");
-
-#--------------------------------------------------
-# actions for package-index-update event (move to nethserver-yum)
-#--------------------------------------------------
-# $event = "package-index-update";
-
-# templates2events("/etc/httpd/conf/httpd.conf", $event);
-# templates2events("/home/e-smith/files/ibays/Primary/html/package.html", $event);
-# safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/httpd");
 
 #--------------------------------------------------
 # actions for nethserver-base-update event
