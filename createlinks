@@ -174,24 +174,23 @@ safe_symlink("/etc/e-smith/templates-default/template-begin-pam", "root/etc/e-sm
 #--------------------------------------------------
 # actions for user-name validator
 #--------------------------------------------------
-my $validator = 'user-name';
-validator_link("uniq-account", $validator, 20);
-validator_link("user-length", $validator, 30);
-validator_link("max-users", $validator, 90);
-
+validator_actions('user-name',
+		  'uniq-account' => '20',
+		  'user-length' => '30',
+		  'max-users' => '90');
 
 #--------------------------------------------------
 # actions for group-name validator
 #--------------------------------------------------
-$validator = 'group-name';
-validator_link("uniq-account", $validator, 20);
-validator_link("group-length", $validator, 30);
+validator_actions('group-name',
+		  'uniq-account' => '20',
+		  'group-length' => '30');
 
 #--------------------------------------------------
 # Refs #939 tcp/udp port server validator
 #--------------------------------------------------
-validator_link('validate-remote-port', 'remote-port', 10);
-
+validator_actions('remote-port',
+		  'validate-remote-port', => '10');
 
 #--------------------------------------------------
 # nethserver-base-save event
