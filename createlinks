@@ -192,6 +192,13 @@ validator_actions('group-name',
 validator_actions('remote-port',
 		  'validate-remote-port', => '10');
 
+
+#--------------------------------------------------
+# validate passwords
+#--------------------------------------------------
+validator_actions('password-strength',
+		  'password-strength' => '10');
+
 #--------------------------------------------------
 # nethserver-base-save event
 #--------------------------------------------------
