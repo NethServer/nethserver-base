@@ -1632,7 +1632,11 @@ DNS_FORWARDER:
 #------------------------------------------------------------
 
 {
-    my $primary = $db->get_value('DNSForwarder') || '';
+    my $primary = $db->get_prop('dns', 'NameServers') || '';
+    my @NameServers = ();
+
+    $primary =~ s/,/ /g;
+
     ($rc, $choice) = $console->input_page
         (
          title => gettext("Corporate DNS server address"),
@@ -1648,32 +1652,29 @@ DNS_FORWARDER:
         goto $prevScreen;
     }
 
-    if ($choice)
-    {
-        if ( isValidIP($choice) )
-        {
-            $db->set_value('DNSForwarder', cleanIP($choice));
-            goto QUERY_SAVE_CONFIG;
-        }
-        elsif ($choice =~ /^\s*$/)
-        {
-            $db->delete('DNSForwarder');
-            goto QUERY_SAVE_CONFIG;
-        }
-    }
-    else
-    {
-        $db->delete('DNSForwarder');
-        goto QUERY_SAVE_CONFIG;
+    $choice =~ s/^ *//;
+
+    if ($choice) {
+	my @choices = split(/[, ]+/, $choice);	
+
+	foreach (@choices) {	   
+	    if ( isValidIP($_) ) {
+		push @NameServers, cleanIP($_);
+	    } else {
+		($rc, $choice) = $console->tryagain_page
+		    (
+		     title   => gettext("Invalid IP address for DNS forwarder"),
+		     choice  => $choice,
+		    );
+
+		goto DNS_FORWARDER;
+	    }
+	}
     }
 
-    ($rc, $choice) = $console->tryagain_page
-        (
-         title   => gettext("Invalid IP address for DNS forwarder"),
-         choice  => $choice,
-        );
+    $db->set_prop('dns', 'NameServers', join(',', @NameServers));
+    goto QUERY_SAVE_CONFIG;
 
-    goto DNS_FORWARDER;
 }
 
 #------------------------------------------------------------
