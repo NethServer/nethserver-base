@@ -33,12 +33,6 @@ my $termType = $db->get_prop('serial-console', 'Terminal') || '';
 
 $ENV{TERM} = $termType if($termType);
 
-use esmith::console::backup_running;
-esmith::console::backup_running->new->doit($console, $db);
-
-use esmith::console::perform_restore;
-esmith::console::perform_restore->new->doit($console, $db);
-
 use esmith::console::system_password;
 esmith::console::system_password->new->doit($console, $db);
 

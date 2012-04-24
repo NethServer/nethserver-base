@@ -11,6 +11,7 @@ use Net::IPv4Addr qw(:all);
 our @adapters;
 our $console;
 our $db;
+our $prevScreen;
 
 sub new
 {
@@ -362,7 +363,7 @@ LOCAL_NETMASK:
             $choice = cleanIP($choice);
             # Update primary record
             $db->set_value('LocalNetmask', $choice);
-            goto SYSTEM_MODE;
+            goto SERVER_ONLY;
         }
     }
     else
@@ -1550,55 +1551,7 @@ SERVER_ONLY:
 #------------------------------------------------------------
 
 {
-    if (scalar @adapters == 2)
-    {
-        my (undef, $driver1, undef, undef) = split (/\s+/, $adapters[0], 4);
-        my (undef, $driver2, undef, undef) = split (/\s+/, $adapters[1], 4);
-        if($driver1 eq $driver2)
-        {
-	    my $val = $db->get_prop('InternalInterface', 'NICBonding') || 'disabled';
-            my @args = (
-                    gettext("enabled"), gettext("Enable NIC bonding"),
-                    gettext("disabled"), gettext("Disable NIC bonding")
-                );
-
-            ($rc, $choice) = $console->menu_page
-                (
-                title => gettext("NIC Bonding"),
-		default => gettext($val),
-                text  =>
-                gettext("You have more than one network adapter. Would you like to bond them together into a single interface? This can provide greater throughput and/or failure resiliency, depending on your adapters and network configuration."),
-                argsref => \@args
-            );
-
-	    $db->set_prop('InternalInterface', 'NICBonding', 
-                    ($choice eq gettext('enabled')) ? 'enabled' : 'disabled');
-
-            $db->set_value("EthernetDriver2", 
-                ($db->get_prop('InternalInterface', 'NICBonding', 
-                    'enabled'))
-                ? $db->get_value("EthernetDriver1") : 'unknown');
-        }
-
-        # SME 935 - edit NIC bonding option string
-        if($db->get_prop('InternalInterface', 'NICBonding') eq 'enabled')
-        {
-            my $msg = gettext("The NIC bonding driver allows various modes and performance options. Edit the option string below if the defaults are not suitable.\n\nMost users do not need to change this setting.\n");
-            my $bond_opts = $db->get_prop("InternalInterface", "NICBondingOptions") || '';
-            ($rc, $choice) = $console->input_page
-                (
-                 title   => gettext("NIC Bonding Options"),
-                 text    => $msg,
-                 value   => $bond_opts
-                );
-
-            goto SERVER_ONLY unless ($rc == 0);
-
-            $db->set_prop('InternalInterface', 'NICBondingOptions', 
-                $choice);
-        }
-    }
-    
+    $prevScreen = 'SERVER_ONLY';
     goto OTHER_PARAMETERS unless ($db->get_value('AccessType') eq 'dedicated');
 
     my $gateway_ip = $db->get_value('GatewayIP') || "";
@@ -1621,7 +1574,7 @@ SERVER_ONLY:
          value   => $gateway_ip
         );
 
-    goto SYSTEM_MODE unless ($rc == 0);
+    goto LOCAL_NETMASK unless ($rc == 0);
 
     $choice ||= '';
     if (!$choice)
@@ -1673,226 +1626,6 @@ if ($bootstrapConsole eq "no")
 }
 #------------------------------------------------------------
 
-DHCP_SERVER:
-{
-    my $start = $db->get_prop("dhcpd", "start") || '0.0.0.65';
-    my $end = $db->get_prop("dhcpd", "end") || '0.0.0.250';
-    my $priv_ip = $db->get_value('LocalIP');
-    my $priv_mask = $db->get_value('LocalNetmask');
-    my $priv_net = ipv4_network($priv_ip, $priv_mask);
-    my $localip = esmith::util::IPquadToAddr($priv_ip);
-    my $netmask = esmith::util::IPquadToAddr($priv_mask);
-    $start      = esmith::util::IPquadToAddr($start);
-    $end        = esmith::util::IPquadToAddr($end);
-    # AND-out the network bits, and OR that with our current dhcp values.
-    my $localnet = $localip & $netmask;
-    # Delete the current DHCP leases file if we are changing networks
-    unless ((($start & $netmask) == $localnet) &&
-	    (($end & $netmask) == $localnet))
-    {
-	my $dhcpLeases = "/var/lib/misc/dnsmasq.leases";
-	open (WR, ">$dhcpLeases")
-	    or die gettext("Can't open output file"),
-		" $dhcpLeases", ": $!\n";
-	close WR;
-    }
-    # AND-out the host bits from the start and end ips.
-    # And, OR our local network with our start and end host values.
-    $start = $localnet | ($start & ~$netmask);
-    $end = $localnet | ($end & ~$netmask);
-    # Make sure that $start is less than $end (might not be if netmask has changed
-    if ($start > $end)
-    {
-	my $temp = $start;
-	$start = $end;
-	$end = $temp;
-    }
-    $start = esmith::util::IPaddrToQuad($start);
-    $end   = esmith::util::IPaddrToQuad($end);
-    # That's it. Set them back. These will hopefully be reasonable defaults.
-    $db->set_prop("dhcpd", "start", $start);
-    $db->set_prop("dhcpd", "end", $end);
-    my $DHCPServer = ($db->get_prop('dhcpd', 'status') eq 'enabled') ?
-        gettext("On") : gettext("Off");
-
-    my @args =
-        (
-         gettext("On"),  gettext("Provide DHCP service to local network"),
-         gettext("Off"), gettext("Do not provide DHCP service to local network"),
-        );
-
-    ($rc, $choice) = $console->menu_page
-        (
-         title => gettext("Select DHCP server configuration"),
-	 default => $DHCPServer,
-         text  =>
-         gettext("Please specify whether you would like this server to provide DHCP service to your local network. This will let you assign IP addresses to your other network computers automatically by configuring them to obtain their IP information using DHCP.") .
-         "\n\n" .
-         gettext("We strongly advise that all clients are configured using DHCP."),
-         argsref => \@args
-        );
-
-    goto SYSTEM_MODE unless ($rc == 0);
-
-    if ($choice eq gettext("On")) {
-        $db->set_prop('dhcpd', 'status', 'enabled');
-        goto DHCP_SERVER_BEGIN;
-    }
-
-    if ($choice eq gettext("Off"))
-    {
-        $db->set_prop('dhcpd', 'status', 'disabled');
-        goto DNS_FORWARDER;
-    }
-
-    goto DNS_FORWARDER;
-}
-
-#------------------------------------------------------------
-DHCP_SERVER_BEGIN:
-#------------------------------------------------------------
-
-{
-    my $start = $db->get_prop("dhcpd", "start") || '0.0.0.65';
-    my $priv_ip = $db->get_value('LocalIP');
-    my $priv_mask = $db->get_value('LocalNetmask');
-    my $priv_net = ipv4_network($priv_ip, $priv_mask);
-
-    my $errmsg = "";
-
-    ($rc, $choice) = $console->input_page
-        (
-         title => gettext("Select beginning of DHCP host number range"),
-         text  =>
-         gettext("You must reserve a range of host numbers for the DHCP server to use.") .
-         "\n\n" .
-         gettext("Please enter the first host number in this range. If you are using the standard server defaults and have no particular preference, you should keep the default values."),
-         value   => $start
-        );
-
-    goto DHCP_SERVER unless ($rc == 0);
-
-    if ($choice)
-    {
-        if ( isValidIP($choice) )
-        {
-	    my $dhcp_net = ipv4_network($choice, $priv_mask);
-	    if ($dhcp_net eq $priv_net)
-	    {
-		# need to check for valid range as well.
-		unless ($choice eq $start)
-		{
-		    $db->set_prop('dhcpd', 'start', cleanIP($choice));
-		}
-		goto DHCP_SERVER_END;
-	    }
-	    else
-	    {   
-		$errmsg = gettext("That address is not on the local network.");
-	    }
-	}
-	else
-	{   
-	    $errmsg = gettext("Invalid IP address for DHCP start");
-	}
-    }
-    else
-    {
-        $choice = '';
-	$errmsg = gettext("You must provide an IP address for the start of the DHCP range.");
-    }
-
-    ($rc, $choice) = $console->tryagain_page
-        (
-         title   => $errmsg,
-         choice  => $choice,
-        );
-
-    goto DHCP_SERVER_BEGIN;
-}
-
-#------------------------------------------------------------
-DHCP_SERVER_END:
-#------------------------------------------------------------
-
-{
-    my $serverStart = $db->get_prop('dhcpd', 'start');
-    my $serverEnd   = $db->get_prop('dhcpd', 'end');
-    my $priv_ip = $db->get_value('LocalIP');
-    my $priv_mask = $db->get_value('LocalNetmask');
-    my $priv_net = ipv4_network($priv_ip, $priv_mask);
-    my $errmsg = "";
-
-    ($rc, $choice) = $console->input_page
-        (
-         title => gettext("Select end of DHCP host number range"),
-         text  =>
-         gettext("Please enter the last host address in this range. If you are using the standard server defaults and have no particular preference, you should keep the default value."),
-         value   => $serverEnd
-        );
-
-    goto DHCP_SERVER_BEGIN unless ($rc == 0);
-
-    if ($choice)
-    {
-        if ( isValidIP($choice) )
-        {
-	    my $dhcp_net = ipv4_network($choice, $priv_mask);
-	    if ($dhcp_net eq $priv_net)
-	    {
-		# There are a few additional things to confirm here. We now
-		# know that the chosen range is on the same network as the
-		# private interface. We should ensure that it does not overlap
-		# the private interface, and that the end is larger than the
-		# beginning. 
-		if (cmpIP($serverStart, $choice) < 0)
-		{
-		    if ((cmpIP($priv_ip, $serverStart) < 0) ||
-			(cmpIP($choice, $priv_ip) < 0))
-		    {
-			# need to check for valid range as well.
-			unless ($choice eq $serverEnd)
-			{
-			    $db->set_prop('dhcpd', 'end', cleanIP($choice));
-			}
-			goto DNS_FORWARDER;
-		    }
-		    else
-		    {
-			$errmsg = gettext("The IP range cannot include our private network address.");
-			$choice = $priv_ip;
-		    }
-		}
-		else
-		{
-		    $errmsg = gettext("The end of the range must be larger than the start.");
-		    $choice = $serverStart;
-		}
-	    }
-	    else
-	    {
-		$errmsg = gettext("That address is not on the local network.");
-	    }
-        }
-	else
-	{
-	    $errmsg = gettext("Invalid IP address for DHCP start");
-	}
-    }
-    else
-    {
-        $choice = '';
-	$errmsg = gettext("You must provide an IP address for the end of the DHCP range.");
-    }
-
-    ($rc, $choice) = $console->tryagain_page
-        (
-         title   => $errmsg,
-         choice  => $choice,
-        );
-
-    goto DHCP_SERVER_END;
-}
 
 #------------------------------------------------------------
 DNS_FORWARDER:
@@ -1912,7 +1645,7 @@ DNS_FORWARDER:
 
     if ($rc != 0)
     {
-        goto DHCP_SERVER;
+        goto $prevScreen;
     }
 
     if ($choice)
