@@ -154,13 +154,14 @@ sub doit
     $console = shift;
     $db = shift;
 
-    return if ($db->get_prop('bootstrap-console', 'ForceSave') eq 'yes'); # We can skip the menus
+    my $BootstrapConsole = $db->get_value('BootstrapConsole') || 'enabled';
     my $SystemName = $db->get_value('SystemName');
     my $DomainName = $db->get_value('DomainName');
-    my $bootstrapConsole =
-	$db->get_prop("bootstrap-console", "Run") || "no";
-    my $rebootRequired = "no";
     my ($rc, $choice);
+
+    if ($BootstrapConsole eq 'disabled') {
+	return;
+    }
 
     #------------------------------------------------------------
     CONFIGURE_MAIN:
@@ -1616,15 +1617,6 @@ SERVER_ONLY:
 #------------------------------------------------------------
 OTHER_PARAMETERS:
 #------------------------------------------------------------
-# Sample UnsavedChanges at this point - nothing after here
-# should require a reboot - and we don't require a reboot first time
-# through
-#------------------------------------------------------------
-if ($bootstrapConsole eq "no")
-{
-    $rebootRequired = $db->get_value('UnsavedChanges');
-}
-#------------------------------------------------------------
 
 
 #------------------------------------------------------------
@@ -1712,42 +1704,17 @@ QUERY_SAVE_CONFIG:
     #------------------------------------------------------------
  SAVE_CONFIG:
     #------------------------------------------------------------
-    # After saving config we don't need to run it again on the next reboot.
 
-    $db->set_prop("bootstrap-console", "ForceSave", "no");
-    $console->infobox(
-           title => gettext("Activating configuration settings"),
-           text => gettext("Please stand by while your configuration settings are activated ..."),
-          );
-    
-    if ($self->{bootstrap})
-    {
-        system("/sbin/e-smith/signal-event", "bootstrap-console-save");
-	($rc, $choice) = $console->yesno_page
-	(
-	    title   => gettext("Changes will take effect after reboot"),
-	    text =>
-		 gettext("The new configuration will take effect when you reboot the server.") .
-			 "\n\n" .
-		 gettext("Do you wish to reboot right now?"),
-	);
+    if ($self->{bootstrap}) {
+        goto QUIT1;
 
-        goto QUIT1 unless ($rc == 0);
-
-        system("/usr/bin/tput", "clear");
-        system("/sbin/e-smith/signal-event", "reboot");
-
-        # A bit of a hack to avoid the console restarting before the
-        # reboot takes effect.
-
-        sleep(600);
-        exit (0);
-    }
-    else
-    {
+    } else {
+	$console->infobox(
+	    title => gettext("Activating configuration settings"),
+	    text => gettext("Please stand by while your configuration settings are activated ..."),
+	    );
         system("/sbin/e-smith/signal-event", "console-save");
         $db->reload;
-
 	my $current_mode = (getppid() == 1) ? "auto" : "login";
 	if ($current_mode ne $db->get_value('ConsoleMode'))
 	{

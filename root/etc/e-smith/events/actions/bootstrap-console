@@ -29,10 +29,6 @@ my $console = esmith::console->new();
 
 my $db = esmith::ConfigDB::unsaved->open;
 
-my $termType = $db->get_prop('serial-console', 'Terminal') || '';
-
-$ENV{TERM} = $termType if($termType);
-
 use esmith::console::system_password;
 esmith::console::system_password->new->doit($console, $db);
 
