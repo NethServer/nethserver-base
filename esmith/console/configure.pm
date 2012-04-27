@@ -1618,6 +1618,7 @@ SERVER_ONLY:
 OTHER_PARAMETERS:
 #------------------------------------------------------------
 
+    1;
 
 #------------------------------------------------------------
 DNS_FORWARDER:
@@ -1665,7 +1666,12 @@ DNS_FORWARDER:
     }
 
     $db->set_prop('dns', 'NameServers', join(',', @NameServers));
-    goto QUERY_SAVE_CONFIG;
+
+    if($self->{bootstrap}) {
+	goto SAVE_CONFIG;
+    } else { 
+	goto QUERY_SAVE_CONFIG;
+    }
 
 }
 

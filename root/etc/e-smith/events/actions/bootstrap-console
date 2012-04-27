@@ -1,43 +1,33 @@
-#!/usr/bin/perl -wT
+#!/usr/bin/perl
 
-#----------------------------------------------------------------------
-# copyright (C) 1999-2006 Mitel Corporation
 #
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+# NethServer bootstrap-console
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#----------------------------------------------------------------------
-package esmith::console;
 
 use strict;
+use Env;
+use esmith::ConfigDB;
 
-use Locale::gettext;
-use esmith::ConfigDB::unsaved;
-use esmith::console;
+my $db = esmith::ConfigDB->open_ro;
+if(! $db || $db->get_value('BootstrapConsole') ne 'enabled') {
+    exit 0;
+}
 
-my $console = esmith::console->new();
+my $tty = `/usr/bin/tty`;
+my $event = shift;
+my $ttyArg = '';
 
-my $db = esmith::ConfigDB::unsaved->open;
+if($tty !~ m[^/dev/(console|tty\d)]) {
+    warn('Invalid tty name: ' . $tty);
+    $ttyArg = '';
+} else {
+    $ttyArg = $1;
+}
 
-use esmith::console::system_password;
-esmith::console::system_password->new->doit($console, $db);
+$ENV{TERM} = 'linux';
 
-use esmith::console::configure;
-esmith::console::configure->new(bootstrap => 1)->doit($console, $db);
+if (system('/sbin/e-smith/bootstrap-console', $tty) != 0) {
+    exit 1;
+}
 
-use esmith::console::save_config;
-esmith::console::save_config->new->doit($console, $db);
-
-system("/usr/bin/tput", "clear");
-exit (0);
-
+exit 0;

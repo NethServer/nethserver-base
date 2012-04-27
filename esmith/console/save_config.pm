@@ -16,7 +16,7 @@ sub doit
 {
     my ($self, $console, $db) = @_;
 
-    $BootstrapConsole = $db->get_value('BootstrapConsole') || 'enabled';
+    my $BootstrapConsole = $db->get_value('BootstrapConsole') || 'enabled';
 
     if($BootstrapConsole eq 'disabled') {
 	return;
