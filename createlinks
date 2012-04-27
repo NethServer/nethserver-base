@@ -1,12 +1,7 @@
 #!/usr/bin/perl -w
 
 use esmith::Build::CreateLinks  qw(:all);
-
-# SELINUX settings:
-templates2events("/etc/selinux/config", qw(
-    post-install
-    post-upgrade
-));
+use File::Path;
 
 
 #--------------------------------------------------
@@ -46,12 +41,6 @@ $event = "group-modify";
 event_link("group-modify-unix", $event, "15");
 
 
-#--------------------------------------------------
-# actions for halt event
-#--------------------------------------------------
-$event = "halt";
-event_link("halt", $event, "70");
-
 
 #--------------------------------------------------
 # actions for network-create event
@@ -65,33 +54,6 @@ event_link("halt", $event, "70");
 #--------------------------------------------------
 # $event = "network-delete";
 # event_link("conf-routes", $event, "89");
-
-
-#--------------------------------------------------
-# actions for post-install event
-#--------------------------------------------------
-$event = "post-install";
-
-event_link("initialize-default-databases", $event, "00");
-#event_link("rotate_timestamped_logfiles", $event, "05");
-event_link("init-accounts", $event, "08");
-event_link("nethserver-base-selinux-setup", $event, "10");
-#event_link("conf-startup", $event, "10");
-#event_link("conf-modules", $event, "30");
-
-
-#--------------------------------------------------
-# actions for reboot event
-#--------------------------------------------------
-
-$event = "reboot";
-
-event_link("reboot", $event, "99");
-
-#--------------------------------------------------
-# actions for remoteaccess-update event
-#--------------------------------------------------
-#$event = "remoteaccess-update";
 
 
 #--------------------------------------------------
@@ -113,14 +75,10 @@ event_link("count-active-user-accounts", $event, "25");
 #--------------------------------------------------
 # actions for user-modify event
 #--------------------------------------------------
-
 $event = "user-modify";
-
 event_link("user-modify-unix", $event, "15");
 event_link("user-group-modify", $event, "85");
 
-#$event = "user-modify-admin";
-#event_link("user-modify-unix", $event, "15");
 
 #--------------------------------------------------
 # actions for user-lock event
@@ -142,7 +100,6 @@ event_link("count-active-user-accounts", $event, "25");
 #--------------------------------------------------
 $event = "password-modify";
 event_link("set-password", $event, "25");
-event_link("count-active-user-accounts", $event, "25");
 event_link("delete-tmp", $event, "90");
 
 
@@ -218,6 +175,13 @@ templates2events('/etc/hosts',
 		 'host-create',
 		 'host-delete',
 		 'host-modify');
+
+
+#--------------------------------------------------
+# system-{start,stop} events
+#--------------------------------------------------
+event_actions('system-start', 'bootstrap-console' => '20');
+File::Path::make_path('root/etc/e-smith/events/system-stop');
 
 exit 0;
 
