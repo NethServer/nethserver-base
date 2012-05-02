@@ -1,9 +1,9 @@
-# /etc/localnetworks - See #1087 
-#
-# Modify this list by the LocalNetwork web admin module
-#
-
 {
+    # /etc/localnetworks - See #1087, #1089
+    #
+    # The format of this file is specified in hosts.allow manpage
+    #
+
     use esmith::NetworksDB;
 
     my $ndb = esmith::NetworksDB->open_ro();
