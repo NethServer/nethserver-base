@@ -45,15 +45,17 @@ event_link("group-modify-unix", $event, "15");
 #--------------------------------------------------
 # actions for network-create event
 #--------------------------------------------------
-# $event = "network-create";
-# event_link("conf-routes", $event, "89");
+event_templates('network-create',
+		'/etc/localnetworks');
+# event_link("conf-routes", 'network-create', "89");
 
 
 #--------------------------------------------------
 # actions for network-delete event
 #--------------------------------------------------
-# $event = "network-delete";
-# event_link("conf-routes", $event, "89");
+event_templates('network-delete',
+		'/etc/localnetworks');
+# event_link("conf-routes", 'network-delete', "89");
 
 
 #--------------------------------------------------
