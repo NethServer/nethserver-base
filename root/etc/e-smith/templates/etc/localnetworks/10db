@@ -1,0 +1,17 @@
+# /etc/localnetworks - See #1087 
+#
+# Modify this list by the LocalNetwork web admin module
+#
+
+{
+    use esmith::NetworksDB;
+
+    my $ndb = esmith::NetworksDB->open_ro();
+    my @localAccessList = $ndb->local_access_spec();
+
+    foreach(@localAccessList) {
+	s#/255\.255\.255\.255##g;
+	$OUT .= $_ . "\n" 
+    }
+
+}
