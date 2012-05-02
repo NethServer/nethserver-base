@@ -126,6 +126,9 @@ event_templates('nethserver-base-update', qw(
     /etc/pam.d/password-auth-nh
     /etc/sudoers
     /etc/sysconfig/sshd
+    /etc/localnetworks
+    /etc/hosts.allow
+    /etc/hosts.deny
 ));
 		
 safe_symlink("/etc/e-smith/templates-default/template-begin-pam", "root/etc/e-smith/templates/etc/pam.d/system-auth-nh/template-begin");		
@@ -161,12 +164,14 @@ validator_actions('password-strength',
 #--------------------------------------------------
 # nethserver-base-save event
 #--------------------------------------------------
+event_templates('nethserver-base-save',
+		'/etc/hosts.allow',
+		'/etc/hosts.deny',
+		'/etc/sysconfig/sshd');
+
 event_actions('nethserver-base-save',
 	      'firewall-adjust' => '60',
 	      'runlevel-adjust' => '61');
-
-event_templates('nethserver-base-save',
-		'/etc/sysconfig/sshd');
 
 
 #--------------------------------------------------
