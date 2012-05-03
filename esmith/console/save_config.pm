@@ -16,19 +16,9 @@ sub doit
 {
     my ($self, $console, $db) = @_;
 
-    my $BootstrapConsole = $db->get_value('BootstrapConsole') || 'enabled';
-
-    if($BootstrapConsole eq 'disabled') {
-	return;
-    }
-
     #------------------------------------------------------------
  SAVE_CONFIG:
     #------------------------------------------------------------
-
-    # After saving config we don't need to run it again on the
-    # next reboot.
-    $db->set_value("BootstrapConsole", "disabled");
 
     $console->infobox(
            title => gettext("Activating configuration settings"),

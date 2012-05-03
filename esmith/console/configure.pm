@@ -154,14 +154,9 @@ sub doit
     $console = shift;
     $db = shift;
 
-    my $BootstrapConsole = $db->get_value('BootstrapConsole') || 'enabled';
     my $SystemName = $db->get_value('SystemName');
     my $DomainName = $db->get_value('DomainName');
     my ($rc, $choice);
-
-    if ($BootstrapConsole eq 'disabled') {
-	return;
-    }
 
     #------------------------------------------------------------
     CONFIGURE_MAIN:

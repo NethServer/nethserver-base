@@ -187,8 +187,8 @@ templates2events('/etc/hosts',
 #--------------------------------------------------
 # system-{start,stop} events
 #--------------------------------------------------
-event_actions('system-start', 'bootstrap-console' => '20');
-File::Path::make_path('root/etc/e-smith/events/system-stop');
+File::Path::make_path('root/etc/e-smith/events/system-start',
+		      'root/etc/e-smith/events/system-stop');
 
 exit 0;
 
