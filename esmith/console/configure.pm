@@ -6,6 +6,7 @@ use esmith::console;
 use esmith::util::network qw(:all);
 use esmith::db;
 use esmith::ethernet;
+use esmith::event;
 use Net::IPv4Addr qw(:all);
 
 our @adapters;
@@ -1714,7 +1715,7 @@ QUERY_SAVE_CONFIG:
 	    title => gettext("Activating configuration settings"),
 	    text => gettext("Please stand by while your configuration settings are activated ..."),
 	    );
-        system("/sbin/e-smith/signal-event", "console-save");
+        event_signal("console-save");
         $db->reload;
 	my $current_mode = (getppid() == 1) ? "auto" : "login";
 	if ($current_mode ne $db->get_value('ConsoleMode'))

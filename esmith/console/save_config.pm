@@ -1,6 +1,7 @@
 package esmith::console::save_config;
 use Locale::gettext;
 use esmith::console;
+use esmith::event;
 use strict;
 use warnings;
 
@@ -25,7 +26,7 @@ sub doit
            text => gettext("Please stand by while your configuration settings are activated ..."),
           );
 
-    system("/sbin/e-smith/signal-event", 'bootstrap-console-save');
+    event_signal('bootstrap-console-save');
 }
 
 1;
