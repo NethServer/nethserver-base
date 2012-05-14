@@ -71,7 +71,7 @@ input[type="text"][readonly] {background-color: #eee; color: #444}
 .Fieldset.expandable.collapsed {margin-bottom: 0}
 .Fieldset.expandable legend .TextLabel {cursor:pointer}
 
-.FieldsetSwitchPanel {margin-left: 2em}
+.FieldsetSwitchPanel {margin-left: 2em; margin-bottom: 1em}
 fieldset {margin-left: 16px}
 legend {padding: 0 0 .6em 18px; display: block; font-size: 115%; color: #444; position: relative; left: -16px}
 legend .ui-icon:first-child {position: absolute; top: 0; left: -2px; opacity: .5; -moz-opacity: .5}
