@@ -190,5 +190,8 @@ templates2events('/etc/hosts',
 File::Path::make_path('root/etc/e-smith/events/system-start',
 		      'root/etc/e-smith/events/system-stop');
 
+# Refs #1066 - The skel root directory
+File::Path::make_path('root/etc/e-smith/skel');
+
 exit 0;
 

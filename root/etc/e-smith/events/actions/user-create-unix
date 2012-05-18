@@ -27,9 +27,11 @@ use strict;
 use Errno;
 use esmith::ConfigDB;
 use esmith::AccountsDB;
+use File::Path;
 
 my $conf = esmith::ConfigDB->open_ro;
 my $accounts = esmith::AccountsDB->open;
+my $homeDirPrefix = '/home/e-smith/files/users/';
 
 my $errors = 0;
 
@@ -50,6 +52,8 @@ unless (defined $acct and $acct->prop('type') eq "user")
 
 my $lock = undef;
 my $uid;
+
+# FIXME: assignment in conditional operator:
 unless ($uid = $acct->prop('Uid'))
 {
     use esmith::lockfile;
@@ -70,6 +74,11 @@ if( ! -x $shell) {
     $shell = '/bin/false';
 }
 
+# Create the home directory prefix if still does not exists
+if( ! -d $homeDirPrefix) {
+    File::Path::make_path($homeDirPrefix);
+}
+
 # Create the user's unique group first
 system(
 	"/usr/sbin/lgroupadd",
@@ -86,8 +95,8 @@ system(
 	"-u", $uid,
 	"-g", $uid,
         '--surname', $userName,
-	'-d', '/home/e-smith/files/users/' . $userName,
-	"-k", "/etc/e-smith/skel/user",
+	'-d', $homeDirPrefix . $userName,
+	"-k", "/etc/skel/",
 	"-s", $shell,
 	$userName
     ) == 0 or die "Failed to create user account `$userName`.\n";
@@ -96,8 +105,7 @@ system(
 $lock && esmith::lockfile::UnlockFile($lock);
 
 # Set initial permissions on user's root directory.
-
-chmod 0700, "/home/e-smith/files/users/$userName";
+chmod 0700, $homeDirPrefix . $userName;
 
 if(system('/usr/sbin/lusermod', '-L', $userName) != 0) {
     warn("Could not lock password for user `$userName`.\n");
