@@ -154,7 +154,7 @@ validator_actions('group-name',
 # Refs #939 tcp/udp port server validator
 #--------------------------------------------------
 validator_actions('remote-port',
-		  'validate-remote-port', => '10');
+		  'open-tcp-connection', => '10');
 
 
 #--------------------------------------------------

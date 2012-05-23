@@ -1,0 +1,35 @@
+#!/usr/bin/perl
+
+use strict;
+use IO::Handle;
+
+my $port_number = shift || die('Missing port number argument');
+my $server_name = shift || die('Missing server name argument');
+
+=head1 validate-remote-port
+
+Arguments: <port_number> <po <server_name>
+
+=cut
+
+use esmith::util::network;
+
+if( ! esmith::util::network::isValidPort($port_number) ) {
+    # Invalid port number argument
+    exit 3;
+}
+
+if( ! (esmith::util::network::isValidHostname($server_name)) ) {
+    # Invalid host address
+    exit 4;
+}
+
+my $output = qx(/usr/bin/nc -z -v $server_name $port_number 2>&1);
+
+if($? != 0) {
+    my $reason = [split(/:\s+/, $output, 3)]->[-1];
+    print $reason;
+    exit 1;
+}
+
+exit 0;
