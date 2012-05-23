@@ -18,7 +18,7 @@ my $maxGroupNameLength = ($db->get('maxGroupNameLength')
    : "") || 32;
 
 if ( length $groupName > $maxGroupNameLength ) {
-    print "Max length is: $maxGroupNameLength\n"; 
+    print "Max group name length is: $maxGroupNameLength\n"; 
     exit 1 
 }
 
