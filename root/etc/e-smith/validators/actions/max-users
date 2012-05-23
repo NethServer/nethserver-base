@@ -21,14 +21,13 @@ Takes the name of the next page to go to if the test succeeds as an argument.
 my $sysconfig = $db->get('sysconfig');
 my $maxUsers = (($sysconfig) ? $sysconfig->prop('MaxUsers') : '') || '';
 my $activeUsers = scalar $accountdb->activeUsers() || 0;
-if ((defined $activeUsers and $maxUsers ne '')
-    and ($activeUsers >= $maxUsers))
+if ((defined $activeUsers && $maxUsers ne '')
+    && ($activeUsers >= $maxUsers))
 {
-    print "Can't create more than $maxUsers accounts.\n";
+    print "Max users: $maxUsers\n";
     exit 1;
 }
-else
-{
-    exit 0;
-}
+
+exit 0;
+
 

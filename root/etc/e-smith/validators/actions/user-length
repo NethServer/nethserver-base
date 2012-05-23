@@ -21,7 +21,7 @@ my $maxAcctNameLength = ($db->get('maxAcctNameLength')
    : "") || 32;
 
 if ( length $acctName > $maxAcctNameLength ) {
-    print "'$acctName' is too long. Max length is: $maxAcctNameLength\n"; 
+    print "Max length is: $maxAcctNameLength\n";
     exit 1 
 } else {
     exit 0;
