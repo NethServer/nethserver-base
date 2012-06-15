@@ -1,4 +1,3 @@
-
 #!/usr/bin/perl -w
 
 use esmith::Build::CreateLinks  qw(:all);
@@ -71,7 +70,7 @@ event_link("user-group-modify", $event, "85");
 # actions for user-delete event
 #--------------------------------------------------
 event_actions('user-delete',
-	      'user-delete-groups-and-pseudonyms' => '75',
+	      'user-delete-groups' => '75',
 	      'user-delete-unix' => '80',
 	      'count-active-user-accounts' => '90'
     );

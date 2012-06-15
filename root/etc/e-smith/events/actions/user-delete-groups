@@ -7,7 +7,7 @@ my $accountdb = esmith::AccountsDB->open() or
     die "Unable to open accounts db";
 
 my ($event, $acctName) = @ARGV;
-$accountdb->remove_user_from_groups($acctName, 
-    $accountdb->user_group_list($acctName));
-$accountdb->remove_all_user_pseudonyms($acctName);
+
+$accountdb->remove_user_from_groups($acctName, $accountdb->user_group_list($acctName));
+
 
