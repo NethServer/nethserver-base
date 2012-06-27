@@ -77,6 +77,7 @@ legend {padding: 0 0 .6em 18px; display: block; font-size: 115%; color: #444; po
 legend .ui-icon:first-child {position: absolute; top: 0; left: -2px; opacity: .5; -moz-opacity: .5}
 legend button {color: #444; text-decoration: underline; border: none; background: transparent; font-size: 115%; color: #444; cursor: pointer}
 
+.labeled-control.label-right {overflow: hidden}
 .labeled-control.label-left label {display: inline-block; min-width: 10em; margin-right: 0.5em}
 .labeled-control.label-right label {margin-left: 0.5em}
 .labeled-control.label-above label {display: block}
@@ -173,6 +174,7 @@ legend button {color: #444; text-decoration: underline; border: none; background
 
 textarea.console {font-family: monospace; background: #111; color: #eee; width: 100%}
 
+.Slider { width: 200px; float: left; margin: .3em .2em .3em .5em}
 
 
 /* Responsive layout */
