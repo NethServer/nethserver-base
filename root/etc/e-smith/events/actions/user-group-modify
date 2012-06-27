@@ -38,12 +38,18 @@ foreach (split(' ', `/usr/bin/groups $userName`)) {
 }
 
 # Combine the previous and the current membership sets:
-my %groups = map { $_, 1 } @oldGroups, $accountsDb->user_group_list($userName);
+my %groups = {};
 
-# Then do the group-modify actions for all groups in the resulting set:
-if(scalar(keys %groups) > 0) {
-    warn 'INFO: update user membership of groups ' . join(', ', keys %groups) . ".\n";
-    event_signal("group-modify", $_) foreach (keys %groups);
+foreach (@oldGroups, $accountsDb->user_group_list($userName)) {
+    $groups{$_} ++;
+}
+
+# Signal group modify excluding the two set intersection
+foreach (keys %groups) {
+    if($groups{$_} == 1) {
+	warn 'INFO: update user membership of group ' . $_ . ".\n";
+	event_signal("group-modify", $_);
+    }
 }
 
 
