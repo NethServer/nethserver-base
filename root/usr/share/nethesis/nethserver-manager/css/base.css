@@ -73,7 +73,7 @@ input[type="text"][readonly] {background-color: #eee; color: #444}
 
 .FieldsetSwitchPanel {margin-left: 2em; margin-bottom: 1em}
 fieldset {margin-left: 16px}
-legend {padding: 0 0 .6em 18px; display: block; font-size: 115%; color: #444; position: relative; left: -16px}
+legend {padding: 0 0 .6em 18px; display: block; font-size: 100%; color: #444; position: relative; left: -16px}
 legend .ui-icon:first-child {position: absolute; top: 0; left: -2px; opacity: .5; -moz-opacity: .5}
 legend button {color: #444; text-decoration: underline; border: none; background: transparent; font-size: 115%; color: #444; cursor: pointer}
 
@@ -82,6 +82,7 @@ legend button {color: #444; text-decoration: underline; border: none; background
 .labeled-control.label-right label {margin-left: 0.5em}
 .labeled-control.label-above label {display: block}
 
+.ButtonList {clear: both}
 .Buttonlist .Help {position: absolute; top: auto; right: 0}
 .Buttonlist > .Button {margin-right: 0.4em;}
 .Buttonlist > .Button.link:first-child {color: white; border: 1px solid #3079ED; text-transform: uppercase; background: #4D90FE url('img/blue-inset-normal.png') repeat-x left bottom}
@@ -174,7 +175,7 @@ legend button {color: #444; text-decoration: underline; border: none; background
 
 textarea.console {font-family: monospace; background: #111; color: #eee; width: 100%}
 
-.Slider { width: 200px; float: left; margin: .3em .2em .3em .5em}
+.Slider { width: 200px; margin: .3em .2em .3em .5em}
 
 
 /* Responsive layout */
