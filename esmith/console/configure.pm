@@ -1989,6 +1989,7 @@ QUERY_SAVE_CONFIG:
     if ($self->{bootstrap})
     {
         system("/sbin/e-smith/signal-event", "bootstrap-console-save");
+	system("/sbin/e-smith/event-queue", "signal");
 	($rc, $choice) = $console->yesno_page
 	(
 	    title   => gettext("Changes will take effect after reboot"),
