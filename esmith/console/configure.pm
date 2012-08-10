@@ -1708,6 +1708,7 @@ QUERY_SAVE_CONFIG:
     #------------------------------------------------------------
 
     if ($self->{bootstrap}) {
+	system("/sbin/e-smith/event-queue", "signal");
         goto QUIT1;
 
     } else {
