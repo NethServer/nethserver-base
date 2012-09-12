@@ -16,7 +16,7 @@
         "Effect": "ALLOW",
         "Subject": ".groups HAS administrators",
         "Action": "READ OR WRITE",
-        "Resource": "Nethgui\\System\\ConfigurationDatabase:*",
+        "Resource": "Nethgui\\System\\EsmithDatabase:*",
 
         "Description":
             "Administrators are allowed to read and modify any database"
@@ -38,7 +38,7 @@
         "Effect": "ALLOW",
         "Subject": ".groups HAS managers",
         "Action": ["QUERY OR MUTATE OR INSTANTIATE", "WRITE"],
-        "Resource": [".category IS Management", "Nethgui\\System\\ConfigurationDatabase:accounts"],
+        "Resource": [".category IS Management", "Nethgui\\System\\EsmithDatabase:accounts"],
 
         "Description":
             "Managers can access modules in Management category and write accounts database"
@@ -49,9 +49,19 @@
         "Effect": "ALLOW",
         "Subject": ".authenticated",
         "Action": "READ OR INSTANTIATE",
-        "Resource": "Nethgui\\System\\ConfigurationDatabase:* OR NethServer\\Module\\*",
+        "Resource": "Nethgui\\System\\EsmithDatabase:* OR NethServer\\Module\\*",
 
         "Description":
             "Authenticated users can read any database and instantiate any module"
+    },
+    {
+        "Id": 1347435447,
+        "Effect": "ALLOW",
+        "Subject": ".authenticated",
+        "Action": "QUERY",
+        "Resource": "NethServer\\Module\\Status:*",
+
+        "Description":
+            "Authenticated users can query Status module (default)"
     }
 ]
