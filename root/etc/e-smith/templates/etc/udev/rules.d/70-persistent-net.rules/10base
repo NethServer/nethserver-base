@@ -1,0 +1,18 @@
+{
+
+use esmith::InterfacesDB;
+my $idb = esmith::InterfacesDB->open_ro();
+my @interfaces = $idb->ethernets;
+foreach my $i (@interfaces) {
+    my $name = $i->key;
+    my %props = $i->props;
+    my @keys = keys %props;
+    my $hwaddr = $props{'hwaddr'} || '';
+    # skip bridged and bondend ethernets
+    if ( grep($_ eq 'bridge', @keys) or grep($_ eq 'slave', @keys) or ($hwaddr eq '')) { 
+        next;
+    }
+    $OUT.="SUBSYSTEM==\"net\", ACTION==\"add\", DRIVERS==\"?*\", ATTR{address}==\"$hwaddr\", ATTR{type}==\"1\", KERNEL==\"eth*\", NAME=\"$name\"\n";
+}
+
+}
