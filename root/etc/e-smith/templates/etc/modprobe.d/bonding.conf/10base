@@ -1,0 +1,12 @@
+{
+
+use esmith::InterfacesDB;
+my $idb = esmith::InterfacesDB->open_ro();
+my @bonds = $idb->bonds;
+foreach my $i (@bonds) {
+    my $name = $i->key;
+    $OUT.="alias $name bonding\n";
+}
+
+}
+
