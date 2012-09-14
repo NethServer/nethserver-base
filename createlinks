@@ -145,7 +145,7 @@ event_templates($event,
      '/etc/modprobe.d/bonding.conf',
      '/etc/udev/rules.d/70-persistent-net.rules'
 );
-
+safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/network");
 
 
 #--------------------------------------------------
