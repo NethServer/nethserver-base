@@ -62,13 +62,13 @@ sub doit
     elsif ($choice eq gettext('Reboot'))
     {
         system("/usr/bin/tput", "clear");
-        system("/sbin/e-smith/signal-event", "reboot");
+        system("reboot");
     }
     elsif ($choice eq gettext('Reconfigure'))
     {
         system("/usr/bin/tput", "clear");
 	system("/sbin/e-smith/signal-event", "post-upgrade");
-        system("/sbin/e-smith/signal-event", "reboot");
+        system("reboot");
     }
 
     # A bit of a hack to avoid the console restarting before the
