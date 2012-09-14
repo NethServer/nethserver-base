@@ -10,6 +10,6 @@ interfaces=$(ls $ESMITH_NETWORK_OUT_DIR/ifcfg* | \
             LANG=C sed 's/ //')
 
 for i in $interfaces; do
-    echo rm -f $i
+    rm -f $i
 done
 
