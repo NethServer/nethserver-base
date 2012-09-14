@@ -1,0 +1,29 @@
+#!/usr/bin/perl
+
+use esmith::InterfacesDB;
+
+our $output_dir = $output_dir || $ENV{ESMITH_NETWORK_OUT_DIR} || "/etc/sysconfig/network-scripts";
+my $idb = esmith::InterfacesDB->open_ro();
+my @interfaces = $idb->interfaces;
+foreach my $i (@interfaces) {
+    # update udev
+    #TODO: delete existing files
+    _write_config_file($i);
+}
+
+
+sub _write_config_file() {
+    my ($i) = @_;
+    my $file = sprintf "%s/ifcfg-%s", $output_dir, $i->key;
+    my $out = sprintf "NAME=%s\n",  $i->key;
+    my %props = $i->props;
+    foreach my $prop (sort { $a cmp $b } keys %props) {
+        next unless ($prop ne 'role'); # skip role
+        my $val = $props{$prop};
+        $val = ucfirst($val) unless ($prop ne 'type');  #first letter of type must be capitalized
+        $out .= sprintf "%s=%s\n", uc($prop), $val;
+    }
+    open ($fh, '>', $file);
+    print $fh $out; 
+    close ($fh);
+}

@@ -134,6 +134,20 @@ event_templates('nethserver-base-update', qw(
 		
 safe_symlink("/etc/e-smith/templates-default/template-begin-pam", "root/etc/e-smith/templates/etc/pam.d/system-auth-nh/template-begin");		
 
+
+#--------------------------------------------------
+# actions for network-update event
+#--------------------------------------------------
+$event = "network-update";
+event_link("network-config-reset", $event, "25");
+event_link("network-config-write", $event, "30");
+event_templates($event,
+     '/etc/modprobe.d/bonding.conf',
+     '/etc/udev/rules.d/70-persistent-net.rules'
+);
+
+
+
 #--------------------------------------------------
 # actions for user-name validator
 #--------------------------------------------------

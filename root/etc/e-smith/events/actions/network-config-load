@@ -1,0 +1,34 @@
+#!/bin/bash
+if [ "x$ESMITH_NETWORK_OUT_DIR" == "x" ]; then
+    ESMITH_NETWORK_OUT_DIR=/etc/sysconfig/network-scripts
+fi
+interfaces=$(ls $ESMITH_NETWORK_OUT_DIR/ifcfg* | \
+            LANG=C sed -e "$__sed_discard_ignored_files" \
+                       -e '/\(ifcfg-lo$\|:\|ifcfg-.*-range\)/d' \
+                       -e '/ifcfg-[A-Za-z0-9#\._-]\+$/ { s/^ifcfg-//g;s/[0-9]/ &/}' | \
+            LANG=C sort -k 1,1 -k 2n | \
+            LANG=C sed 's/ //')
+
+for i in $interfaces; do
+    unset DEVICE TYPE
+    eval $(LANG=C fgrep "DEVICE=" $i)
+    eval $(LANG=C fgrep "TYPE=" $i)
+    if [ "$TYPE" != "Ethernet" ]; then
+        continue;
+    fi
+    cmd="db network_interfaces set $DEVICE ethernet role '' "
+    old_IFS=$IFS      # save the field separator         
+    IFS=$'\n'     # new field separator, the end of line         
+    for line in $(cat $i)        
+    do        
+       key=`echo ${line,,} | cut -d'=' -f 1` #also convert to lowercase
+       if [ "$key" = 'type' ]; then # skip type
+           continue;
+       fi
+       value=`echo $line | cut -d'=' -f 2-`
+       cmd="$cmd $key $value "
+    done
+    IFS=$old_IFS     # restore default field separator 
+    `$cmd`
+done
+
