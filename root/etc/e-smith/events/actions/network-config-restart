@@ -1,0 +1,31 @@
+#!/usr/bin/perl
+
+use esmith::InterfacesDB;
+
+our $output_dir = $output_dir || $ENV{ESMITH_NETWORK_OUT_DIR} || "/etc/sysconfig/network-scripts";
+my $idb = esmith::InterfacesDB->open_ro();
+my @interfaces = $idb->ethernets;
+
+my %current;
+my $rec = `/sbin/ifconfig -a | grep "HWaddr"`;
+foreach (split(/\n/,$rec)) {
+   my ($name, $field2, $field3, $field4, $mac) = split(/\s+/, $_);
+   $current{$mac} = $name;
+   `/sbin/ifconfig $name down`;
+}
+
+`/sbin/service network stop`;
+`/sbin/udevadm control --reload-rules`;
+
+
+foreach my $i (@interfaces) {
+   my $new_name = $i->key;
+   my %props = $i->props;
+   my $hwaddr = $props{'hwaddr'} || '';
+   my $old_name = $current{$hwaddr};
+   next unless ($hwaddr ne '') and ($old_name ne $new_name);
+   `/sbin/ip link set dev $old_name name $new_name`;
+}
+
+`/sbin/service network start`;
+

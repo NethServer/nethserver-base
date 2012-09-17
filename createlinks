@@ -141,12 +141,11 @@ safe_symlink("/etc/e-smith/templates-default/template-begin-pam", "root/etc/e-sm
 $event = "network-update";
 event_link("network-config-reset", $event, "25");
 event_link("network-config-write", $event, "30");
+event_link("network-config-restart", $event, "80");
 event_templates($event,
      '/etc/modprobe.d/bonding.conf',
      '/etc/udev/rules.d/70-persistent-net.rules'
 );
-safe_symlink("restart", "root/etc/e-smith/events/$event/services2adjust/network");
-
 
 #--------------------------------------------------
 # actions for user-name validator
