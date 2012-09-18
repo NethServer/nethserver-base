@@ -13,3 +13,4 @@ for i in $interfaces; do
     rm -f $i
 done
 
+exit 0

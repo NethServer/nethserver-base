@@ -25,7 +25,7 @@ for i in $interfaces; do
        if [ "$key" = 'type' ]; then # skip type
            continue;
        fi
-       value=`echo $line | cut -d'=' -f 2-`
+       value=`echo $line | cut -d'=' -f 2- | sed 's/"//g'`
        cmd="$cmd $key $value "
     done
     IFS=$old_IFS     # restore default field separator 

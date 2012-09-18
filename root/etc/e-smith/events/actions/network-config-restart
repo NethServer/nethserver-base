@@ -22,7 +22,7 @@ foreach my $i (@interfaces) {
    my $new_name = $i->key;
    my %props = $i->props;
    my $hwaddr = $props{'hwaddr'} || '';
-   my $old_name = $current{$hwaddr};
+   my $old_name = $current{$hwaddr} || $new_name;
    next unless ($hwaddr ne '') and ($old_name ne $new_name);
    `/sbin/ip link set dev $old_name name $new_name`;
 }
