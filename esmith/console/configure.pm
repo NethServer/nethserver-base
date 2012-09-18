@@ -12,7 +12,9 @@ use Net::IPv4Addr qw(:all);
 our @adapters;
 our $console;
 our $db;
+our $idb;
 our $prevScreen;
+
 
 sub new
 {
@@ -49,37 +51,19 @@ sub ethernetSelect($$)
 
     if (scalar @adapters == 1)
     {
-	if ($ifName eq "external")
-	{
-	    # We'll use a VLAN on eth0 for the "dedicated" WAN link
-	    $db->set_value("EthernetDriver2", "unknown");
-            $db->set_prop("ExternalInterface", "HWAddress", "");
-	    return 'CHANGE';
-	}
 	# Internal, and there's only one
         my (undef, $driver, $hwaddr, undef) = split (/\s+/, $adapters[0], 4);
-	$db->set_value("EthernetDriver1", $driver);
-        $db->set_prop("InternalInterface", "HWAddress", $hwaddr);
+        $idb->set_prop($ifName, "role", "green", 'ethernet');
+        $idb->set_prop($ifName, "hwaddr", $hwaddr);
+        $db->set_value('UnsavedChanges', 'yes');
+
 	return 'CHANGE';
     }
 
-    my %tag2driver;
     my %tag2hwaddr;
+    my %tag2name;
     my @args;
     my $default;
-    my $existing_hwaddr;
-    my $skip;
-
-    if ($ifName eq "external")
-    {
-        $skip = $db->get_prop("InternalInterface", "HWAddress");
-        $existing_hwaddr = $db->get_prop("ExternalInterface", "HWAddress");
-    }
-    else
-    {
-        $skip = "";
-        $existing_hwaddr = $db->get_prop("InternalInterface", "HWAddress");
-    }
 
     if ( @adapters == 0 ) {
 
@@ -100,19 +84,13 @@ sub ethernetSelect($$)
 
 	my $tag = ++$item . ".";
 
-	$tag2driver{$tag} = $driver;
 	$tag2hwaddr{$tag} = $hwaddr;
+	$tag2name{$tag} = $driver;
 
-	my $display_name = gettext("Use") . " " . ${driver} . " " .
-	    gettext("for chipset") . " " . ${chipset};
+	my $display_name = ${driver} . ": " . ${chipset} . " - " . ${hwaddr}; 
 
 	push(@args, $tag, substr($display_name, 0, 65));
 
-        if ($hwaddr ne $skip)
-        {
-            $default = $tag if $hwaddr eq $existing_hwaddr;
-            $default ||= $tag;
-        }
     }
 
     #--------------------------------------------------------
@@ -137,14 +115,10 @@ sub ethernetSelect($$)
         );
 
     return 'CANCEL' unless ($rc == 0);
-
-    return 'KEEP' if ($tag2hwaddr{$choice} eq $existing_hwaddr);
-
-    $db->set_value($confEntry, $tag2driver{$choice});
-    $db->set_prop(
-        ($ifName eq "external") ? "ExternalInterface" : "InternalInterface",
-        "HWAddress", $tag2hwaddr{$choice}
-    );
+    
+    $ifName = $tag2name{$choice};
+    $idb->set_prop($ifName, "role", "green");
+    $db->set_value('UnsavedChanges', 'yes');
 
     return 'CHANGE';
 }
@@ -154,6 +128,7 @@ sub doit
     my $self = shift;
     $console = shift;
     $db = shift;
+    $idb = shift;
 
     my $SystemName = $db->get_value('SystemName');
     my $DomainName = $db->get_value('DomainName');
@@ -166,8 +141,15 @@ sub doit
 
     # Refresh the db
     $db->reload;
+    $idb->reload;
 
-    # Run kudzu probe to detect ethernet adapters
+    my @interfaces =  $idb->get_all();
+    if (scalar(@interfaces) == 0) {
+        `/etc/e-smith/events/actions/network-config-load` ;
+        $idb->reload;
+    } 
+
+    # Pobe to detect ethernet adapters
     @adapters = split(/\n/, esmith::ethernet::probeAdapters());
 
     #------------------------------------------------------------
@@ -288,7 +270,6 @@ ETHERNET_LOCAL:
 
     goto LOCAL_IP           if ($selectMode eq 'CHANGE');
 
-    goto LOCAL_IP           if ($selectMode eq 'KEEP');
 }
 
 #------------------------------------------------------------
@@ -296,7 +277,12 @@ LOCAL_IP:
 #------------------------------------------------------------
 
 {
-    my $local_ip = $db->get_value('LocalIP') || '192.168.' . (int(rand(248)) + 2) . '.1';
+    my $green = $idb->green();
+    my $local_ip = '192.168.' . (int(rand(248)) + 2) . '.1';
+    if ($green) {
+        my %green_props = $green->props;
+        $local_ip = $green_props{'ipaddr'}; 
+    }
 
     ($rc, $choice) = $console->input_page
         (
@@ -317,7 +303,10 @@ LOCAL_IP:
         if (isValidIP($choice))
         {
             $choice = cleanIP($choice);
-            $db->set_value('LocalIP', $choice);
+            $idb->set_prop($green->key, 'bootproto', 'static');
+            $idb->set_prop($green->key, 'ipaddr', $choice);
+            $db->set_value('UnsavedChanges', 'yes');
+
             goto LOCAL_NETMASK;
         }
     }
@@ -339,6 +328,13 @@ LOCAL_NETMASK:
 #------------------------------------------------------------
 
 {
+    my $green = $idb->green();
+    my $local_netmask = '255.255.255.0';
+    if ($green) {
+        my %green_props = $green->props;
+        $local_netmask = $green_props{'netmask'}; 
+    }
+
     ($rc, $choice) = $console->input_page
         (
          title => gettext("Select local subnet mask"),
@@ -348,7 +344,7 @@ LOCAL_NETMASK:
          gettext("If this server is the first machine on your network, we recommend using the default unless you have a specific reason to choose something else.") .
          "\n\n" .
          gettext("If your server is being installed into an existing network, you must choose the same subnet mask used by other computers on this network."),
-         value   => $db->get_value('LocalNetmask')
+         value   => $local_netmask
         );
 
     goto LOCAL_IP unless ($rc == 0);
@@ -359,7 +355,8 @@ LOCAL_NETMASK:
         {
             $choice = cleanIP($choice);
             # Update primary record
-            $db->set_value('LocalNetmask', $choice);
+            $idb->set_prop($green->key,'netmask', $choice);
+            $db->set_value('UnsavedChanges', 'yes');
             goto SERVER_ONLY;
         }
     }
@@ -449,29 +446,18 @@ SERVER_GATEWAY:
 {
     my $currentmode;
     my $currentnumber;
-    my $dialup_support = $db->get_prop("bootstrap-console", "DialupSupport")
-			    || "yes";
 
-    if ($dialup_support eq "no")
-    {
-        $db->set_value('AccessType', 'dedicated');
-        goto ETHERNET_EXTERNAL;
-    }
+    $db->set_value('AccessType', 'dedicated');
+    goto ETHERNET_EXTERNAL;
 
     if ($db->get_value('AccessType') eq 'dedicated')
     {
         $currentmode = gettext("Server and gateway - dedicated");
         $currentnumber = "1.";
     }
-    else
-    {
-        $currentmode = gettext("Server and gateway - dialup");
-        $currentnumber = "2.";
-    }
 
     my @args = (
                 "1.", gettext("Server and gateway - dedicated"),
-                "2.", gettext("Server and gateway - dialup"),
                );
 
     ($rc, $choice) = $console->menu_page
@@ -481,7 +467,6 @@ SERVER_GATEWAY:
          text =>
          gettext("The next step is to select the access mode that your server will use to connect to the Internet.") .
          "\n\n" .
-         gettext("Choose the dedicated option if you access the Internet via a router, a cable modem or ADSL. Choose the dialup option if you use a modem or ISDN connection."),
          argsref => \@args
         );
 
@@ -493,12 +478,6 @@ SERVER_GATEWAY:
         goto ETHERNET_EXTERNAL;
     }
 
-    if ($choice eq  "2.")
-    {
-        $db->set_value('AccessType', 'dialup');
-        $db->set_prop("pppoe", "status", "disabled");
-        goto DIALUP_MODEM;
-    }
 }
 
 #------------------------------------------------------------
@@ -550,39 +529,20 @@ SERVER_GATEWAY_DEDICATED:
 
     if ($db->get_value('ExternalDHCP') eq 'on')
     {
-        if ($db->get_value('DHCPClient') eq 'dhi')
-        {
-            $currentmode = gettext("use DHCP (send account name as client identifier)");
-            $shortmode = gettext("DHCP with account name");
-            $currentnumber = "1.";
-        }
-        else
-        {
-            $currentmode =
-                gettext("use DHCP (send ethernet address as client identifier)");
-            $shortmode = gettext("DHCP with ethernet address");
-            $currentnumber = "2.";
-        }
-    }
-    elsif ($db->get_prop("pppoe", "status") eq "enabled")
-    {
-        $currentmode = gettext("use PPP over Ethernet (PPPoE)");
-        $shortmode = gettext("PPPoE");
-        $currentnumber = "3.";
-
+        $currentmode = gettext("use DHCP (send ethernet address as client identifier)");
+        $shortmode = gettext("DHCP with ethernet address");
+        $currentnumber = "1.";
     }
     else
     {
         $currentmode = gettext("use static IP address (do not use DHCP or PPPoE)");
         $shortmode = gettext("static IP");
-        $currentnumber = "4.";
+        $currentnumber = "2.";
     }
 
     my @args = (
                 "1.", gettext("Use DHCP (send account name as client identifier)"),
-                "2.", gettext("Use DHCP (send ethernet address as client identifier)"),
-                "3.", gettext("Use PPP over Ethernet (PPPoE)"),
-                "4.", gettext("Use static IP address"),
+                "2.", gettext("Use static IP address"),
                );
 
     ($rc, $choice) = $console->menu_page
@@ -598,20 +558,6 @@ SERVER_GATEWAY_DEDICATED:
 
     goto SERVER_GATEWAY unless ($rc == 0);
 
-    if ($choice eq  "3.")
-    {
-        $db->set_value('ExternalDHCP', 'off');
-
-        $db->set_prop("pppoe", "status", "enabled");
-        $db->set_prop("pppoe", "DemandIdleTime", "no");
-        $db->set_prop("pppoe", "SynchronousPPP", "no");
-        # Delete GatewayIP, as Gateway is via ppp link
-        $db->delete('GatewayIP');
-        goto PPPoE_ACCOUNT;
-    }
-    else
-    {
-        $db->set_prop("pppoe", "status", "disabled");
         if ($choice eq  "1.")
         {
             # Delete GatewayIP, as Gateway is via DHCP
@@ -619,256 +565,11 @@ SERVER_GATEWAY_DEDICATED:
             $db->set_value('ExternalDHCP', 'on');
             $db->set_value('DHCPClient', 'dhi');
             goto DHCP_ACCOUNT;
-        }
-
-        if ($choice eq  "2.")
-        {
-            # Delete GatewayIP, as Gateway is via DHCP
-            $db->delete('GatewayIP');
-            $db->set_value('ExternalDHCP', 'on');
-            $db->set_value('DHCPClient', 'd');
-            goto DYNAMIC_DNS_SERVICE;
-        }
-
-        if ($choice eq  "4.")
-        {
+        } else {
             $db->set_value('ExternalDHCP', 'off');
             $db->set_prop('DynDNS', 'status', 'disabled');
             goto STATIC_IP;
         }
-    }
-}
-
-#------------------------------------------------------------
-DHCP_ACCOUNT:
-#------------------------------------------------------------
-{
-    ($rc, $choice) = $console->input_page
-        (
-         title => gettext("Enter ISP assigned hostname"),
-         text  =>
-         gettext("You have selected DHCP (send account name). Please enter the account name assigned by your ISP. You must enter the account name exactly as specified by your ISP."),
-         value   => $db->get_value('DialupUserAccount')
-        );
-
-    goto SERVER_GATEWAY_DEDICATED unless ($rc == 0);
-
-    $db->set_value('DialupUserAccount', $choice || '');
-
-    goto DYNAMIC_DNS_SERVICE;
-}
-
-#------------------------------------------------------------
-PPPoE_ACCOUNT:
-#------------------------------------------------------------
-{
-    ($rc, $choice) = $console->input_page
-        (
-         title => gettext("Select PPPoE user account"),
-         text  =>
-         gettext("Please enter the user account name for your PPPoE Internet connection. Most PPPoE service providers use an account name and e-mail domain. For example, ") . "fredfrog\@frog.pond",
-         value   => $db->get_value('DialupUserAccount')
-        );
-
-    goto SERVER_GATEWAY_DEDICATED unless ($rc == 0);
-
-    $db->set_value('DialupUserAccount', $choice || '');
-
-    goto PPPoE_PASSWORD;
-}
-
-#------------------------------------------------------------
-PPPoE_PASSWORD:
-#------------------------------------------------------------
-
-{
-    ($rc, $choice) = $console->input_page
-        (
-         title  => gettext("Select PPPoE password"),
-         text   =>
-         gettext("Please enter the password for your PPPoE Internet connection."),
-         value   => $db->get_value('DialupUserPassword')
-        );
-
-    goto PPPoE_ACCOUNT unless ($rc == 0);
-
-    $db->set_value('DialupUserPassword', $choice || '');
-
-    goto DYNAMIC_DNS_SERVICE;
-}
-
-#------------------------------------------------------------
-DYNAMIC_DNS_SERVICE:
-#------------------------------------------------------------
-goto OTHER_PARAMETERS unless (-d "/sbin/e-smith/dynamic-dns");
-
-{
-    unless (opendir (DIR, "/sbin/e-smith/dynamic-dns"))
-    {
-        warn gettext("Cannot read directory"),
-            " /sbin/e-smith/dynamic-dns", "\n";
-        $db->set_prop('DynDNS', 'status', 'disabled');
-        goto OTHER_PARAMETERS;
-
-    }
-    my @scripts = grep (!/^(\.\.?|custom)$/, readdir (DIR));
-    closedir (DIR);
-
-    foreach my $script (@scripts)
-    {
-        # Grab description from script contents
-    }
-
-    my $currentnumber;
-
-    my $status = $db->get_prop('DynDNS', 'status') || "disabled";
-    my $service = $db->get_prop('DynDNS', 'Service');
-    if ($status eq "disabled")
-    {
-        $service = "off";
-        $currentnumber = "1.";
-    }
-    else
-    {
-        if ($service eq 'yi')
-        {
-            $currentnumber = "2.";
-        }
-
-        if ($service eq 'dyndns')
-        {
-            $currentnumber = "3.";
-        }
-
-        if ($service eq 'dyndns.org')
-        {
-            $currentnumber = "4.";
-        }
-
-        if ($service eq 'tzo')
-        {
-            $currentnumber = "5.";
-        }
-
-        if ($service eq 'custom')
-        {
-            $currentnumber = "6.";
-        }
-    }
-
-    my @args = (
-                "1.", gettext("Do not use a dynamic DNS service"),
-                "2.", "www.yi.org"     . " - " . gettext("free service"),
-                "3.", "www.dyndns.com" . " - " . gettext("commercial service"),
-                "4.", "www.dyndns.org" . " - " . gettext("free service"),
-                "5.", "www.tzo.com"    . " - " . gettext("commercial service"),
-                "6.", gettext("custom DynDNS service"),
-               );
-
-    ($rc, $choice) = $console->menu_page
-        (
-         title   => gettext("Select dynamic DNS service"),
-	 default => $currentnumber,
-         text    =>
-         gettext("Please specify whether you wish to subscribe to a dynamic DNS service. Such services allow you to have a domain name without a static IP address, and are available from various organizations for free or for a reasonable charge. A notification must be sent to the dynamic DNS service whenever your IP address changes. Your server can automatically do this for some dynamic DNS services.") .
-         "\n\n" .
-         gettext("Choose which dynamic DNS service you would like to use."),
-         argsref => \@args
-        );
-
-    goto SERVER_GATEWAY_DEDICATED unless ($rc == 0);
-
-    if ($choice eq  "1.")
-    {
-        $db->set_prop('DynDNS', 'status', 'disabled');
-        goto OTHER_PARAMETERS;
-    }
-    $db->set_prop('DynDNS', 'status', 'enabled');
-    if ($choice eq  "2.")
-    {
-        $db->set_prop('DynDNS', 'Service', 'yi');
-        goto DYNAMIC_DNS_ACCOUNT;
-    }
-
-    if ($choice eq  "3.")
-    {
-        $db->set_prop('DynDNS', 'Service', 'dyndns');
-        goto DYNAMIC_DNS_ACCOUNT;
-    }
-
-    if ($choice eq  "4.")
-    {
-        $db->set_prop('DynDNS', 'Service', 'dyndns.org');
-        goto DYNAMIC_DNS_ACCOUNT;
-    }
-
-    if ($choice eq  "5.")
-    {
-        $db->set_prop('DynDNS', 'Service', 'tzo');
-        goto DYNAMIC_DNS_ACCOUNT;
-    }
-
-    if ($choice eq  "6.")
-    {
-        $db->set_prop('DynDNS', 'Service', 'custom');
-        goto DYNAMIC_DNS_ACCOUNT;
-    }
-}
-
-#------------------------------------------------------------
-DYNAMIC_DNS_ACCOUNT:
-#------------------------------------------------------------
-
-{
-    my $account = $db->get_prop('DynDNS', 'Account') || '';
-    my $service = $db->get_prop('DynDNS', 'Service');
-    ($rc, $choice) = $console->input_page
-        (
-         title => gettext("Select dynamic DNS account"),
-         text  => gettext("Please enter the account name for your dynamic DNS service"),
-         value   => $account
-        );
-
-    goto DYNAMIC_DNS_SERVICE unless ($rc == 0);
-
-    if ($choice)
-    {
-        $db->set_prop('DynDNS', 'Account', $choice);
-    }
-    else
-    {
-        $db->set_prop('DynDNS', 'Account', '');
-    }
-
-    goto DYNAMIC_DNS_PASSWORD;
-}
-
-#------------------------------------------------------------
-DYNAMIC_DNS_PASSWORD:
-#------------------------------------------------------------
-
-{
-    my $account = $db->get_prop('DynDNS', 'Account');
-    my $password = $db->get_prop('DynDNS', 'Password') || '';
-    ($rc, $choice) = $console->input_page
-        (
-         title => gettext("Select dynamic DNS password"),
-         text  => gettext("Please enter the password for your dynamic DNS service"),
-         value   => $password
-        );
-
-    goto DYNAMIC_DNS_ACCOUNT unless ($rc == 0);
-
-    if ($choice)
-    {
-        $db->set_prop('DynDNS', 'Password', $choice);
-    }
-    else
-    {
-        $db->set_prop('DynDNS', 'Password', '');
-    }
-
-    goto OTHER_PARAMETERS;
 }
 
 #------------------------------------------------------------
@@ -1012,536 +713,31 @@ STATIC_GATEWAY:
     my $error = undef;
     if (!isValidIP($choice))
     {
-	$error = "not a valid IP address";
+        $error = "not a valid IP address";
     }
     elsif (cleanIP($choice) eq $db->get_value('ExternalIP'))
     {
-	$error = "address matches external interface address";
+        $error = "address matches external interface address";
     }
     elsif (!ipv4_in_network($db->get_value('ExternalIP'),
-	$db->get_value('ExternalNetmask'), "$choice/32"))
+        $db->get_value('ExternalNetmask'), "$choice/32"))
     {
-	$error = "address is not local";
+        $error = "address is not local";
     }
     if ($error)
     {
-	($rc, $choice) = $console->tryagain_page
-	    (
-	     title   => gettext("Invalid") . " - " . gettext($error),
-	     choice  => $choice,
-	    );
-
-	goto STATIC_GATEWAY;
-    }
-    $db->set_value('GatewayIP', cleanIP($choice));
-    goto OTHER_PARAMETERS;
-}
-
-#------------------------------------------------------------
-DIALUP_MODEM:
-#------------------------------------------------------------
-
-{
-    my @args = (
-                "COM1", gettext("Set modem port to") . " COM1 (/dev/ttyS0)",
-                "COM2", gettext("Set modem port to") . " COM2 (/dev/ttyS1)",
-                "COM3", gettext("Set modem port to") . " COM3 (/dev/ttyS2)",
-                "COM4", gettext("Set modem port to") . " COM4 (/dev/ttyS3)",
-                gettext("ISDN"), gettext("Set modem port to") . " " .
-                gettext("internal ISDN card") . " (/dev/ttyI0)",
-               );
-
-    ($rc, $choice) = $console->menu_page
-        (
-         title => gettext("Select modem/ISDN port"),
-	 default =>  $db->get_value('DialupModemDevice'),
-         text  =>
-         gettext("Please specify which serial port your modem or ISDN terminal adapter is connected to. Select ISDN if you wish to use an internal ISDN card."),
-         argsref => \@args
-        );
-
-    goto SERVER_GATEWAY unless ($rc == 0);
-
-    if ($choice eq  "COM1")
-    {
-        $db->set_value('DialupModemDevice', '/dev/ttyS0');
-    }
-
-    if ($choice eq  "COM2")
-    {
-        $db->set_value('DialupModemDevice', '/dev/ttyS1');
-    }
-
-    if ($choice eq  "COM3")
-    {
-        $db->set_value('DialupModemDevice', '/dev/ttyS2');
-    }
-
-    if ($choice eq  "COM4")
-    {
-        $db->set_value('DialupModemDevice', '/dev/ttyS3');
-    }
-    if ($choice eq gettext("ISDN"))
-    {
-        $db->set_value('DialupModemDevice', '/dev/ttyI0');
-    }
-
-    if ($db->get_value('DialupModemDevice') eq '/dev/ttyI0')
-    {
-        $db->set_prop('ippp', 'status', 'enabled');
-        $db->set_prop('isdn', 'status', 'enabled');
-        goto HISAX_OPTIONS
-    }
-    $db->set_prop('ippp', 'status', 'disabled');
-    $db->set_prop('isdn', 'status', 'disabled');
-    goto MODEM_INIT_STRING;
-}
-
-#------------------------------------------------------------
-HISAX_OPTIONS:
-#------------------------------------------------------------
-
-{
-    # See http://ibiblio.org/pub/Linux/distributions/caldera/eServer/\
-    # 2.3.1/live/etc/hwprobe.config for a pciid list - we cover most of
-    # the cards listed there
-    my %isdn_cards = (
-                      '1133e001' =>
-                      { type => "11",
-                        description => "Eicon|DIVA 20PRO" },
-                      '1133e002' =>
-                      { type => "11",
-                        description => "Eicon|DIVA 20" },
-                      '1133e003' =>
-                      { type => "11",
-                        description => "Eicon|DIVA 20PRO_U" },
-                      '1133e004' =>
-                      { type => "11",
-                        description => "Eicon|DIVA 20_U" },
-                      '1133e005' =>
-                      { type => "11",
-                        description => "Eicon|DIVA 2.01 PCI or PCI_LP" },
-                      '1133e010' =>
-                      { type => "11",
-                        description => "Eicon|DIVA Server BRI-2M" },
-                      '1133e012' =>
-                      { type => "11",
-                        description => "Eicon|DIVA Server BRI-8M" },
-                      '1133e014' =>
-                      { type => "11",
-                        description => "Eicon|DIVA Server PRO-30M" },
-                      '1133e018' =>
-                      { type => "11",
-                        description => "Eicon|DIVA Server BRI-2M/-2F" },
-                      'e1590002' =>
-                      { type => "15",
-                        description => "Sedlbauer Speed PCI ISDN" },
-                      '10481000' =>
-                      { type => "18",
-                        description => "Elsa AG|QuickStep 1000" },
-                      '10483000' =>
-                      { type => "18",
-                        description => "Elsa AG|QuickStep 3000" },
-                      'e1590001' =>
-                      { type => "20",
-                        description => "Netjet|Tigerjet 300|320" },
-                      '11de6057' =>
-                      { type => "21",
-                        description => "Teles PCI ISDN network controller" },
-                      '11de6120' =>
-                      { type => "21",
-                        description => "Teles PCI ISDN network controller" },
-                      '12671016' =>
-                      { type => "24",
-                        description => "Dr Neuhaus Niccy PCI" },
-                      '12440a00' =>
-                      { type => "27",
-                        description => "AVM Fritz PCI" },
-                      '10b51030' =>
-                      { type => "34",
-                        description => "Gazel/PLX R685" },
-                      '10b51151' =>
-                      { type => "34",
-                        description => "Gazel/PLX DJINN_ITOO" },
-                      '10b51152' =>
-                      { type => "34",
-                        description => "Gazel/PLX R753" },
-                      '13972bd0' =>
-                      { type => "35",
-                        description => "ISDN network controller [HFC-PCI]" },
-                      '1397b000' =>
-                      { type => "35",
-                        description => "ISDN network controller [HFC-PCI]" },
-                      '1397b006' =>
-                      { type => "35",
-                        description => "ISDN network controller [HFC-PCI]" },
-                      '1397b007' =>
-                      { type => "35",
-                        description => "ISDN network controller [HFC-PCI]" },
-                      '1397b008' =>
-                      { type => "35",
-                        description => "ISDN network controller [HFC-PCI]" },
-                      '1397b009' =>
-                      { type => "35",
-                        description => "ISDN network controller [HFC-PCI]" },
-                      '1397b00a' =>
-                      { type => "35",
-                        description => "ISDN network controller [HFC-PCI]" },
-                      '1397b00b' =>
-                      { type => "35",
-                        description => "ISDN network controller [HFC-PCI]" },
-                      '1397b00c' =>
-                      { type => "35",
-                        description => "ISDN network controller [HFC-PCI]" },
-                      '1397b100' =>
-                      { type => "35",
-                        description => "ISDN network controller [HFC-PCI]" },
-                      '15b02bd0' =>
-                      { type => "35",
-                        description => "Zoltrix ISDN network controller [HFC-PCI]" },
-                      '10430675' =>
-                      { type => "35",
-                        description => "Asuscom ISDNLINK 128K [HFC-PCI]" },
-                      '06751700' =>
-                      { type => "36",
-                        description => "Dynalink IS64PH ISDN network controller" },
-                      '06751702' =>
-                      { type => "36",
-                        description => "Dynalink IS64PH ISDN network controller" },
-                      '06751704' =>
-                      { type => "36",
-                        description => "Dynalink IS64PH ISDN network controller" },
-                      '10506692' =>
-                      { type => "36",
-                        description => "Winbond 6692 ISDN network controller" },
-                      '15ad0710' =>
-                      { type => "FF",
-                        description =>
-                        "Test thingy to check detection (actually VMWare display)" },
-                     );
-
-    my $card;
-    open (PCI, "/proc/bus/pci/devices");
-    while (my $pci_data = <PCI>)
-    {
-        my $id = (split(/\s+/, $pci_data))[1];
-        $card = $isdn_cards{$id};
-        last if defined $card;
-    }
-    close (PCI);
-    if (defined $card)
-    {
-        my $description = $$card{'description'};
-        ($rc, $choice) = $console->yesno_page
-            (
-             title => gettext("ISDN card detected"),
-             text  =>
-             gettext("Do you wish to use the following ISDN card for your Internet connection?") .
-             "\n\n" .
-             $description,
-            );
-
-        if ($rc == 0)
-        {
-            my $type = $$card{'type'};
-            $db->set_prop('isdn', 'Type', "$type");
-            goto DIALUP_ACCESS_NUMBER;
-        }
-    }
-
-    my $hisax_options = $db->get_prop('isdn', 'HisaxOptions') || "";
-    ($rc, $choice) = $console->input_page
-        (
-         title => gettext("ISDN driver options"),
-         text  =>
-         gettext("You have selected an internal ISDN card.") .
-         "\n\n" .
-         gettext("The ISDN software will need to be told what ISDN hardware you have. It may also need to be told what protocol number to use and may need to be given some additional information about your hardware such as the I/O address and interrupt settings.") .
-         "\n\n" .
-         gettext("This information is provided via an options string. An example is") .
-         " " .  qq("type=27 protocol=2") . " " .
-         gettext("which would be used to set the") .
-         " " . qq("AVM Fritz!PCI") . " " .
-         gettext("to EURO-ISDN."),
-         value   => $hisax_options
-        );
-
-    goto DIALUP_MODEM unless ($rc == 0);
-
-    if ($choice)
-    {
-        $db->set_prop('isdn', 'HisaxOptions', $choice);
-    }
-    else
-    {
-        $db->delete_prop('isdn', 'HisaxOptions');
-    }
-}
-
-#------------------------------------------------------------
-ISDN_MSN:
-#------------------------------------------------------------
-goto MODEM_INIT_STRING;         # Skip this page - only for dial-in
-
-{
-    my $msn = $db->get_prop('isdn', 'Msn');
-    $msn = "" unless (defined $msn);
-    ($rc, $choice) = $console->input_page
-        (
-         title => gettext("Multiple Subscriber Numbering"),
-         text  =>
-         gettext("Your ISDN line may have more than one number associated with it known as Multiple Subscriber Numbering (MSN). In order to receive an incoming ISDN call from an ISP or a remote site, you may need to configure your ISDN card with its MSN so that ISDN calls are routed correctly. If you do not know this number, you can leave this value blank."),
-         value   => $msn
-        );
-
-    goto HISAX_OPTIONS unless ($rc == 0);
-
-    unless ($choice eq "" or $choice =~ /^[-,0-9]+$/)
-    {
         ($rc, $choice) = $console->tryagain_page
             (
-             title   => gettext("Invalid Multiple Subscriber Numbering (MSN)"),
+             title   => gettext("Invalid") . " - " . gettext($error),
              choice  => $choice,
             );
 
-        goto ISDN_MSN;
+        goto STATIC_GATEWAY;
     }
-    $db->set_prop('isdn', 'Msn', "$choice");
-    goto DIALUP_ACCESS_NUMBER;
+    $db->set_value('GatewayIP', cleanIP($choice));
+    goto OTHER_PARAMETERS;
+
 }
-#------------------------------------------------------------
-MODEM_INIT_STRING:
-#------------------------------------------------------------
-
-{
-    my $modem_init = $db->get_value('ModemInit') || "";
-    my $modem = $db->get_value('DialupModemDevice') || "";
-
-    my $isdn_msg =
-        gettext("You have selected an internal ISDN card.") .
-            "\n\n" .
-        gettext("The driver for this card includes modem emulation software, and modem control commands are used by the networking software to configure and control the ISDN interface card.") .
-                    "\n\n" .
-        gettext("The precise behavior of your ISDN card can be modified by using a specific modem initialization string, to adjust the settings of the card, or to modify its default behavior. Most cards should work correctly with the default settings, but you may enter a modem initialization string here if required.");
-
-    my $modem_msg =
-        gettext("You have selected a modem device.") .
-            "\n\n" .
-        gettext("The precise behavior of your modem can be modified by using a specific modem initialization string, to adjust the settings of your modem, or to modify its default behavior. You may enter a modem initialization string here.") .
-                    "\n\n" .
-        gettext("Many modems will work correctly without any special settings. If you leave this field blank, the default string of") .
-                            " " . qw("L0M0") . " " .
-        gettext("will be used. This turns the modem speaker off, so that you will not be bothered by the noises that a modem makes when it starts a connection.");
-
-    my $msg = ($modem eq '/dev/ttyI0') ? $isdn_msg : $modem_msg;
-
-    ($rc, $choice) = $console->input_page
-        (
-         title   => gettext("Modem initialization string"),
-         text    => $msg,
-         value   => $modem_init
-        );
-
-    unless ($rc == 0)
-    {
-        if ($db->get_value('DialupModemDevice') eq '/dev/ttyI0')
-        {
-            goto HISAX_OPTIONS;
-        }
-        else
-        {
-            goto DIALUP_MODEM;
-        }
-    }
-
-    if ($choice)
-    {
-        $db->set_value('ModemInit', $choice);
-    }
-    else
-    {
-        $db->delete('ModemInit');
-    }
-    goto DIALUP_ACCESS_NUMBER;
-}
-
-#------------------------------------------------------------
-DIALUP_ACCESS_NUMBER:
-#------------------------------------------------------------
-
-{
-    my $title = gettext("Select access phone number");
-
-    my $msg =
-        gettext("Please enter the access phone number for your Internet connection. Long distance numbers can be entered. The phone number must not contain spaces, but may contain dashes for readability. Commas may be inserted where a delay is required. For example, if you need to dial 9 first, then wait, then dial a phone number, you could enter") . " "
-            . qq("9,,,123-4567");
-
-    ($rc, $choice) = $console->input_page
-        (
-         title   => $title,
-         text    => $msg,
-         value   => $db->get_value('DialupPhoneNumber')
-        );
-
-    goto MODEM_INIT_STRING unless ($rc == 0);
-
-    if ($choice)
-    {
-        if ($choice =~ /^[-,0-9]+$/)
-        {
-            $db->set_value('DialupPhoneNumber', "$choice");
-            goto DIALUP_ACCOUNT;
-        }
-    }
-    else
-    {
-        $choice = '';
-    }
-
-    ($rc, $choice) = $console->tryagain_page
-        (
-         title   => gettext("Invalid access phone number"),
-         choice  => $choice,
-        );
-
-    goto DIALUP_ACCESS_NUMBER;
-}
-
-#------------------------------------------------------------
-DIALUP_ACCOUNT:
-#------------------------------------------------------------
-
-{
-    my $msg = gettext("Please enter the user account name for your Internet connection.")
-        . "\n\n" .
-            gettext("Please note that account names are usually case sensitive.");
-
-    ($rc, $choice) = $console->input_page
-        (
-         title   => gettext("Select dialup user account"),
-         text    => $msg,
-         value   => $db->get_value('DialupUserAccount')
-        );
-
-    goto DIALUP_ACCESS_NUMBER unless ($rc == 0);
-
-    $db->set_value('DialupUserAccount', $choice || '');
-    goto DIALUP_PASSWORD;
-}
-
-#------------------------------------------------------------
-DIALUP_PASSWORD:
-#------------------------------------------------------------
-
-{
-    my $msg = gettext("Please enter the password for your Internet connection.")
-        . "\n\n" .
-            gettext("Please note that passwords are usually case sensitive.");
-
-    ($rc, $choice) = $console->input_page
-        (
-         title   => gettext("Select dialup password"),
-         text    => $msg,
-         value   => $db->get_value('DialupUserPassword')
-        );
-
-    goto DIALUP_ACCOUNT unless ($rc == 0);
-
-    $db->set_value('DialupUserPassword', $choice || '');
-    goto INITIALIZE_CONNECT_TIMES;
-}
-
-#------------------------------------------------------------
-INITIALIZE_CONNECT_TIMES:
-#------------------------------------------------------------
-my %policy2string =
-    (
-     "never"        => "No connection",
-     "short"        => "Short connect times to minimize minutes off-hook",
-     "medium"       => "Medium connect times",
-     "long"     => "Long connect times to minimize dialing delays",
-     "continuous"   => "Continuous connection",
-    );
-
-my @connect_options;
-my %gettext2policy;
-
-goto DIALUP_OFFICE if scalar @connect_options;
-
-foreach (keys %policy2string)
-{
-    push @connect_options, gettext($_), gettext($policy2string{$_});
-    $gettext2policy{gettext($_)} = $_;
-}
-
-#------------------------------------------------------------
-DIALUP_OFFICE:
-#------------------------------------------------------------
-{
-    my $val = $db->get_value('DialupConnOffice') || 'medium';
-
-    ($rc, $choice) = $console->menu_page
-        (
-         title => gettext("Select connect policy"),
-	 default => gettext($val),
-         text  =>
-         gettext("Select the dialup connect policy that you would like to use during office hours (8:00 AM to 6:00 PM) on weekdays."),
-
-         argsref => \@connect_options,
-        );
-
-    goto DIALUP_PASSWORD unless ($rc == 0);
-
-    $db->set_value('DialupConnOffice', $gettext2policy{$choice});
-
-    goto DIALUP_OUTSIDE;
-}
-
-#------------------------------------------------------------
-DIALUP_OUTSIDE:
-#------------------------------------------------------------
-
-{
-    my $val = $db->get_value('DialupConnOutside') || 'medium';
-
-    ($rc, $choice) = $console->menu_page
-        (
-         title => gettext("Select connect policy"),
-	 default => gettext($val),
-         text  =>
-         gettext("Please select the dialup connect policy that you would like to use outside office hours (6:00 PM to 8:00 AM) on weekdays."),
-         argsref => \@connect_options,
-        );
-
-    goto DIALUP_OFFICE unless ($rc == 0);
-
-    $db->set_value('DialupConnOutside', $gettext2policy{$choice});
-
-    goto DIALUP_WEEKEND;
-}
-
-#------------------------------------------------------------
-DIALUP_WEEKEND:
-#------------------------------------------------------------
-
-{
-    my $val = $db->get_value('DialupConnWeekend') || 'medium';
-    ($rc, $choice) = $console->menu_page
-        (
-         title => gettext("Select connect policy"),
-	 default => gettext($val),
-         text  =>
-         gettext("Please select the dialup connect policy that you would like to use during the weekend."),
-         argsref => \@connect_options,
-        );
-
-    goto DIALUP_OUTSIDE unless ($rc == 0);
-
-    $db->set_value('DialupConnWeekend', $gettext2policy{$choice});
-
-    goto DYNAMIC_DNS_SERVICE;
-}
-
 
 #------------------------------------------------------------
 SERVER_ONLY:
@@ -1550,16 +746,12 @@ SERVER_ONLY:
 {
     $prevScreen = 'SERVER_ONLY';
     goto OTHER_PARAMETERS unless ($db->get_value('AccessType') eq 'dedicated');
+    my $green = $idb->green();
+    my %green_props = $green->props;
+    my $local_ip = $green_props{'ipaddr'};
+    my $local_netmask = $green_props{'netmask'};
+    my $gateway_ip = $green_props{'gateway'} || "";
 
-    my $gateway_ip = $db->get_value('GatewayIP') || "";
-    my $netmaskBits = esmith::util::IPquadToAddr ($db->get_value('LocalNetmask'));
-    unless ((esmith::util::IPquadToAddr($db->get_value('LocalIP')) & $netmaskBits) ==
-            (esmith::util::IPquadToAddr($db->get_value('GatewayIP')) & $netmaskBits)) {
-        $gateway_ip =
-            esmith::util::IPaddrToQuad(
-                                       (esmith::util::IPquadToAddr($db->get_value('LocalIP')) & $netmaskBits)
-                                       + 1);
-    }
 
     ($rc, $choice) = $console->input_page
         (
@@ -1577,7 +769,6 @@ SERVER_ONLY:
     if (!$choice)
     {
         $db->delete('GatewayIP');
-        $db->set_value('AccessType', 'off');
         goto OTHER_PARAMETERS;
     }
 
@@ -1586,12 +777,11 @@ SERVER_ONLY:
     {
 	$error = "not a valid IP address";
     }
-    elsif (cleanIP($choice) eq $db->get_value('LocalIP'))
+    elsif (cleanIP($choice) eq $local_ip)
     {
 	$error = "address matches local interface address";
     }
-    elsif (!ipv4_in_network($db->get_value('LocalIP'),
-	$db->get_value('LocalNetmask'), "$choice/32"))
+    elsif (!ipv4_in_network($local_ip, $local_netmask, "$choice/32"))
     {
 	$error = "address is not local";
     }
@@ -1605,7 +795,9 @@ SERVER_ONLY:
 
 	goto SERVER_ONLY;
     }
-    $db->set_value('GatewayIP', cleanIP($choice));
+    $idb->set_prop($green->key,'gateway', cleanIP($choice));
+    $db->set_value('UnsavedChanges', 'yes');
+
     $db->set_value('AccessType', 'dedicated');
     goto OTHER_PARAMETERS;
 }
@@ -1622,9 +814,11 @@ DNS_FORWARDER:
 
 {
     my $primary = $db->get_prop('dns', 'NameServers') || '';
+    my $secondary = "";
     my @NameServers = ();
 
     $primary =~ s/,/ /g;
+
 
     ($rc, $choice) = $console->input_page
         (
@@ -1717,7 +911,9 @@ QUERY_SAVE_CONFIG:
 	    text => gettext("Please stand by while your configuration settings are activated ..."),
 	    );
         event_signal("console-save");
+        event_signal("network-update");
         $db->reload;
+        $idb->reload;
 	my $current_mode = (getppid() == 1) ? "auto" : "login";
 	if ($current_mode ne $db->get_value('ConsoleMode'))
 	{
@@ -1732,7 +928,7 @@ QUERY_SAVE_CONFIG:
 QUIT:
 #------------------------------------------------------------
 {
-    if ( $db->get_value('UnsavedChanges') eq 'yes' )
+    if ( $db->get_value('UnsavedChanges') eq 'yes')
     {
 	($rc, $choice) = $console->yesno_page
 	    (
