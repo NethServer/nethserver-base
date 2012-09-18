@@ -16,7 +16,7 @@ for i in $interfaces; do
     if [ "$TYPE" != "Ethernet" ]; then
         continue;
     fi
-    cmd="db network_interfaces set $DEVICE ethernet role '' "
+    cmd="/sbin/e-smith/db network_interfaces set $DEVICE ethernet role '' "
     old_IFS=$IFS      # save the field separator         
     IFS=$'\n'     # new field separator, the end of line         
     for line in $(cat $i)        
@@ -32,3 +32,4 @@ for i in $interfaces; do
     `$cmd`
 done
 
+exit 0
