@@ -97,7 +97,6 @@ sub ethernetSelect($$)
     # These are just to ensure that xgettext knows about the
     # interface types.
     gettext("local");
-    gettext("external");
     #--------------------------------------------------------
 
     my ($rc, $choice) = $console->menu_page
@@ -119,6 +118,18 @@ sub ethernetSelect($$)
     $ifName = $tag2name{$choice};
     $idb->set_prop($ifName, "role", "green");
     $db->set_value('UnsavedChanges', 'yes');
+
+    # rename to green
+    my $i = $idb->get($ifName);
+    my %props = $i->props;
+    my $new_name = 'green'; # new_name = role
+    $i->delete();
+    $idb->set_prop($new_name, 'role', 'green', type => 'ethernet');
+    $i = $idb->get($new_name);
+    $i->reset_props(%props);
+    $idb->set_prop($new_name,'device',$new_name);
+
+
 
     return 'CHANGE';
 }
@@ -431,313 +442,12 @@ SYSTEM_MODE:
 
     if ($choice eq "3.")
     {
-        $db->set_prop("pppoe", "status", "disabled");
         $db->delete("ExternalIP");
         $db->set_value('SystemMode', 'serveronly');
-        $db->set_value('AccessType', "dedicated");
         goto SERVER_ONLY;
     }
 }
 
-#------------------------------------------------------------
-SERVER_GATEWAY:
-#------------------------------------------------------------
-
-{
-    my $currentmode;
-    my $currentnumber;
-
-    $db->set_value('AccessType', 'dedicated');
-    goto ETHERNET_EXTERNAL;
-
-    if ($db->get_value('AccessType') eq 'dedicated')
-    {
-        $currentmode = gettext("Server and gateway - dedicated");
-        $currentnumber = "1.";
-    }
-
-    my @args = (
-                "1.", gettext("Server and gateway - dedicated"),
-               );
-
-    ($rc, $choice) = $console->menu_page
-        (
-         title => gettext("Select external access mode"),
-         default => $currentnumber,
-         text =>
-         gettext("The next step is to select the access mode that your server will use to connect to the Internet.") .
-         "\n\n" .
-         argsref => \@args
-        );
-
-    goto SYSTEM_MODE unless ($rc == 0);
-
-    if ($choice eq  "1.")
-    {
-        $db->set_value('AccessType', 'dedicated');
-        goto ETHERNET_EXTERNAL;
-    }
-
-}
-
-#------------------------------------------------------------
-ETHERNET_EXTERNAL:
-#------------------------------------------------------------
-{
-    my $vlan = $db->get_prop('sysconfig', 'VlanWAN');
-    if (scalar @adapters == 1 && !$vlan)
-    {
-        ($rc, $choice) = $console->message_page
-            (
-             title => gettext("Only one network adapter"),
-             text  =>
-             gettext("Your system only has a single network adapter. It cannot be used in this configuration."),
-	     left => "",
-	     right => "Back",
-            );
-	goto SERVER_GATEWAY;
-    }
-    my ($selectMode, $newDriver) = ethernetSelect('external', 'EthernetDriver2');
-
-    goto ETHERNET_EXTERNAL  if ($selectMode eq 'CANCEL_MANUAL');
-
-    goto SERVER_GATEWAY     if ($selectMode eq 'CANCEL');
-
-    if ($selectMode eq 'NOLOAD')
-    {
-        failed_to_load($newDriver);
-        goto ETHERNET_EXTERNAL;
-    }
-
-    $db->set_value('EthernetAssign', "normal");
-
-    goto SERVER_GATEWAY_DEDICATED;
-}
-
-#------------------------------------------------------------
-SERVER_GATEWAY_DEDICATED:
-#------------------------------------------------------------
-{
-    unless ($db->get_value('DHCPClient'))
-    {
-        $db->set_value('DHCPClient', 'dhi');
-    }
-
-    my $currentmode;
-    my $currentnumber;
-    my $shortmode;
-
-    if ($db->get_value('ExternalDHCP') eq 'on')
-    {
-        $currentmode = gettext("use DHCP (send ethernet address as client identifier)");
-        $shortmode = gettext("DHCP with ethernet address");
-        $currentnumber = "1.";
-    }
-    else
-    {
-        $currentmode = gettext("use static IP address (do not use DHCP or PPPoE)");
-        $shortmode = gettext("static IP");
-        $currentnumber = "2.";
-    }
-
-    my @args = (
-                "1.", gettext("Use DHCP (send account name as client identifier)"),
-                "2.", gettext("Use static IP address"),
-               );
-
-    ($rc, $choice) = $console->menu_page
-        (
-         title   => gettext("External Interface Configuration"),
-	 default => $currentnumber,
-         text    =>
-         gettext("Next, specify how to configure the external ethernet adapter.") .
-         "\n\n" .
-         gettext("For cable modem connections, select DHCP. If your ISP has assigned a system name for your connection, use the account name option. Otherwise use the ethernet address option. For residential ADSL, use PPPoE. For most corporate connections, use a static IP address."),
-         argsref => \@args
-        );
-
-    goto SERVER_GATEWAY unless ($rc == 0);
-
-        if ($choice eq  "1.")
-        {
-            # Delete GatewayIP, as Gateway is via DHCP
-            $db->delete('GatewayIP');
-            $db->set_value('ExternalDHCP', 'on');
-            $db->set_value('DHCPClient', 'dhi');
-            goto DHCP_ACCOUNT;
-        } else {
-            $db->set_value('ExternalDHCP', 'off');
-            $db->set_prop('DynDNS', 'status', 'disabled');
-            goto STATIC_IP;
-        }
-}
-
-#------------------------------------------------------------
-STATIC_IP:
-#------------------------------------------------------------
-
-{
-    # Need to do this now, since we delete ExternalIP and
-    # the console will throw an uninitialized variable error
-    # that you'll never see, but will make rc == 0.
-
-    my $externalIP = $db->get_value('ExternalIP') || "";
-    ($rc, $choice) = $console->input_page
-        (
-         title => gettext("Select static IP address"),
-         text  =>
-         gettext("You have chosen to configure your external Ethernet connection with a static IP address. Please enter the IP address which should be used for the external interface on this server.") .
-         "\n\n" .
-         gettext("Please note, this is not the address of your external gateway."),
-         value   => $externalIP
-        );
-
-    goto SERVER_GATEWAY_DEDICATED unless ($rc == 0);
-
-    if ($choice)
-    {
-        if (isValidIP($choice) )
-        {
-            $db->set_value('ExternalIP', cleanIP($choice));
-            goto STATIC_NETMASK;
-        }
-    }
-    else
-    {
-        $choice = '';
-    }
-
-    ($rc, $choice) = $console->tryagain_page
-        (
-         title   => gettext("Invalid external IP address"),
-         choice  => $choice,
-        );
-
-    goto STATIC_IP;
-}
-
-#------------------------------------------------------------
-STATIC_NETMASK:
-#------------------------------------------------------------
-
-{
-    ($rc, $choice) = $console->input_page
-        (
-         title => gettext("Select subnet mask"),
-         text  =>
-         gettext("Please enter the subnet mask for your Internet connection. A typical subnet mask is 255.255.255.0."),
-         value   => $db->get_value('ExternalNetmask')
-        );
-
-    goto STATIC_IP unless ($rc == 0);
-
-    if ($choice)
-    {
-        if ( isValidIP($choice) )
-        {
-            # Check for overlapping ranges in external and internal interface IP and netmasks
-
-            # Retrieve the local IP/mask setting
-            my $localAddress = $db->get_value('LocalIP');
-            my $localNetmask = $db->get_value('LocalNetmask');
-
-            # Retrieve the external IP/mask setting
-            my $externalAddress = $db->get_value('ExternalIP');
-            my $externalNetmask = cleanIP($choice);
-
-            if ( ipv4_in_network($localAddress, $localNetmask, $externalAddress, $externalNetmask) )
-            {
-
-                ($rc, $choice) = $console->message_page
-                (
-                    title => gettext("Invalid address ranges"),
-                    text  => sprintf(gettext(
-                                 "Internal address range overlaps external address range" .
-                                 "\n\n".
-                                 "Local interface: %s/%s" .
-                                 "\n" .
-                                 "External interface: %s/%s" .
-                                 "\n\n".
-                                 "Please review your settings."), 
-                             $localAddress, $localNetmask, $externalAddress, $externalNetmask
-                    )
-                );
-
-                goto STATIC_IP;
-
-            }
-
-            $db->set_value('ExternalNetmask', $externalNetmask);
-            goto STATIC_GATEWAY;
-        }
-    }
-    else
-    {
-        $choice = '';
-    }
-
-    ($rc, $choice) = $console->tryagain_page
-        (
-         title   => gettext("Invalid external subnet mask"),
-         choice  => $choice,
-        );
-
-    goto STATIC_NETMASK;
-}
-
-#------------------------------------------------------------
-STATIC_GATEWAY:
-#------------------------------------------------------------
-
-{
-    my $netmaskBits = esmith::util::IPquadToAddr ($db->get_value('ExternalNetmask'));
-    my $gateway_ip = $db->get_value('GatewayIP') || "";
-    unless ((esmith::util::IPquadToAddr($db->get_value('ExternalIP')) & $netmaskBits) ==
-            (esmith::util::IPquadToAddr($db->get_value('GatewayIP')) & $netmaskBits)) {
-        $gateway_ip =
-            esmith::util::IPaddrToQuad(
-                                       (esmith::util::IPquadToAddr($db->get_value('ExternalIP')) & $netmaskBits)
-                                       + 1);
-    }
-    ($rc, $choice) = $console->input_page
-        (
-         title => gettext("Select gateway IP address"),
-         text  =>
-         gettext("Please enter the gateway IP address for your Internet connection."),
-         value   => $gateway_ip
-        );
-
-    goto STATIC_NETMASK unless ($rc == 0);
-
-    $choice ||= '';
-    my $error = undef;
-    if (!isValidIP($choice))
-    {
-        $error = "not a valid IP address";
-    }
-    elsif (cleanIP($choice) eq $db->get_value('ExternalIP'))
-    {
-        $error = "address matches external interface address";
-    }
-    elsif (!ipv4_in_network($db->get_value('ExternalIP'),
-        $db->get_value('ExternalNetmask'), "$choice/32"))
-    {
-        $error = "address is not local";
-    }
-    if ($error)
-    {
-        ($rc, $choice) = $console->tryagain_page
-            (
-             title   => gettext("Invalid") . " - " . gettext($error),
-             choice  => $choice,
-            );
-
-        goto STATIC_GATEWAY;
-    }
-    $db->set_value('GatewayIP', cleanIP($choice));
-    goto OTHER_PARAMETERS;
-
-}
 
 #------------------------------------------------------------
 SERVER_ONLY:
