@@ -1,4 +1,4 @@
-#!/usr/bin/perl -wT
+#!/usr/bin/perl -w
 
 #----------------------------------------------------------------------
 # copyright (C) 1999-2006 Mitel Corporation
@@ -23,11 +23,13 @@ use strict;
 
 use Locale::gettext;
 use esmith::ConfigDB::unsaved;
+use esmith::InterfacesDB;
 use esmith::console;
 
 my $console = esmith::console->new();
 
 my $db = esmith::ConfigDB::unsaved->open;
+my $idb = esmith::InterfacesDB->open;
 
 my $termType = $db->get_prop('serial-console', 'Terminal') || '';
 
@@ -37,7 +39,7 @@ use esmith::console::system_password;
 esmith::console::system_password->new->doit($console, $db);
 
 use esmith::console::configure;
-esmith::console::configure->new(bootstrap => 1)->doit($console, $db);
+esmith::console::configure->new(bootstrap => 1)->doit($console, $db, $idb);
 
 use esmith::console::save_config;
 esmith::console::save_config->new->doit($console, $db);
