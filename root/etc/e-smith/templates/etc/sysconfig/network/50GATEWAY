@@ -1,6 +1,0 @@
-{
-    $OUT = "GATEWAY=";
-
-    $OUT .= ($AccessType eq "dedicated" and defined $GatewayIP) ? $GatewayIP 
-                                                                : "";
-}

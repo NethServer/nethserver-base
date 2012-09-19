@@ -1,8 +1,0 @@
-{
-    return "" unless (defined $ExternalInterface && defined $GatewayIP);
-
-    my $dev = ($ExternalInterface{Configuration} eq 'disabled') ?
-	$InternalInterface{Name} :
-	$ExternalInterface{Name};
-    return "GATEWAYDEV=$dev";
-}
