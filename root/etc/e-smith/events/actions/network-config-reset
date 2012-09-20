@@ -10,7 +10,10 @@ interfaces=$(ls $ESMITH_NETWORK_OUT_DIR/ifcfg* | \
             LANG=C sed 's/ //')
 
 for i in $interfaces; do
-    rm -f $i
+    rm -f $i 2>/dev/null
 done
+
+# remove all aliases
+rm $ESMITH_NETWORK_OUT_DIR/ifcfg-*\:? 2>/dev/null
 
 exit 0
