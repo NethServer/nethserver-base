@@ -1,9 +1,0 @@
-{
-    $OUT = "";
-    return if ($InternalInterface{Name} eq "bond0");
-    return unless $THIS_DEVICE =~ /^eth[01]$/;
-    my $hwaddr = $is_internal ? 
-        $InternalInterface{HWAddress}:
-        $ExternalInterface{HWAddress};
-    $OUT .= "HWADDR=$hwaddr" if $hwaddr;
-}

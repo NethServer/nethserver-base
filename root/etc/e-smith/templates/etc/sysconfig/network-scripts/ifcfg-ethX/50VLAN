@@ -1,9 +1,0 @@
-{
-    $OUT = "";
-    $THIS_DEVICE =~ /(eth\d)\.(\d+)/;
-    return unless defined $2;
-
-    my ($physdev, $vlan) = ($1, $2);
-    $OUT .= "VLAN=yes\n" .
-            "PHYSDEV=$physdev";
-}

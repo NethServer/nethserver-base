@@ -1,3 +1,0 @@
-{
-    return "ONBOOT=$ifup_this_device";
-}
