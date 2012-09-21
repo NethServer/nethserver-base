@@ -1,4 +1,8 @@
 { 
+    use esmith::InterfacesDB;
+    my $ndb = esmith::InterfacesDB->open_ro() || return;;
+    my $LocalIP = $ndb->green()->prop('ipaddr') || '';
+
     $OUT .= "$LocalIP\t";
     $OUT .= "${SystemName}.${DomainName}";
     $OUT .= " ${SystemName}";
