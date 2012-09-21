@@ -145,7 +145,8 @@ event_link("network-config-restart", $event, "80");
 event_templates($event,
      '/etc/modprobe.d/bonding.conf',
      '/etc/udev/rules.d/70-persistent-net.rules',
-     '/etc/sysconfig/network'
+     '/etc/sysconfig/network',
+     '/etc/localnetworks'
 );
 
 #--------------------------------------------------
