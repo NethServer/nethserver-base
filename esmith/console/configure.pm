@@ -120,14 +120,24 @@ sub ethernetSelect($$)
     $db->set_value('UnsavedChanges', 'yes');
 
     # rename to green
-    my $i = $idb->get($ifName);
-    my %props = $i->props;
+
     my $new_name = 'green'; # new_name = role
-    $i->delete();
-    $idb->set_prop($new_name, 'role', 'green', type => 'ethernet');
-    $i = $idb->get($new_name);
-    $i->reset_props(%props);
-    $idb->set_prop($new_name,'device',$new_name);
+    my $i = $idb->get($ifName);
+    if ( defined ($i) ) {
+        my %props = $i->props;
+        $i->delete();
+        $idb->set_prop($new_name, 'role', 'green', type => 'ethernet');
+        $i = $idb->get($new_name);
+        $i->reset_props(%props);
+        $idb->set_prop($new_name,'device',$new_name);
+    } else { # the card is not in the db
+        my $g = $idb->green();
+        $g->delete(); # delete ol green devnce
+        $idb->set_prop($new_name, 'role', 'green', type => 'ethernet');
+        $idb->set_prop($new_name, 'hwaddr', $tag2hwaddr{$choice});
+        $idb->set_prop($new_name, 'device', $new_name);
+        $idb->set_prop($new_name, 'onboot', 'yes');
+    }
 
 
 
@@ -341,9 +351,11 @@ LOCAL_NETMASK:
 {
     my $green = $idb->green();
     my $local_netmask = '255.255.255.0';
+    my $local_ip = "";
     if ($green) {
         my %green_props = $green->props;
         $local_netmask = $green_props{'netmask'}; 
+        $local_ip = $green_props{'ipaddr'}; 
     }
 
     ($rc, $choice) = $console->input_page
@@ -368,6 +380,24 @@ LOCAL_NETMASK:
             # Update primary record
             $idb->set_prop($green->key,'netmask', $choice);
             $db->set_value('UnsavedChanges', 'yes');
+
+            # update local network
+            use esmith::NetworksDB;
+            my $ndb = my $db = esmith::NetworksDB->open;
+            my @networks = $ndb->networks; 
+            foreach my $network (@networks) {
+                my %nprops = $network->props;
+                my $local = $nprops{'SystemLocalNetwork'} || 'no';
+                if ($local eq 'yes') {
+                    $network->delete();
+                }
+            }
+            if ($local_ip ne '') { 
+                my ($network, $broadcast) = esmith::util::computeNetworkAndBroadcast($local_ip, $choice);
+                $ndb->set_prop($network,'SystemLocalNetwork','yes',type=>'network');
+                $ndb->set_prop($network,'Mask',$choice);
+            }
+
             goto SERVER_ONLY;
         }
     }
