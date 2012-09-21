@@ -416,76 +416,11 @@ LOCAL_NETMASK:
 }
 
 #------------------------------------------------------------
-SYSTEM_MODE:
-#------------------------------------------------------------
-
-{
-    my $currentmode;
-    my $currentnumber;
-
-    if ($db->get_value('SystemMode') eq 'servergateway')
-    {
-        $currentmode = gettext("Server and gateway");
-        $currentnumber = "1.";
-    }
-    #elsif ($db->get_value('SystemMode') eq 'servergateway-private')
-    #{
-    #    $currentmode = gettext("Private server and gateway");
-    #    $currentnumber = "2.";
-    #}
-    else
-    {
-        $currentmode = gettext("Server-only");
-        $currentnumber = "3.";
-    }
-
-    my @args = (
-                #"1.", gettext("Server and gateway"),
-                #"2.", gettext("Private server and gateway"),
-                "3.", gettext("Server-only"),
-               );
-
-    ($rc, $choice) = $console->menu_page
-        (
-         title   => gettext("Select operation mode"),
-         default => $currentnumber,
-         text    =>
-         #gettext("If you want this server to act as a gateway to the Internet, choose one of the server and gateway options. Server and gateway mode acts as a firewall and provides an external web and mail server.") .
-         #"\n\n" .
-         gettext("Server-only mode provides services to a local, protected network. If you choose this mode and Internet access is required, the network must be protected by another server configured in server and gateway mode (or another firewall)."),
-         argsref => \@args
-        );
-
-    goto ETHERNET_LOCAL unless ($rc == 0);
-
-    if ($choice eq "1.")
-    {
-        $db->set_value('SystemMode', 'servergateway');
-        goto SERVER_GATEWAY;
-    }
-
-    #if ($choice eq "2.")
-    #{
-    #    $db->set_value('SystemMode', 'servergateway-private');
-    #    goto SERVER_GATEWAY;
-    #}
-
-    if ($choice eq "3.")
-    {
-        $db->delete("ExternalIP");
-        $db->set_value('SystemMode', 'serveronly');
-        goto SERVER_ONLY;
-    }
-}
-
-
-#------------------------------------------------------------
 SERVER_ONLY:
 #------------------------------------------------------------
 
 {
-    $prevScreen = 'SERVER_ONLY';
-    goto OTHER_PARAMETERS unless ($db->get_value('AccessType') eq 'dedicated');
+    $prevScreen = 'LOCAL_NETMASK';
     my $green = $idb->green();
     my %green_props = $green->props;
     my $local_ip = $green_props{'ipaddr'};
@@ -538,7 +473,6 @@ SERVER_ONLY:
     $idb->set_prop($green->key,'gateway', cleanIP($choice));
     $db->set_value('UnsavedChanges', 'yes');
 
-    $db->set_value('AccessType', 'dedicated');
     goto OTHER_PARAMETERS;
 }
 
@@ -642,6 +576,7 @@ QUERY_SAVE_CONFIG:
     #------------------------------------------------------------
 
     if ($self->{bootstrap}) {
+        event_signal("network-update");
 	system("/sbin/e-smith/event-queue", "signal");
         goto QUIT1;
 
