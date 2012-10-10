@@ -130,6 +130,7 @@ event_templates('nethserver-base-update', qw(
     /etc/localnetworks
     /etc/hosts.allow
     /etc/hosts.deny
+    /etc/shells
 ));
 		
 safe_symlink("/etc/e-smith/templates-default/template-begin-pam", "root/etc/e-smith/templates/etc/pam.d/system-auth-nh/template-begin");		
