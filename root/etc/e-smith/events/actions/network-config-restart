@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 
+use strict;
 use esmith::InterfacesDB;
 
 our $output_dir = $output_dir || $ENV{ESMITH_NETWORK_OUT_DIR} || "/etc/sysconfig/network-scripts";
@@ -24,7 +25,10 @@ foreach my $i (@interfaces) {
    my $hwaddr = $props{'hwaddr'} || '';
    my $old_name = $current{$hwaddr} || $new_name;
    next unless ($hwaddr ne '') and ($old_name ne $new_name);
-   `/sbin/ip link set dev $old_name name $new_name`;
+   `/sbin/ip link set $old_name name $new_name`;
+   if ( $? != 0 ) {
+       warn "Failed to rename $old_name interface to $new_name\n";
+   }
 }
 
 `/sbin/service network start`;
