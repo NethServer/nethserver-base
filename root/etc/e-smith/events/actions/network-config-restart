@@ -3,33 +3,47 @@
 use strict;
 use esmith::InterfacesDB;
 
+qx(/sbin/service network stop);
+
 our $output_dir = $output_dir || $ENV{ESMITH_NETWORK_OUT_DIR} || "/etc/sysconfig/network-scripts";
 my $idb = esmith::InterfacesDB->open_ro();
 my @interfaces = $idb->ethernets;
 
-my %current;
-my $rec = `/sbin/ifconfig -a | grep "HWaddr"`;
-foreach (split(/\n/,$rec)) {
+my %current = {};
+# Query the currently active interfaces:
+foreach (split(/\n/, `/sbin/ifconfig -a | grep "HWaddr"`)) {
    my ($name, $field2, $field3, $field4, $mac) = split(/\s+/, $_);
-   $current{$mac} = $name;
-   `/sbin/ifconfig $name down`;
+   $current{uc($mac)} = $name;
+
+   # Ensure all ethernets are down:
+   my $output = `/sbin/ifconfig $name down 2>&1`;
+   if ( $? != 0 ) {
+       warn "Could not bring down " . $name . ": " . $output . "\n";
+   }
 }
 
-`/sbin/service network stop`;
-`/sbin/udevadm control --reload-rules`;
-
+if(system(qw(/sbin/udevadm control --reload-rules)) != 0) {
+    warn "Failed to reload udevadm rules\n";
+};
 
 foreach my $i (@interfaces) {
    my $new_name = $i->key;
    my %props = $i->props;
-   my $hwaddr = $props{'hwaddr'} || '';
+   my $hwaddr = uc($props{'hwaddr'}) || '';
    my $old_name = $current{$hwaddr} || $new_name;
-   next unless ($hwaddr ne '') and ($old_name ne $new_name);
-   `/sbin/ip link set $old_name name $new_name`;
-   if ( $? != 0 ) {
-       warn "Failed to rename $old_name interface to $new_name\n";
+
+   # Check if interface has been renamed:
+   if($hwaddr ne '' && $old_name ne $new_name) {
+       my $output = `/sbin/ip link set $old_name name $new_name 2>&1`;
+       if ( $? != 0 ) {
+	   warn "Failed to rename " . $old_name . " interface to " . $new_name . ": " . $output . "\n";
+       }
    }
 }
 
-`/sbin/service network start`;
+qx(/sbin/service network start);
+if($? != 0) {
+    warn "Failed to start service network\n";
+} 
+
 
