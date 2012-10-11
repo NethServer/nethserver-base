@@ -38,7 +38,7 @@ foreach (split(' ', `/usr/bin/groups $userName`)) {
 }
 
 # Combine the previous and the current membership sets:
-my %groups = {};
+my %groups = ();
 
 foreach (@oldGroups, $accountsDb->user_group_list($userName)) {
     $groups{$_} ++;
@@ -46,7 +46,7 @@ foreach (@oldGroups, $accountsDb->user_group_list($userName)) {
 
 # Signal group modify excluding the two set intersection
 foreach (keys %groups) {
-    if($groups{$_} == 1) {
+    if(defined $groups{$_} && $groups{$_} == 1) {
 	warn 'INFO: update user membership of group ' . $_ . ".\n";
 	event_signal("group-modify", $_);
     }
