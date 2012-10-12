@@ -58,7 +58,7 @@ unless ($uid = $acct->prop('Uid'))
 {
     use esmith::lockfile;
 
-    $lock = esmith::lockfile::LockFileOrWait("/home/e-smith/db/accounts");
+    $lock = esmith::lockfile::LockFileOrWait("/var/lib/nethserver/db/accounts");
     $uid = $accounts->get_next_uid;
     $acct->set_prop('Uid', $uid);
     $acct->set_prop('PasswordSet', 'no');

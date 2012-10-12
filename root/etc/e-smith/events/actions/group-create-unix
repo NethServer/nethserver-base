@@ -53,7 +53,7 @@ unless ($gid = $group->prop('Gid'))
 {
     use esmith::lockfile;
 
-    $lock = esmith::lockfile::LockFileOrWait("/home/e-smith/db/accounts");
+    $lock = esmith::lockfile::LockFileOrWait("/var/lib/nethserver/db/accounts");
     $gid = $accounts->get_next_uid;
     $group->set_prop('Gid', $gid);
     unless ($group->prop('Uid'))
