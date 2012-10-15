@@ -132,7 +132,9 @@ sub ethernetSelect($$)
         $idb->set_prop($new_name,'device',$new_name);
     } else { # the card is not in the db
         my $g = $idb->green();
-        $g->delete(); # delete ol green devnce
+	if(defined($g)) {
+	    $g->delete(); # delete ol green devnce
+	}
         $idb->set_prop($new_name, 'role', 'green', type => 'ethernet');
         $idb->set_prop($new_name, 'hwaddr', $tag2hwaddr{$choice});
         $idb->set_prop($new_name, 'device', $new_name);
