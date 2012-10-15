@@ -192,6 +192,9 @@ event_actions('nethserver-base-save',
 	      'firewall-adjust' => '60',
 	      'runlevel-adjust' => '61');
 
+event_services('nethserver-base-save', qw(
+               sshd reload
+));
 
 #--------------------------------------------------
 # Refs #1038 expand /etc/hosts template on host 
