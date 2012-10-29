@@ -39,7 +39,6 @@ class LocalNetwork extends \Nethgui\Controller\TableController
             'Key',
             'Mask',
             'Router',
-            'SystemLocalNetwork',
             'Description',
             'Actions'
         );
@@ -54,8 +53,9 @@ class LocalNetwork extends \Nethgui\Controller\TableController
         $this
             ->setTableAdapter($this->getPlatform()->getTableAdapter('networks', 'network'))
             ->setColumns($columns)
-            ->addTableAction(new \Nethgui\Controller\Table\Modify('create', $parameterSchema, 'NethServer\Template\LocalNetwork\CreateUpdate'))
+            ->addTableAction(new \Nethgui\Controller\Table\Modify('create', $parameterSchema, 'NethServer\Template\LocalNetwork\CreateUpdate'))            
             ->addTableAction(new \Nethgui\Controller\Table\Help('Help'))
+            ->addRowAction(new \Nethgui\Controller\Table\Modify('update', $parameterSchema, 'NethServer\Template\LocalNetwork\CreateUpdate'))
             ->addRowAction(new \Nethgui\Controller\Table\Modify('delete', $parameterSchema, 'Nethgui\Template\Table\Delete'))
         ;
 
