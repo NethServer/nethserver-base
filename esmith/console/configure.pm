@@ -382,24 +382,6 @@ LOCAL_NETMASK:
             # Update primary record
             $idb->set_prop($green->key,'netmask', $choice);
             $db->set_value('UnsavedChanges', 'yes');
-
-            # update local network
-            use esmith::NetworksDB;
-            my $ndb = my $db = esmith::NetworksDB->open;
-            my @networks = $ndb->networks; 
-            foreach my $network (@networks) {
-                my %nprops = $network->props;
-                my $local = $nprops{'SystemLocalNetwork'} || 'no';
-                if ($local eq 'yes') {
-                    $network->delete();
-                }
-            }
-            if ($local_ip ne '') { 
-                my ($network, $broadcast) = esmith::util::computeNetworkAndBroadcast($local_ip, $choice);
-                $ndb->set_prop($network,'SystemLocalNetwork','yes',type=>'network');
-                $ndb->set_prop($network,'Mask',$choice);
-            }
-
             goto SERVER_ONLY;
         }
     }

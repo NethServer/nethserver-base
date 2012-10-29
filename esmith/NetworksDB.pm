@@ -10,6 +10,8 @@ use strict;
 use warnings;
 
 use esmith::DB::db;
+use esmith::InterfacesDB;
+use esmith::util;
 our @ISA = qw( esmith::DB::db );
 
 =head1 NAME
@@ -116,6 +118,18 @@ sub local_access_spec
     my $access = shift || "private";
 
     my @localAccess = ("127.0.0.1");
+
+    my $idb = esmith::InterfacesDB->open_ro();
+
+    if($idb && $idb->green()) {
+	my $greenNetwork = esmith::util::computeLocalNetworkSpec(
+	    $idb->green()->prop('ipaddr'), 
+	    $idb->green()->prop('netmask')
+	);
+	if($greenNetwork) {
+	    push @localAccess, $greenNetwork;
+	}
+    }
 
     if ( $access eq "localhost" )
     {
