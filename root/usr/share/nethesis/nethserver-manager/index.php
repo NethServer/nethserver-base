@@ -32,8 +32,8 @@ setlocale(LC_CTYPE, 'en_US.utf-8');
 // If xdebug is loaded, disable xdebug backtraces:
 extension_loaded('xdebug') && xdebug_disable();
 
-// Disable hashed target names:
-define('NETHGUI_ENABLE_TARGET_HASH', FALSE);
+// Enable hashed target names:
+define('NETHGUI_ENABLE_TARGET_HASH', TRUE);
 
 // Enable nethgui javascript files auto inclusion:
 define('NETHGUI_ENABLE_INCLUDE_WIDGET', TRUE);
