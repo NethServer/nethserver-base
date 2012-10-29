@@ -19,30 +19,6 @@ event_link("reset-unsavedflag", $event, "95");
 
 
 #--------------------------------------------------
-# actions for group-create event
-#--------------------------------------------------
-event_actions('group-create', 
-	      "group-create-unix" => "04",
-	      'group-modify-unix' => '20',
-    );
-
-
-#--------------------------------------------------
-# actions for group-delete event
-#--------------------------------------------------
-$event = "group-delete";
-event_link("group-delete-unix", $event, "15");
-
-
-#--------------------------------------------------
-# actions for group-modify event
-#--------------------------------------------------
-$event = "group-modify";
-event_link("group-modify-unix", $event, "15");
-
-
-
-#--------------------------------------------------
 # actions for network-create event
 #--------------------------------------------------
 event_templates('network-create',
@@ -56,54 +32,6 @@ event_templates('network-create',
 event_templates('network-delete',
 		'/etc/localnetworks');
 # event_link("conf-routes", 'network-delete', "89");
-
-
-#--------------------------------------------------
-# actions for user-create event
-#--------------------------------------------------
-$event = "user-create";
-event_link("user-create-unix", $event, "04");
-event_link("count-active-user-accounts", $event, "25");
-event_link("user-group-modify", $event, "85");
-
-#--------------------------------------------------
-# actions for user-delete event
-#--------------------------------------------------
-event_actions('user-delete',
-	      'user-delete-groups' => '75',
-	      'user-delete-unix' => '80',
-	      'count-active-user-accounts' => '90'
-    );
-
-#--------------------------------------------------
-# actions for user-modify event
-#--------------------------------------------------
-$event = "user-modify";
-event_link("user-modify-unix", $event, "15");
-event_link("user-group-modify", $event, "85");
-
-
-#--------------------------------------------------
-# actions for user-lock event
-#--------------------------------------------------
-$event = "user-lock";
-event_link("user-lock-unix", $event, "15");
-event_link("count-active-user-accounts", $event, "25");
-
-#--------------------------------------------------
-# actions for user-lock event
-#--------------------------------------------------
-$event = "user-unlock";
-event_link("user-unlock-unix", $event, "15");
-event_link("count-active-user-accounts", $event, "25");
-
-
-#--------------------------------------------------
-# actions for password-modify event
-#--------------------------------------------------
-$event = "password-modify";
-event_link("set-password", $event, "25");
-event_link("delete-tmp", $event, "90");
 
 
 #--------------------------------------------------
@@ -152,20 +80,6 @@ event_templates($event,
      '/etc/hosts'
 );
 
-#--------------------------------------------------
-# actions for user-name validator
-#--------------------------------------------------
-validator_actions('user-name',
-		  'uniq-account' => '20',
-		  'user-length' => '30',
-		  'max-users' => '90');
-
-#--------------------------------------------------
-# actions for group-name validator
-#--------------------------------------------------
-validator_actions('group-name',
-		  'uniq-account' => '20',
-		  'group-length' => '30');
 
 #--------------------------------------------------
 # Refs #939 tcp/udp port server validator
@@ -173,12 +87,6 @@ validator_actions('group-name',
 validator_actions('remote-port',
 		  'open-tcp-connection', => '10');
 
-
-#--------------------------------------------------
-# validate passwords
-#--------------------------------------------------
-validator_actions('password-strength',
-		  'password-strength' => '10');
 
 #--------------------------------------------------
 # nethserver-base-save event
