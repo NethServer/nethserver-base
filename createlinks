@@ -7,34 +7,35 @@ use File::Path;
 #--------------------------------------------------
 # actions for network-create event
 #--------------------------------------------------
-event_templates('network-create',
-		'/etc/localnetworks');
+event_templates('network-create', qw(
+		/etc/localnetworks
+));
 
 #--------------------------------------------------
 # actions for network-update event
 #--------------------------------------------------
-event_templates('network-update',
-		'/etc/localnetworks');
+event_templates('network-update', qw(
+		/etc/localnetworks
+));
 
 #--------------------------------------------------
 # actions for network-delete event
 #--------------------------------------------------
-event_templates('network-delete',
-		'/etc/localnetworks');
-
-
+event_templates('network-delete', qw(
+		/etc/localnetworks
+));
 
 #--------------------------------------------------
 # actions for nethserver-base-update event
 #--------------------------------------------------
-event_actions('nethserver-base-update', 
-    "initialize-default-databases"   => "00",
-    "nethserver-base-selinux-setup"  => "10",
-    "nethserver-base-conf"           => "40",
-    "nethserver-base-pam-setup"      => "50",
-    "firewall-adjust"                => "70",
-    "runlevel-adjust"                => "71",
-);
+event_actions('nethserver-base-update', qw(
+    initialize-default-databases      00
+    nethserver-base-selinux-setup     10
+    nethserver-base-conf              40
+    nethserver-base-pam-setup         50
+    firewall-adjust                   70
+    runlevel-adjust                   71
+));
 
 event_templates('nethserver-base-update', qw(
     /etc/hosts
@@ -51,18 +52,21 @@ event_templates('nethserver-base-update', qw(
     /etc/shells
 ));
 		
-safe_symlink("/etc/e-smith/templates-default/template-begin-pam", "root/etc/e-smith/templates/etc/pam.d/system-auth-nh/template-begin");		
+safe_symlink(
+    "/etc/e-smith/templates-default/template-begin-pam", 
+    "root/etc/e-smith/templates/etc/pam.d/system-auth-nh/template-begin");		
 
 
 #--------------------------------------------------
 # actions for interface-update event #1532
 #--------------------------------------------------
 event_actions('interface-update', qw(
-              interface-config-reset 25
-              interface-config-write 30
-              interface-config-restart 70
-              interface-config-hostname 75
+              interface-config-reset     25
+              interface-config-write     30
+              interface-config-restart   70
+              interface-config-hostname  75
 ));
+
 event_templates('interface-update', qw(
      /etc/modprobe.d/bonding.conf
      /etc/udev/rules.d/70-persistent-net.rules
@@ -75,21 +79,24 @@ event_templates('interface-update', qw(
 #--------------------------------------------------
 # Refs #939 tcp/udp port server validator
 #--------------------------------------------------
-validator_actions('remote-port',
-		  'open-tcp-connection', => '10');
+validator_actions('remote-port', qw(
+		  open-tcp-connection 10
+));
 
 
 #--------------------------------------------------
 # nethserver-base-save event
 #--------------------------------------------------
-event_templates('nethserver-base-save',
-		'/etc/hosts.allow',
-		'/etc/hosts.deny',
-		'/etc/sysconfig/sshd');
+event_templates('nethserver-base-save', qw(
+		/etc/hosts.allow
+		/etc/hosts.deny
+		/etc/sysconfig/sshd
+));
 
-event_actions('nethserver-base-save',
-	      'firewall-adjust' => '60',
-	      'runlevel-adjust' => '61');
+event_actions('nethserver-base-save', qw(
+	      firewall-adjust 60
+	      runlevel-adjust 61
+));
 
 event_services('nethserver-base-save', qw(
                sshd reload
@@ -97,12 +104,14 @@ event_services('nethserver-base-save', qw(
 
 #--------------------------------------------------
 # Refs #1038 expand /etc/hosts template on host 
-# events
+# events -- FIXME: should be moved into 
+# nethserver-hosts package (?)
 #--------------------------------------------------
-templates2events('/etc/hosts', 
-		 'host-create',
-		 'host-delete',
-		 'host-modify');
+templates2events('/etc/hosts', qw(
+		 host-create
+		 host-delete
+		 host-modify
+));
 
 
 #--------------------------------------------------
