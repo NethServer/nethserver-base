@@ -23,14 +23,14 @@ use strict;
 
 use Locale::gettext;
 use esmith::ConfigDB::unsaved;
-use esmith::InterfacesDB;
+use esmith::NetworksDB;
 use esmith::console;
 use esmith::console::quitConsole;
 
 my $console = esmith::console->new();
 
 my $db = esmith::ConfigDB::unsaved->open;
-my $idb = esmith::InterfacesDB->open;
+my $idb = esmith::NetworksDB->open;
 
 my $termType = $db->get_prop('serial-console', 'Terminal') || '';
 my $SystemName = $db->get_value('SystemName');
