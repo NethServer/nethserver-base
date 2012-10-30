@@ -26,7 +26,6 @@ sub doit
            text => gettext("Please stand by while your configuration settings are activated ..."),
           );
 
-    event_signal('bootstrap-console-save');
 }
 
 1;

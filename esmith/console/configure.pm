@@ -560,7 +560,7 @@ QUERY_SAVE_CONFIG:
     #------------------------------------------------------------
 
     if ($self->{bootstrap}) {
-        event_signal("network-update");
+        event_signal("interface-update");
 	system("/sbin/e-smith/event-queue", "signal");
         goto QUIT1;
 
@@ -569,8 +569,7 @@ QUERY_SAVE_CONFIG:
 	    title => gettext("Activating configuration settings"),
 	    text => gettext("Please stand by while your configuration settings are activated ..."),
 	    );
-        event_signal("console-save");
-        event_signal("network-update");
+        event_signal("interface-update");
         $db->reload;
         $idb->reload;
 	my $current_mode = (getppid() == 1) ? "auto" : "login";

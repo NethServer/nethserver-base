@@ -5,20 +5,6 @@ use File::Path;
 
 
 #--------------------------------------------------
-# actions for console-save event
-#--------------------------------------------------
-my $event = "console-save";
-event_link("reset-unsavedflag", $event, "95");
-
-
-#--------------------------------------------------
-# actions for bootstrap-console-save event
-#--------------------------------------------------
-$event = "bootstrap-console-save";
-event_link("reset-unsavedflag", $event, "95");
-
-
-#--------------------------------------------------
 # actions for network-create event
 #--------------------------------------------------
 event_templates('network-create',
