@@ -1,5 +1,6 @@
 #----------------------------------------------------------------------
 # Copyright 1999-2003 Mitel Networks Corporation
+# Copyright (C) 2012 Nethesis srl
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 #----------------------------------------------------------------------
@@ -10,7 +11,6 @@ use strict;
 use warnings;
 
 use esmith::DB::db;
-use esmith::InterfacesDB;
 use esmith::util;
 our @ISA = qw( esmith::DB::db );
 
@@ -27,14 +27,16 @@ esmith::NetworksDB - interface to esmith networks database
 
 =head1 DESCRIPTION
 
-This module provides an abstracted interface to the esmith master
-configuration database.
+This module provides an abstracted interface to the esmith networks
+database.
 
 Unless otherwise noted, esmith::NetworksDB acts like esmith::DB::db.
 
 =cut
 
-=head2 open()
+=head2 Original network database methods
+
+=item I<open>
 
 Like esmith::DB->open, but if given no $file it will try to open the
 file in the ESMITH_NETWORKS_DB environment variable or networks.
@@ -59,7 +61,7 @@ sub open
     return $class->SUPER::open($file);
 }
 
-=head2 open_ro()
+=item I<open_ro>
 
 Like esmith::DB->open_ro, but if given no $file it will try to open the
 file in the ESMITH_NETWORKS_DB environment variable or networks.
@@ -77,7 +79,7 @@ sub open_ro
     return $class->SUPER::open_ro($file);
 }
 
-=head2 networks
+=item I<networks>
 
 Return a list of all objects of type "network".
 
@@ -88,7 +90,7 @@ sub networks {
     return $self->get_all_by_prop(type => 'network');
 }
 
-=head2 local_access_spec ([$access])
+=item I<local_access_spec ([$access])>
 
 Compute the network/netmask entries which are to treated as local access.
 
@@ -117,14 +119,12 @@ sub local_access_spec
     my $self   = shift;
     my $access = shift || "private";
 
-    my @localAccess = ("127.0.0.1");
+    my @localAccess = ("127.0.0.1");    
 
-    my $idb = esmith::InterfacesDB->open_ro();
-
-    if($idb && $idb->green()) {
+    if($self && $self->green()) {
 	my $greenNetwork = esmith::util::computeLocalNetworkSpec(
-	    $idb->green()->prop('ipaddr'), 
-	    $idb->green()->prop('netmask')
+	    $self->green()->prop('ipaddr'),
+	    $self->green()->prop('netmask')
 	);
 	if($greenNetwork) {
 	    push @localAccess, $greenNetwork;
@@ -156,15 +156,182 @@ sub local_access_spec
     return wantarray ? @localAccess : "@localAccess";
 }
 
+=head2 Network interfaces methods
+
+=over 4
+
+=item I<interfaces>
+
+    my @interfaces = $interfaces->interfaces;
+
+Returns a list of all interface records in the database.
+
+=cut
+
+sub interfaces {
+    my ($self) = @_;
+    return grep { $_->prop('type') =~ /^(ethernet|bridge|bond|alias|ipsec)$/ } $self->get_all();
+}
+
+
+=item I<ethernets>
+
+    my @interfaces = $interfaces->ethernets;
+
+Returns a list of all interfaces of type 'ethernet'.
+
+=cut
+
+sub ethernets {
+    my ($self) = @_;
+    return $self->get_all_by_prop('type' => 'ethernet');
+}
+
+=item I<bridges>
+
+    my @interfaces = $interfaces->bridges;
+
+Returns a list of all interfaces of type 'bridges'.
+
+=cut
+
+sub bridges {
+    my ($self) = @_;
+    return $self->get_all_by_prop('type' => 'bridge');
+}
+
+=item I<bonds>
+
+    my @interfaces = $interfaces->bonds;
+
+Returns a list of all interfaces of type 'bond'.
+
+=cut
+
+sub bonds {
+    my ($self) = @_;
+    return $self->get_all_by_prop('type' => 'bond');
+}
+
+=item I<aliases>
+
+    my @interfaces = $interfaces->aliases;
+
+Returns a list of all interfaces of type 'aliases'.
+
+=cut
+
+sub aliases {
+    my ($self) = @_;
+    return $self->get_all_by_prop('type' => 'alias');
+}
+
+=item I<ipsecs>
+
+    my @interfaces = $interfaces->ipsecs;
+
+Returns a list of all interfaces of type 'ipsecs'.
+
+=cut
+
+sub ipsecs {
+    my ($self) = @_;
+    return $self->get_all_by_prop('type' => 'ipsec');
+}
+
+=item I<get_by_role>
+
+    my @interfaces = $interfaces->get_by_role('myrole');
+
+Returns the interface with the given role, if exsists. Returns undef, otherwise.
+
+=cut
+
+sub get_by_role {
+    my ($self, $role) = @_;
+    my @t = $self->get_all_by_prop('role' => $role);
+    if ( wantarray ) {
+	return @t;
+    } 
+    return (scalar @t > 0) ? $t[0] : undef;
+}
+
+=item I<green>
+
+Returns the interface with green role.
+
+=cut
+
+sub green {
+    my ($self) = @_;
+    return $self->get_by_role('green');   
+}
+
+=item I<orange>
+
+Returns the interface with orange role.
+
+=cut
+
+sub orange {
+    my ($self) = @_;
+    return $self->get_by_role('orange');
+}
+
+=item I<blue>
+
+Returns the interface with blue role.
+
+=cut
+
+sub blue {
+    my ($self) = @_;
+    return $self->get_by_role('blue');
+}
+
+=item I<yellow>
+
+Returns the interface with yellowe role.
+
+=cut
+
+sub yellow {
+    my ($self) = @_;
+    return $self->get_by_role('yellow');
+}
+
+=item I<red1>
+
+Returns the interface with red1 role.
+
+=cut
+
+sub red1 {
+    my ($self) = @_;
+    return $self->get_by_role('red1');
+}
+
+=item I<red2>
+
+Returns the interface with red2 role.
+
+=cut
+
+sub red2 {
+    my ($self) = @_;
+    return $self->get_by_role('red2');
+} 
+
+
+=back
+
 =head1 AUTHOR
 
-SME Server Developers <bugs@e-smith.com>
+Giacomo Sanchietti - Nethesis <support@nethesis.it>, SME Server Developers <bugs@e-smith.com>
 
 =head1 SEE ALSO
 
-L<esmith::DB::db>
-
-L<esmith::DB::Record>
+L<esmith::ConfigDB>
 
 =cut
 
