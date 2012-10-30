@@ -1,7 +1,20 @@
 #!/bin/bash
+
+#
+# interface-config-write -- remove ifcfg-* interface configurations
+#
+# This script is part of NethServer 
+#
+# Copyright (C) 2012 Nethesis srl
+#
+#
+
+source /etc/rc.d/init.d/functions
+
 if [ "x$ESMITH_NETWORK_OUT_DIR" == "x" ]; then
     ESMITH_NETWORK_OUT_DIR=/etc/sysconfig/network-scripts
 fi
+
 interfaces=$(ls $ESMITH_NETWORK_OUT_DIR/ifcfg* | \
             LANG=C sed -e "$__sed_discard_ignored_files" \
                        -e '/\(ifcfg-lo$\|:\|ifcfg-.*-range\)/d' \

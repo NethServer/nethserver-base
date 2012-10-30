@@ -1,12 +1,20 @@
 #!/usr/bin/perl
 
+#
+# interface-config-restart -- remove ifcfg-* interface configurations
+#
+# This script is part of NethServer 
+#
+# Copyright (C) 2012 Nethesis srl
+#
+
+use esmith::NetworksDB;
 use strict;
-use esmith::InterfacesDB;
 
 qx(/sbin/service network stop);
 
 our $output_dir = $output_dir || $ENV{ESMITH_NETWORK_OUT_DIR} || "/etc/sysconfig/network-scripts";
-my $idb = esmith::InterfacesDB->open_ro();
+my $idb = esmith::NetworksDB->open_ro();
 my @interfaces = $idb->ethernets;
 
 my %current = {};

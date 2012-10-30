@@ -1,3 +1,0 @@
-#!/bin/bash
-
-/bin/hostname `/sbin/e-smith/config get SystemName`.`/sbin/e-smith/config get DomainName`

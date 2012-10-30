@@ -1,7 +1,20 @@
 #!/bin/bash
+
+#
+# interface-config-load -- parse ifcfg-* files and load 
+# values into networks DB.
+#
+# This script is part of NethServer 
+#
+# Copyright (C) 2012 Nethesis srl
+#
+
+source /etc/rc.d/init.d/functions
+
 if [ "x$ESMITH_NETWORK_OUT_DIR" == "x" ]; then
     ESMITH_NETWORK_OUT_DIR=/etc/sysconfig/network-scripts
 fi
+
 interfaces=$(ls $ESMITH_NETWORK_OUT_DIR/ifcfg* | \
             LANG=C sed -e "$__sed_discard_ignored_files" \
                        -e '/\(ifcfg-lo$\|:\|ifcfg-.*-range\)/d' \
@@ -16,7 +29,7 @@ for i in $interfaces; do
     if [ "$TYPE" != "Ethernet" ]; then
         continue;
     fi
-    cmd="/sbin/e-smith/db network_interfaces set $DEVICE ethernet "
+    cmd="/sbin/e-smith/db networks set $DEVICE ethernet "
     old_IFS=$IFS      # save the field separator         
     IFS=$'\n'     # new field separator, the end of line         
     for line in $(cat $i)        
@@ -30,7 +43,7 @@ for i in $interfaces; do
     done
     IFS=$old_IFS     # restore default field separator 
     `$cmd`
-    /sbin/e-smith/db network_interfaces setprop $DEVICE role ""
+    /sbin/e-smith/db networks setprop $DEVICE role ""
 done
 
 exit 0
