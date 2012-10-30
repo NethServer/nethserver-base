@@ -23,15 +23,19 @@ event_link("reset-unsavedflag", $event, "95");
 #--------------------------------------------------
 event_templates('network-create',
 		'/etc/localnetworks');
-# event_link("conf-routes", 'network-create', "89");
 
+#--------------------------------------------------
+# actions for network-update event
+#--------------------------------------------------
+event_templates('network-update',
+		'/etc/localnetworks');
 
 #--------------------------------------------------
 # actions for network-delete event
 #--------------------------------------------------
 event_templates('network-delete',
 		'/etc/localnetworks');
-# event_link("conf-routes", 'network-delete', "89");
+
 
 
 #--------------------------------------------------
@@ -65,7 +69,7 @@ safe_symlink("/etc/e-smith/templates-default/template-begin-pam", "root/etc/e-sm
 
 
 #--------------------------------------------------
-# actions for network-update event
+# actions for interface-update event #1532
 #--------------------------------------------------
 event_actions('interface-update', qw(
               interface-config-reset 25
