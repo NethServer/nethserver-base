@@ -166,13 +166,7 @@ sub doit
     $db->reload;
     $idb->reload;
 
-    my @interfaces =  $idb->get_all();
-    if (scalar(@interfaces) == 0) {
-        `/etc/e-smith/events/actions/network-config-load` ;
-        $idb->reload;
-    } 
-
-    # Pobe to detect ethernet adapters
+    # Probe to detect ethernet adapters
     @adapters = split(/\n/, esmith::ethernet::probeAdapters());
 
     #------------------------------------------------------------

@@ -36,6 +36,8 @@ Unless otherwise noted, esmith::NetworksDB acts like esmith::DB::db.
 
 =head2 Original network database methods
 
+=over 4
+
 =item I<open>
 
 Like esmith::DB->open, but if given no $file it will try to open the
@@ -156,6 +158,8 @@ sub local_access_spec
     return wantarray ? @localAccess : "@localAccess";
 }
 
+=back
+
 =head2 Network interfaces methods
 
 =over 4
@@ -243,7 +247,11 @@ sub ipsecs {
 
     my @interfaces = $interfaces->get_by_role('myrole');
 
-Returns the interface with the given role, if exsists. Returns undef, otherwise.
+Returns the interface(s) with the given role, if exsists. Returns undef, otherwise.
+
+The return type is context sensible. In array context a list is
+returned, in scalar context a Record is returned, if at least one
+exists.
 
 =cut
 
@@ -258,7 +266,7 @@ sub get_by_role {
 
 =item I<green>
 
-Returns the interface with green role.
+Returns the interface(s) with green role.
 
 =cut
 
@@ -269,7 +277,7 @@ sub green {
 
 =item I<orange>
 
-Returns the interface with orange role.
+Returns the interface(s) with orange role.
 
 =cut
 
@@ -280,7 +288,7 @@ sub orange {
 
 =item I<blue>
 
-Returns the interface with blue role.
+Returns the interface(s) with blue role.
 
 =cut
 
@@ -291,7 +299,7 @@ sub blue {
 
 =item I<yellow>
 
-Returns the interface with yellowe role.
+Returns the interface(s) with yellowe role.
 
 =cut
 
@@ -302,7 +310,7 @@ sub yellow {
 
 =item I<red1>
 
-Returns the interface with red1 role.
+Returns the interface(s) with red1 role.
 
 =cut
 
@@ -313,7 +321,7 @@ sub red1 {
 
 =item I<red2>
 
-Returns the interface with red2 role.
+Returns the interface(s) with red2 role.
 
 =cut
 
