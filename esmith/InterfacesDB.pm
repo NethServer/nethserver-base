@@ -4,7 +4,7 @@
 # modify it under the same terms as Perl itself.
 #----------------------------------------------------------------------
 
-package esmith::NetworksDB;
+package esmith::InterfacesDB;
 
 use strict;
 use warnings;
