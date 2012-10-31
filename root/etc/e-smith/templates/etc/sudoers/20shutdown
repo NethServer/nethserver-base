@@ -1,0 +1,10 @@
+{
+    #
+    # 20shutdown
+    #
+    push @cmnd_alias_httpd_admin, qw(
+         /sbin/poweroff
+         /sbin/reboot
+    );
+    '';
+}
