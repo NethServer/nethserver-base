@@ -33,7 +33,7 @@ sub _write_config_file() {
         $val = ucfirst($val) unless ($prop ne 'type');  #first letter of type must be capitalized
         $out .= sprintf "%s=%s\n", uc($prop), $val;
     }
-    open ($fh, '>', $file);
+    open (my $fh, '>', $file);
     print $fh $out; 
     close ($fh);
 }

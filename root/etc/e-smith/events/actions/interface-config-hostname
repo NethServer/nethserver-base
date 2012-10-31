@@ -9,7 +9,7 @@
 # Copyright (C) 2012 Nethesis srl
 #
 
-$system_name=`/sbin/e-smith/config get SystemName`
-$domain_name=`/sbin/e-smith/config get DomainName`
+system_name=`/sbin/e-smith/config get SystemName`
+domain_name=`/sbin/e-smith/config get DomainName`
 
 /bin/hostname ${system_name:-localhost}.${domain_name:-localdomain}
