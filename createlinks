@@ -12,9 +12,9 @@ event_templates('network-create', qw(
 ));
 
 #--------------------------------------------------
-# actions for network-update event
+# actions for network-modify event
 #--------------------------------------------------
-event_templates('network-update', qw(
+event_templates('network-modify', qw(
 		/etc/localnetworks
 ));
 
@@ -58,7 +58,7 @@ safe_symlink(
 
 
 #--------------------------------------------------
-# actions for interface-update event #1532
+# actions for interface-modify event #1532
 #--------------------------------------------------
 event_actions('interface-update', qw(
               interface-config-reset     25

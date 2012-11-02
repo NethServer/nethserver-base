@@ -82,7 +82,12 @@ class LocalNetwork extends \Nethgui\Controller\TableController
 
     public function onParametersSaved(\Nethgui\Module\ModuleInterface $currentAction, $changes, $parameters)
     {
-        $this->getPlatform()->signalEvent(sprintf('network-%s@post-process', $currentAction->getIdentifier()));
+        $eventName = strtolower($currentAction->getIdentifier());
+        // Update is replaced by "modify":
+        if($eventName === 'update') {
+            $eventName = 'modify';
+        }
+        $this->getPlatform()->signalEvent(sprintf('network-%s@post-process', $eventName));
     }
 
 }
