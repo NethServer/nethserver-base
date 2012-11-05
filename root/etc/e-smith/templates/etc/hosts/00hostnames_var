@@ -1,0 +1,11 @@
+{
+    #
+    # 00hostnames_var
+    #
+    @hostnames = ();
+
+    push @hostnames, "${SystemName}.${DomainName}";
+    push @hostnames, $SystemName;
+
+    '';
+}
