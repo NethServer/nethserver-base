@@ -1,20 +1,21 @@
 <?php
 
-// echo $view->header()->setAttribute('template', $T('Ssh'));
+/* @var $view Nethgui\Renderer\Xhtml */
+
+$view->requireFlag($view::INSET_FORM);
+
+
 
 echo $view->fieldsetSwitch('status', 'disabled');
+$panel = $view->fieldsetSwitch('status', 'enabled');
+        
 
-echo $view->fieldsetSwitch('status', 'enabled')
-    ->insert($view->fieldset()->setAttribute('template', $view->translate('Connection'))
-        ->insert($view->textInput('port'))
-        ->insert($view->radioButton('access', 'private'))
-        ->insert($view->radioButton('access', 'public'))
-    )
-    ->insert($view->fieldset()->setAttribute('template', $view->translate('Permissions'))
-        ->insert($view->checkBox('rootLogin', 'yes'))
-        ->insert($view->checkBox('passwordAuth', 'yes'))
-    )
+foreach($view as $name => $value) {
+    if($value instanceof \Nethgui\View\ViewInterface && $name !== 'Po') {
+        $panel->insert($view->inset($name));
+    }
+}
 
-;
+echo $panel;
 
 echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_HELP);

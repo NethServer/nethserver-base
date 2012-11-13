@@ -20,30 +20,70 @@ namespace NethServer\Module\RemoteAccess;
  * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Nethgui\System\PlatformInterface as Validate;
-
 /**
  * Control ssh access to the system
  * 
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Ssh extends \Nethgui\Controller\AbstractController
+class Ssh extends \Nethgui\Controller\ListComposite
 {
+    /**
+     *
+     * @var \Nethgui\Adapter\AdapterInterface
+     */
+    private $status;
+
+    private $validators = array();
 
     public function initialize()
     {
         parent::initialize();
 
-        $this->declareParameter('status', Validate::SERVICESTATUS, array('configuration', 'sshd', 'status'));
-        $this->declareParameter('port', Validate::PORTNUMBER, array('configuration', 'sshd', 'TCPPort'));
-        $this->declareParameter('passwordAuth', Validate::BOOLEAN, array('configuration', 'sshd', 'PasswordAuthentication'));
-        $this->declareParameter('rootLogin', Validate::BOOLEAN, array('configuration', 'sshd', 'PermitRootLogin'));
-        $this->declareParameter('access', $this->createValidator()->memberOf('private', 'public'), array('configuration', 'sshd', 'access'));
+        $this->loadChildrenDirectory($this, 'SshPlugins');
+
+        $this->sortChildren(function(\Nethgui\Module\ModuleInterface $a, \Nethgui\Module\ModuleInterface $b) {
+                $pa = $a->getAttributesProvider()->getMenuPosition();
+                $pb = $b->getAttributesProvider()->getMenuPosition();
+                return strcmp($pa, $pb);
+            });
+
+            $this->status = $this->getPlatform()->getIdentityAdapter('configuration', 'sshd', 'status');
     }
 
-    protected function onParametersSaved($changes)
+    public function bind(\Nethgui\Controller\RequestInterface $request)
     {
-        $this->getPlatform()->signalEvent('nethserver-base-save@post-process');
+        parent::bind($request);
+        if ($request->isMutation()) {
+            $this->status->set($request->getParameter('status'));
+        }
+        if($request->hasParameter('status')) {
+            $this->validators[] = array($request->getParameter('status'), $this->getPlatform()->createValidator(\Nethgui\System\NethPlatform::SERVICESTATUS), 'status');
+        }
+    }
+
+    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
+    {
+        parent::validate($report);
+        foreach($this->validators as $check) {
+            if( ! $check[1]->evaluate($check[0])) {
+                $report->addValidationError($this, $check[2], $check[1]);
+            }
+        }
+    }
+
+    public function process()
+    {
+        parent::process();
+        if($this->status->isModified()) {
+            $this->status->save();
+            $this->getPlatform()->signalEvent('nethserver-base-save@post-process');
+        }
+    }
+
+    public function prepareView(\Nethgui\View\ViewInterface $view)
+    {
+        parent::prepareView($view);
+        $view['status'] = $this->status->get();
     }
 
 }
