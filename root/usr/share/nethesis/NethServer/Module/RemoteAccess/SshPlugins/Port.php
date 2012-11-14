@@ -42,4 +42,9 @@ class Port extends \Nethgui\Controller\AbstractController
         $this->declareParameter('port', Validate::PORTNUMBER, array('configuration', 'sshd', 'TCPPort'));
     }
 
+    protected function onParametersSaved($changedParameters)
+    {
+        $this->getParent()->setSaveEvent(TRUE);
+    }
+
 }

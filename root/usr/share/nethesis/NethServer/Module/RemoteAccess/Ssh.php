@@ -33,6 +33,12 @@ class Ssh extends \Nethgui\Controller\ListComposite
      */
     private $status;
 
+    /**
+     * If the nethserver-base-save event must be signalled 
+     * @var bool
+     */
+    private $saveEvent = FALSE;
+
     private $validators = array();
 
     public function initialize()
@@ -76,8 +82,17 @@ class Ssh extends \Nethgui\Controller\ListComposite
         parent::process();
         if($this->status->isModified()) {
             $this->status->save();
+            $this->setSaveEvent(TRUE);
+        }
+
+        if($this->saveEvent) {
             $this->getPlatform()->signalEvent('nethserver-base-save@post-process');
         }
+    }
+
+    public function setSaveEvent($value) {
+        $this->saveEvent = (bool) $value;
+        return $this;
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
