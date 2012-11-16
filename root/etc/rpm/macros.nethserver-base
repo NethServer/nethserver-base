@@ -1,7 +1,0 @@
-# nethserver-base macros
-
-%signal_event [ -x /sbin/e-smith/signal-event ] && /sbin/e-smith/signal-event
-%event_queue [ -x /sbin/e-smith/event-queue ] && /sbin/e-smith/event-queue
-
-
-
