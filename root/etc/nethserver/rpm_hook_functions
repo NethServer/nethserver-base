@@ -1,0 +1,20 @@
+#
+# NethServer -- rpm hook functions for scriptlets
+#
+# Copyright (C) 2012 Nethesis srl
+#
+
+ESMITH_PATH=/sbin/e-smith
+
+function event_queue() {
+    [ -x $ESMITH_PATH/event-queue ] && $ESMITH_PATH/event-queue $@
+}
+
+function signal_event() {
+    [ -x $ESMITH_PATH/signal-event ] && $ESMITH_PATH/signal-event $@
+}
+
+function expand_template() {
+    [ -x $ESMITH_PATH/expand-template ] && $ESMITH_PATH/expand-template $@ 
+}
+
