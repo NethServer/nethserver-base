@@ -52,7 +52,7 @@ $FW = new \Nethgui\Framework();
 $FW
     ->setLogLevel(E_WARNING | E_ERROR)
     ->registerNamespace(realpath(__DIR__ . '/../NethServer'))
-    ->setDefaultModule('Status')
+    ->setDefaultModule('Welcome')
 ;
 
 try {
