@@ -33,7 +33,7 @@ foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
     }
 
     foreach my $proto (qw(tcp udp)) {
-	my $fwAdjustPorts = $serviceRecord->prop('FwAdjust' . uc($proto)) || '';
+	my $fwAdjustPorts = $serviceRecord->prop('__fwAdjust' . uc($proto)) || '';
 	my $adjustPorts = $serviceRecord->prop(uc($proto) . 'Ports') || $serviceRecord->prop(uc($proto) . 'Port') || '';
 
 	if( $adjustPorts eq $fwAdjustPorts ) {
@@ -85,9 +85,9 @@ foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
 			       
         # Update the firewall kill list:
 	if(@openPorts) {
-	    $serviceRecord->set_prop('FwAdjust' . uc($proto), join(',', @openPorts));
+	    $serviceRecord->set_prop('__fwAdjust' . uc($proto), join(',', @openPorts));
 	} else {
-	    $serviceRecord->delete_prop('FwAdjust' . uc($proto));
+	    $serviceRecord->delete_prop('__fwAdjust' . uc($proto));
 	}
     }  
 }
