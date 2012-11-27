@@ -9,3 +9,4 @@ $L['Organization contacts'] = 'Informazioni di contatto per l\'organizzazione';
 $L['organization-contact-update_success'] = 'Dati organizzazione salvati correttamente';
 $L['organization-contact-update_failure'] = 'Errore nel salvataggio dei dati organizzatione';
 $L['Organization_Tags'] = "rubrica azienda città ufficio telefono indirizzo";
+$L['Organization_Description']= 'Cambia i dettagli dell\'organizzazione';

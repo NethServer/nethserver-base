@@ -19,4 +19,6 @@ $L['network-modify_failure'] = 'Errore durante la modifica della rete locale';
 $L['network-delete_success'] = 'Rete locale `${1}` eliminata correttamente';
 $L['network-delete_failure'] = 'Errore durante l\'eliminazione della rete locale `${1}`';
 
+$L['LocalNetwork_Description'] = 'Modifica reti locali';
+
 $L['LocalNetwork_Tags'] = 'rete router maschera trusted fidate affidabili locali reti';

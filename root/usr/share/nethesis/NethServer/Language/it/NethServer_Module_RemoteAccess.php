@@ -16,3 +16,4 @@ $L['HttpdAdmin_Title'] = 'Accesso web';
 $L['Ssh_Title'] = 'SSH';
 
 $L['port_label'] = 'Porta TCP';
+$L['RemoteAccess_Description'] = 'Gestisci accesso remoto al sistema';
