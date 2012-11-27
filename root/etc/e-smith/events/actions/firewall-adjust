@@ -14,13 +14,13 @@ use Data::Dumper;
 my $event = shift || die("Missing event argument!");
 my $confDb = esmith::ConfigDB->open();
 my $errors = 0;
+my $commands = 0;
 
 my $actions = {
     OPEN => $confDb->get_prop('firewall', 'open'),
     CLOSE => $confDb->get_prop('firewall', 'close'),
     APPLY => $confDb->get_prop('firewall', 'apply')
 };
-
 
 foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
     my $serviceName = $serviceRecord->prop('ServiceFirewallName') || $serviceRecord->key;
@@ -33,10 +33,18 @@ foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
     }
 
     foreach my $proto (qw(tcp udp)) {
-      	my @openPorts = grep { $_ > 0 } (split(',', $serviceRecord->prop(uc($proto) . 'Ports')), $serviceRecord->prop(uc($proto) . 'Port'));
+	my $fwAdjustPorts = $serviceRecord->prop('FwAdjust' . uc($proto)) || '';
+	my $adjustPorts = $serviceRecord->prop(uc($proto) . 'Ports') || $serviceRecord->prop(uc($proto) . 'Port') || '';
+
+	if( $adjustPorts eq $fwAdjustPorts ) {
+	    # nothing to do 
+	    next;
+	}
+
+      	my @openPorts = grep { $_ > 0 } (split(',', $adjustPorts));
 
 	# Read the kill list to find ports to close:
-	my @closePorts = split(',', $serviceRecord->prop('FwAdjust' . uc($proto)));
+	my @closePorts = split(',', $fwAdjustPorts);
 
 	# Prepare a unique port list:
 	my %ports = map { $_ => 1 } @openPorts, @closePorts;
@@ -71,6 +79,7 @@ foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
 		$errors ++;
 	    } else {
 		print "firewall-adjust\@$event: $serviceName $action $proto port $port\n";
+		$commands ++;
 	    }
 	}	
 			       
@@ -85,7 +94,7 @@ foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
 
 my $applyCommand = $actions->{'APPLY'};
 
-if($applyCommand) {
+if($applyCommand && $commands > 0) {
     qx($applyCommand);
     if($? != 0) {
 	warn "APPLY: " . $!;
