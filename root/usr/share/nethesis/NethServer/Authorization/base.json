@@ -30,7 +30,7 @@
         "Resource": "NethServer\\Module\\*",
 
         "Description":
-            "Administrators are allowed to read and modify any database"
+            "Administrators are allowed to read and modify any module"
     }
     ,
     {
@@ -59,9 +59,21 @@
         "Effect": "ALLOW",
         "Subject": ".authenticated",
         "Action": "QUERY",
-        "Resource": "NethServer\\Module\\Status:*",
+        "Resource": [
+            "NethServer\\Module\\Status:*",
+            "NethServer\\Module\\Welcome:*"],
 
         "Description":
-            "Authenticated users can query Status module (default)"
+            "Authenticated users can query Welcome and Status module"
+    },
+    {
+        "Id": 1354027567,
+        "Effect": "ALLOW",
+        "Subject": ".authenticated",
+        "Action": "*",
+        "Resource": "NethServer\\Module\\UserProfile:*",
+
+        "Description":
+            "Authenticated users have full control on UserProfile module"
     }
 ]
