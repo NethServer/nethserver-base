@@ -22,13 +22,10 @@ input[type="text"][readonly] {background-color: #eee; color: #444}
 #pageHeader h2 { display: none; }
 .secondaryContent { padding: 0px; margin: 0px} 
 #pageContent {position: relative}
-#ModuleTitle { color: #002f64; font-size: 2em; position: absolute; left: 10%; top: 10%; letter-spacing: 1px}
 #footer {display: none }
 
 #loading-message {display: none}
 .NethguiLoading {display:none !important}
-
-.CurrentModule {clear: both; }
 
 #Notification {position: fixed; display: inline-block; width: 50%; top: -3px; left: 26%; z-index: 50; background: transparent}
 #Notification > div[id] {padding: 4px; position: relative}
@@ -182,19 +179,23 @@ textarea.console {font-family: monospace; background: #111; color: #eee; width: 
 [role="menu"] {margin-top: 2em; padding-top: 1em; border-top: 1px solid #aaa}
 .secondaryContent h2 {display:none}
 
+#ModuleTitle { display: none }
+#productTitle { color: white; font-weight: bold;  font-family: arial, sans-serif}
+#headerMenu {position: absolute; right: 15px; bottom: 0; background: white; padding: 2px; border-radius: 2px 2px 0 0}
+#headerMenu a {color: #555; text-decoration: none}
 
 @media screen and (min-width: 40em) {
 [role="main"] {float: left; margin-left: 16%; width: 83%; min-height: 400px}
 [role="menu"] {position: absolute; width: 14%; border-top: none; top: 0; left: 0; margin: 0; overflow: hidden }
 .CurrentModule { border-bottom: 1px solid #aaa; min-height: 300px; }
-#ModuleTitle { color: #002f64; font-size: 26px; position: absolute; left: 40%; top: 18px; letter-spacing: 2px}
 .DataTable {min-height: auto;}
 .header {padding: .5em;  border: none; }
 #pageHeader { position:relative; height: 5em; margin-left: .5em; margin-right: .5em; margin-bottom: .5em; border-bottom-right-radius: 10px; border-bottom-left-radius: 10px;}
-#ModuleTitle { display: none }
-#productTitle { display: block; float: left; margin-left: 10px; font-size: 400%; font-weight: bold; margin-top: 0.4em; vertical-align: bottom; color: white; font-family: arial, sans-serif}
-.secondaryContent {margin-left: 5px; padding-bottom: 5px; border-radius: 5px;} 
-#footer { display: block; color: #aaa; padding: 5px; float: right;}
+#productTitle { display: block; float: left; margin-left: 10px; font-size: 400%; margin-top: 0.4em; vertical-align: bottom;}
+.secondaryContent {margin-left: 5px; padding-bottom: 5px; margin-bottom: 25px; border-radius: 5px;}
+.allWrapper {min-height: 100%}
+
+#footer { display: inherit; position: fixed; color: #aaa; padding: 5px; text-align: right; bottom: 0; right: 0; border-top: 1px solid #eee; background: white; min-width: 100%}
 .Tabs { min-height: 300px; }
 } /*end media screen */
 
