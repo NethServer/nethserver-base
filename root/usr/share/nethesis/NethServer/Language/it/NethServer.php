@@ -1,11 +1,8 @@
-<?php
-/**
- */
+<?php 
 
-$L['Security'] = 'Sicurezza';
-$L['Administration'] = 'Amministrazione';
-$L['Configuration'] = 'Configurazione';
-$L['Management'] = 'Gestione';
-$L['Other modules'] = 'Altri moduli';
-
-$L['Category_Order'] = 'Management, Administration, Security, Configuration';
+$L['Administration'] = 'Amministrazione'; 
+$L['Category_Order'] = 'Management, Administration, Security, Configuration'; 
+$L['Configuration'] = 'Configurazione'; 
+$L['Management'] = 'Gestione'; 
+$L['Other modules'] = 'Altri moduli'; 
+$L['Security'] = 'Sicurezza'; 
