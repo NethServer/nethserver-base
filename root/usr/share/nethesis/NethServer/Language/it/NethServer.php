@@ -1,17 +1,12 @@
-<?php
-/**
- */
+<?php 
 
-$L['Security'] = 'Sicurezza';
-$L['Administration'] = 'Amministrazione';
-$L['Configuration'] = 'Configurazione';
-$L['Management'] = 'Gestione';
-$L['Other modules'] = 'Altri moduli';
-
-$L['Category_Order'] = 'Management, Administration, Security, Configuration';
-
+$L['Administration'] = 'Amministrazione'; 
+$L['Category_Order'] = 'Management, Administration, Security, Configuration'; 
+$L['Configuration'] = 'Configurazione'; 
+$L['Management'] = 'Gestione'; 
+$L['Other modules'] = 'Altri moduli'; 
+$L['Security'] = 'Sicurezza'; 
 $L['UserProfile_Title'] = 'Profilo utente';
-
 $L['ChangePassword_Header'] = 'Cambia password all\'utente `${0}`';
 $L['ChangePassword_label'] = 'Cambia password';
 $L['newPassword_label'] = 'Nuova password';
