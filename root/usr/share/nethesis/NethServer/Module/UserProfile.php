@@ -26,42 +26,62 @@ namespace NethServer\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class UserProfile extends \Nethgui\Controller\ListComposite
+class UserProfile extends \Nethgui\Controller\CompositeController
 {
     /**
      *
      * @var \Nethgui\Adapter\AdapterInterface
      */
     private $adapter;
+    private $recordAdapter;
 
     public function initialize()
     {
-        parent::initialize();
         $this->loadChildrenDirectory($this);
+
+        // Create an empty record adapter and set it into child modules, so
+        // that child parameters can be declared in initialize():
+        $this->recordAdapter = new \Nethgui\Adapter\RecordAdapter();
+        foreach ($this->getChildren() as $child) {
+            $child->setAdapter($this->recordAdapter);
+        }
+
+        // Sort child modules so that "Personal" is actually the first (shown by default).
+        $firstModule = 'Personal';
+        $this->sortChildren(function(\Nethgui\Module\ModuleInterface $a, \Nethgui\Module\ModuleInterface $b) use ($firstModule) {
+                if ($a->getIdentifier() === $firstModule) {
+                    return -1;
+                } elseif ($b->getIdentifier() === $firstModule) {
+                    return 1;
+                }
+                return 0;
+            });
+
+        parent::initialize();
     }
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
         $userName = $request->getUser()->getCredential('username');
 
+        // The `admin` user needs a different data source:
         if ($userName === 'admin') {
             $this->adapter = $this->getPlatform()->getTableAdapter('configuration', 'configuration');
         } else {
             $this->adapter = $this->getPlatform()->getTableAdapter('accounts', 'user');
         }
 
-        $recordAdapter = new \Nethgui\Adapter\RecordAdapter($this->adapter);
-        $recordAdapter->setKeyValue($userName);
+        // Inject username-dependent datasource into the record adapter
+        $this->recordAdapter->setTableData($this->adapter)->setKeyValue($userName);
 
-        foreach ($this->getChildren() as $child) {
-            $child->setAdapter($recordAdapter);
-        }
         parent::bind($request);
     }
 
     public function process()
     {
         parent::process();
+
+        // If something has been changed in the original table persist modifications:
         $this->adapter->save();
     }
 

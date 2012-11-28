@@ -1,7 +1,5 @@
 <?php
 
-$L['UserProfile_Title'] = 'User\'s profile';
-
 $L['UserProfile_Header'] = '${0} user\'s profile';
 $L['BasicInfo_Title'] = "Basic informations";
 $L['FirstName_label'] = 'First name';

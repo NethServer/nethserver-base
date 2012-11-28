@@ -31,7 +31,7 @@ use Nethgui\System\PlatformInterface as Validate;
 class Personal extends \Nethgui\Controller\Table\AbstractAction
 {
 
-    public function bind(\Nethgui\Controller\RequestInterface $request)
+    public function initialize()
     {
         $this->declareParameter('FirstName', Validate::ANYTHING, array($this->getAdapter(), 'FirstName'));
         $this->declareParameter('LastName', Validate::ANYTHING, array($this->getAdapter(), 'LastName'));
@@ -43,13 +43,14 @@ class Personal extends \Nethgui\Controller\Table\AbstractAction
         $this->declareParameter('Street', Validate::ANYTHING, array($this->getAdapter(), 'Street'));
         $this->declareParameter('Phone', Validate::ANYTHING, array($this->getAdapter(), 'Phone'));
 
-        parent::bind($request);
+        parent::initialize();
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
         $view['username'] = $this->getAdapter()->getKeyValue();
+        $view['ChangePassword'] = $view->getModuleUrl('../ChangePassword');
     }
     
 }

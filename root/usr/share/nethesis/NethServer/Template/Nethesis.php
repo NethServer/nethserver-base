@@ -34,7 +34,7 @@ $view
         <div id="allWrapper"><?php echo $view['notificationOutput'] ?>
             <?php if ( ! $view['disableHeader']): ?>
                 <div id="pageHeader">
-                    <div id="headerMenu"><a href="<?php echo $view->getModuleUrl('/UserProfile') ?>"><?php echo $T('User\'s profile'); ?></a></div>
+                    <div id="headerMenu"><a href="<?php echo $view->getModuleUrl('/UserProfile') ?>"><?php echo $T('UserProfile_Title'); ?></a></div>
                     <h1 id="ModuleTitle"><?php echo htmlspecialchars($view['moduleTitle']) ?></h1>
                     <div id="productTitle">NethServer</div>
                 </div>

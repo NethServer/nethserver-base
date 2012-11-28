@@ -11,13 +11,16 @@ echo $view->fieldset()
     ->insert($view->textInput('EmailAddress'))
 ;
 
-if ($view['username'] !== 'admin') {
-
+if ($view['username'] !== 'admin')
     echo $view->fieldset()
         ->setAttribute('template', $T('ExtraInfo_Title'))
         ->insert($view->textInput('Company'))
         ->insert($view->textInput('Dept'))
         ->insert($view->textInput('Street'))
         ->insert($view->textInput('City'))
-        ->insert($view->textInput('Phone'));
-}
+        ->insert($view->textInput('Phone'))
+    ;
+
+echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_HELP)
+    ->insert($view->button('ChangePassword', $view::BUTTON_LINK))
+;
