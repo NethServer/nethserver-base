@@ -56,6 +56,7 @@ $FW
     ->setLogLevel(E_WARNING | E_ERROR | E_NOTICE)
     ->registerNamespace(realpath(__DIR__ . '/../NethServer'))
     ->setDefaultModule('Welcome')
+    ->setDecoratorTemplate('NethServer\\Template\\Nethesis')
 ;
 
 try {
