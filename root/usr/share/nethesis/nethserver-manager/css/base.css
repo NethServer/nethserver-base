@@ -20,7 +20,6 @@ input[type="text"][readonly] {background-color: #eee; color: #444}
 #pageHeader { position:relative; height: 3em; margin-bottom: .5em; }
 #pageHeader h1 { font-size: 1.7em; }
 #pageHeader h2 { display: none; }
-#product { display: none}
 .secondaryContent { padding: 0px; margin: 0px} 
 #pageContent {position: relative}
 #ModuleTitle { color: #002f64; font-size: 2em; position: absolute; left: 10%; top: 10%; letter-spacing: 1px}
@@ -180,13 +179,13 @@ textarea.console {font-family: monospace; background: #111; color: #eee; width: 
 
 /* Responsive layout */
 
-[role="otherTask"] {margin-top: 2em; padding-top: 1em; border-top: 1px solid #aaa}
+[role="menu"] {margin-top: 2em; padding-top: 1em; border-top: 1px solid #aaa}
 .secondaryContent h2 {display:none}
 
 
 @media screen and (min-width: 40em) {
-[role="mainTask"] {float: left; margin-left: 16%; width: 83%; min-height: 400px}
-[role="otherTask"] {position: absolute; width: 14%; border-top: none; top: 0; left: 0; margin: 0; overflow: hidden }
+[role="main"] {float: left; margin-left: 16%; width: 83%; min-height: 400px}
+[role="menu"] {position: absolute; width: 14%; border-top: none; top: 0; left: 0; margin: 0; overflow: hidden }
 .CurrentModule { border-bottom: 1px solid #aaa; min-height: 300px; }
 #ModuleTitle { color: #002f64; font-size: 26px; position: absolute; left: 40%; top: 18px; letter-spacing: 2px}
 .DataTable {min-height: auto;}
@@ -195,7 +194,6 @@ textarea.console {font-family: monospace; background: #111; color: #eee; width: 
 #ModuleTitle { display: none }
 #productTitle { display: block; float: left; margin-left: 10px; font-size: 400%; font-weight: bold; margin-top: 0.4em; vertical-align: bottom; color: white; font-family: arial, sans-serif}
 .secondaryContent {margin-left: 5px; padding-bottom: 5px; border-radius: 5px;} 
-#product { display: block; position: absolute; top: 3px; right: 6px; width: 200px; height: 50px; text-align: center; font-size: xx-small;  color: #002f64; text-decoration: none; background:  url("../images/logo.png") no-repeat center right;}
 #footer { display: block; color: #aaa; padding: 5px; float: right;}
 .Tabs { min-height: 300px; }
 } /*end media screen */
