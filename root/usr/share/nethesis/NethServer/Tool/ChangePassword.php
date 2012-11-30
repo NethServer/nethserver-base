@@ -69,6 +69,10 @@ class ChangePassword extends \Nethgui\Controller\Table\AbstractAction
         if ( ! $userExists) {
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1322148399);
         }
+
+        // FIXME: #1580 -- Avoid privilege escalation in ChangePassword action
+        // Enforce user rights check to change the password in bind() method
+
     }
 
     public function validate(\Nethgui\Controller\ValidationReportInterface $report)
