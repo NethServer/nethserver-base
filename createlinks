@@ -50,11 +50,21 @@ event_templates('nethserver-base-update', qw(
     /etc/hosts.allow
     /etc/hosts.deny
     /etc/shells
+    /etc/rc.d/rc.local
 ));
+
+
+#
+# Template headers
+#
 		
 safe_symlink(
     "/etc/e-smith/templates-default/template-begin-pam", 
     "root/etc/e-smith/templates/etc/pam.d/system-auth-nh/template-begin");		
+
+safe_symlink(
+    "/etc/e-smith/templates-default/template-begin-shell", 
+    "root/etc/e-smith/templates/etc/rc.d/rc.local/template-begin");		
 
 
 #--------------------------------------------------
