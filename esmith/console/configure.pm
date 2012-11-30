@@ -555,6 +555,7 @@ QUERY_SAVE_CONFIG:
 
     if ($self->{bootstrap}) {
         event_signal("interface-update");
+        $db->set_value('UnsavedChanges', 'no');
 	system("/sbin/e-smith/event-queue", "signal");
         goto QUIT1;
 
@@ -564,6 +565,7 @@ QUERY_SAVE_CONFIG:
 	    text => gettext("Please stand by while your configuration settings are activated ..."),
 	    );
         event_signal("interface-update");
+        $db->set_value('UnsavedChanges', 'no');
         $db->reload;
         $idb->reload;
 	my $current_mode = (getppid() == 1) ? "auto" : "login";
