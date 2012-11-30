@@ -27,10 +27,10 @@ namespace NethServer\Module;
  */
 class Status extends \Nethgui\Controller\TabsController
 {
-    protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
-    {
-        return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($base, 'Administration', 20);
-    }
+    #protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
+    #{
+    #    return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($base, 'Administration', 20);
+    #}
     
     public function initialize()
     {
