@@ -78,7 +78,7 @@ legend button {color: #444; text-decoration: underline; border: none; background
 .labeled-control.label-right label {margin-left: 0.5em}
 .labeled-control.label-above label {display: block}
 
-.ButtonList {clear: both}
+.Buttonlist {clear: both; min-height: 27px}
 .Buttonlist .Help {position: absolute; top: auto; right: 0}
 .Buttonlist > .Button {margin-right: 0.4em;}
 .Buttonlist > .Button.link:first-child {color: white; border: 1px solid #3079ED; text-transform: uppercase; background: #4D90FE url('img/blue-inset-normal.png') repeat-x left bottom}
