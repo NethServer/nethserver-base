@@ -42,10 +42,10 @@ define('NETHGUI_ENABLE_TARGET_HASH', FALSE);
 // Enable nethgui javascript files auto inclusion:
 define('NETHGUI_ENABLE_INCLUDE_WIDGET', TRUE);
 
-// Enable caching:
-define('NETHGUI_ENABLE_HTTP_CACHE_HEADERS', TRUE);
+// Disable caching:
+// define('NETHGUI_ENABLE_HTTP_CACHE_HEADERS', FALSE);
 
-// Disable debug mode (produces more verbose log 
+// Enable debug mode (produces more verbose log
 // output and uses non-minified js & css)
 define('NETHGUI_DEBUG', TRUE);
 

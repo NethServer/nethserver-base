@@ -76,4 +76,26 @@
         "Description":
             "Authenticated users have full control on UserProfile module"
     }
+    ,
+    {
+        "Id": 1354619788,
+        "Effect": "ALLOW",
+        "Subject": "NOT (.groups HAS administrators)",
+        "Action": "CHANGE_PASSWORD",
+        "Resource": "Oneself",
+
+        "Description":
+            "Unprivileged user can set his own password -- #1580"
+    }
+    ,
+    {
+        "Id": 1354619789,
+        "Effect": "ALLOW",
+        "Subject": ".groups HAS administrators OR .groups HAS managers",
+        "Action": "CHANGE_PASSWORD",
+        "Resource": "SomeoneElse OR Oneself",
+
+        "Description":
+            "Administrators and Managers can set other users' password -- #1580"
+    }
 ]

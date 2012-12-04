@@ -35,9 +35,12 @@ class ChangePassword extends \Nethgui\Controller\Table\AbstractAction
     private $stash;
 
     /**
+     * The user we want to change the password to
      * @var string
      */
     private $userName;
+
+    const ACTION_CHANGE_PASSWORD = 'CHANGE_PASSWORD';
 
     public function __construct($identifier = NULL)
     {
@@ -70,9 +73,19 @@ class ChangePassword extends \Nethgui\Controller\Table\AbstractAction
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1322148399);
         }
 
-        // FIXME: #1580 -- Avoid privilege escalation in ChangePassword action
-        // Enforce user rights check to change the password in bind() method
+        // The resource the current user is acting on is another user or
+        // the current user oneself.  The policy decision point is delegated
+        // to decide whether the current user has enough rights to change
+        // the other user's password.  Refs #1580
+        $currentUser = $this->getRequest()->getUser()->getCredential('username');
+        $resource = $currentUser === $this->userName ? 'Oneself' : 'SomeoneElse';
 
+        $response = $this->getPolicyDecisionPoint()->authorize($this->getRequest()->getUser(), $resource, self::ACTION_CHANGE_PASSWORD);
+        if ($response->isDenied()) {
+            throw $response->asException(1354619038);
+        } elseif ($request->isMutation()) {
+            $this->getLog()->notice(sprintf("%s: %s is changing password to %s (%s). %s", __CLASS__, $currentUser, $resource, $this->userName, $response->getMessage()));
+        }
     }
 
     public function validate(\Nethgui\Controller\ValidationReportInterface $report)

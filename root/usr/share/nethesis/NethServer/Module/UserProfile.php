@@ -26,7 +26,7 @@ namespace NethServer\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class UserProfile extends \Nethgui\Controller\CompositeController
+class UserProfile extends \Nethgui\Controller\CompositeController implements \Nethgui\Authorization\PolicyEnforcementPointInterface
 {
     /**
      *
