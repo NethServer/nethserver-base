@@ -5,13 +5,12 @@ if [ $? -eq 0 ]; then
    exit 0
 fi
 
-logger -t "first-boot" "Starting rebrand"
 /bin/sed -i 's/CentOS/NethServer/' /etc/issue 2>/dev/null
 /bin/sed -i 's/^hiddenmenu/#hiddenmenu/' /boot/grub/grub.conf 2>/dev/null
 rm -f /boot/grub/splash.xpm.gz 2>/dev/null
-cp  /usr/share/doc/nethesis/splash_grub.xpm.gz /boot/grub/splash.xpm.gz 2>/dev/null
+cp  /usr/share/doc/nethesis/splash.xpm.gz /boot/grub/splash.xpm.gz 2>/dev/null
 /bin/sed -i 's/CentOS/NethServer/' /etc/system-release 2>/dev/null
-/sbin/new-kernel-pkg --package kernel --mkinitrd --dracut --depmod --update $(uname -r) 2>/dev/null
+# execute dracut in background
+/usr/bin/nohup /sbin/new-kernel-pkg --package kernel --mkinitrd --dracut --depmod --update $(uname -r) & 2>/dev/null
 /bin/sed -i 's/CentOS/NethServer/' /boot/grub/grub.conf 2>/dev/null
-logger -t "first-boot" "Rebrand end"
 
