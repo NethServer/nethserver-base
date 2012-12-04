@@ -1,0 +1,12 @@
+#!/bin/bash
+# Start bootstrap-console on tty1 
+
+# Stop mingetty process on tty1
+status tty TTY=/dev/tty1 && stop tty TTY=/dev/tty1
+
+TERM=linux /sbin/e-smith/bootstrap-console /dev/tty1
+
+rm -f /var/spool/bootstrap-console
+[ -x /usr/bin/clear ] && /usr/bin/clear
+start tty TTY=/dev/tty1
+
