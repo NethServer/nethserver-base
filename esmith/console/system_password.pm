@@ -137,7 +137,6 @@ sub doit
     #--------------------------------------------------
 
     esmith::util::setUnixSystemPassword ($choice1);
-    esmith::util::setServerSystemPassword ($choice1);
 
     my $old = $db->get_value('UnsavedChanges');
     $db->set_value('PasswordSet', 'yes');
