@@ -20,8 +20,6 @@ namespace NethServer\Module\UserProfile;
  * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Nethgui\System\PlatformInterface as Validate;
-
 /**
  * Change the current user password
  *
