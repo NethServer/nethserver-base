@@ -130,6 +130,17 @@ templates2events('/etc/hosts', qw(
 File::Path::make_path('root/etc/e-smith/events/system-start',
 		      'root/etc/e-smith/events/system-stop');
 
+#--------------------------------------------------
+# actions for first-boot event
+#--------------------------------------------------
+event_actions('first-boot', qw(
+    initialize-default-databases      00
+    rebrand 			      10
+    bootstrap-console-start           50
+));
+
+
+
 # Refs #1066 - The skel root directory
 File::Path::make_path('root/etc/e-smith/skel');
 
