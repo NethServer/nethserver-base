@@ -33,24 +33,14 @@ setlocale(LC_CTYPE, 'en_US.utf-8');
 // If xdebug is loaded, disable xdebug backtraces:
 extension_loaded('xdebug') && xdebug_disable();
 
-// Enable hashed target names:
-define('NETHGUI_ENABLE_TARGET_HASH', TRUE);
-
 // Enable nethgui javascript files auto inclusion:
 define('NETHGUI_ENABLE_INCLUDE_WIDGET', TRUE);
-
-// Enable caching:
-define('NETHGUI_ENABLE_HTTP_CACHE_HEADERS', TRUE);
-
-// Disable debug mode (produces more verbose log 
-// output and uses non-minified js & css)
-define('NETHGUI_DEBUG', FALSE);
 
 require_once('../Nethgui/Framework.php');
 
 $FW = new \Nethgui\Framework();
 $FW
-    ->setLogLevel(E_WARNING | E_ERROR)
+    ->setLogLevel(E_WARNING | E_ERROR | E_NOTICE)
     ->registerNamespace(realpath(__DIR__ . '/../NethServer'))
     ->setDefaultModule('Welcome')
     ->setDecoratorTemplate('NethServer\\Template\\Nethesis')
