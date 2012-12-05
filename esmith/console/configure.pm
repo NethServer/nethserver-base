@@ -51,7 +51,8 @@ sub ethernetSelect($$)
 
     if (scalar @adapters == 1)
     {
-	# Internal, and there's only one
+	# Internal, and there's only one, force name to green
+	$ifName = 'green';
         my (undef, $driver, $hwaddr, undef) = split (/\s+/, $adapters[0], 4);
         $idb->set_prop($ifName, "role", "green", type => 'ethernet');
         $idb->set_prop($ifName, "hwaddr", $hwaddr);
