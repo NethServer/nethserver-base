@@ -51,9 +51,10 @@ sub ethernetSelect($$)
 
     if (scalar @adapters == 1)
     {
-	# Internal, and there's only one
+	# Internal, and there's only one, force name to green
+	$ifName = 'green';
         my (undef, $driver, $hwaddr, undef) = split (/\s+/, $adapters[0], 4);
-        $idb->set_prop($ifName, "role", "green", 'ethernet');
+        $idb->set_prop($ifName, "role", "green", type => 'ethernet');
         $idb->set_prop($ifName, "hwaddr", $hwaddr);
         $db->set_value('UnsavedChanges', 'yes');
 
@@ -298,7 +299,7 @@ LOCAL_IP:
     my $local_ip = '192.168.' . (int(rand(248)) + 2) . '.1';
     if ($green) {
         my %green_props = $green->props;
-        $local_ip = $green_props{'ipaddr'}; 
+        $local_ip = $green_props{'ipaddr'} || $local_ip ; 
     }
 
     ($rc, $choice) = $console->input_page
@@ -350,7 +351,7 @@ LOCAL_NETMASK:
     my $local_ip = "";
     if ($green) {
         my %green_props = $green->props;
-        $local_netmask = $green_props{'netmask'}; 
+        $local_netmask = $green_props{'netmask'} || '255.255.255.0'; 
         $local_ip = $green_props{'ipaddr'}; 
     }
 
