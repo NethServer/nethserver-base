@@ -139,10 +139,5 @@ event_actions('first-boot', qw(
     bootstrap-console-start           50
 ));
 
-
-
-# Refs #1066 - The skel root directory
-File::Path::make_path('root/etc/e-smith/skel');
-
 exit 0;
 
