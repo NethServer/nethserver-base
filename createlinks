@@ -135,7 +135,7 @@ File::Path::make_path('root/etc/e-smith/events/system-start',
 #--------------------------------------------------
 event_actions('first-boot', qw(
     initialize-default-databases      00
-    rebrand 			      10
+    system-rebrand		      10
     bootstrap-console-start           50
 ));
 
