@@ -36,6 +36,16 @@ foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
 	my $fwAdjustPorts = $serviceRecord->prop('__fwAdjust' . uc($proto)) || '';
 	my $adjustPorts = $serviceRecord->prop(uc($proto) . 'Ports') || $serviceRecord->prop(uc($proto) . 'Port') || '';
 
+	if( ($adjustPorts eq $fwAdjustPorts && $statusAction eq 'OPEN')
+	    || ( ! $fwAdjustPorts && $statusAction eq 'CLOSE') ) {	    
+	    # nothing to do if one of the following condition is true
+	    #   - action is OPEN and current ports list
+	    #     is the same as target ports list
+	    #   - action is CLOSE
+	    #     and all target ports are closed
+	    next;
+	}
+
       	my @targetPorts = grep { $_ > 0 } (split(',', $adjustPorts));
 
 	# Read the kill list to find ports to close:
