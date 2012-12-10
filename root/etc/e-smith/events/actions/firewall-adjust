@@ -36,25 +36,30 @@ foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
 	my $fwAdjustPorts = $serviceRecord->prop('__fwAdjust' . uc($proto)) || '';
 	my $adjustPorts = $serviceRecord->prop(uc($proto) . 'Ports') || $serviceRecord->prop(uc($proto) . 'Port') || '';
 
-	if( $adjustPorts eq $fwAdjustPorts ) {
-	    # nothing to do 
+	if( ($adjustPorts eq $fwAdjustPorts && $statusAction eq 'OPEN')
+	    || ( ! $fwAdjustPorts && $statusAction eq 'CLOSE') ) {	    
+	    # nothing to do if one of the following condition is true
+	    #   - action is OPEN and current ports list
+	    #     is the same as target ports list
+	    #   - action is CLOSE
+	    #     and all target ports are closed
 	    next;
 	}
 
-      	my @openPorts = grep { $_ > 0 } (split(',', $adjustPorts));
+      	my @targetPorts = grep { $_ > 0 } (split(',', $adjustPorts));
 
 	# Read the kill list to find ports to close:
-	my @closePorts = split(',', $fwAdjustPorts);
+	my @currentPorts = split(',', $fwAdjustPorts);
 
 	# Prepare a unique port list:
-	my %ports = map { $_ => 1 } @openPorts, @closePorts;
+	my %ports = map { $_ => 1 } @targetPorts, @currentPorts;
 
 	foreach my $port (keys %ports) {
 
 	    my $action;
 
-	    # Close any port not in OPEN list:
-	    if( ! grep { $port == $_ } @openPorts ) {
+	    # Close any port not in TARGET list:
+	    if( ! grep { $port == $_ } @targetPorts ) {
 		$action = 'CLOSE';
 	    } else {
 		# Let the service status to decide what to do:
@@ -83,10 +88,11 @@ foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
 	    }
 	}	
 			       
-        # Update the firewall kill list:
-	if(@openPorts) {
-	    $serviceRecord->set_prop('__fwAdjust' . uc($proto), join(',', @openPorts));
+	if(@targetPorts && $statusAction eq 'OPEN') {
+	    # Save the opened port list for the next run:
+	    $serviceRecord->set_prop('__fwAdjust' . uc($proto), join(',', @targetPorts));
 	} else {
+	    # All ports are closed OR the required action was CLOSE:
 	    $serviceRecord->delete_prop('__fwAdjust' . uc($proto));
 	}
     }  
