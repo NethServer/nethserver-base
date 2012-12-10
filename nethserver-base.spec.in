@@ -1,0 +1,169 @@
+Name: nethserver-base
+Summary: NethServer basic configuration
+Version: @@VERSION@@
+Release: @@RELEASE@@%{?dist}
+License: GPL
+Source: %{name}-%{version}.tar.gz
+BuildArch: noarch
+URL: http://dev.nethesis.it/projects/%{name}
+
+Requires: initscripts
+Requires: perl(Locale::gettext)
+Requires: perl(Crypt::Cracklib)
+Requires: perl(Date::Manip)
+Requires: perl(Data::UUID)
+Requires: perl(Net::IPv4Addr)
+Requires: perl-TimeDate
+Requires: perl-DateTime-Format-Mail
+Requires: perl-Mail-RFC822-Address
+Requires: smartmontools
+Requires: dbus
+Requires: hal
+Requires: acpid
+Requires: bridge-utils
+Requires: vconfig
+Requires: mdadm
+Requires: pv
+Requires: libuser >= 0.56
+Requires: sudo
+Requires: perl-suidperl
+Requires: nc
+Requires: iproute
+Requires: openssh-server
+
+Requires: nethserver-yum
+Requires: nethserver-lib
+Requires: nethserver-nethgui
+
+BuildRequires: nethserver-devtools >= 6.133.4
+BuildRequires: gettext
+
+%description 
+The %{name} package provides the fundamental infrastructure for the
+configuration management of NethServer, derived from SME Server event
+and template system.
+
+%prep
+%setup
+
+%pre
+# ensure admin user exists:
+if ! id admin >/dev/null 2>&1 ; then
+   useradd -M admin
+fi
+
+%post
+source /etc/nethserver/rpm_hook_functions
+
+# On first install enable the event queue 
+# if it has not already been done by some other ways 
+# (yum nethserver plugin)
+if [ $1 = 1 ] && ! event_queue status ; then
+   event_queue enable
+fi
+
+event_queue add %{name}-update
+
+%build
+
+perl createlinks
+
+mkdir -p root/usr/share/locale/en_US/LC_MESSAGES
+xgettext -L perl -o root/usr/share/locale/en_US/LC_MESSAGES/server-console.po root/sbin/e-smith/console
+
+mkdir -p root/var/state/e-smith
+
+# davidep: relocate perl modules under default perl vendorlib directory:
+mkdir -p root%{perl_vendorlib}
+mv -v esmith root%{perl_vendorlib}
+
+
+%install
+rm -rf $RPM_BUILD_ROOT
+(cd root   ; find . -depth -not -name '*.orig' -print  | cpio -dump $RPM_BUILD_ROOT)
+%{genfilelist} $RPM_BUILD_ROOT \
+    --file /etc/cron.daily/conf-mod_ssl 'attr(0544,root,root)' \
+    --dir /home/e-smith/ssl.key 'attr(0700,root,root)' \
+    --dir /home/e-smith/ssl.crt 'attr(0700,root,root)' \
+    --dir /home/e-smith/ssl.pem 'attr(0700,root,root)' \
+    > %{name}-%{version}-%{release}-filelist
+
+echo "%doc COPYING"          >> %{name}-%{version}-%{release}-filelist
+
+%clean 
+rm -rf $RPM_BUILD_ROOT
+
+%files -f %{name}-%{version}-%{release}-filelist
+%defattr(-,root,root)
+
+%changelog
+* Fri Oct 26 2012 Davide Principi <davide.principi@nethesis.it> - 6.133-14.nh
+- Added nethserver-yum dependency
+
+* Mon Aug 20 2012 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 6.104-13-g8cb411c-1
+- Initialize default databases before boostrap-console
+
+* Fri Aug 10 2012 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 6.104-12-gc052078-1
+- Execute /sbin/e-smith/event_queue before exiting boostrap-console 
+
+* Fri May 18 2012 Davide Principi <davide.principi@nethesis.it> - 4
+- Moved user skel dir creation in source package
+
+* Thu May  3 2012 Davide Principi <davide.principi@nethesis.it> - 6.103.0-3
+- Removed nethserver-rc script
+
+* Fri Apr 27 2012 Davide Principi <davide.principi@nethesis.it> - 6.103.0-2
+- Added nethserver-rc to runlevels
+
+* Thu Apr 26 2012 Davide Principi <davide.principi@nethesis.it> - 6.4.0-1
+- Removed nethserver-grub dependency
+- Removed predefined root password settings
+
+* Thu Mar 29 2012 Davide Principi <davide.principi@nethesis.it> - 6.2.4-1.nh
+- Added nc (netcat) dependency and remote-server validator - Refs #939
+
+* Wed Mar 28 2012 Davide Principi <davide.principi@nethesis.it> - 6.2.3-1.nh
+- runlevel-adjust: stopping service if not enabled in current runlevel
+
+* Wed Mar  7 2012 Davide Principi <davide.principi@nethesis.it> - 6.1.0-3.nh.ccce2d9c
+- added perl-suidperl requirement for console
+- removed openldap requirements (moved into nethserver-directory package)
+- sudo, pam, libuser, nsswitch pluggable configuration
+
+* Fri Feb 24 2012 Davide Principi <davide.principi@nethesis.it> - 6.1.0-1.nh.gitdavidep
+- Moved all ldap and PAM related stuff in nethserver-directory
+
+* Tue Feb  7 2012 Davide <davidep@davidep1.nethesis.it> - 6.0.0-1.nh
+- Added NethServer manager web UI
+- Added Nethgui framework requirement
+
+* Mon Feb  6 2012 Davide <davidep@nethesis.it> - 5.9.15-2.nh
+- Makefile: tweaked checkout target
+
+* Wed Sep 28 2011 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 5.9.14-1.nh
+- Change password-modify event to execute user password change
+- Unify with nethserver-ldap
+
+* Thu Aug 05 2011 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 5.9.13-1.nh
+- More cleanup
+
+* Thu Aug 04 2011 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 5.9.12-1.nh
+- Removed runsv and e-smith service
+- Removed runlevel 7
+- Removed most of inittab template fragments
+- Removed web and test dirs
+
+* Mon Jul 27 2011 Davide <davidep@davidep1.nethesis.it> - 5.9.11-6.nh
+- nss_ldap package splitted into pam_ldap and nss-pam-ldapd 
+- Added BuildArch: noarch
+- Dropped tons of obsoleted requirements
+
+* Fri Jul 22 2011 Davide <davide.principi@nethesis.it> - 5.9.11-2.nh
+- Fixed perl include path, filtered out .orig files
+
+* Mon Mar 28 2011 Giacomo Sanchietti <giacomo.sanchietti@gmail.com> 5.9.11-1.nh
+- Remove wan support
+- Remove dhcpd (move to dnsmasq package)
+
+* Thu Feb 24 2011 Giacomo Sanchietti <giacomo.sanchietti@gmail.com> 5.9.9-1.nh
+- First build with ldap auth
