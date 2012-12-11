@@ -5,9 +5,11 @@
 # values into networks DB.
 #
 # This script is part of NethServer 
+
 #
-# Copyright (C) 2012 Nethesis srl
-#
+# Copyright (C) 2012 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
 
 system_name=`/sbin/e-smith/config get SystemName`
 domain_name=`/sbin/e-smith/config get DomainName`
