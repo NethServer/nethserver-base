@@ -35,7 +35,7 @@ Requires: nethserver-yum
 Requires: nethserver-lib
 Requires: nethserver-nethgui
 
-BuildRequires: nethserver-devtools >= 6.133.4
+BuildRequires: nethserver-devtools
 BuildRequires: gettext
 
 %description 
