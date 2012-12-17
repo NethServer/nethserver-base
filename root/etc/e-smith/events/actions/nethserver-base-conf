@@ -39,4 +39,17 @@ NethServer::Service::manage_add('nethserver-base',
 				'rsyslog',
 				'bootstrap-console');
 
+#
+# Import distribution GPG keys into RPM database -- Refs #1597
+#
+foreach (qw(
+    RPM-GPG-KEY-CentOS-6
+    RPM-GPG-KEY-NethServer-6
+)) {
+    my $keyFile = '/etc/pki/rpm-gpg/' . $_;
+    if ( -f $keyFile ) {
+	system('/bin/rpm', '--import', $keyFile);
+    }
+}
+
 exit($errors == 0 ? 0 : 1);
