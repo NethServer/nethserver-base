@@ -81,13 +81,7 @@ mv -v esmith root%{perl_vendorlib}
 %install
 rm -rf $RPM_BUILD_ROOT
 (cd root   ; find . -depth -not -name '*.orig' -print  | cpio -dump $RPM_BUILD_ROOT)
-%{genfilelist} $RPM_BUILD_ROOT \
-    --file /etc/cron.daily/conf-mod_ssl 'attr(0544,root,root)' \
-    --dir /home/e-smith/ssl.key 'attr(0700,root,root)' \
-    --dir /home/e-smith/ssl.crt 'attr(0700,root,root)' \
-    --dir /home/e-smith/ssl.pem 'attr(0700,root,root)' \
-    > %{name}-%{version}-%{release}-filelist
-
+%{genfilelist} $RPM_BUILD_ROOT > %{name}-%{version}-%{release}-filelist
 echo "%doc COPYING"          >> %{name}-%{version}-%{release}-filelist
 
 %clean 
@@ -95,8 +89,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -f %{name}-%{version}-%{release}-filelist
 %defattr(-,root,root)
-
-
 
 %changelog
 
