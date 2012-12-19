@@ -28,6 +28,12 @@ namespace NethServer\Module;
  */
 class Shutdown extends \Nethgui\Controller\AbstractController
 {
+    /**
+     *
+     *
+     * @var \Nethgui\System\ProcessInterface
+     */
+    private $process;
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
@@ -43,15 +49,52 @@ class Shutdown extends \Nethgui\Controller\AbstractController
     public function process()
     {
         parent::process();
-        if($this->getRequest()->isMutation()) {
-            if($this->parameters['Action'] === 'poweroff') {
+
+        if ($this->getRequest()->isMutation()) {
+            if ($this->parameters['Action'] === 'poweroff') {
                 $cmd = '/sbin/poweroff';
             } else {
                 $cmd = '/sbin/reboot';
             }
-            /* @var $p \Nethgui\System\PlatformInterface */
-            $p = $this->getPlatform();
-            $p->exec('/usr/bin/sudo ${1}', array($cmd));
+
+            $this->process = $this->getPlatform()->exec('/usr/bin/sudo ${1}', array($cmd));
+            //$this->process = $this->getPlatform()->exec('/bin/date');
+
+        } elseif ($this->getRequest()->hasArgument('wait')) {
+            // parse /sbin/runlevel output to get the current runlevel value:
+            $this->process = $this->getPlatform()->exec('/usr/bin/sudo ${1}', array('/sbin/runlevel'));
+            $runlevel = \Nethgui\array_end(explode(' ', $this->process->getOutput()));
+            NETHGUI_DEBUG && $this->getLog()->notice($runlevel . ' ' . join(', ', $this->getRequest()->getArgumentNames()));
+
+            // runlevel validation:
+            if ($runlevel === '0' || $runlevel === '6') {
+                NETHGUI_DEBUG && $this->getLog()->notice('Sleeping 10 seconds..');
+                sleep(10);
+            } else {
+                // wait argument is allowed only on reboot and halt runlevels!
+                throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1355301177);
+                sleep(2);
+            }
+        }
+    }
+
+    public function prepareView(\Nethgui\View\ViewInterface $view)
+    {
+        parent::prepareView($view);
+        if ( ! isset($this->process)) {
+            return;
+        }
+        
+        if ($this->getRequest()->isMutation()) {
+            if ($this->process->getExitCode() === 0) {
+                $view->getCommandList()
+                    ->shutdown($view->getModuleUrl() . '?wait=0', $this->parameters['Action'], array($view->translate('shutdown_' . $this->parameters['Action']), $view->translate('test')));
+                ;
+            } else {
+                $view->getCommandList('/Notification')
+                    ->showMessage("error " . $this->process->getOutput(), \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR)
+                ;
+            }
         }
     }
 
