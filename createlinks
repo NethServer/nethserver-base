@@ -102,6 +102,7 @@ event_templates('interface-update', qw(
      /etc/sysconfig/network
      /etc/localnetworks
      /etc/hosts
+     /etc/resolv.conf
 ));
 
 
