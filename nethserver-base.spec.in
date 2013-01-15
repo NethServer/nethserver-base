@@ -23,7 +23,6 @@ Requires: acpid
 Requires: bridge-utils
 Requires: vconfig
 Requires: mdadm
-Requires: pv
 Requires: libuser >= 0.56
 Requires: sudo
 Requires: perl-suidperl
