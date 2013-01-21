@@ -131,18 +131,23 @@ if ( $CrtType eq 'custom') {
 	$generate = 1;
     }
 
+    #
+    # 5.2.1 Check only if expired or subject changed:
+    #
+    if ( $event eq 'checkgen' ) {
+	# Notify caller that the certificate has been renewed, exiting
+	# with non-zero value "6".
+	exit ($generate ? 6 : 0);
+    }
+
+    #
+    # 5.2.2 Generate a new default certificate:
+    #
     if ( $generate ) {
-        #
-        # 5.2.1 Generate a new default certificate:
-        #
 	warn "Generating new default certificate.\n";
 	system('/usr/libexec/nethserver/pki-gencrt', '-f', $CrtFile);
 	if ( $? != 0 ) {
-	    exit 5;
-	} elsif ( $event eq 'checkgen' ) {
-	    # Notify caller that the certificate has been renewed, exiting
-	    # with non-zero value "6".
-	    exit 6;
+	    exit 7;
 	}
     }
 }

@@ -149,7 +149,7 @@ templates2events('/etc/hosts', qw(
 # empty events:
 #--------------------------------------------------
 foreach (qw(
-   certificate-update
+
 )) {
     File::Path::make_path('root/etc/e-smith/events/' . $_);
 }
@@ -160,6 +160,13 @@ foreach (qw(
 event_actions('first-boot', qw(
     initialize-default-databases      00
     bootstrap-console-start           50
+));
+
+#
+# certificate-update event
+#
+event_actions('certificate-update', qw(
+    nethserver-base-check-certificate 04
 ));
 
 exit 0;
