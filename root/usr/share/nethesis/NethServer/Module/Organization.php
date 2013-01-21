@@ -48,6 +48,7 @@ class Organization extends \Nethgui\Controller\AbstractController
     protected function onParametersSaved($changes)
     {
         $this->getPlatform()->signalEvent('nethserver-base-save@post-process');
+        $this->getPlatform()->signalEvent('certificate-update@post-response');
     }
 
 }
