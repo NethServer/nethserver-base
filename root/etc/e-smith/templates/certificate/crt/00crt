@@ -1,0 +1,22 @@
+{
+    #
+    # public certificate expansion
+    #
+
+    my $crtFile = $pki{CrtFile} || "/etc/pki/tls/NSRV.crt";
+
+    $OUT = '';
+
+    if( ! open(FH, '<', $crtFile)) {
+	warn ("Could not open $crtFile: $!\n");
+	return '';
+    }
+ 
+    while (<FH>) {
+	$OUT .= $_;
+    }
+
+    close(FH);
+
+    $OUT;
+}

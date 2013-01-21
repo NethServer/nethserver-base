@@ -1,0 +1,22 @@
+{
+    #
+    # private key expansion
+    #
+
+    my $keyFile = $pki{KeyFile} || "/etc/pki/tls/private/NSRV.key";
+
+    $OUT = '';
+
+    if( ! open(FH, '<', $keyFile)) {
+	warn ("Could not open $keyFile: $!\n");
+	return '';
+    }
+ 
+    while (<FH>) {
+	$OUT .= $_;
+    }
+
+    close(FH);
+
+    $OUT;
+}
