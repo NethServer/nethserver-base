@@ -3,7 +3,7 @@
     # public certificate expansion
     #
 
-    my $crtFile = $pki{CrtFile} || "/etc/pki/tls/NSRV.crt";
+    my $crtFile = $pki{CrtFile} || "/etc/pki/tls/certs/NSRV.crt";
 
     $OUT = '';
 

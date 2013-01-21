@@ -26,7 +26,7 @@ use Getopt::Std;
 
 my %opts;
 my @extraArgs;
-my $crtFile = "/etc/pki/tls/NSRV.crt";
+my $crtFile = "/etc/pki/tls/certs/NSRV.crt";
 my $keyFile = "/etc/pki/tls/private/NSRV.key";
 
 getopts('f:sh', \%opts);

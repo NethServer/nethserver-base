@@ -57,7 +57,7 @@ if ($KeyFile && ! -f $KeyFile) {
 # 2. Set default values
 #
 
-$CrtFile = $CrtFile || '/etc/pki/tls/NSRV.crt';
+$CrtFile = $CrtFile || '/etc/pki/tls/certs/NSRV.crt';
 $KeyFile = $KeyFile || '/etc/pki/tls/private/NSRV.key';
 
 #
