@@ -52,6 +52,7 @@ event_actions('nethserver-base-update', qw(
     nethserver-base-selinux-setup     10
     nethserver-base-conf              40
     nethserver-base-pam-setup         50
+    nethserver-base-check-certificate 50
     firewall-adjust                   70
     runlevel-adjust                   71
 ));
