@@ -101,9 +101,9 @@ if ( $CrtType eq 'custom') {
     # 5.1 TODO: send certificate expiration warning
     #
     if ( $now > $expire ) {
-	warn "WARNING $CrtFile: certificate EXPIRED on $notAfter\n";
+	warn "WARNING $CrtFile: certificate EXPIRED on $notAfter\n" if ($event ne 'checkgen');
     } elsif ( $now > $warningTs ) {
-	warn "WARNING $CrtFile: stale certificate is going to expire on $notAfter\n";
+	warn "WARNING $CrtFile: stale certificate is going to expire on $notAfter\n" if ($event ne 'checkgen');
     }
 
 } elsif ( $CrtType eq 'default' ) {
@@ -121,13 +121,12 @@ if ( $CrtType eq 'custom') {
     my $generate = 0;
 
     if ( $now > $renewTs ) {
-	warn "Stale certificate..\n";
+	warn "Stale certificate..\n" if ($event ne 'checkgen');
 	$generate = 1;
     } 
 
     if ($certSubject ne $dbSubject ) {
-	warn "Subject changed..\n";
-	print $certSubject . "\n" . $dbSubject . "\n";
+	warn "Subject changed..\n" if ($event ne 'checkgen');
 	$generate = 1;
     }
 
