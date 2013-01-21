@@ -1,0 +1,110 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2013 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use strict;
+use esmith::ConfigDB;
+use Getopt::Std;
+
+my %opts;
+my @extraArgs;
+my $crtFile = "/etc/pki/tls/NSRV.crt";
+my $keyFile = "/etc/pki/tls/private/NSRV.key";
+
+getopts('f:sh', \%opts);
+
+if($opts{'h'}) { die qq( 
+pki-gencrt: Generate NethServer default certificate 
+            from OrganizationContact key in configuration 
+            database. 
+
+Usage:
+   pki-gencrt [-s] [-f <filename>] [-h]
+
+   -s Outputs a sample the certificate subject
+   -f Set output to <filename> (Default is $crtFile)
+   -h this help
+
+)
+}
+
+if($opts{'f'}) {
+    $crtFile = $opts{'f'};
+}
+
+if($opts{'s'}) {
+    # Print subject
+    @extraArgs = ('-noout', '-subject', '2>/dev/null');
+} else {
+    # Certificate generation
+    @extraArgs = ('-out', $crtFile, '&>/dev/null');
+}
+
+if ( ! -r $keyFile ) {
+    die("Could not read $keyFile\n");
+}
+
+my $configDb = esmith::ConfigDB->open_ro() || die("Could not open ConfigDB");
+my %conf = $configDb->as_hash();
+
+
+my $contact = $conf{OrganizationContact};
+my $pki = $conf{pki};
+my $certificateDuration = $pki->{CertificateDuration} || "30";
+
+if ($certificateDuration < 7) {
+    warn "WARNING: pki CertificateDuration is less than 7 days! Check configuration DB.\n";
+}
+
+my $fqdn = join('.', $conf{SystemName}{type}, $conf{DomainName}{type});
+my $countryCode = substr($contact->{CountryCode} || '--', 0, 2);
+my $state = substr($contact->{State} || 'SomeState', 0, 32);
+my $city = substr($contact->{City} || 'SomeCity', 0, 64);
+my $company = substr($contact->{Company} || 'SomeCompany', 0, 64);
+my $department = substr($contact->{Department} || 'SomeDepartment', 0, 64);
+my $commonName = substr($pki->{CommonName} || $fqdn , 0, 64);
+my $email = substr($conf{admin}{EmailAddress} || 'admin@' . $fqdn, 0, 64);
+
+open(FH, '|-', join(' ', '/usr/bin/openssl',
+		    'req',
+		    '-x509',
+		    '-days', $certificateDuration,
+		    '-utf8',
+		    '-new',
+		    '-key', $keyFile,
+		    '-set_serial', time(),
+		    @extraArgs
+		    )
+    ) || die("Could not connect to openssl: $!\n");
+
+foreach (
+    $countryCode,
+    $state,
+    $city,
+    $company,
+    $department,
+    $commonName,
+    $email
+) {
+    print FH ($_ . "\n");
+}
+
+exit (close(FH) ? 0 : 1);
