@@ -44,7 +44,7 @@ _esmith_db ()
 
     case $COMP_CWORD in
     1) # config file
-	COMPREPLY=( $(find /home/e-smith /home/e-smith/db -maxdepth 1 -type f \
+	COMPREPLY=( $(find /var/lib/nethserver/db -maxdepth 1 -type f \
 			\( -name '.*' -prune -o \
 			   -name "$cur*" -printf "%f\n" \)) )
 	;;
