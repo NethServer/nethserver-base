@@ -42,45 +42,47 @@ my $KeyFile = $confDb->get_prop('pki', 'KeyFile') || '';
 # existence.
 #
 
-if($CrtFile) {
-    if ( ! -f $CrtFile) {
-	die "ERROR $CrtFile: custom certificate not found!\n"	
-    }
-    $CrtType="custom";
-}
-
-if ($KeyFile && ! -f $KeyFile) {
-    die "ERROR $KeyFile: custom private key not found!\n"
-}
-
-#
-# 2. Set default values
-#
-
-$CrtFile = $CrtFile || '/etc/pki/tls/certs/NSRV.crt';
-$KeyFile = $KeyFile || '/etc/pki/tls/private/NSRV.key';
-
-#
-# 3. Generate key and certificate, if missing
-#
-
-if( ! -r $KeyFile ) {
-    system('/usr/libexec/nethserver/pki-genkey');
-    if ( $? != 0 ) {
-	exit 3;
+if($CrtFile || $KeyFile) {
+    if(-f $CrtFile && -f $KeyFile) {
+	$CrtType="custom";
+    } else {
+	warn "WARNING $CrtFile: custom certificate not found!\n" 
+	    if( ! -f $CrtFile);
+	warn "WARNING $KeyFile: custom private key not found!\n"
+	    if( ! -f $KeyFile);
+	warn "WARNING: falling back to default certificate.\n";
     }
 }
 
-if( ! -r $CrtFile ) {
-    system('/usr/libexec/nethserver/pki-gencrt');
-    if ( $? != 0 ) {
-	exit 4;
+#
+# 2. Set default values, if custom cert is not set at this point
+#
+
+if($CrtType eq 'default') {
+    $CrtFile = '/etc/pki/tls/certs/NSRV.crt';
+    $KeyFile = '/etc/pki/tls/private/NSRV.key';
+
+    #
+    # 2.1 Generate key and certificate, if missing
+    #
+
+    if( ! -f $KeyFile ) {
+	system('/usr/libexec/nethserver/pki-genkey');
+	if ( $? != 0 ) {
+	    exit 3;
+	}
+    }
+
+    if( ! -f $CrtFile ) {
+	system('/usr/libexec/nethserver/pki-gencrt');
+	if ( $? != 0 ) {
+	    exit 4;
+	}
     }
 }
 
-
 #
-# 4. Check certificate expiration date
+# 3. Check certificate expiration date
 #
 
 my $x509 = "/usr/bin/openssl x509 -in \"$CrtFile\" -noout";
@@ -96,20 +98,21 @@ my $expire = int (str2time($notAfter) / 86400);
 my $warningTs = $expire - 7;
 my $renewTs = $expire - 2;
 
-if ( $CrtType eq 'custom') {
+if($CrtType eq 'custom') {
     #
-    # 5.1 TODO: send certificate expiration warning
+    # 3.1 TODO: send certificate expiration warning
     #
     if ( $now > $expire ) {
-	warn "WARNING $CrtFile: certificate EXPIRED on $notAfter\n" if ($event ne 'checkgen');
+	warn "WARNING $CrtFile: certificate EXPIRED on $notAfter\n";
     } elsif ( $now > $warningTs ) {
-	warn "WARNING $CrtFile: stale certificate is going to expire on $notAfter\n" if ($event ne 'checkgen');
+	warn "WARNING $CrtFile: stale certificate is going to expire on $notAfter\n";
     }
 
-} elsif ( $CrtType eq 'default' ) {
+} elsif($CrtType eq 'default') {
 
-    # Read certificate subject and compare to current DB,
-    # to see if it has been changed.
+    #
+    # 3.2 Read certificate subject and compare to current DB,
+    #     to see if it has been changed.
     my $certSubject=`${x509} -subject`;
 
     $certSubject =~ s/^subject= *//;
@@ -120,29 +123,29 @@ if ( $CrtType eq 'custom') {
 
     my $generate = 0;
 
-    if ( $now > $renewTs ) {
+    if($now > $renewTs) {
 	warn "Stale certificate..\n" if ($event ne 'checkgen');
 	$generate = 1;
     } 
 
-    if ($certSubject ne $dbSubject ) {
+    if($certSubject ne $dbSubject) {
 	warn "Subject changed..\n" if ($event ne 'checkgen');
 	$generate = 1;
     }
 
     #
-    # 5.2.1 Check only if expired or subject changed:
+    # 3.2.1 Check only if expired or subject changed:
     #
-    if ( $event eq 'checkgen' ) {
-	# Notify caller that the certificate has been renewed, exiting
+    if($event eq 'checkgen') {
+	# Notify caller that the certificate must be renewed, exiting
 	# with non-zero value "6".
 	exit ($generate ? 6 : 0);
     }
 
     #
-    # 5.2.2 Generate a new default certificate:
+    # 3.2.2 Generate a new default certificate:
     #
-    if ( $generate ) {
+    if($generate) {
 	warn "Generating new default certificate.\n";
 	system('/usr/libexec/nethserver/pki-gencrt', '-f', $CrtFile);
 	if ( $? != 0 ) {
