@@ -46,11 +46,17 @@ class Personal extends \Nethgui\Controller\Table\AbstractAction
         parent::initialize();
     }
 
+    protected function onParametersSaved($changedParameters)
+    {
+        parent::onParametersSaved($changedParameters);     
+        $this->getPlatform()->signalEvent('profile-modify@post-process', array($this->getAdapter()->getKeyValue()));
+    }
+
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
         $view['username'] = $this->getAdapter()->getKeyValue();
         $view['ChangePassword'] = $view->getModuleUrl('../ChangePassword');
     }
-    
+
 }

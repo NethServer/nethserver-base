@@ -53,6 +53,7 @@ event_actions('nethserver-base-update', qw(
     nethserver-base-conf              40
     nethserver-base-pam-setup         50
     nethserver-base-check-certificate 50
+    nethserver-base-conf-admin-alias  50
     firewall-adjust                   70
     runlevel-adjust                   71
 ));
@@ -168,6 +169,15 @@ event_actions('first-boot', qw(
 event_actions('certificate-update', qw(
     nethserver-base-check-certificate 04
 ));
+
+
+#
+# profile-modify event
+#
+event_actions('profile-modify', qw(
+    nethserver-base-conf-admin-alias 30
+));
+
 
 exit 0;
 

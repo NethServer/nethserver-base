@@ -1,0 +1,61 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2013 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+ALIASES_DB="/etc/aliases"
+EVENT=$1
+USER=$2
+
+if ! [ -r "${ALIASES_DB}" ]; then
+    echo "Could not read ${ALIASES_DB}"
+    exit 1
+fi
+
+if [ -n "${USER}" ] && [ "${USER}" != 'admin' ]; then
+    # Give up, if we have USER name which is not "admin":
+    exit 0
+fi
+
+if ! id admin &>/dev/null; then
+    echo "Could not find admin user"
+    exit 2
+fi
+
+ADMIN_EMAIL=`/sbin/e-smith/db configuration getprop admin EmailAddress`
+
+if [ -n "${ADMIN_EMAIL}" ]; then
+    if ! grep -q '^admin:' $ALIASES_DB; then
+	echo "Enabling admin external mail address forwarding"
+	echo -e "admin:\t\t${ADMIN_EMAIL}" >> ${ALIASES_DB}    
+    fi
+else
+    if grep -q '^admin:' $ALIASES_DB; then
+	echo "Disabling admin external mail address forwarding"
+	sed -i '/^admin:/ d' ${ALIASES_DB}    
+    fi
+fi
+
+if ! grep -q '^root' $ALIASES_DB; then
+    echo "Creating root => admin alias"
+    echo "# NethServer: all root mail to admin account" >> ${ALIASES_DB}
+    echo -e "root:\t\tadmin" >> ${ALIASES_DB}
+fi
+
