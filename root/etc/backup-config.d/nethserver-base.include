@@ -1,0 +1,9 @@
+/etc/e-smith/templates-custom
+/etc/e-smith/templates-user-custom
+/etc/ssh
+/root
+/etc/sudoers
+/etc/passwd
+/etc/shadow
+/etc/group
+/etc/gshadow
