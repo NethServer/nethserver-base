@@ -29,10 +29,12 @@ Requires: perl-suidperl
 Requires: nc
 Requires: iproute
 Requires: openssh-server
+Requires: postfix
 
 Requires: nethserver-yum
 Requires: nethserver-lib
 Requires: nethserver-nethgui
+
 
 BuildRequires: nethserver-devtools
 BuildRequires: gettext

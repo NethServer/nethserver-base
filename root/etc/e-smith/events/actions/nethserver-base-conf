@@ -34,10 +34,12 @@ if( $? != 0 ) {
     $errors ++;
 }
 
-NethServer::Service::manage_add('nethserver-base',
-				'sshd',
-				'rsyslog',
-				'bootstrap-console');
+NethServer::Service::manage_add('nethserver-base', qw(
+				sshd
+				rsyslog
+				bootstrap-console
+                                postfix
+));
 
 #
 # Import distribution GPG keys into RPM database -- Refs #1597
