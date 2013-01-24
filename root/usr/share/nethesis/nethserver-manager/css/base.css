@@ -23,7 +23,7 @@ input[type="text"][readonly] {background-color: #eee; color: #444}
 #pageHeader h1 { font-size: 1.7em; }
 #pageHeader h2 { display: none; }
 .secondaryContent { padding: 0px; margin: 0px} 
-#pageContent {position: relative}
+#pageContent {position: relative; overflow: hidden; padding-bottom: 25px}
 #footer {display: none }
 
 #loading-message {display: none}
