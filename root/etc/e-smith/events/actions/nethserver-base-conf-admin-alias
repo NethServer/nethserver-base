@@ -23,6 +23,7 @@
 ALIASES_DB="/etc/aliases"
 EVENT=$1
 USER=$2
+REFRESH=0
 
 if ! [ -r "${ALIASES_DB}" ]; then
     echo "Could not read ${ALIASES_DB}"
@@ -45,11 +46,18 @@ if [ -n "${ADMIN_EMAIL}" ]; then
     if ! grep -q '^admin:' $ALIASES_DB; then
 	echo "Enabling admin external mail address forwarding"
 	echo -e "admin:\t\t${ADMIN_EMAIL}" >> ${ALIASES_DB}    
+	REFRESH=1
+    elif ! grep -q $'^admin:\t\t'"${ADMIN_EMAIL}" $ALIASES_DB; then
+	echo "Updating admin external mail address forwarding"
+	sed -i "/^admin:/ c \\
+admin:\t\t${ADMIN_EMAIL}" ${ALIASES_DB}    
+	REFRESH=1	
     fi
 else
     if grep -q '^admin:' $ALIASES_DB; then
 	echo "Disabling admin external mail address forwarding"
 	sed -i '/^admin:/ d' ${ALIASES_DB}    
+	REFRESH=1
     fi
 fi
 
@@ -57,5 +65,12 @@ if ! grep -q '^root' $ALIASES_DB; then
     echo "Creating root => admin alias"
     echo "# NethServer: all root mail to admin account" >> ${ALIASES_DB}
     echo -e "root:\t\tadmin" >> ${ALIASES_DB}
+    REFRESH=1
+fi
+
+# If we have changed alias DB source file, rebuild binary form:
+if [ ${REFRESH} -ne 0 ]; then
+    [ -x /usr/bin/newaliases ] && /usr/bin/newaliases
+    # now Postfix should be reloaded ... (see event's services section)
 fi
 

@@ -178,6 +178,9 @@ event_actions('profile-modify', qw(
     nethserver-base-conf-admin-alias 30
 ));
 
+event_services('profile-modify', qw(
+    postfix reload
+));
 
 exit 0;
 
