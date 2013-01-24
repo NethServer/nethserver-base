@@ -16,11 +16,11 @@ $extCss = "
   list-style-type:circle;
   margin-left: 2em;
 }
-p {
+#Welcome p {
   margin-bottom: 1em;
   margin-top: 1em;
 }
-p.code {
+#Welcome p.code {
   margin-bottom: 1em;
   margin-top: 1em;
   margin-left: 2em;
