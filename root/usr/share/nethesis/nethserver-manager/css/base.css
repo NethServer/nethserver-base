@@ -22,9 +22,7 @@ input[type="text"][readonly] {background-color: #eee; color: #444}
 #pageHeader { position:relative; height: 22px; margin-bottom: .5em; }
 #pageHeader h1 { font-size: 1.7em; }
 #pageHeader h2 { display: none; }
-.secondaryContent { padding: 0px; margin: 0px} 
-#pageContent {position: relative; overflow: hidden; padding-bottom: 25px}
-#footer {display: none }
+#footer { display: none }
 
 #loading-message {display: none}
 .NethguiLoading {display:none !important}
@@ -49,7 +47,7 @@ input[type="text"][readonly] {background-color: #eee; color: #444}
 .Navigation.Flat a.currentMenuItem { background-color: #fff }
 
 .Navigation #Menu_search {width: 100%; border: none}
-.Navigation .searchPanel {margin: 0 .2em; border: 1px solid lightgrey; background: white; position: relative}
+.Navigation .searchPanel {margin: 0 .5em; border: 1px solid lightgrey; background: white; position: relative}
 .Navigation .searchPanel button {border: none; position: absolute; top: 0; right: 0}
 .Navigation .searchPanel .ui-button-text {padding: 0}
 
@@ -186,7 +184,8 @@ p.TextLabel {margin: 0.5em 0}
 
 /* Responsive layout */
 
-[role="menu"] {margin-top: 2em; padding-top: 1em; border-top: 1px solid #aaa}
+.secondaryContent { margin-top: 2em }
+.secondaryContent .contentWrapper { padding: .5em 0; border-radius: 5px; }
 .secondaryContent h2 {display:none}
 
 #ModuleTitle { display: none }
@@ -195,19 +194,23 @@ p.TextLabel {margin: 0.5em 0}
 #headerMenu a {color: #555; text-decoration: none}
 
 @media screen and (min-width: 40em) {
-    [role="main"] {float: left; margin-left: 16%; width: 83%; min-height: 400px}
-    [role="menu"] {position: absolute; width: 14%; border-top: none; top: 0; left: 0; margin: 0; overflow: hidden }
+    #pageContent {margin: 0 .5em; position: relative; padding-bottom: 25px }
+    .primaryContent {margin-left: 20.5em }
+    .secondaryContent {position: absolute; width: 20em;  top: 0; left: 0; margin: 0; padding-bottom: 50px }    
     .CurrentModule { border-bottom: 1px solid #aaa; min-height: 300px; }
     .DataTable {min-height: auto;}
     .header {padding: .5em;  border: none; }
     #pageHeader { position:relative; height: 50px; margin-left: .5em; margin-right: .5em; margin-bottom: .5em; border-bottom-right-radius: 10px; border-bottom-left-radius: 10px;}
     #productTitle {  font-size: 48px; bottom: -14px }
-    .secondaryContent {margin-left: 5px; padding-bottom: 5px; margin-bottom: 25px; border-radius: 5px;}
-    .allWrapper {min-height: 100%}
-
     #footer { display: inherit; position: fixed; color: #aaa; padding: 5px; text-align: right; bottom: 0; right: 0; border-top: 1px solid #eee; background: white; min-width: 100%}
     .Tabs { min-height: 300px; }
 } /*end media screen */
 
-
+#pageHeader { background: #bed2ea; }
+.header {background: #bed2ea; color: #002F64 }
+.Navigation.Flat a {color: #fff;}
+.Navigation.Flat a:hover {color: #003C7B;}
+.Navigation.Flat .category {color: #fff;}
+.secondaryContent .contentWrapper { background: #003C7B;}
+.Navigation.Flat a.currentMenuItem { color: #003C7B}
 
