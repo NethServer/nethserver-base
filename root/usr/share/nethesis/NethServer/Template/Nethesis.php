@@ -16,10 +16,9 @@ $view
     // Javascript:
     ->includeJavascript($bootstrapJs)
     // CSS:
-    ->useFile('css/default/jquery-ui-1.8.16.custom.css')
+    ->useFile('css/ui/jquery-ui-1.8.16.custom.css')
     ->useFile('css/jquery.qtip.min.css')
-    ->useFile('css/base.css')
-    ->useFile('css/default.css')
+    ->useFile('css/base.css')    
 ;
 
 ?><!DOCTYPE html>
