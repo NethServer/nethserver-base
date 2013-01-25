@@ -1,0 +1,3 @@
+#!/bin/bash
+
+[ -x /usr/libexec/plymouth/plymouth-update-initrd ] && nohup /usr/libexec/plymouth/plymouth-update-initrd &>/dev/null &

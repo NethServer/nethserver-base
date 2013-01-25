@@ -160,6 +160,7 @@ foreach (qw(
 #--------------------------------------------------
 event_actions('first-boot', qw(
     initialize-default-databases      00
+    nethserver-base-plymouth-update   40
     bootstrap-console-start           50
 ));
 
