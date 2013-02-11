@@ -48,8 +48,8 @@ jQuery(document).ready(function () {
 $view->includeCss("
 .PasswordStrength {overflow: hidden; padding-top: 4px}
 .PasswordStrength .led {float: left; cursor: help}
-.PasswordStrength .led.off.ui-icon { background-image: url(/css/default/images/ui-icons_cd0a0a_256x240.png) }
-.PasswordStrength .led.on.ui-icon { background-image: url(/css/default/images/ui-icons_888888_256x240.png) }
+.PasswordStrength .led.off.ui-icon { background-image: url(/css/ui/images/ui-icons_cd0a0a_256x240.png) }
+.PasswordStrength .led.on.ui-icon { background-image: url(/css/ui/images/ui-icons_888888_256x240.png) }
 ");
 
 echo $view->textInput('newPassword', $view::TEXTINPUT_PASSWORD);
