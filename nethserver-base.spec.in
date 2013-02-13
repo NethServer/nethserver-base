@@ -5,7 +5,7 @@ Release: @@RELEASE@@
 License: GPL
 Source: %{name}-%{version}.tar.gz
 BuildArch: noarch
-URL: http://dev.nethesis.it/projects/%{name}
+URL: %{url_prefix}/%{name} 
 
 Requires: initscripts
 Requires: perl(Locale::gettext)
