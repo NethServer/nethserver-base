@@ -23,7 +23,13 @@ namespace NethServer\Module\Dashboard;
 use Nethgui\System\PlatformInterface as Validate;
 
 /**
- * @todo describe class
+ * Show list of services. For each service show:
+ *   - status property
+ *   - running status
+ *   - TCP and UDP ports (if present)
+ *
+ * @author Giacomo Sanchietti
+ *
  */
 class Services extends \Nethgui\Controller\TableController
 {
@@ -39,6 +45,7 @@ class Services extends \Nethgui\Controller\TableController
             'Key',
             'status',
             'running',
+            'ports',
         );
 
         $this
@@ -59,16 +66,59 @@ class Services extends \Nethgui\Controller\TableController
      */
     public function prepareViewForColumnRunning(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
+        $ret = "-";
         $p = $this->getPlatform()->exec('/usr/bin/sudo /sbin/service ${1} status', array($key));
-        return ($p->getExitCode() === 0)?"running":"stopped:".$p->getExitCode();    
+        if ($p->getExitCode() === 0) {
+            $ret = $view->translate("running_label");
+            $rowMetadata['rowCssClass'] .= ' running ';
+        } else {
+            $ret = $view->translate("stopped_label");
+            $rowMetadata['rowCssClass'] .= ' stopped ';
+        }
+
+        return $ret; 
     }
+
+    /**
+     *
+     * @param \Nethgui\Controller\Table\Read $action
+     * @param \Nethgui\View\ViewInterface $view
+     * @param string $key The data row key
+     * @param array $values The data row values
+     * @return string|\Nethgui\View\ViewInterface
+     */
+    public function prepareViewForColumnPorts(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        $ret = " ";
+        $tcp = isset($values['TCPPort'])?$values['TCPPort']:"";
+        if ($tcp == "" &&  isset($values['TCPPorts'])) {
+             $tcp = $values['TCPPorts'];
+        }
+        $udp = isset($values['UDPPort'])?$values['UDPPort']:"";
+        if ($udp == "" &&  isset($values['UDPPorts'])) {
+             $udp = $values['UDPPorts'];
+        }
+        if ($tcp !== "") {
+            $ret .= $view->translate("TCPPorts_label").": $tcp ";
+        }
+        if ($udp !== "") {
+            $ret .= " ".$view->translate("UDPPorts_label").": $udp ";
+        }
+       
+        return $ret;
+    }
+
+
 
    /**
     * XXX: experimental -> CSS injection 
    **/
    public function prepareView(\Nethgui\View\ViewInterface $view)
    {
-       $cssCode = ".odd { color: red }";
+       $cssCode = "
+           tr.running td:nth-child(3) { color: green }
+           tr.stopped td:nth-child(3) { color: red }
+       ";
        $view->getCommandList('/Resource/css')->appendCode($cssCode, 'css');
        parent::prepareView($view);
    }
