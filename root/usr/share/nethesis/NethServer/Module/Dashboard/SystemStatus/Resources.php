@@ -62,15 +62,19 @@ class Resources extends \Nethgui\Controller\AbstractController
         return $uptime;
     }
 
-   private function readDF($fs='/') {
-       $cmd = '/usr/bin/perl -e \'
-           use Filesys::DiskFree; 
-           $handle = new Filesys::DiskFree; 
-           $handle->df();
-           print $handle->total("'.$fs.'").",".$handle->used("'.$fs.'").",".$handle->avail("'.$fs.'");
-           \'';
-        exec($cmd,$output);
-        return explode(",",$output[0]);
+   private function readDF() {
+       $out = array();
+       $ret = array();
+       exec('/bin/df -hP -x tmpfs', $out);
+       # Filesystem Size  Used Avail Use% Mount
+       for ($i=0; $i<count($out); $i++) {
+           if ($i == 0) {
+               continue;
+           }
+           $tmp = explode(" ", preg_replace( '/\s+/', ' ', $out[$i]));
+           $ret[$tmp[5]] = array('fs' => $tmp[0], 'total' => $tmp[1], 'used' => $tmp[2], 'avail' => $tmp[3], 'perc_used' => $tmp[4]);
+       }
+       return $ret;
    }
 
     public function process()
@@ -113,9 +117,9 @@ class Resources extends \Nethgui\Controller\AbstractController
             $this->df = $this->readDF();
         }
 
-        $view['root_total'] = $this->df[0];
-        $view['root_used'] = $this->df[1];
-        $view['root_avail'] = $this->df[2];
+        $view['root_total'] = $this->df['/']['total'];
+        $view['root_used'] = $this->df['/']['used'];
+        $view['root_avail'] = $this->df['/']['avail'];
      
     }
   
