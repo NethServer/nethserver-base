@@ -16,6 +16,7 @@ Requires: perl(Net::IPv4Addr)
 Requires: perl-TimeDate
 Requires: perl-DateTime-Format-Mail
 Requires: perl-Mail-RFC822-Address
+Requires: perl-Filesys-DiskFree
 Requires: smartmontools
 Requires: dbus
 Requires: hal
