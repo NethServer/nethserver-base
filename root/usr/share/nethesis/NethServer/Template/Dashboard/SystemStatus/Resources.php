@@ -11,7 +11,6 @@ $view->includeCSS("
     padding: 5px;
     border: 1px solid #ccc;
     float: left;
-    clear: both;
     width: 33%;
   }
 
