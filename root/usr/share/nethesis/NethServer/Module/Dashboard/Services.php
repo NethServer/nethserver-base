@@ -34,6 +34,8 @@ use Nethgui\System\PlatformInterface as Validate;
 class Services extends \Nethgui\Controller\TableController
 {
 
+    public $sortId = 10;
+
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
         return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($base, 'Security', 20);

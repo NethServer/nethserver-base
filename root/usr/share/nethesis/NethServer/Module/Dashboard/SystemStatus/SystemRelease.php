@@ -28,6 +28,8 @@ namespace NethServer\Module\Dashboard\SystemStatus;
 class SystemRelease extends \Nethgui\Controller\AbstractController
 {
 
+    public $sortId = 10;
+ 
     private $release = "";
 
     private function readRelease()

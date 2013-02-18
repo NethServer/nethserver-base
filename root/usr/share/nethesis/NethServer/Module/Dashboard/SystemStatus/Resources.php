@@ -31,11 +31,13 @@ namespace NethServer\Module\Dashboard\SystemStatus;
  */
 class Resources extends \Nethgui\Controller\AbstractController
 {
+    public $sortId = 10;
  
     private $load = array();
     private $memory = array();
     private $uptime = array();
     private $df = array();
+    private $cpuNum = 0;
 
     private function readMemory()
     {
@@ -44,8 +46,8 @@ class Resources extends \Nethgui\Controller\AbstractController
         foreach ($f as $line) {
             $tmp = explode(':',$line);
             $tmp2 = explode(' ', trim($tmp[1]));
-            $mb = $tmp2[0] % 1024; # kB -> MB
-            $fields[trim($tmp[0])] = $mb;
+            $mb = $tmp2[0] / 1024; # kB -> MB
+            $fields[trim($tmp[0])] = ceil($mb);
         }
         return $fields; 
     }
@@ -62,20 +64,33 @@ class Resources extends \Nethgui\Controller\AbstractController
         return $uptime;
     }
 
-   private function readDF() {
-       $out = array();
-       $ret = array();
-       exec('/bin/df -hP -x tmpfs', $out);
-       # Filesystem Size  Used Avail Use% Mount
-       for ($i=0; $i<count($out); $i++) {
-           if ($i == 0) {
-               continue;
-           }
-           $tmp = explode(" ", preg_replace( '/\s+/', ' ', $out[$i]));
-           $ret[$tmp[5]] = array('fs' => $tmp[0], 'total' => $tmp[1], 'used' => $tmp[2], 'avail' => $tmp[3], 'perc_used' => $tmp[4]);
-       }
-       return $ret;
-   }
+    private function readDF() {
+        $out = array();
+        $ret = array();
+        exec('/bin/df -P -x tmpfs', $out);
+        # Filesystem Size  Used Avail Use% Mount
+        for ($i=0; $i<count($out); $i++) {
+            if ($i == 0) {
+                continue;
+            }
+            $tmp = explode(" ", preg_replace( '/\s+/', ' ', $out[$i]));
+            // skip fs ($tmp[0]) and perc_used ($tmp[4])
+            $ret[$tmp[5]] = array('total' => intval($tmp[1]), 'used' => intval($tmp[2]), 'avail' => intval($tmp[3]));
+        }
+        return $ret;
+    }
+
+    private function readCPUNumber() 
+    {
+        $ret = 0;
+        $f = file('/proc/cpuinfo');
+        foreach ($f as $line) {
+            if (strpos($line, 'processor') === 0) {
+                $ret++;
+            }
+        }
+        return $ret;
+    }
 
     public function process()
     {
@@ -83,6 +98,7 @@ class Resources extends \Nethgui\Controller\AbstractController
         $this->memory = $this->readMemory();
         $this->uptime = $this->readUptime();
         $this->df = $this->readDF();
+        $this->cpuNum = $this->readCPUNumber();
     }
  
     public function prepareView(\Nethgui\View\ViewInterface $view)
@@ -94,15 +110,25 @@ class Resources extends \Nethgui\Controller\AbstractController
         $view['load1'] = $this->load[0];
         $view['load5'] = $this->load[1];
         $view['load15'] = $this->load[2];
-
-        if (!$this->memory) {
-            $this->memory = $this->readMemory();
+        
+        if (!$this->cpuNum) {
+            $this->cpuNum = $this->readCPUNumber();
         }
- 
-        $view['MemTotal'] = $this->memory['MemTotal'];
-        $view['MemFree'] = $this->memory['MemFree'];
-        $view['SwapTotal'] = $this->memory['SwapTotal'];
-        $view['SwapFree'] = $this->memory['SwapFree'];
+        $view['cpu_num'] = $this->cpuNum; 
+
+        if ($this->memory) {
+            $tmp[] = array($view->translate("mem_total_label"), $this->memory['MemTotal']);
+            $tmp[] = array($view->translate("mem_used_label"), $this->memory['MemTotal']-$this->memory['MemFree']);
+            $tmp[] = array($view->translate("mem_free_label"), $this->memory['MemFree']);
+            $view['memory'] = $tmp;
+
+            $tmp = array();
+            $tmp[] = array($view->translate("swap_total_label"), $this->memory['SwapTotal']);
+            $tmp[] = array($view->translate("swap_used_label"), $this->memory['SwapTotal']-$this->memory['SwapFree']);
+            $tmp[] = array($view->translate("swap_free_label"), $this->memory['SwapFree']);
+            $view['swap'] = $tmp;
+        }
+
 
         if (!$this->uptime) {
             $this->uptime = $this->readUptime();
@@ -113,14 +139,14 @@ class Resources extends \Nethgui\Controller\AbstractController
         $view['minutes'] = $this->uptime['minutes'];
         $view['seconds'] = $this->uptime['seconds'];
         
-        if (!$this->df) {
-            $this->df = $this->readDF();
+        if ($this->df) {
+            $tmp = array(); 
+            foreach($this->df['/'] as $k=>$v) {
+                $tmp[] = array($view->translate($k."_label"),$v);
+            } 
+            $view['root_df']  = $tmp; 
         }
-
-        $view['root_total'] = $this->df['/']['total'];
-        $view['root_used'] = $this->df['/']['used'];
-        $view['root_avail'] = $this->df['/']['avail'];
-     
+        
     }
   
 
