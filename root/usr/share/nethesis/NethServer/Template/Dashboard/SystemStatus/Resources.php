@@ -10,10 +10,8 @@ $view->includeCSS("
     margin: 5px;
     padding: 5px;
     border: 1px solid #ccc;
-    float: left;
-    width: 33%;
+    width: 300px;
   }
-
   .dashboard-item dt {
     float: left;
     clear: left;
@@ -30,12 +28,12 @@ $view->includeCSS("
   }
   .dashboard-item table.jqplot-table-legend {
     width:auto;
- }
+  }
 ");
 
 echo "<div class='dashboard-item'>";
-echo "<dl>";
 echo $view->header()->setAttribute('template',$T('general_title'));
+echo "<dl>";
 echo "<dt>".$T('load1_label')."</dt><dd>"; echo $view->textLabel('load1'); echo "</dd>";
 echo "<dt>".$T('load5_label')."</dt><dd>"; echo $view->textLabel('load5'); echo "</dd>";
 echo "<dt>".$T('load15_label')."</dt><dd>"; echo $view->textLabel('load15'); echo "</dd>";
@@ -47,6 +45,7 @@ echo $view->textLabel('hours').$T('hours_label')." ";
 echo $view->textLabel('minutes').$T('minutes_label')." ";
 echo $view->textLabel('seconds').$T('seconds_label');
 echo "</dd>";
+echo "</dl>";
 echo "</div>";
 
 
