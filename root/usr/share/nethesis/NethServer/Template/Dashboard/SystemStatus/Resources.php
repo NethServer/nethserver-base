@@ -88,15 +88,22 @@ $view->includeJavascript("
         return val.toFixed(2)+' GB';
       }
     }
- 
 
-    $(document).ready(function() {
+    function loadPage() {
         $.Nethgui.Server.ajaxMessage({
             isMutation: false,
             url: '/Dashboard/SystemStatus'
         });
+    } 
 
-        $('.$root_df_id').on('nethguiupdateview', function(event, value, httpStatusCode) { 
+    $(document).ready(function() {
+        loadPage();
+        // reload page after 30 seconds
+        setInterval(loadPage,30000);
+
+        $('.$root_df_id').on('nethguiupdateview', function(event, value, httpStatusCode) {
+            $(this).empty();
+            $('#root_plot').empty(); 
             // draw plot excluding total field
             var root_plot = jQuery.jqplot ('root_plot', [value.slice(1,3)], 
             { 
@@ -122,6 +129,8 @@ $view->includeJavascript("
 
 
         $('.$memory_id').on('nethguiupdateview', function(event, value, httpStatusCode) { 
+            $(this).empty();
+            $('#memory_plot').empty(); 
             // draw plot excluding total field
             var memory_plot = jQuery.jqplot ('memory_plot', [value.slice(1,3)], 
             { 
@@ -141,6 +150,8 @@ $view->includeJavascript("
 
         $('.$swap_id').on('nethguiupdateview', function(event, value, httpStatusCode) {
             // draw plot excluding total field
+            $(this).empty();
+            $('#swap_plot').empty(); 
             var swap_plot = jQuery.jqplot ('swap_plot', [value.slice(1,3)],
             {
                 seriesDefaults: {
