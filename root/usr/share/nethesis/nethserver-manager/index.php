@@ -42,7 +42,7 @@ $FW = new \Nethgui\Framework();
 $FW
     ->setLogLevel(E_WARNING | E_ERROR | E_NOTICE)
     ->registerNamespace(realpath(__DIR__ . '/../NethServer'))
-    ->setDefaultModule('Welcome')
+    ->setDefaultModule('Dashboard')
     ->setDecoratorTemplate('NethServer\\Template\\Nethesis')
 ;
 
