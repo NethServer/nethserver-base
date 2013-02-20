@@ -124,6 +124,9 @@ class Network extends \Nethgui\Controller\AbstractController
         foreach ($this->interfaces as $i=>$props) {
             $tmp = array();
             foreach ($props as $k=>$v) {
+              if ( $k != 'stats' && $k != 'name' ) {
+                  $k = $view->translate($k."_label");
+              }
               $tmp[] = array($k,$v);
             }
             $ifaces[] = $tmp;
