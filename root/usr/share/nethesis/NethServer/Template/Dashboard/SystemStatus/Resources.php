@@ -28,9 +28,9 @@ $swap_title = $T('swap_title');
 echo "<div class='dashboard-item'>";
 echo $view->header()->setAttribute('template',$memory_title);
 echo "<dl class='$memory_id'></dl>";
-echo "<div id='memory_plot' style='height:250px;width:250px'></div>";
+echo "<div id='memory_plot' class='dashboard-graph'></div>";
 echo "<dl class='$swap_id'></dl>";
-echo "<div id='swap_plot' style='height:250px;width:250px'></div>";
+echo "<div id='swap_plot' class='dashboard-graph'></div>";
 echo "</div>";
 
 
@@ -39,7 +39,7 @@ $root_df_id = $view->getClientEventTarget('root_df');
 echo "<div class='dashboard-item'>";
 echo $view->header()->setAttribute('template',$root_title);
 echo "<dl class='$root_df_id'></dl>";
-echo "<div id='root_plot' style='height:250px;width:250px'></div>";
+echo "<div id='root_plot' class='dashboard-graph'></div>";
 echo "</div>";
 
 $view->includeJavascript("
@@ -48,6 +48,8 @@ $view->includeJavascript("
     var T = function () {
         return $.Nethgui.Translator.translate.apply($.Nethgui.Translator, Array.prototype.slice.call(arguments, 0));
     };
+
+    var plots = [];
 
     function format_df(val)
     {
@@ -63,7 +65,7 @@ $view->includeJavascript("
     function loadPage() {
         $.Nethgui.Server.ajaxMessage({
             isMutation: false,
-            url: '/Dashboard/SystemStatus'
+            url: '/Dashboard/SystemStatus/Resources'
         });
     } 
 
@@ -71,21 +73,45 @@ $view->includeJavascript("
         loadPage();
         // reload page after 30 seconds
         setInterval(loadPage,30000);
+        
+        // draw plot excluding total field
+        var plot = jQuery.jqplot ('root_plot', [['',1]], 
+        { 
+            seriesDefaults: {
+                renderer: jQuery.jqplot.PieRenderer, 
+                rendererOptions: { showDataLabels: true }
+            }, 
+            legend: { show:true, location: 's' },
+            title: '$root_title'
+         });
+        plots['root'] = plot;
+
+        plot = jQuery.jqplot ('memory_plot', [['',1]], 
+        { 
+            seriesDefaults: {
+                renderer: jQuery.jqplot.PieRenderer, 
+                rendererOptions: { showDataLabels: true }
+            }, 
+            legend: { show:true, location: 's' },
+            title: '$phys_memory_title'
+        });
+        plots['memory'] = plot;
+
+        plot = jQuery.jqplot ('swap_plot', [['',1]],
+        {
+            seriesDefaults: {
+                renderer: jQuery.jqplot.PieRenderer,
+                rendererOptions: { showDataLabels: true }
+            },
+            legend: { show:true, location: 's' },
+            title: '$swap_title'
+        });
+        plots['swap'] = plot;
 
         $('.$root_df_id').on('nethguiupdateview', function(event, value, httpStatusCode) {
             $(this).empty();
-            $('#root_plot').empty(); 
-            // draw plot excluding total field
-            var root_plot = jQuery.jqplot ('root_plot', [value.slice(1,3)], 
-            { 
-                seriesDefaults: {
-                    renderer: jQuery.jqplot.PieRenderer, 
-                    rendererOptions: { showDataLabels: true }
-                }, 
-                legend: { show:true, location: 's' },
-                title: '$root_title'
-            });
- 
+            plots['root'].series[0].data = value.slice(1,3);
+            plots['root'].replot();
             //add text label
             for (var i=0; i<value.length; i++) {
                 $(this).append('<dt>'+value[i][0]+'</dt><dd>'+format_df(value[i][1])+'</dd>');
@@ -101,18 +127,9 @@ $view->includeJavascript("
 
         $('.$memory_id').on('nethguiupdateview', function(event, value, httpStatusCode) { 
             $(this).empty();
-            $('#memory_plot').empty(); 
-            // draw plot excluding total field
-            var memory_plot = jQuery.jqplot ('memory_plot', [value.slice(1,3)], 
-            { 
-                seriesDefaults: {
-                    renderer: jQuery.jqplot.PieRenderer, 
-                    rendererOptions: { showDataLabels: true }
-                }, 
-                legend: { show:true, location: 's' },
-                title: '$phys_memory_title'
-            });
- 
+            plots['memory'].series[0].data = value.slice(1,3);
+            plots['memory'].replot();
+            //add text label
             //add text label
             for (var i=0; i<value.length; i++) {
                 $(this).append('<dt>'+value[i][0]+'</dt><dd>'+value[i][1]+' MB</dd>');
@@ -122,16 +139,8 @@ $view->includeJavascript("
         $('.$swap_id').on('nethguiupdateview', function(event, value, httpStatusCode) {
             // draw plot excluding total field
             $(this).empty();
-            $('#swap_plot').empty(); 
-            var swap_plot = jQuery.jqplot ('swap_plot', [value.slice(1,3)],
-            {
-                seriesDefaults: {
-                    renderer: jQuery.jqplot.PieRenderer,
-                    rendererOptions: { showDataLabels: true }
-                },
-                legend: { show:true, location: 's' },
-                title: '$swap_title'
-            });
+            plots['swap'].series[0].data = value.slice(1,3);
+            plots['swap'].replot();
 
             //add text label
             for (var i=0; i<value.length; i++) {

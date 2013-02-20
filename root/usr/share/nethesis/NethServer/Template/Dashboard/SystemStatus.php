@@ -24,6 +24,10 @@ $view->includeCSS("
     margin: 0 0 0 110px;
     padding: 0 0 0.5em 0;
   }
+  .dashboard-graph {
+    height:250px;
+    width:250px;
+  }
   .dashboard-item table.jqplot-table-legend {
     width:auto;
   }
