@@ -13,20 +13,28 @@ $view->includeCSS("
   .dashboard-item dt {
     float: left;
     clear: left;
-    width: 100px;
     text-align: right;
     font-weight: bold;
+    margin-right: 0.5em;
+    padding: 0.1em;
   }
   .dashboard-item dt:after {
     content: \":\";
   }
   .dashboard-item dd {
-    margin: 0 0 0 110px;
-    padding: 0 0 0.5em 0;
+    text-align: right;
+    padding: 0.1em;
   }
   .dashboard-graph {
+    margin-top: 0.2em;
     height:250px;
     width:250px;
+  }
+  .dashboard-item h2 {
+    font-weight: bold;
+    font-size: 120%;
+    text-align: center;
+    padding: 0.2em;
   }
   .dashboard-item table.jqplot-table-legend {
     width:auto;
