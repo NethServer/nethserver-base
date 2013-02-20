@@ -36,6 +36,18 @@ class Dashboard extends \Nethgui\Controller\TabsController
     {
         parent::initialize();
         $this->loadChildrenDirectory();
+        $this->sortChildren(array($this,"sortPlugin"));
+    }
+
+    public function sortPlugin($a, $b)
+    {
+        if ($a->sortId == $b->sortId) {
+            return 0;
+        } else if ($a->sortId  < $b->sortId) {
+            return -1;
+        } else {
+            return 1;
+        }
     }
 
 }
