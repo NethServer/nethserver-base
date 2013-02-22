@@ -4,7 +4,6 @@ $view->includeCSS("
     margin: 5px;
     padding: 5px;
     border: 1px solid #ccc;
-    float: left;
     width: auto;
   }
 
