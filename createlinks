@@ -100,7 +100,7 @@ event_actions('interface-update', qw(
 
 event_templates('interface-update', qw(
      /etc/modprobe.d/bonding.conf
-     /etc/udev/rules.d/70-persistent-net.rules
+     /etc/udev/rules.d/80-persistent-net.rules
      /etc/sysconfig/network
      /etc/localnetworks
      /etc/hosts
