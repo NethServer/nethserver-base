@@ -1,4 +1,0 @@
-TEMPLATE_PATH="/etc/sysconfig/network-scripts/route-ethX"
-OUTPUT_FILENAME="/etc/sysconfig/network-scripts/route-eth0"
-MORE_DATA={ THIS_DEVICE => "eth0" }
-FILTER=sub { $_[0] =~ /^#/ ? '' : $_[0] } # Remove comments
