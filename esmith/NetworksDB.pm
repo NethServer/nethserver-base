@@ -1,10 +1,23 @@
-#----------------------------------------------------------------------
-# Copyright 1999-2003 Mitel Networks Corporation
-# Copyright (C) 2012 Nethesis srl
-# This program is free software; you can redistribute it and/or
-# modify it under the same terms as Perl itself.
-#----------------------------------------------------------------------
-
+#
+# Copyright (C) 2013 Nethesis S.r.l.
+# Original work by: Copyright 1999-2003 Mitel Networks Corporation
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
 package esmith::NetworksDB;
 
 use strict;
@@ -335,7 +348,7 @@ sub red2 {
 
 =head1 AUTHOR
 
-Giacomo Sanchietti - Nethesis <support@nethesis.it>, SME Server Developers <bugs@e-smith.com>
+Giacomo Sanchietti - Nethesis <support@nethesis.it>
 
 =head1 SEE ALSO
 
