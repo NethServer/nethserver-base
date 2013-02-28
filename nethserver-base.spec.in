@@ -28,7 +28,6 @@ Requires: sudo
 Requires: perl-suidperl
 Requires: nc
 Requires: iproute
-Requires: openssh-server
 Requires: postfix
 
 Requires: nethserver-yum >= 1.0.0-2

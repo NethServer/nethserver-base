@@ -25,17 +25,7 @@ use NethServer::Service;
 
 my $errors = 0;
 
-#
-# Fix system-config-firewall
-#
-qx(/bin/sed -i '/^--service=ssh/ d' /etc/sysconfig/system-config-firewall);
-if( $? != 0 ) {
-    warn "Failed to remove ssh service from /etc/sysconfig/system-config-firewall\n";
-    $errors ++;
-}
-
 NethServer::Service::manage_add('nethserver-base', qw(
-				sshd
 				rsyslog
 				bootstrap-console
                                 postfix

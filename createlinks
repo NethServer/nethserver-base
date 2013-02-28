@@ -66,7 +66,6 @@ event_templates('nethserver-base-update', qw(
     /etc/pam.d/system-auth-nh
     /etc/pam.d/password-auth-nh
     /etc/sudoers
-    /etc/sysconfig/sshd
     /etc/localnetworks
     /etc/hosts.allow
     /etc/hosts.deny
@@ -122,7 +121,6 @@ validator_actions('remote-port', qw(
 event_templates('nethserver-base-save', qw(
 		/etc/hosts.allow
 		/etc/hosts.deny
-		/etc/sysconfig/sshd
 ));
 
 event_actions('nethserver-base-save', qw(
@@ -130,9 +128,6 @@ event_actions('nethserver-base-save', qw(
 	      runlevel-adjust 61
 ));
 
-event_services('nethserver-base-save', qw(
-               sshd restart
-));
 
 #--------------------------------------------------
 # Refs #1038 expand /etc/hosts template on host 

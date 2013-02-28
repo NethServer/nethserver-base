@@ -1,1 +1,0 @@
-sshd	:	{ $sshd{access} eq 'private' ? '/etc/localnetworks' : 'ALL' }
