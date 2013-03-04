@@ -9,7 +9,7 @@ if ($view->getModule()->getIdentifier() == 'update') {
 echo $view->panel()
     ->insert($view->header('network')->setAttribute('template', $headerText))
     ->insert($view->textInput('network', ($view->getModule()->getIdentifier() == 'update' ? $view::STATE_READONLY : 0)))
-    ->insert($view->textInput('Mask'))
+    ->insert($view->textInput('Mask', ($view->getModule()->getIdentifier() == 'update' ? $view::STATE_READONLY : 0)))
     ->insert($view->textInput('Router'))
     ->insert($view->textInput('Description'));
 
