@@ -178,5 +178,13 @@ event_services('profile-modify', qw(
     postfix reload
 ));
 
+
+#--------------------------------------------------
+# actions for migration-import event
+#--------------------------------------------------
+
+$event = "migration-import";
+event_actions($event, 'nethserver-base-migrate' => 20);
+
 exit 0;
 

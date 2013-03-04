@@ -1,0 +1,149 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2013 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use esmith::DB::db;
+use esmith::event;
+use File::Copy;
+use File::Basename;
+use NethServer::Migrate;
+use strict;
+
+my $event = shift;
+my $sourceDir = shift;
+my $esmithDbDir = '/home/e-smith/db';
+my $errors = 0;
+if( ! -d $sourceDir) {
+    die("Could not find dir $sourceDir");
+}
+
+my $srcConfigDb = esmith::DB::db->open_ro(join('', $sourceDir, $esmithDbDir, '/configuration')) || die("Could not open source configuration database in $sourceDir \n");
+
+my $dstConfigDb = esmith::DB::db->open('configuration') || die("Could not open destination account db\n");
+
+
+my $service = 'passwordstrength';
+my $old = $srcConfigDb->get($service);
+my $new = $dstConfigDb->get($service) || $dstConfigDb->new_record($service);
+$new->merge_props($old->props);
+
+$old = $srcConfigDb->get('syslog');
+$new = $dstConfigDb->get('rsyslog') || $dstConfigDb->new_record('rsyslog');
+$new->merge_props($old->props);
+
+my @keys = ('ConsoleMode', 'MinUid', 'maxAcctNameLength', 'maxAcctNameLength', 'maxGroupNameLength', 'maxIbayNameLength');
+foreach my $key (@keys) {
+    $old = $srcConfigDb->get($key);
+    $new = $dstConfigDb->get($key) || $dstConfigDb->new_record($key);
+    $new->set_prop('type',$old->prop('type'));
+}
+
+$old = $srcConfigDb->get('ldap');
+$new = $dstConfigDb->get('OrganizationContact') || $dstConfigDb->new_record('OrganizationContact');
+$new->set_prop('City',$old->prop('defaultCity') || "");
+$new->set_prop('Company',$old->prop('defaultCompany') || "");
+$new->set_prop('Department',$old->prop('defaultDepartment') || "");
+$new->set_prop('PhoneNumber',$old->prop('defaultPhoneNumber') || "");
+$new->set_prop('Street',$old->prop('defaultStreet') || "");
+
+$old = $srcConfigDb->get('modSSL');
+$new = $dstConfigDb->get('pki') || $dstConfigDb->new_record('pki');
+my $crt = $old->prop('crt') || "";
+my $key = $old->prop('key') || "";
+
+# copy default self-signed cert and key
+if ($crt eq "" && $key eq "") {
+    $new->set_prop('CrtFile','');
+    $new->set_prop('KeyFile','');
+    my $oldKey = '/home/e-smith/ssl.key/'.$srcConfigDb->get('SystemName')->prop('type').".".$srcConfigDb->get('DomainName').'.key';
+    my $oldCrt = '/home/e-smith/ssl.crt/'.$srcConfigDb->get('SystemName')->prop('type').".".$srcConfigDb->get('DomainName').'.crt';
+    my $oldPem = '/home/e-smith/ssl.pem/'.$srcConfigDb->get('SystemName')->prop('type').".".$srcConfigDb->get('DomainName').'.pem';
+    copy("$sourceDir/$oldKey","/etc/pki/tls/private/NSRV.key");
+    copy("$sourceDir/$oldCrt","/etc/pki/tls/certs/NSRV.crt");
+    if ( -f "$sourceDir/$oldPem") { 
+        copy("$sourceDir/$oldPem","/etc/pki/tls/NSRV.pem");
+    }
+} else {  # copy custom cert and key
+    my $oldKey = basename($key);
+    my $oldCrt = basename($crt);
+    $new->set_prop('KeyFile',"/etc/pki/tls/private/$oldKey");
+    $new->set_prop('CrtFile',"/etc/pki/tls/certs/$oldCrt");
+    copy("$sourceDir/$key","/etc/pki/tls/private/$oldKey");
+    copy("$sourceDir/$crt","/etc/pki/tls/certs/$oldCrt");
+}
+
+
+my $srcNetworkDb = esmith::DB::db->open_ro(join('', $sourceDir, $esmithDbDir, '/networks')) || die("Could not open source networks db in $sourceDir \n");
+
+my $dstNetworkDb = esmith::DB::db->open('networks') || die("Could not open destination account db\n");
+
+my @srcNetworks = $srcNetworkDb->get_all_by_prop(type=>'network');
+
+foreach my $srcNetwork (@srcNetworks) {
+    my $network = $srcNetwork->key;
+
+    my $local = $srcNetwork->prop('SystemLocalNetwork') || '';
+
+    # skip SystemLocalNetwork, is calculted on-the-fly when needed
+    if ($local eq 'yes') {
+        next;
+    }
+
+    # skip an existing network
+    if($dstNetworkDb->get($network)) {
+        warn "[WARNING] Network $network is already registered in networks DB\n";
+        next;
+    }
+    my %defaults = ( 'type' => 'network', 'Description' => '', 'Router' => '' );
+    my $new = $dstNetworkDb->new_record($network, \%defaults);
+    $new->merge_props($srcNetwork->props());
+}
+
+
+# copy root files, but first save exiting logs in /root/logs
+mkdir("/root/logs");
+while (</root/*.log>) {
+   move($_,"/root/logs");
+}
+while (</root/*.syslog>) {
+   move($_,"/root/logs");
+}
+NethServer::Migrate::migrateDir("$sourceDir/root","/root");
+
+
+
+#
+# Apply configuration
+#
+my $errors = 0; 
+
+if( ! esmith::event::event_signal('certificate-update')) {
+    warn "[WARNING] Errors during certificate-update event";
+    $errors++;
+}
+
+if( ! esmith::event::event_signal('nethserver-base-update')) {
+    warn "[WARNING] Errors during nethserver-base-update event";
+    $errors++;
+}
+
+
+exit($errors > 0 ? 1 : 0);
