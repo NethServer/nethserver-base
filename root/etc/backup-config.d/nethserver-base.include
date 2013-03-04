@@ -5,3 +5,4 @@
 /etc/shadow
 /etc/group
 /etc/gshadow
+/etc/pki
