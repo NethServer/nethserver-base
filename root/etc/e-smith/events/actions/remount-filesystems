@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-my $excludes = 'swap proc sysfs devpts tmpfs';
+my $excludes = 'swap proc sysfs devpts';
 
 my @lines = ();
 open (RD, "</etc/fstab") || die("Cannot open input file /etc/fstab: $!\n");
