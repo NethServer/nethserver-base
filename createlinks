@@ -50,7 +50,7 @@ event_templates('network-delete', qw(
 event_actions('nethserver-base-update', qw(
     initialize-default-databases      00
     nethserver-base-selinux-setup     10
-    filesystem-remount                10
+    remount-filesystems               10
     nethserver-base-conf              40
     nethserver-base-pam-setup         50
     nethserver-base-check-certificate 50
@@ -181,10 +181,10 @@ event_services('profile-modify', qw(
 ));
 
 #
-# filesystem-remount 
+# fstab-update
 #
-$event = "filesystem-remount";
-event_actions($event, 'filesystem-remount' => 20);
+$event = "fstab-update";
+event_actions($event, 'remount-filesystems' => 20);
 templates2events('/etc/fstab', $event);
 
 #--------------------------------------------------
