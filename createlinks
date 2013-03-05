@@ -50,6 +50,7 @@ event_templates('network-delete', qw(
 event_actions('nethserver-base-update', qw(
     initialize-default-databases      00
     nethserver-base-selinux-setup     10
+    filesystem-remount                10
     nethserver-base-conf              40
     nethserver-base-pam-setup         50
     nethserver-base-check-certificate 50
@@ -60,6 +61,7 @@ event_actions('nethserver-base-update', qw(
 
 event_templates('nethserver-base-update', qw(
     /etc/hosts
+    /etc/fstab
     /etc/resolv.conf
     /etc/selinux/config
     /etc/libuser.conf
@@ -178,6 +180,12 @@ event_services('profile-modify', qw(
     postfix reload
 ));
 
+#
+# filesystem-remount 
+#
+$event = "filesystem-remount";
+event_actions($event, 'filesystem-remount' => 20);
+templates2events('/etc/fstab', $event);
 
 #--------------------------------------------------
 # actions for migration-import event

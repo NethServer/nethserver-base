@@ -1,28 +1,26 @@
 {
     # vim: ft=perl:
-    %lines = ();
-    @lines = ();
+    our @lines = ();
     open (RD, "</etc/fstab")
     || warn "Cannot open input file /etc/fstab: $!\n";
     while (<RD>)
     {
 	chop;
-	push @lines, $_;
-	$lines{$_} = 1;
+        if ($_ =~ /^#/) { # skip comments
+            next;
+        }
+        my @line =  split(/\s+/, $_);
+        push @lines, \@line;
     }
     close(RD);
     my @header = (
 	"#------------------------------------------------------------",
 	"# BE CAREFUL WHEN MODIFYING THIS FILE! It is updated automatically",
-	"# by the SME server software. A few entries are updated during",
+	"# by the NethServer software. A few entries are updated during",
 	"# the template processing of the file and white space is removed,",
 	"# but otherwise changes to the file are preserved.",
-	"# For more information, see http://www.e-smith.org/custom/ and",
-	"# the template fragments in /etc/e-smith/templates/etc/fstab/.",
-	"# ",
-	"# copyright (C) 2002 Mitel Networks Corporation",
 	"#------------------------------------------------------------",
-    );
+   );
     foreach my $line (@header)
     {
 	# Print the header banner, and delete any of its lines from the

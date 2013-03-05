@@ -1,0 +1,14 @@
+{
+    use esmith::ConfigDB;
+    my $confdb = esmith::ConfigDB->open;
+    my $fstab = $confdb->get('fstab') or return "";
+ 
+    # Enable xattr for / file system
+    foreach my $line (@lines) {
+        my $tmp = $fstab->prop($$line[1]) || "";
+        if ( $tmp ne "" ) {
+             $$line[3] = $fstab{$$line[1]};
+        }
+    }
+    "";
+}

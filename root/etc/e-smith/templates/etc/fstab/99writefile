@@ -1,7 +1,6 @@
 {
     $OUT .= "";
-    foreach my $line (@lines)
-    {
-	$OUT .= "$line\n";
-    }
+    foreach my $line (@lines) {
+        $OUT .= $$line[0]."\t".$$line[1]."\t".$$line[2]."\t".$$line[3]."\t".$$line[4]." ".$$line[5]."\n";
+   }
 }
