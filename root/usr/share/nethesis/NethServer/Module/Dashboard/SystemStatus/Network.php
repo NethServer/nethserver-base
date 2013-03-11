@@ -57,8 +57,13 @@ class Network extends \Nethgui\Controller\AbstractController
         $stats = $this->readNetStats();
         $interfaces = $this->getPlatform()->getDatabase('networks')->getAll('ethernet');
         foreach ($interfaces as $interface => $props) {
+             # remove non existing interfaces
+             if (!file_exists("/sys/class/net/$interface")) {
+                 unset($interfaces[$interface]);
+                 continue;
+             }
              $tmp = array(
-                 'name' => $props['device'],
+                 'name' => $interface,
                  'ipaddr'=> $props['ipaddr'], 
                  'netmask'=> $props['netmask'], 
                  'gateway'=>$props['gateway'], 
