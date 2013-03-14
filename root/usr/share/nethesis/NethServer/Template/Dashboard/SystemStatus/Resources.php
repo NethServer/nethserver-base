@@ -2,6 +2,8 @@
 
 $view->useFile("js/jqplot.pieRenderer.min.js");
 
+echo "<div id='Dashboard_SystemStatus_Resources_loading'>".$T('Loading')."...</div>";
+
 echo "<div class='dashboard-item'>";
 echo $view->header()->setAttribute('template',$T('general_title'));
 echo "<dl>";
@@ -42,6 +44,13 @@ echo "<dl class='$root_df_id'></dl>";
 echo "<div id='root_plot' class='dashboard-graph'></div>";
 echo "</div>";
 
+$view->includeCSS("
+    #Dashboard_SystemStatus_Resources_loading {
+        text-align: center;
+        font-size: 1.2em;
+    }
+");
+
 $view->includeJavascript("
 (function ( $ ) {
     // FIXME: define in jquery.nethgui.base.js -- A translator helper:
@@ -72,7 +81,12 @@ $view->includeJavascript("
     $(document).ready(function() {
         loadPage();
         // reload page after 30 seconds
-        setInterval(loadPage,30000);
+        setInterval(loadPage,7000);
+        $('.dashboard-item').hide(); 
+            
+        if ($(window).width() > 500) {
+            $('#Dashboard_SystemStatus').masonry({ itemSelector: '.dashboard-item' }); 
+        }
         
         // draw plot excluding total field
         var plot = jQuery.jqplot ('root_plot', [['',1]], 
@@ -107,9 +121,12 @@ $view->includeJavascript("
             title: '$swap_title'
         });
         plots['swap'] = plot;
+       
 
         $('.$root_df_id').on('nethguiupdateview', function(event, value, httpStatusCode) {
             $(this).empty();
+            $('#Dashboard_SystemStatus_Resources_loading').hide();
+            $('.dashboard-item').show(); 
             plots['root'].series[0].data = value.slice(1,3);
             plots['root'].replot();
             //add text label
@@ -127,6 +144,8 @@ $view->includeJavascript("
 
         $('.$memory_id').on('nethguiupdateview', function(event, value, httpStatusCode) { 
             $(this).empty();
+            $('#Dashboard_SystemStatus_Resources_loading').hide();
+            $('.dashboard-item').show(); 
             plots['memory'].series[0].data = value.slice(1,3);
             plots['memory'].replot();
             //add text label
@@ -139,6 +158,8 @@ $view->includeJavascript("
         $('.$swap_id').on('nethguiupdateview', function(event, value, httpStatusCode) {
             // draw plot excluding total field
             $(this).empty();
+            $('#Dashboard_SystemStatus_Resources_loading').hide();
+            $('.dashboard-item').show(); 
             plots['swap'].series[0].data = value.slice(1,3);
             plots['swap'].replot();
 
@@ -148,9 +169,6 @@ $view->includeJavascript("
             }
         });
 
-        if ($(window).width() > 500) {
-            $('#Dashboard_SystemStatus').masonry({ itemSelector: '.dashboard-item' }); 
-        }
     });
 } ( jQuery ));
 ");   
