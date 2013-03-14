@@ -68,16 +68,20 @@ class Services extends \Nethgui\Controller\TableController
      */
     public function prepareViewForColumnRunning(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
-        $ret = "-";
-        $p = $this->getPlatform()->exec('/usr/bin/sudo /sbin/service ${1} status', array($key));
-        if ($p->getExitCode() === 0) {
-            $ret = $view->translate("running_label");
-            $rowMetadata['rowCssClass'] .= ' running ';
-        } else {
-            $ret = $view->translate("stopped_label");
-            $rowMetadata['rowCssClass'] .= ' stopped ';
-        }
+        $ret = "...";
+        $request = $this->getRequest();
+        if (isset($request) && $this->getRequest()->getExtension() === 'json') {
+            $ret = "-";
+            $p = $this->getPlatform()->exec('/usr/bin/sudo /sbin/service ${1} status', array($key));
+            if ($p->getExitCode() === 0) {
+               $ret = $view->translate("running_label");
+               $rowMetadata['rowCssClass'] .= ' running ';
+            } else {
+               $ret = $view->translate("stopped_label");
+               $rowMetadata['rowCssClass'] .= ' stopped ';
+            }
 
+        }
         return $ret; 
     }
 
@@ -122,6 +126,17 @@ class Services extends \Nethgui\Controller\TableController
            tr.stopped td:nth-child(3) { color: red }
        ";
        $view->getCommandList('/Resource/css')->appendCode($cssCode, 'css');
+       $jsCode = "
+(function ( $ ) {
+    $(document).ready(function() {
+        $.Nethgui.Server.ajaxMessage({
+            isMutation: false,
+            url: '/Dashboard/Services'
+        });
+    });
+} ( jQuery ));
+       ";
+       $view->getCommandList('/Resource/js')->appendCode($jsCode, 'js');
        parent::prepareView($view);
    }
 
