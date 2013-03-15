@@ -57,6 +57,9 @@ sub ethernetSelect($$)
         $idb->set_prop($ifName, "role", "green", type => 'ethernet');
         $idb->set_prop($ifName, "hwaddr", $hwaddr);
         $db->set_value('UnsavedChanges', 'yes');
+        # delete old interface entry
+        my $i = $idb->get($driver);
+        $i->delete();
 
 	return 'CHANGE';
     }
