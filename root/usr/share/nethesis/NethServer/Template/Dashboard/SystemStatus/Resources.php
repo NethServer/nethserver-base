@@ -78,15 +78,36 @@ $view->includeJavascript("
         });
     } 
 
+    function refreshPlots() {
+        for (var plot in plots) {
+            if (typeof plots[plot] !== 'undefined') {
+                plots[plot].replot();
+            }
+        }
+    }
+
+    function refreshMasonry() {
+        if ($(window).width() > 500) {
+            $('#Dashboard_SystemStatus').masonry();
+        }
+    }
+
     $(document).ready(function() {
         loadPage();
         // reload page after 30 seconds
-        setInterval(loadPage,7000);
+        setInterval(loadPage,30000);
         $('.dashboard-item').hide(); 
             
         if ($(window).width() > 500) {
-            $('#Dashboard_SystemStatus').masonry({ itemSelector: '.dashboard-item' }); 
+            $('#Dashboard_SystemStatus').masonry({ itemSelector: '.dashboard-item'  }); 
         }
+
+        $( '#Dashboard' ).bind( 'tabsshow', function(event, ui) {
+            if (ui.panel.id == 'Dashboard_SystemStatus') {
+                refreshMasonry();
+                refreshPlots(); 
+            }
+        });       
         
         // draw plot excluding total field
         var plot = jQuery.jqplot ('root_plot', [['',1]], 
@@ -134,11 +155,7 @@ $view->includeJavascript("
                 $(this).append('<dt>'+value[i][0]+'</dt><dd>'+format_df(value[i][1])+'</dd>');
             }
 
-            // force layout refresh
-            if ($(window).width() > 500) {
-                $('#Dashboard_SystemStatus').masonry('reload'); 
-            }
-
+            refreshMasonry();
         }); 
 
 
