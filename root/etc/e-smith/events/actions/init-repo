@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Enable only NethServer repositories
+/sbin/e-smith/eorepo centos-{base,updates} nethserver-{base,updates}
