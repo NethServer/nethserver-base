@@ -1,3 +1,2 @@
 #!/bin/bash
-
-[ -x /usr/libexec/plymouth/plymouth-update-initrd ] && nohup /usr/libexec/plymouth/plymouth-update-initrd &>/dev/null &
+/usr/bin/nohup /sbin/new-kernel-pkg --package kernel --mkinitrd --dracut --depmod --update $(uname -r) &>/dev/null &
