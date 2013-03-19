@@ -157,10 +157,10 @@ foreach (qw(
 #--------------------------------------------------
 event_actions('first-boot', qw(
     initialize-default-databases      00
-    init-repo                         30
     nethserver-base-plymouth-update   40
     bootstrap-console-start           50
-    network-restart                   60
+    init-repo                         60
+    network-restart                   70
 ));
 
 #
