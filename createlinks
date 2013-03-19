@@ -160,6 +160,7 @@ event_actions('first-boot', qw(
     init-repo                         30
     nethserver-base-plymouth-update   40
     bootstrap-console-start           50
+    network-restart                   60
 ));
 
 #
