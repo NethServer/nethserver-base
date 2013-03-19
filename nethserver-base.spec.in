@@ -91,6 +91,13 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Tue Mar 19 2013 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.1.1-1
+- New dashboard #583
+- first-boot event: execute network restart (#1741) do not block on error
+- Add migration code #1702
+- Add support for filesystems options #1658
+- Various bugfixes
+
 * Thu Jan 31 2013 Davide Principi <davide.principi@nethesis.it> - 1.1.0-1.ns6
 - Removed "pv" requirement
 - Added Certificate Management #1503
