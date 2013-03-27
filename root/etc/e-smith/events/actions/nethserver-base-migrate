@@ -91,6 +91,12 @@ if ($crt eq "" && $key eq "") {
 }
 
 
+my $chain = $old->prop("CertificateChainFile") || "";
+if ($chain ne "") { 
+    copy("$sourceDir/$chain","/etc/pki/tls/".basename($chain));
+    $new->set_prop('ChainFile',"/etc/pki/tls/".basename($chain));
+}
+
 my $srcNetworkDb = esmith::DB::db->open_ro(join('', $sourceDir, $esmithDbDir, '/networks')) || die("Could not open source networks db in $sourceDir \n");
 
 my $dstNetworkDb = esmith::DB::db->open('networks') || die("Could not open destination account db\n");
