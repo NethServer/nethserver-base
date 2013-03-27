@@ -132,7 +132,18 @@ while (</root/*.log>) {
 while (</root/*.syslog>) {
    move($_,"/root/logs");
 }
+
+# move out my.cnf to avoid problems during mysql migration
+if (-f "$sourceDir/root/.my.cnf") {
+   move("$sourceDir/root/.my.cnf","/tmp/my.cnf.bak")
+}
+
 NethServer::Migrate::migrateDir("$sourceDir/root","/root");
+
+# restore my.cnf posizion
+if (-f "/tmp/my.cnf.bak") {
+    move("/tmp/my.cnf.bak", "$sourceDir/root/.my.cnf")
+}
 
 
 
