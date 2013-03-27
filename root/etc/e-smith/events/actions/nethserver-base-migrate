@@ -138,6 +138,9 @@ if (-f "$sourceDir/root/.my.cnf") {
    move("$sourceDir/root/.my.cnf","/tmp/my.cnf.bak")
 }
 
+# cleanup destination .ssh directory
+system('rm -rf /root/.ssh');
+
 NethServer::Migrate::migrateDir("$sourceDir/root","/root");
 
 # restore my.cnf posizion
