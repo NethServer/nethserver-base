@@ -32,6 +32,9 @@
 	forwardable  true
     )};
 
+    # Set default realm to uppercase DomainName:
+    $conf->{libdefaults}{default_realm} = uc($DomainName);
+
     $conf->{realms} = {};
     $conf->{domain_realm} = {};
 
