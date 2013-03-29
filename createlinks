@@ -73,6 +73,7 @@ event_templates('nethserver-base-update', qw(
     /etc/hosts.deny
     /etc/shells
     /etc/rc.d/rc.local
+    /etc/krb5.conf
 ));
 
 
