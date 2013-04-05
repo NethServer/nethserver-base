@@ -1,0 +1,25 @@
+{
+    #
+    # include chain file
+    #
+
+    my $chainFile = $pki{ChainFile} || "";
+    if ($chainFile eq "") {
+        return "";
+    }
+
+    $OUT = '';
+
+    if( ! open(FH, '<', $chainFile)) {
+        warn ("Could not open $chainFile: $!\n");
+        return '';
+    }
+
+    while (<FH>) {
+        $OUT .= $_;
+    }
+
+    close(FH);
+
+    $OUT;
+}
