@@ -1,0 +1,60 @@
+{
+    #
+    # 00template_vars
+    #
+    # nethserver-base provides an extensible interface to expand PAM system-auth 
+    # configuration, respecting the syntax documented by its manpage.
+    #
+    # The expansion is performed by 90conf_expand fragment. Client packages should
+    # define fragments with index below 90, and add their values to $conf hash.
+    #
+    # Each value in $conf hash must be an array reference
+
+    $conf = {};
+
+    $add_rule = sub {   
+	my $secref = shift; # array reference
+	my $value = shift; # string
+	my $before = shift; # regexp
+
+	if($before) {
+	    return [ map { $_ =~ $before ? ($value, $_) : $_  } @{$secref} ];
+	} 
+	
+	return [ @{$secref}, $value ];       
+    };
+
+    #
+    # This is the basic configuration, using the traditional unix databases
+    #
+
+    $conf->{'auth'} = [
+        'required pam_env.so',
+        'sufficient pam_unix.so nullok try_first_pass',
+        'requisite pam_succeed_if.so uid >= 500 quiet',
+	'required pam_deny.so'
+	];
+    
+    $conf->{'account'} = [
+	'required pam_unix.so',
+	'sufficient pam_localuser.so',
+	'sufficient pam_succeed_if.so uid < 500 quiet',	
+	'required pam_permit.so'
+	];
+
+    $conf->{'password'} = [
+	'requisite pam_cracklib.so try_first_pass retry=3 type=',
+	'sufficient pam_unix.so sha512 shadow nullok try_first_pass use_authtok',
+	'required pam_deny.so',
+	];
+
+    $conf->{'session'} = [
+	'optional pam_keyinit.so revoke',
+	'required pam_limits.so',
+	'optional pam_mkhomedir.so',
+	'[success=1 default=ignore] pam_succeed_if.so service in crond quiet use_uid',
+	'required pam_unix.so',
+	];
+
+    '';
+}

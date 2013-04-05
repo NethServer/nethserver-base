@@ -27,6 +27,6 @@
 # daemons.
 if [ $? -eq 6 ]; then
    [ -d /etc/e-smith/events/certificate-update ] && \
-       signal-event certificate-update
+       /sbin/e-smith/signal-event certificate-update
 fi
 

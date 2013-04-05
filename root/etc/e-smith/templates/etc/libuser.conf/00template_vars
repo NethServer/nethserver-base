@@ -1,0 +1,39 @@
+{
+    #
+    # 00template_vars
+    #
+
+    # nethserver-base provides an extensible interface to expand libuser.conf file,
+    # respecting the syntax documented by its manpage.
+    #
+    # The expansion is performed by 90conf_expand fragment. Client packages should
+    # define fragments with index below 90, and add their values to %conf hash.
+
+    $conf = {};
+
+    #
+    # Inject some default values...
+    #
+
+    $conf->{'import'} = {qw(
+	login_defs /etc/login.defs
+        default_useradd /etc/default/useradd
+    )};
+
+    $conf->{'defaults'} = {
+        crypt_style  => 'sha512',
+        modules => 'files shadow',
+        create_modules => 'files shadow'
+    };
+
+    $conf->{'userdefaults'} = {qw(
+        LU_USERNAME %n
+        LU_GIDNUMBER %u
+    )};
+
+    $conf->{'groupdefaults'} = {qw(
+        LU_GROUPNAME %n
+    )};
+
+    '',
+}

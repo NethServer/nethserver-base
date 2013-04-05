@@ -1,0 +1,14 @@
+{
+    #
+    # 90config_expand
+    #
+
+    foreach my $section (sort keys %{$conf}) {
+	foreach (@{$conf->{$section}}) {
+	    $OUT .= sprintf("%-12s %s\n", $section, $_);
+	}
+	$OUT .= "\n";
+    }
+
+    return $OUT;
+}

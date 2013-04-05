@@ -1,0 +1,11 @@
+{
+    #
+    # 90conf_expand
+    #
+    foreach my $key (keys %{$conf}) {
+	$OUT .= sprintf("%-16s %s\n", $key . ':', join(' ', @{$conf->{$key}}));
+    }
+
+    return $OUT;
+}
+

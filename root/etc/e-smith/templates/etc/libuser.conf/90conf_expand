@@ -1,0 +1,37 @@
+{
+    #
+    # 90conf_expand
+    #
+    
+    # Recursive output generator:
+    our $iniGenerator = sub {
+	my $tag = $_[0];
+	my $value = $_[1];
+	my $level = $_[2] || 0;
+
+	my $indentation = '    ' x $level;
+
+	if(ref $value eq 'HASH') {
+	    $OUT .= $indentation . $tag . " = {\n";
+	    foreach my $subtag (sort keys %{$value}) {
+		&$iniGenerator($subtag, $value->{$subtag}, $level + 1);
+	    }
+	    $OUT .= $indentation . "}\n";
+	} else {
+	    $OUT .= $indentation . $tag . ' = ' . $value . "\n";
+	}
+
+    };
+
+    # Main section-loop
+    foreach my $section (sort keys %{$conf}) {
+	$OUT .= "\n[$section]\n";
+
+	# Recursively, descend the section sub hashes:
+	foreach my $tag (keys %{$conf->{$section}}) {	
+	    &$iniGenerator($tag, $conf->{$section}->{$tag}, 1);
+	}       
+    }
+
+    return $OUT;
+}

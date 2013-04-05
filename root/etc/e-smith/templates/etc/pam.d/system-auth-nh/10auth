@@ -1,3 +1,0 @@
-auth        required      pam_env.so
-auth        sufficient    pam_unix.so nullok try_first_pass
-auth        requisite     pam_succeed_if.so uid >= 500 quiet
