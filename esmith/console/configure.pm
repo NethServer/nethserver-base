@@ -112,11 +112,8 @@ sub ethernetSelect($$)
                           gettext($ifName)),
 	 default => $default,
          text  =>
-         sprintf(gettext("You now need to select the proper driver for your " .
-	      "%s network ethernet adapter. The server can attempt to do " .
-	      "this automatically, or you can do it manually - either by " .
-	      "specifying the model of your ethernet adapter or by " .
-	      "directly choosing a driver.\n"), gettext($ifName)),
+         sprintf(gettext("You now need to select an ethernet adapterto be used as green interface. The " .
+	      "green interface is the one inside your LAN.\n"), gettext($ifName)),
          argsref => \@args,
         );
 
@@ -186,7 +183,7 @@ sub doit
          text    =>
          gettext("Please enter the primary domain name for your server.") .
          "\n\n" .
-         gettext("This will be the default domain for your e-mail and web server. Virtual domains can be added later using the server manager."),
+         gettext("This will be the default domain for your e-mail and web server. Virtual domains can be added later using the web interface."),
          value   => $DomainName
         );
 
@@ -417,9 +414,9 @@ SERVER_ONLY:
         (
          title => gettext("Select gateway IP address"),
          text  =>
-         gettext("In server-only mode, this server will use only one ethernet adapter connected to your local network. If you have a firewall and wish to use this server as your e-mail/web server, you should consult the firewall documentation for networking details.") .
+         gettext("This server will use only one ethernet adapter connected to your local network. If you have a firewall and wish to use this server as your e-mail/web server, you should consult the firewall documentation for networking details.") .
          "\n\n" .
-         gettext("Please specify the gateway IP address that this server should use to access the Internet. Leave blank if you have no Internet access."),
+         gettext("Please specify the gateway IP address that this server should use to access the Internet."),
          value   => $gateway_ip
         );
 

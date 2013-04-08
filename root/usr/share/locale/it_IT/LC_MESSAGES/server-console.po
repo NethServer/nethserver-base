@@ -1,0 +1,445 @@
+# NethServer-base translations
+# Copyright (C) 2013 Nethesis - wwww.nethesis.it
+# This file is distributed under the same license as nethserver-base package.
+# Giacomo Sanchietti <giacomo.sanchietti@nethesis.it>, 2013
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: bootstrap-console\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-04-05 18:31+0000\n"
+"PO-Revision-Date: 2013-04-08 12:00+0000\n"
+"Last-Translator: Giacomo Sanchietti <giacomo.sanchietti@nethesis.it>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:87
+msgid "Bad ttyname:"
+msgstr "Bad ttyname:"
+
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:90
+msgid "Can't redirect stdin"
+msgstr "Can't redirect stdin"
+
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:91
+msgid "Can't redirect stdout"
+msgstr "Can't redirect stdout"
+
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:94
+msgid "Can't fork"
+msgstr "Can't fork"
+
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:144
+msgid "Couldn't create pipe"
+msgstr "Couldn't create pipe"
+
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:150
+msgid "Couldn't fork"
+msgstr "Couldn't fork"
+
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:161
+msgid "Couldn't close reading end of pipe"
+msgstr "Couldn't close reading end of pipe"
+
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:169
+msgid "Couldn't connect STDERR to pipe"
+msgstr "Couldn't connect STDERR to pipe"
+
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:172
+msgid "Couldn't close writing end of pipe"
+msgstr "Couldn't close writing end of pipe"
+
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:186
+msgid "Couldn't exec:"
+msgstr "Impossibile eseguire:"
+
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:240
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:272
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:295
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:356
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:417
+msgid "Back"
+msgstr "Indietro"
+
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:241
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:273
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:296
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:357
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:418
+msgid "Next"
+msgstr "Avanti"
+
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:267
+msgid "please try again"
+msgstr "riprovare"
+
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:324
+msgid "Yes"
+msgstr "Si"
+
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:325
+msgid "No"
+msgstr "No"
+
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:442
+msgid "Keep the current setting"
+msgstr "Mantenere l'impostazione attuale"
+
+#: /usr/share/perl5/vendor_perl/esmith/console.pm:444
+msgid "keep"
+msgstr "Mantieni"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:23
+msgid "Configure this server"
+msgstr "Configura il server"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:79
+msgid "No network interfaces found"
+msgstr "Interfacce di rete non trovate"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:80
+msgid ""
+"The installer can't continue because no network interfaces are installed or "
+"recognised. Please install at least one network interface."
+msgstr "Impossibile continuare senza nessuna interfaccia di rete. Si prega di installare almeno un'interfaccaid i rete."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:106
+msgid "local"
+msgstr "locale"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:111
+#, perl-format
+msgid "Select %s network ethernet driver"
+msgstr "Selezionare il driver ethernet %s"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:115
+#, perl-format
+msgid ""
+"You now need to select an ethernet adapterto be used as green interface. The "
+"green interface is the one inside your LAN.\n"
+msgstr "Selezionare il driver corretto per l'adattatore ethernet di rete %s. Il server tenterà di rilevarlo automaticamente, ma è possibile selezionarlo manualmente specificando il modello dell'adattatore ethernet o scegliendo direttamente un driver.\n"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:183
+msgid "Primary domain name"
+msgstr "Nome del dominio primario"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:185
+msgid "Please enter the primary domain name for your server."
+msgstr "Inserire il nome del dominio primario del server."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:187
+msgid ""
+"This will be the default domain for your e-mail and web server. Virtual "
+"domains can be added later using the web interface."
+msgstr "Questo sarà il dominio di default per il server Web e il server di posta. Eventuali domini virtuali potranno essere aggiunti successivamente utilizzando il server-manager."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:213
+msgid "Invalid domain name"
+msgstr "Nome di dominio non valido"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:231
+msgid "Select system name"
+msgstr "Nome del sistema"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:233
+msgid "Please enter the system name for your server."
+msgstr "Inserire il nome di sistema per il server."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:235
+msgid "You should select unique system names for each server."
+msgstr "Scegliere un nome di sistema univoco per ogni server."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:237
+msgid ""
+"The system name must start with a letter and can be composed of  letters, "
+"numbers and hyphens."
+msgstr "Il nome del sistema deve iniziare con una lettera e può contenere lettere, numeri e trattini."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:256
+msgid "Invalid system name"
+msgstr "Nome del sistema non valido"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:269
+msgid "The specified driver failed to load."
+msgstr "Il drive specificato non è stato caricato."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:311
+msgid "Local networking parameters"
+msgstr "Parametri di rete locale"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:313
+msgid "Please enter the local IP address for this server."
+msgstr "Inserire l'indirizzo IP locale del server."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:315
+msgid ""
+"If this server is the first machine on your network, we recommend accepting "
+"the default value unless you have a specific reason to choose something else."
+msgstr "Se il server è il primo computer della rete, si raccomanda di lasciare il valore di default, a meno che non ci sia una ragione particolare per cambiarlo."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:317
+msgid ""
+"If your server is being installed into an existing network, you must choose "
+"an address which is not in use by any other computer on this network."
+msgstr "Se il server è stato installato all'interno di una rete esistente, si scelga un indirizzo non utilizzato dagli altri computer della rete."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:342
+msgid "Invalid local IP address"
+msgstr "Indirizzo IP locale non valido"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:364
+msgid "Select local subnet mask"
+msgstr "Subnet mask locale"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:366
+msgid "Please enter the local subnet mask for this server."
+msgstr "Inserire la subnet mask locale per il server."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:368
+msgid ""
+"If this server is the first machine on your network, we recommend using the "
+"default unless you have a specific reason to choose something else."
+msgstr "Se il server è il primo computer della rete, si raccomanda di usare il valore di default, a meno che non ci sia una ragione particolare per cambiarlo."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:370
+msgid ""
+"If your server is being installed into an existing network, you must choose "
+"the same subnet mask used by other computers on this network."
+msgstr "Se il server è stato installato all'interno di una rete esistente, si scelga la stessa subnet mask usata dagli altri computer della rete."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:394
+msgid "Invalid local subnet mask"
+msgstr "Subnet mask locale non valida"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:416
+msgid "Select gateway IP address"
+msgstr "Selezionare l'indirizzo IP del gateway"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:418
+msgid ""
+"This server will use only one ethernet adapter connected to your local "
+"network. If you have a firewall and wish to use this server as your e-mail/"
+"web server, you should consult the firewall documentation for networking "
+"details."
+msgstr "Il server utilizzerà solo un adattatore ethernet connesso alla rete locale. Se si ha un firewall e si vuole usare il server come un server Web o un server di posta, consultare la documentazione del firewall per i dettagli."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:420
+msgid ""
+"Please specify the gateway IP address that this server should use to access "
+"the Internet."
+msgstr "Indicare l'indirizzo IP del gateway che il server dovrebbe usare per accedere ad Internet."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:450
+msgid "Invalid"
+msgstr "Non valido"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:482
+msgid "Corporate DNS server address"
+msgstr "Indirizzo server DNS aziendale"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:484
+msgid ""
+"The server is capable of resolving all its own domain hosts and all DHCP "
+"assigned ip, if the DHCP server is enabled."
+msgstr "Il server è in grado di risolvere tutti i nomi del proprio dominio compresi gli host assegnati con DHCP, se il server DHCP è abilitato."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:486
+msgid ""
+"You should enter the address of your ISP's DNS servers here to resolve all "
+"other domains."
+msgstr "Inserire il DNS del provider per risolvere tutti gli altri domini"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:506
+msgid "Invalid IP address for DNS forwarder"
+msgstr "Indirizzo IP non valido per il DNS"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:534
+msgid "No unsaved changes"
+msgstr "Nessuna modifica non salvata"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:536
+msgid "No changes were made during the configuration process"
+msgstr "Nessuna modifica è stata fatta durante la procedura di configurazione"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:538
+msgid "Press ENTER to proceed."
+msgstr "Premere Invio per continuare."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:539
+msgid "Finish"
+msgstr "Fine"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:548
+msgid "Activate configuration changes"
+msgstr "Attivare le modifiche alla configurazione"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:550
+msgid ""
+"Your configuration changes will now be activated. The configuration files on "
+"this server will be changed to reflect your new settings. This may take a "
+"few minutes."
+msgstr "Le modifiche alla configurazione saranno attivate ora. I file di configurazione saranno modificati con i nuovi parametri. Questo potrebbe richiedere alcuni minuti."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:552
+msgid "Do you wish to activate your changes?"
+msgstr "Si desidera attivare i cambiamenti apportati?"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:569
+#: /usr/share/perl5/vendor_perl/esmith/console/save_config.pm:25
+msgid "Activating configuration settings"
+msgstr "Attivazione dei parametri di configurazione"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:570
+#: /usr/share/perl5/vendor_perl/esmith/console/save_config.pm:26
+msgid "Please stand by while your configuration settings are activated ..."
+msgstr "Attendere mentre i parametri di configurazione vengono attivati ..."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:594
+#: /usr/share/perl5/vendor_perl/esmith/console/quitConsole.pm:34
+msgid "*** THERE ARE UNACTIVATED CHANGES - QUIT ANYWAY? ***"
+msgstr "*** CI SONO MODIFICHE NON ATTIVE - USCIRE COMUNQUE? ***"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:596
+#: /usr/share/perl5/vendor_perl/esmith/console/quitConsole.pm:36
+msgid ""
+"Your configuration changes have been saved but have not yet been activated. "
+"This may result in unpredictable system behavior. We recommend that you "
+"complete the configuration process and activate the changes before exiting "
+"the console."
+msgstr "Le modifiche alla configurazione sono state salvate ma non sono ancora state attivate. Questo può rendere le funzionalità del sistema imprevedibili. Si raccomanda di completare il processo di configurazione e attivare i cambiamenti prima di uscire dalla console."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/configure.pm:598
+#: /usr/share/perl5/vendor_perl/esmith/console/quitConsole.pm:38
+msgid "Are you sure you want to quit with unactivated changes?"
+msgstr "Siete sicuri di voler uscire con i cambiamenti non attivi?"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/quitConsole.pm:10
+msgid "Exit from the server console"
+msgstr "Esci dalla console del server"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:30
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:109
+msgid "Choose administrator password"
+msgstr "Inserire la password dell'amministratore"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:32
+msgid "Welcome to the server console!"
+msgstr "Benvenuti nella console del server!"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:34
+msgid ""
+"You will now be taken through a sequence of screens to perform basic "
+"networking configuration on this server."
+msgstr "Seguire le istruzioni che appariranno in sequenza sullo schermo per effettuare la configurazione di base della rete su questo server."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:36
+msgid ""
+"You can make your selections in each screen using the Arrow and Tab keys. At "
+"any point, if you select Back you will be returned to the previous screen."
+msgstr "E' possibile utilizzare il tasto Tab e i tasti cursore in ogni schermata. Se si seleziona Indietro, in qualsiasi momento, si ritorna alla schermata precedente."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:38
+msgid ""
+"Before you start, you must first choose the administrator password for your "
+"system and enter it below. You will not see the password as you enter it."
+msgstr "Prima di iniziare, scegliere la password dell'amministratore di sistema e inserirla nel campo sottostante. La password non verrà visualizzata mentre viene digitata."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:45
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:117
+msgid "Administrator password not set"
+msgstr "La password dell'amministratore non è stata inserita"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:46
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:118
+msgid "Sorry, you must set the administrator password now."
+msgstr "Inserire ora la password dell'amministratore."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:56
+msgid "Unprintable characters in password"
+msgstr "Caratteri non validi nella password"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:57
+msgid "The password must contain only printable characters."
+msgstr "La password deve contenere solo caratteri stampabili."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:70
+msgid "it is based on your username"
+msgstr "è basata sull'username"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:71
+msgid "it is based upon your password entry"
+msgstr "è basata sulla password utilizzata per accedere"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:72
+msgid "it is derived from your password entry"
+msgstr "è derivata dalla password utilizzata per accedere"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:73
+msgid "it is derivable from your password entry"
+msgstr "è derivabile dalla password utilizzata per accedere"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:74
+msgid "it is too short"
+msgstr "è troppo corta"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:75
+msgid "it is all whitespace"
+msgstr "contiene solo spazi bianchi"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:76
+msgid "it is too simplistic/systematic"
+msgstr "è troppo semplice"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:77
+msgid "it is based on a dictionary word"
+msgstr "è basata su una parola del dizionario"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:78
+msgid "it is based on a (reversed) dictionary word"
+msgstr "è basata su una parola del dizionario (invertita)"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:79
+msgid "it does not contain numbers"
+msgstr "non contiene numeri"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:80
+msgid "it does not contain uppercase characters"
+msgstr "non contiene lettere maiuscole"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:81
+msgid "it does not contain lowercase characters"
+msgstr "non contiene lettere minuscole"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:82
+msgid "it does not contain special characters"
+msgstr "non contiene caratteri speciali"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:91
+msgid "Software error: password check failed"
+msgstr "Errore software: fallita la verifica della password"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:96
+msgid "Bad Password Choice"
+msgstr "Cattiva scelta della password"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:98
+msgid "The password you have chosen is not a good choice, because "
+msgstr "La password inserita non è una buona scelta, perché "
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:101
+msgid "Do you wish to choose a better one?"
+msgstr "Si desidera cambiarla con una migliore?"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:110
+msgid "Please type your administrator password again to verify."
+msgstr "Inserire nuovamente la password amministratore per verifica."
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:128
+msgid "Passwords do not match"
+msgstr "Le password non coincidono"
+
+#: /usr/share/perl5/vendor_perl/esmith/console/system_password.pm:129
+msgid "The two passwords did not match"
+msgstr "Le due password non coincidevano"

@@ -68,14 +68,15 @@ event_queue add %{name}-update
 
 perl createlinks
 
-mkdir -p root/usr/share/locale/en_US/LC_MESSAGES
-xgettext -L perl -o root/usr/share/locale/en_US/LC_MESSAGES/server-console.po root/sbin/e-smith/console
-
-mkdir -p root/var/state/e-smith
-
 # davidep: relocate perl modules under default perl vendorlib directory:
 mkdir -p root%{perl_vendorlib}
 mv -v esmith root%{perl_vendorlib}
+
+for f in `/bin/ls root/usr/share/locale/*/LC_MESSAGES/server-console.po`; do
+   out=`dirname $f`
+   /usr/bin/msgfmt $f -o $out/server-console.mo
+   rm -f $f
+done
 
 
 %install

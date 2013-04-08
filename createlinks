@@ -206,5 +206,3 @@ event_actions($event, 'nethserver-base-dump-ldap' => 20);
 
 exit 0;
 
-exit 0;
-
