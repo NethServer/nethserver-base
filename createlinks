@@ -197,5 +197,14 @@ templates2events('/etc/fstab', $event);
 $event = "migration-import";
 event_actions($event, 'nethserver-base-migrate' => 20);
 
+#--------------------------------------------------
+# actions for pre-backup-config event
+#--------------------------------------------------
+
+$event = "pre-backup-config";
+event_actions($event, 'nethserver-base-dump-ldap' => 20);
+
+exit 0;
+
 exit 0;
 
