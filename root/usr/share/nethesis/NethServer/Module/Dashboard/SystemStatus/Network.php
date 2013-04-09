@@ -64,11 +64,11 @@ class Network extends \Nethgui\Controller\AbstractController
              }
              $tmp = array(
                  'name' => $interface,
-                 'ipaddr'=> $props['ipaddr'], 
-                 'netmask'=> $props['netmask'], 
-                 'gateway'=>$props['gateway'], 
-                 'hwaddr'=> $props['hwaddr'], 
-                 'bootproto'=> $props['bootproto'], 
+                 'ipaddr'=> isset($props['ipaddr'])?$props['ipaddr']:'', 
+                 'netmask'=> isset($props['netmask'])?$props['netmask']:"", 
+                 'gateway'=> isset($props['gateway'])?$props['gateway']:"", 
+                 'hwaddr'=> isset($props['hwaddr'])?$props['hwaddr']:"", 
+                 'bootproto'=> isset($props['bootproto'])?$props['bootproto']:"" 
              );
              $tmp['speed'] = file_get_contents("/sys/class/net/".$interface."/speed")." Mb/s";
              $tmp['stats'] = $stats[$interface];
