@@ -1,0 +1,10 @@
+{
+    #
+    # 40nics
+    #
+    push @cmnd_alias_httpd_admin, qw(
+       /usr/libexec/nethserver/update-networks-db
+       /usr/libexec/nethserver/nic-info
+    );
+    '';
+}

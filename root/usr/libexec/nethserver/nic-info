@@ -1,0 +1,58 @@
+#!/bin/sh
+
+card=$1
+if [ "x$card" == "x" ]; then
+    exit 1
+fi
+
+#Check if this is an Ethernet device (type=1)
+if [ `cat /sys/class/net/$card/type` == "1" ]; then
+	hwaddr=`cat /sys/class/net/$card/address`
+
+	#Check that is no VLAN if
+	if [[ ! "$card" =~ "[.]" ]]; then
+
+		#check if this not a bridge
+		if [ ! -e /sys/class/net/$card/brforward ]; then
+
+			#Check if mac is valid (not 00:00... or FF:FF...)
+			if [ ! "$hwaddr" == "00:00:00:00:00:00" ];then
+				if [ ! "$hwaddr" == "ff:ff:ff:ff:ff:ff" ];then
+					driver=`basename $(ls -l /sys/class/net/$card/device/driver | awk '{print$NF}' )`
+					type=`basename $(ls -l /sys/class/net/$card/device/subsystem | awk '{print$NF}' )`
+
+					#Default if not avaiable in /sys/class/net
+					if [ "a$type" == "a" ]; then
+						type="???"
+					fi
+					if [ "a$driver" == "a" ]; then
+						driver="Unknown Network Interface ($card)"
+					fi
+					#description=`echo $type: $driver`
+					model=$type
+
+					#Get more details for pci and usb devices
+					if [ "$type" == "pci" ]; then
+						model=`lspci -s $(basename $(ls -l /sys/class/net/$card/device | awk '{print$NF}' )) | cut -d':' -f3 | cut -c 2-`
+						#description=`echo $type: $name`
+					fi
+					if [ "$type" == "usb" ]; then
+						bus=`grep DEVICE= /sys/class/net/$card/device/uevent | cut -d"/" -f5`
+						dev=`grep DEVICE= /sys/class/net/$card/device/uevent | cut -d"/" -f6`
+						#work around the base8 convert
+						let bus=`echo 1$bus`-1000
+						let dev=`echo 1$dev`-1000
+						model=`lsusb -s $bus:$dev | cut -d':' -f3 | cut -c 6-`
+						#description=`echo $type: $name`
+					fi
+					speed=`cat /sys/class/net/$card/speed 2>/dev/null`
+					link=`cat /sys/class/net/$card/carrier 2>/dev/null`
+
+				fi
+			fi
+		fi
+	fi
+fi
+		echo $card,$hwaddr,$type,$model,$driver,$speed,$link
+
+exit 0
