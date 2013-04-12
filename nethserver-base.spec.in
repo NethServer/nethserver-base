@@ -53,16 +53,6 @@ if ! id admin >/dev/null 2>&1 ; then
 fi
 
 %post
-source /etc/nethserver/rpm_hook_functions
-
-# On first install enable the event queue 
-# if it has not already been done by some other ways 
-# (yum nethserver plugin)
-if [ $1 = 1 ] && ! event_queue status ; then
-   event_queue enable
-fi
-
-event_queue add %{name}-update
 
 %build
 
