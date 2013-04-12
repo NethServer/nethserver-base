@@ -25,12 +25,6 @@ use NethServer::Service;
 
 my $errors = 0;
 
-NethServer::Service::manage_add('nethserver-base', qw(
-				rsyslog
-				bootstrap-console
-                                postfix
-));
-
 #
 # Import distribution GPG keys into RPM database -- Refs #1597
 #
