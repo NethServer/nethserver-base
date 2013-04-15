@@ -557,17 +557,17 @@ QUERY_SAVE_CONFIG:
  SAVE_CONFIG:
     #------------------------------------------------------------
 
+    $console->infobox(
+        title => gettext("Activating configuration settings"),
+        text => gettext("Please stand by while your configuration settings are activated ..."),
+    );
     if ($self->{bootstrap}) {
         event_signal("interface-update");
         $db->set_value('UnsavedChanges', 'no');
-	system("/sbin/e-smith/event-queue", "signal");
+	system("/etc/e-smith/events/actions/system-adjust");
         goto QUIT1;
 
     } else {
-	$console->infobox(
-	    title => gettext("Activating configuration settings"),
-	    text => gettext("Please stand by while your configuration settings are activated ..."),
-	    );
         event_signal("interface-update");
         $db->set_value('UnsavedChanges', 'no');
         $db->reload;
