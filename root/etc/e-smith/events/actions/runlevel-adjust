@@ -23,6 +23,7 @@
 use strict;
 use esmith::ConfigDB;
 use NethServer::Service;
+use File::Basename;
 
 my $event = shift || die("Missing event argument!");
 my $confDb = esmith::ConfigDB->open_ro();
@@ -43,6 +44,18 @@ sub chkconfig
     return 1; # OK
 }
 
+my %configured = {};
+my @files = glob "/etc/e-smith/db/configuration/defaults/*";
+for my $file (@files) {
+    open(FH, "$file/type") or next;
+    my $type = do{local $/; <FH>;};
+    close FH;
+    chomp $type;
+    if ($type eq "service") {
+        $configured{basename($file)} = 1;
+    }
+}
+
 foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
 
     my $serviceName = $serviceRecord->key;
@@ -59,6 +72,13 @@ foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
 	$errors ++;
 	next;
     }
+    
+    # test if service is orphan: service record exists but no db default defined
+    if(!exists($configured{$serviceName})) {
+        warn "Stopping orphan service `$serviceName`\n";
+	NethServer::Service::stop($serviceName);
+        next;
+    }
 
     # Start the service if is enabled in current runlevel
     if(NethServer::Service::is_enabled($serviceName)) {
@@ -71,7 +91,9 @@ foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
 	chkconfig($runLevels, $serviceName, 'off') != 0 || next;
 	NethServer::Service::stop($serviceName);
     }
+    
 
 }
+
 
 exit($errors > 0 ? 1 : 0);

@@ -1,0 +1,45 @@
+#!/usr/bin/python
+
+import os
+import rpm
+
+def insertBefore(list, el, search):
+    i = 0
+    k = -1
+    for l in list:
+        if l == search:
+            k = i
+        i=i+1
+    if k < 0:
+        list.append(el)
+    else:
+        list.insert(k,el)
+    return list
+
+def uniq(list):
+    seen = set()
+    seen_add = seen.add
+    return [ x for x in list if x not in seen and not seen_add(x)]
+
+
+list = ['nethserver-lib']
+ts = rpm.TransactionSet()
+mi = ts.dbMatch()
+for h in mi:
+    if not h['name'].startswith('nethserver'): continue
+    for dep in h[rpm.RPMTAG_REQUIRENAME]:
+        if not dep.startswith('nethserver'): continue
+        insertBefore(list,dep,h['name']);
+    list.append(h['name'])
+
+
+for p in uniq(list):
+    event = "%s-update" % p
+    if os.path.isdir('/etc/e-smith/events/%s' % event):
+        cmd = "/sbin/e-smith/signal-event %s" % event
+        os.system(cmd)
+
+if os.path.isdir("/etc/e-smith/events/firewall-adjust"):
+    os.spawnl(os.P_WAIT, "/sbin/e-smith/signal-event", "/sbin/e-smith/signal-event", "firewall-adjust")
+if os.path.isdir("/etc/e-smith/events/runlevel-adjust"):
+    os.spawnl(os.P_WAIT, "/sbin/e-smith/signal-event", "/sbin/e-smith/signal-event", "runlevel-adjust")

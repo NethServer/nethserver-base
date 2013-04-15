@@ -55,8 +55,6 @@ event_actions('nethserver-base-update', qw(
     nethserver-base-pam-setup         50
     nethserver-base-check-certificate 50
     nethserver-base-conf-admin-alias  50
-    firewall-adjust                   70
-    runlevel-adjust                   71
 ));
 
 event_templates('nethserver-base-update', qw(
@@ -124,11 +122,6 @@ validator_actions('remote-port', qw(
 event_templates('nethserver-base-save', qw(
 		/etc/hosts.allow
 		/etc/hosts.deny
-));
-
-event_actions('nethserver-base-save', qw(
-	      firewall-adjust 60
-	      runlevel-adjust 61
 ));
 
 
@@ -203,6 +196,20 @@ event_actions($event, 'nethserver-base-migrate' => 20);
 
 $event = "pre-backup-config";
 event_actions($event, 'nethserver-base-dump-ldap' => 20);
+
+#--------------------------------------------------
+# actions for firewall-adjust event
+#--------------------------------------------------
+
+$event = "firewall-adjust";
+event_actions($event, 'firewall-adjust' => 20);
+
+#--------------------------------------------------
+# actions for runlevel-adjust event
+#--------------------------------------------------
+
+$event = "runlevel-adjust";
+event_actions($event, 'runlevel-adjust' => 20);
 
 exit 0;
 
