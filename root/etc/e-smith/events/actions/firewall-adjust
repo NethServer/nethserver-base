@@ -21,106 +21,18 @@
 #
 
 use strict;
-use NethServer::Service;
 use esmith::ConfigDB;
-use Data::Dumper;
+use esmith::event;
 
 my $event = shift || die("Missing event argument!");
 my $confDb = esmith::ConfigDB->open();
-my $errors = 0;
-my $commands = 0;
+my $fevent = "";
 
-my $actions = {
-    OPEN => $confDb->get_prop('firewall', 'open'),
-    CLOSE => $confDb->get_prop('firewall', 'close'),
-    APPLY => $confDb->get_prop('firewall', 'apply')
-};
-
-foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
-    my $serviceName = $serviceRecord->prop('ServiceFirewallName') || $serviceRecord->key;
-    my $statusAction;
-
-    if( ! NethServer::Service::is_enabled($serviceRecord->key) ) {
-	$statusAction = 'CLOSE';
-    } else {
-	$statusAction = 'OPEN';
-    }
-
-    foreach my $proto (qw(tcp udp)) {
-	my $fwAdjustPorts = $serviceRecord->prop('__fwAdjust' . uc($proto)) || '';
-	my $adjustPorts = $serviceRecord->prop(uc($proto) . 'Ports') || $serviceRecord->prop(uc($proto) . 'Port') || '';
-
-	if( ($adjustPorts eq $fwAdjustPorts && $statusAction eq 'OPEN')
-	    || ( ! $fwAdjustPorts && $statusAction eq 'CLOSE') ) {	    
-	    # nothing to do if one of the following condition is true
-	    #   - action is OPEN and current ports list
-	    #     is the same as target ports list
-	    #   - action is CLOSE
-	    #     and all target ports are closed
-	    next;
-	}
-
-      	my @targetPorts = grep { $_ > 0 } (split(',', $adjustPorts));
-
-	# Read the kill list to find ports to close:
-	my @currentPorts = split(',', $fwAdjustPorts);
-
-	# Prepare a unique port list:
-	my %ports = map { $_ => 1 } @targetPorts, @currentPorts;
-
-	foreach my $port (keys %ports) {
-
-	    my $action;
-
-	    # Close any port not in TARGET list:
-	    if( ! grep { $port == $_ } @targetPorts ) {
-		$action = 'CLOSE';
-	    } else {
-		# Let the service status to decide what to do:
-		$action = $statusAction;
-	    }
-
-	    my $command = $actions->{$action};
-
-	    $command =~ s/%PROTO/$proto/g;
-	    $command =~ s/%PORT/$port/g;
-	    $command =~ s/%SERVICE/$serviceName/g;
-	    $command =~ s/%ACTION/$action/g;
-
-	    if( ! $command || ! $port > 0) {
-		next;
-	    }
-
-	    qx($command);
-
-	    if( $? != 0 ) {
-		warn "FIREWALL-ADJUST: " . $!;
-		$errors ++;
-	    } else {
-		print "firewall-adjust\@$event: $serviceName $action $proto port $port\n";
-		$commands ++;
-	    }
-	}	
-			       
-	if(@targetPorts && $statusAction eq 'OPEN') {
-	    # Save the opened port list for the next run:
-	    $serviceRecord->set_prop('__fwAdjust' . uc($proto), join(',', @targetPorts));
-	} else {
-	    # All ports are closed OR the required action was CLOSE:
-	    $serviceRecord->delete_prop('__fwAdjust' . uc($proto));
-	}
-    }  
+my $firewall = $confDb->get('firewall');
+if ($firewall) {
+   $fevent = $firewall->prop("event") || "";
 }
 
-my $applyCommand = $actions->{'APPLY'};
+my $error = event_signal($fevent, $event);
 
-if($applyCommand && $commands > 0) {
-    qx($applyCommand);
-    if($? != 0) {
-	warn "APPLY: " . $!;
-	$errors ++;
-    }
-}
-
-
-exit($errors > 0 ? 1 : 0);
+exit($error > 0 ? 1 : 0);
