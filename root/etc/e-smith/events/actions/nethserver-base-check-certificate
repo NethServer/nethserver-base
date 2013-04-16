@@ -22,6 +22,7 @@
 
 use strict;
 use esmith::ConfigDB;
+use esmith::event;
 use Date::Parse;
 
 my $confDb = esmith::ConfigDB->open_ro();
@@ -150,6 +151,10 @@ if($CrtType eq 'custom') {
 	system('/usr/libexec/nethserver/pki-gencrt', '-f', $CrtFile);
 	if ( $? != 0 ) {
 	    exit 7;
+	}
+	if($event eq 'hostname-modify') {
+	    esmith::event::event_signal('certificate-update', 'hostname-modify') 
+		|| die("[ERROR] certificate-update event failed.\n");	    
 	}
     }
 }
