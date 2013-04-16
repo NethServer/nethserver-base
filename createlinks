@@ -223,7 +223,7 @@ templates2events('/etc/sysconfig/system-config-firewall', $event);
 #
 # hostname-modify event (#1878)
 #
-event_actions('hostname-modify-event', qw(
+event_actions('hostname-modify', qw(
      interface-config-hostname  00
      nethserver-base-check-certificate 95
 ));
