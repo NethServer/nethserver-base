@@ -1,0 +1,52 @@
+#!/usr/bin/perl
+
+#
+# network-route-up -- call ifup-route on all interfaces
+#
+
+#
+# Copyright (C) 2013 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+use esmith::NetworksDB;
+use strict;
+
+our $output_dir = $output_dir || $ENV{ESMITH_NETWORK_OUT_DIR} || "/etc/sysconfig/network-scripts";
+
+my $idb = esmith::NetworksDB->open_ro();
+my @interfaces = $idb->interfaces;
+
+foreach my $i (@interfaces) {
+    my $if = $i->key;
+    my %props = $i->props;
+    my $role = $props{'role'} || '';
+    next unless ($role ne '');
+    next unless ($role ne 'red');
+
+    open FILE, "<", "$output_dir/route-$if" or die $!;
+
+    while (<FILE>) {
+    s/#.*//;            # ignore comments by erasing them
+    next if /^(\s)*$/;  # skip blank lines
+    chomp;              # remove trailing newline characters
+    system("ip ro del $_");
+    }
+}
+
