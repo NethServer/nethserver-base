@@ -46,25 +46,6 @@ foreach (split(/\n/, `/sbin/ifconfig -a | grep "HWaddr"`)) {
    }
 }
 
-if(system(qw(/sbin/udevadm control --reload-rules)) != 0) {
-    warn "Failed to reload udevadm rules\n";
-};
-
-foreach my $i (@interfaces) {
-   my $new_name = $i->key;
-   my %props = $i->props;
-   my $hwaddr = uc($props{'hwaddr'}) || '';
-   my $old_name = $current{$hwaddr} || $new_name;
-
-   # Check if interface has been renamed:
-   if($hwaddr ne '' && $old_name ne $new_name) {
-       my $output = `/sbin/ip link set $old_name name $new_name 2>&1`;
-       if ( $? != 0 ) {
-	   warn "Failed to rename " . $old_name . " interface to " . $new_name . ": " . $output . "\n";
-       }
-   }
-}
-
 qx(/sbin/service network start);
 if($? != 0) {
     warn "Failed to start service network\n";
