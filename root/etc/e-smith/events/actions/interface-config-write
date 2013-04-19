@@ -71,7 +71,7 @@ sub _write_route_file() {
 	next if $system eq "yes";
 
 	# Skip anything we don't know how to or don't need to route
-	my $router = $network->prop('Router') || return;
+	my $router = $network->prop('Router') || "default";
 	next if $router eq "default";
 	next if not Net::IPv4Addr::ipv4_in_network($net, $msk, $router);
 
