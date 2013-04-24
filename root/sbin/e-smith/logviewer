@@ -1,0 +1,143 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2013 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use strict;
+
+use Getopt::Std;
+use File::Glob;
+use Fcntl qw(:seek);
+
+my %opts;
+my $confFile = '/etc/logviewer.conf';
+
+getopts('lq:o:p:r', \%opts);
+
+my @files = @ARGV;
+my @patterns = read_patterns();
+
+if( ! @patterns) {
+    die("[ERROR] No log file patterns defined in $confFile\n");
+}
+
+# Print out the valid log file names:
+if(defined $opts{l}) {
+    print join("\n", expand_filenames(@patterns)) . "\n";
+    exit;
+}
+
+# Grep the given pattern among the target file names:
+if(defined $opts{q}) {
+    grep_logs($opts{q}, $opts{r}, @files ? @files : @patterns) && exit;
+}
+
+# Print out the first file, starting at offset o, optionally matching p
+if(@files) {
+    print_log(@files[0], $opts{o}, $opts{p}, $opts{r});
+}
+
+exit 1;
+
+#
+# Parse $confFile and return a list of glob-patterns
+#
+sub read_patterns
+{
+    my @p = ();
+    my $ch;
+
+    if( ! defined open($ch, '<', $confFile)) {
+	warn ("[ERROR] Error opening $confFile ($!)\n");
+	return ();
+    }
+
+    # Parse the configuration file
+    while( ! eof($ch)) {
+	my $line = <$ch>;
+	chomp($line);
+
+	# Strip comments and whitespace
+	$line =~ s/\s*#.*$//; 
+	$line =~ s/(^\s*|\s*$)//;
+	
+	# Skip empty lines
+	if( ! $line) {
+	    next;
+	}	
+
+	push @p, $line;
+    }
+    close($ch);
+    return @p;
+}
+
+#
+# Print out the given file from offset "o" to end-of-file.
+#
+sub print_log($$$$)
+{
+    my $fileName = $_[0];
+    my $offset = int($_[1]);
+    my $pattern = $_[2];
+    my $expType = $_[3] ? '-E' : '-F';
+    my ($r, $w);
+
+    if($pattern) {
+	pipe $r, $w;
+	if(fork()) {
+	    # Redirect child output into the pipe:
+	    open(STDOUT, '>&', $w);
+	    exec('grep', '-i', $expType, $pattern, $fileName);
+	} else {
+	    # Read data from the pipe:
+	    open(STDIN, '<&', $r);
+	    exec('tail', '-c', '+' . $offset);   
+	}
+    } else {
+	exec('tail', '-c', '+' . $offset, $fileName);   
+    }
+
+}
+
+
+#
+# Find occurences of "q" in the glob-expansion of the given list of
+# patterns.
+#
+sub grep_logs
+{
+    my $pattern = shift;
+    my $isRegexp = shift;
+    system(qw(grep -i -s -c), $isRegexp ? ('-E') : ('-F'), $pattern, expand_filenames(@_));
+    if($? == 0) {
+	return 1;
+    }
+    return 0;
+}
+
+#
+# glob-expand the given list of patterns, returning only regular
+# file paths.
+#
+sub expand_filenames
+{
+    return map { map { -f $_ ? $_ : () } glob $_ } @_;
+}

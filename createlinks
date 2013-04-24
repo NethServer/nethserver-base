@@ -72,6 +72,7 @@ event_templates('nethserver-base-update', qw(
     /etc/shells
     /etc/rc.d/rc.local
     /etc/krb5.conf
+    /etc/logviewer.conf
 ));
 
 
@@ -226,6 +227,13 @@ templates2events('/etc/sysconfig/system-config-firewall', $event);
 event_actions('hostname-modify', qw(
      interface-config-hostname  00
      nethserver-base-check-certificate 95
+));
+
+#
+# Validator for log file names (#470)
+#
+validator_actions('logfile', qw(
+		  logfile 10
 ));
 
 

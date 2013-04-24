@@ -1,0 +1,12 @@
+#
+# 10base
+#
+
+/var/log/messages*
+/var/log/secure*
+/var/log/maillog*
+/var/log/dmesg*
+/var/log/dracut.log*
+/var/log/cron*
+
+

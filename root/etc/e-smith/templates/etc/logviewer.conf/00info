@@ -1,0 +1,8 @@
+
+#
+# 00info -- Notes
+#
+# This file contains a list of glob patterns that match valid log file
+# names. It is parsed by "logviewer" command. See `logviewer -l` (#470).
+#
+

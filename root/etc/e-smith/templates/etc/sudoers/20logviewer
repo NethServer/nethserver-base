@@ -1,0 +1,9 @@
+{
+    #
+    # 20logviewer
+    #
+    push @cmnd_alias_httpd_admin, qw(
+         /sbin/e-smith/logviewer
+    );
+    '';
+}
