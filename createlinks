@@ -29,6 +29,10 @@ use File::Path;
 event_templates('network-create', qw(
 		/etc/localnetworks
 ));
+event_actions('network-create', qw(
+    interface-config-write      25
+    network-route-up	        35
+));
 
 #--------------------------------------------------
 # actions for network-modify event
@@ -36,12 +40,22 @@ event_templates('network-create', qw(
 event_templates('network-modify', qw(
 		/etc/localnetworks
 ));
+event_actions('network-modify', qw(
+    network-route-down	        15
+    interface-config-write      25
+    network-route-up	        35
+));
 
 #--------------------------------------------------
 # actions for network-delete event
 #--------------------------------------------------
 event_templates('network-delete', qw(
 		/etc/localnetworks
+));
+event_actions('network-delete', qw(
+    network-route-down	        15
+    interface-config-write      25
+    network-route-up	        35
 ));
 
 #--------------------------------------------------
@@ -101,7 +115,6 @@ event_actions('interface-update', qw(
 
 event_templates('interface-update', qw(
      /etc/modprobe.d/bonding.conf
-     /etc/udev/rules.d/80-persistent-net.rules
      /etc/sysconfig/network
      /etc/localnetworks
      /etc/hosts

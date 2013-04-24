@@ -51,18 +51,9 @@ sub ethernetSelect($$)
 
     if (scalar @adapters == 1)
     {
-	# Internal, and there's only one, force name to green
-	$ifName = 'green';
-        my (undef, $driver, $hwaddr, undef) = split (/\s+/, $adapters[0], 4);
-        $idb->set_prop($ifName, "role", "green", type => 'ethernet');
-        $idb->set_prop($ifName, "hwaddr", $hwaddr);
+	# Internal, and there's only one, force role to green
+        $idb->set_prop($ifName, "role", "green");
         $db->set_value('UnsavedChanges', 'yes');
-        # delete old interface entry
-        if ($driver ne 'green') {
-            my $i = $idb->get($driver);
-            $i->delete();
-        }
-
 
 	return 'CHANGE';
     }
@@ -122,30 +113,6 @@ sub ethernetSelect($$)
     $ifName = $tag2name{$choice};
     $idb->set_prop($ifName, "role", "green");
     $db->set_value('UnsavedChanges', 'yes');
-
-    # rename to green
-
-    my $new_name = 'green'; # new_name = role
-    my $i = $idb->get($ifName);
-    if ( defined ($i) ) {
-        my %props = $i->props;
-        $i->delete();
-        $idb->set_prop($new_name, 'role', 'green', type => 'ethernet');
-        $i = $idb->get($new_name);
-        $i->reset_props(%props);
-        $idb->set_prop($new_name,'device',$new_name);
-    } else { # the card is not in the db
-        my $g = $idb->green();
-	if(defined($g)) {
-	    $g->delete(); # delete ol green devnce
-	}
-        $idb->set_prop($new_name, 'role', 'green', type => 'ethernet');
-        $idb->set_prop($new_name, 'hwaddr', $tag2hwaddr{$choice});
-        $idb->set_prop($new_name, 'device', $new_name);
-        $idb->set_prop($new_name, 'onboot', 'yes');
-    }
-
-
 
     return 'CHANGE';
 }

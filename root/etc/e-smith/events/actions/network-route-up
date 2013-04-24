@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 
 #
-# interface-config-restart -- remove ifcfg-* interface configurations
+# network-route-up -- call ifup-route on all interfaces
 #
 
 #
-# Copyright (C) 2012 Nethesis S.r.l.
+# Copyright (C) 2013 Nethesis S.r.l.
 # http://www.nethesis.it - support@nethesis.it
 # 
 # This script is part of NethServer.
@@ -24,31 +24,20 @@
 # along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
 use esmith::NetworksDB;
 use strict;
 
-qx(/sbin/service network stop);
-
-our $output_dir = $output_dir || $ENV{ESMITH_NETWORK_OUT_DIR} || "/etc/sysconfig/network-scripts";
 my $idb = esmith::NetworksDB->open_ro();
-my @interfaces = $idb->ethernets;
+my @interfaces = $idb->interfaces;
 
-my %current = {};
-# Query the currently active interfaces:
-foreach (split(/\n/, `/sbin/ifconfig -a | grep "HWaddr"`)) {
-   my ($name, $field2, $field3, $field4, $mac) = split(/\s+/, $_);
-   $current{uc($mac)} = $name;
+foreach my $i (@interfaces) {
+    my $if = $i->key;
+    my %props = $i->props;
+    my $role = $props{'role'} || '';
+    next unless ($role ne '');
+    next unless ($role ne 'red');
 
-   # Ensure all ethernets are down:
-   my $output = `/sbin/ifconfig $name down 2>&1`;
-   if ( $? != 0 ) {
-       warn "Could not bring down " . $name . ": " . $output . "\n";
-   }
+    system("/etc/sysconfig/network-scripts/ifup-routes $if &>/dev/null");
 }
-
-qx(/sbin/service network start);
-if($? != 0) {
-    warn "Failed to start service network\n";
-} 
-
 
