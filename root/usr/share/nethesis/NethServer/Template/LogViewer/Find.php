@@ -17,6 +17,7 @@ echo $form;
 $resultsTarget = $view->getClientEventTarget('results');
 $consoleTarget = $view->getClientEventTarget('../Read/console');
 $headerTarget = $view->getClientEventTarget('../Read/logFile');
+$formTarget = $view->getClientEventTarget('../Read/FormAction');
 
 echo sprintf('<div class="LogViewerResults %s">', $resultsTarget);
 if($view['results']) {
@@ -61,6 +62,7 @@ $jsCode = <<<JSCODE
                 }
                 if(typeof value === 'string') {                    
                     $('.${headerTarget}').triggerHandler('nethguiupdateview', [logFile + query, selector, jqXHR]);
+                    $('.${formTarget}').triggerHandler('nethguiupdateview', [url, selector, jqXHR]);
                     consoleWidget.triggerHandler('nethguiupdateview', [value, selector, jqXHR]);
                 }
             }
