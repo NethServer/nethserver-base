@@ -2,11 +2,15 @@
 # 10base
 #
 
-/var/log/messages*
-/var/log/secure*
-/var/log/maillog*
-/var/log/dmesg*
-/var/log/dracut.log*
-/var/log/cron*
+include /var/log/*
+exclude /var/log/dmesg*
+exclude /var/log/btmp*
+exclude /var/log/wtmp*
+exclude /var/log/lastlog
+exclude *.gz
+
+
+
+
 
 

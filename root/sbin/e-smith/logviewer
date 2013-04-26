@@ -24,7 +24,10 @@ use strict;
 
 use Getopt::Std;
 use File::Glob;
+use File::Find;
 use Fcntl qw(:seek);
+
+use Data::Dumper;
 
 my %opts;
 my $confFile = '/etc/logviewer.conf';
@@ -32,21 +35,21 @@ my $confFile = '/etc/logviewer.conf';
 getopts('lq:o:p:r', \%opts);
 
 my @files = @ARGV;
-my @patterns = read_patterns();
+my %patterns = read_patterns();
 
-if( ! @patterns) {
+if( ! %patterns) {
     die("[ERROR] No log file patterns defined in $confFile\n");
 }
 
 # Print out the valid log file names:
 if(defined $opts{l}) {
-    print join("\n", expand_filenames(@patterns)) . "\n";
+    print join("\n", expand_filenames(\%patterns)) . "\n";
     exit;
 }
 
 # Grep the given pattern among the target file names:
 if(defined $opts{q}) {
-    grep_logs($opts{q}, $opts{r}, @files ? @files : @patterns) && exit;
+    grep_logs($opts{q}, $opts{r}, @files ? {'include' => \@files} : \%patterns) && exit;
 }
 
 # Print out the first file, starting at offset o, optionally matching p
@@ -61,7 +64,7 @@ exit 1;
 #
 sub read_patterns
 {
-    my @p = ();
+    my %p = ('include' => [], 'exclude' => []);
     my $ch;
 
     if( ! defined open($ch, '<', $confFile)) {
@@ -82,11 +85,17 @@ sub read_patterns
 	if( ! $line) {
 	    next;
 	}	
-
-	push @p, $line;
+	
+	if($line =~ /^exclude\s+(.*)/) {
+	    push @{$p{exclude}}, $1;
+	} elsif($line =~ /^include\s+(.*)/) {
+	    push @{$p{include}}, $1;
+	} else {
+	    push @{$p{include}}, $line;
+	}
     }
     close($ch);
-    return @p;
+    return %p;
 }
 
 #
@@ -139,5 +148,25 @@ sub grep_logs
 #
 sub expand_filenames
 {
-    return map { map { -f $_ ? $_ : () } glob $_ } @_;
+    my %patterns = %{$_[0]};
+
+    $File::Find::no_chdir = 1;
+
+    my $expand = sub {
+	my $p = shift;
+	my @files = ();
+	foreach (glob $p) {
+	    find(sub {
+		if( -f ) {
+		    push @files, $File::Find::name;
+		}
+		 }, $_);
+	}
+	return @files;
+    };
+
+    my @includedFiles = keys %{{map { $_ => 1 } (map { (&$expand($_)) } @{$patterns{include}})}} ;
+    my @excludePatterns = map { my $e = quotemeta($_); $e =~ s/\\\*/(.*)/g; qr|^$e$|; } @{$patterns{exclude}};
+
+    return map { my $f = $_; (grep { $f =~ /$_/ } @excludePatterns) ? () : $f; } @includedFiles;
 }
