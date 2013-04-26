@@ -95,7 +95,8 @@ class Find extends \Nethgui\Controller\AbstractController
         $q = $this->query;
         $view['q'] = $q;
         $results = array_map(function ($result) use ($view, $q) {            
-            $result['h'] = $view->getModuleUrl('../Read') . $result['f'] . ($q ? '?' . http_build_query(array('q' => $q)) : '');
+            $result['p'] = $view->getModuleUrl('../Read') . $result['f']; // The log [p]ath
+            $result['q'] = array('q' => $q); // The filter [q]uery
             return $result;
         }, $this->find($this->query));
         

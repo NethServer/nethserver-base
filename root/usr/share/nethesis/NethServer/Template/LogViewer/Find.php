@@ -31,23 +31,27 @@ if($view['results']) {
             $fileName = $result['f'];
         }
 
-        echo sprintf('<li><a href="%s">%s</a> %s</li>', $result['h'], $fileName, $result['m'] ? " <b>(${result['m']})</b>" : '');
+        echo sprintf('<li><a href="%s">%s</a> %s</li>', $result['p'], $fileName, $result['m'] ? sprintf(' (<a href="%s">%s</a>)', $result['p'] . '?' . http_build_query($result['q']), $T('Results_Filtered_label', array($result['m']))) : '');
     }
     echo '</ul>';
 }
 echo '</div>';
+
+$view->includeTranslations(array('Results_Filtered_label', 'Result_Filtered_label'));
+
 
 $jsCode = <<<JSCODE
 /*
  * NethServer\Module\LogViewer
  */
 (function ( $ ) {
+    var T = $.Nethgui.T;
     var resultsWidget = $('.${resultsTarget}');
     var consoleWidget = $('.${consoleTarget}');
 
     var openLog = function(e) {
         var url = $(this).attr('href');
-        var logFile = $(this).text();
+        var result = $(this).data('result');
 
         $.Nethgui.Server.ajaxMessage({
             isMutation: false,
@@ -56,7 +60,8 @@ $jsCode = <<<JSCODE
             formatSuffix: 'txt',
             isCacheEnabled: false,
             dispatchResponse: function (value, selector, jqXHR) {
-                var query = $('#LogViewer_Find_q').val();
+                var logFile = result.f;
+                var query = result.q.q;
                 if(query) {
                     query = ' (' + query + ')';
                 }
@@ -71,7 +76,7 @@ $jsCode = <<<JSCODE
     };
 
     resultsWidget.on('nethguiupdateview', function (e, results) {
-        var widget = $(this);
+        var widget = $(this);        
 
         widget.empty();
 
@@ -83,8 +88,10 @@ $jsCode = <<<JSCODE
 
         $.each(results, function(i, r) {
              $('<li/>').appendTo(container)
-                 .append($('<a />', {href: r.h}).text(r.f).on('click', openLog))
-                 .append( r.m > 0 ? ' <b>(' + r.m + ')</b>' : '');
+                 .append($('<a />', {href: r.p}).text(r.f).on('click', openLog).data('result', {f: r.f, p: r.p, m: 0, q: {q: ''}}))
+                 .append( r.m > 0 ? ' (' : '')
+                 .append( r.m > 0 ? $('<a />', {href: r.p + '?q=' + encodeURIComponent(r.q.q)}).text(T(r.m === 1 ? 'Result_Filtered_label' : 'Results_Filtered_label', r.m)).on('click', openLog).data('result', r) : '')
+                 .append( r.m > 0 ? ')' : '')
         });
 
         container.appendTo(widget);
@@ -101,6 +108,16 @@ $cssCode = <<<CSSCODE
 .LogViewerResults {
     margin: 1em 0;
     line-height: 180%;
+}
+.LogViewerResults a {
+    color: #002F64;
+    text-decoration: none;
+}
+.LogViewerResults a:hover {
+    text-decoration: underline;
+}
+.LogViewerResults a:visited {
+    color: #002F64
 }
 CSSCODE;
 
