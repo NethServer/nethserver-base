@@ -129,7 +129,7 @@ $jsCode = <<<JSCODE
          if(typeof value != 'string') {
              return;
          }
-         consoleWidget.html(value);
+         consoleWidget.text(value);
          offset = value.length;
          buttonFollow.Button('enable');
          $('#${emptyId}').Button('enable');
