@@ -53,7 +53,11 @@ class Find extends \Nethgui\Controller\AbstractController
 
         foreach ($proc->getOutputArray() as $line) {
             $fields = explode(':', $line);
-            $nameMatch = is_int(strpos($fields[0], $q));
+            if($q) {
+                $nameMatch = is_int(strpos($fields[0], $q));
+            } else {
+                $nameMatch = FALSE;
+            }
             if (isset($fields[1]) && $fields[1] > 0) {
                 $results[] = array('f' => $fields[0], 'm' => intval($fields[1]), 'n' => $nameMatch);
             } else {
