@@ -31,7 +31,7 @@ if($view['results']) {
             $fileName = $result['f'];
         }
 
-        echo sprintf('<li><a href="%s">%s</a> %s</li>', $result['p'], $fileName, $result['m'] ? sprintf(' (<a href="%s">%s</a>)', $result['p'] . '?' . http_build_query($result['q']), $T('Results_Filtered_label', array($result['m']))) : '');
+        echo sprintf('<li><a href="%s">%s</a>%s</li>', htmlspecialchars($result['p']), htmlspecialchars($fileName), $result['m'] ? sprintf(' (<a href="%s">%s</a>)', htmlspecialchars($result['p'] . '?' . http_build_query($result['q'])), htmlspecialchars($T('Results_Filtered_label', array($result['m'])))) : '');
     }
     echo '</ul>';
 }
@@ -51,7 +51,7 @@ $jsCode = <<<JSCODE
 
     var openLog = function(e) {
         var url = $(this).attr('href');
-        var result = $(this).data('result');
+        var result = $(this).data('result') ? $(this).data('result') : {f: $(this).text()};
 
         $.Nethgui.Server.ajaxMessage({
             isMutation: false,
@@ -61,7 +61,7 @@ $jsCode = <<<JSCODE
             isCacheEnabled: false,
             dispatchResponse: function (value, selector, jqXHR) {
                 var logFile = result.f;
-                var query = result.q.q;
+                var query = result.q ? result.q.q : '';
                 if(query) {
                     query = ' (' + query + ')';
                 }
