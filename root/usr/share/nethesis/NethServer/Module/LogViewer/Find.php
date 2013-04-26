@@ -53,18 +53,19 @@ class Find extends \Nethgui\Controller\AbstractController
 
         foreach ($proc->getOutputArray() as $line) {
             $fields = explode(':', $line);
+            $nameMatch = is_int(strpos($fields[0], $q));
             if (isset($fields[1]) && $fields[1] > 0) {
-                $results[] = array('f' => $fields[0], 'm' => intval($fields[1]));
-            } elseif ( ! $q) {
-                $results[] = array('f' => $fields[0], 'm' => 0);
+                $results[] = array('f' => $fields[0], 'm' => intval($fields[1]), 'n' => $nameMatch);
+            } else {
+                $results[] = array('f' => $fields[0], 'm' => 0, 'n' => $nameMatch);
             }
         }
 
         // Sort results, giving weight to file name and match count:
         usort($results, function ($a, $b) use ($q) {
                 if ($q) {
-                    $aNameMatches = is_int(strpos($a['f'], $q));
-                    $bNameMatches = is_int(strpos($b['f'], $q));
+                    $aNameMatches = $a['n'];
+                    $bNameMatches = $b['n'];
                 } else {
                     $aNameMatches = FALSE;
                     $bNameMatches = FALSE;
@@ -94,13 +95,15 @@ class Find extends \Nethgui\Controller\AbstractController
          
         $q = $this->query;
         $view['q'] = $q;
-        $results = array_map(function ($result) use ($view, $q) {            
+        $results = array_filter(array_map(function ($result) use ($view, $q) {
             $result['p'] = $view->getModuleUrl('../Read') . $result['f']; // The log [p]ath
             if($q) {
                 $result['q'] = array('q' => $q); // The filter [q]uery
             }
             return $result;
-        }, $this->find($this->query));
+        }, $this->find($this->query)), function ($result) use ($q) {
+            return ! $q || $result['n'] || $result['m'];
+        });
         
         $view['results'] = $results;
 
