@@ -99,7 +99,7 @@ $jsCode = <<<JSCODE
                 offset += value.length;
                 consoleWidget.append(document.createTextNode(value));
                 if(followAtBottom) {
-                    $('body').animate({scrollTop: Math.max(0, $(document).height() - $(window).height())}, 500);
+                    $('html, body').animate({scrollTop: Math.max(0, $(document).height() - $(window).height())}, 500);
                 }
                 // restart query:
                 if (timer === null) {
