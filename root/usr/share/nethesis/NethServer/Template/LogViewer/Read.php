@@ -9,6 +9,7 @@ echo $view->header('logFile')->setAttribute('template', $T('Read_Title'));
 $form = $view->form()->setAttribute('method', 'get');
 $form->insert($view->buttonList()
         ->insert($view->button('Close', $view::BUTTON_CANCEL))
+        ->insert($view->button('Empty', $view::STATE_DISABLED)->setAttribute('receiver', 'Empty'))
         ->insert($view->button('Follow', $view::STATE_DISABLED)->setAttribute('receiver', 'Follow'))
 );
 echo $form;
@@ -16,6 +17,7 @@ echo $form;
 $consoleTarget = $view->getClientEventTarget('console');
 
 $followId = $view->getUniqueId('Follow');
+$emptyId = $view->getUniqueId('Empty');
 $actionId = $view->getUniqueId();
 $formTarget = $view->getClientEventTarget('FormAction');
 $actionId = $view->getUniqueId();
@@ -130,6 +132,7 @@ $jsCode = <<<JSCODE
          consoleWidget.html(value);
          offset = value.length;
          buttonFollow.Button('enable');
+         $('#${emptyId}').Button('enable');
          $('#${actionId}').trigger('nethguishow');
     });
 
@@ -138,7 +141,10 @@ $jsCode = <<<JSCODE
         return false;
     });
 
-
+    $('#${emptyId}').on('click', function () {
+        consoleWidget.empty();
+        return false;
+    });
 
 } ( jQuery ));
 JSCODE;
