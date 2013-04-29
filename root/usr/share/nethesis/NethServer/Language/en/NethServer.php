@@ -1,7 +1,7 @@
 <?php 
 
 $L['Administration'] = 'Administration'; 
-$L['Category_Order'] = 'Management, Administration, Security, Configuration'; 
+$L['Category_Order'] = 'Management, Administration, Security, Configuration, Gateway, Status'; 
 $L['Configuration'] = 'Configuration'; 
 $L['Management'] = 'Management'; 
 $L['Other modules'] = 'Other modules'; 
