@@ -80,6 +80,14 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Tue Apr 30 2013 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.0-1.ns6
+- Rebuild for automatic package handling. #1870
+- Refactor firewall configuration #1875
+- Add logviewer module #470
+- Handle static routes #1886
+- Add migration code #1794
+- Various fixes: #1754 #1878
+
 * Tue Mar 19 2013 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.1.2-1.ns6
 - first-boot: postpone init-repo execution to avoid clean up of event-queue
 
