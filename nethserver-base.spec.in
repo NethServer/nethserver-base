@@ -80,6 +80,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Thu May  2 2013 Davide Principi <davide.principi@nethesis.it> - 1.2.1-1.ns6
+- Fixed assignment of green role when one NIC only is installed #1883
+
 * Tue Apr 30 2013 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.0-1.ns6
 - Rebuild for automatic package handling. #1870
 - Refactor firewall configuration #1875
