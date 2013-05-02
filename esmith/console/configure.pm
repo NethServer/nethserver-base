@@ -52,6 +52,7 @@ sub ethernetSelect($$)
     if (scalar @adapters == 1)
     {
 	# Internal, and there's only one, force role to green
+        $ifName = @{[split(/\s+/, $adapters[0])]}[1];
         $idb->set_prop($ifName, "role", "green");
         $db->set_value('UnsavedChanges', 'yes');
 
