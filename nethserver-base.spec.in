@@ -80,6 +80,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Tue May  7 2013 Davide Principi <davide.principi@nethesis.it> - 1.2.2-1.ns6
+- system-adjust action: import symbols from nethserver yum plugin  #1870
+
 * Thu May  2 2013 Davide Principi <davide.principi@nethesis.it> - 1.2.1-1.ns6
 - Fixed assignment of green role when one NIC only is installed #1883
 
