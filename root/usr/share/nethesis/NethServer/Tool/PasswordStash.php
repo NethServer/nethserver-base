@@ -31,7 +31,18 @@ namespace NethServer\Tool;
 class PasswordStash
 {
 
-    private $filePath;
+    private $filePath = FALSE;
+    private $unlink = FALSE;
+
+    /**
+     *
+     * @param bool $unlink If TRUE, the stash file will be deleted by destructor
+     * @return \NethServer\Tool\PasswordStash
+     */
+    public function setAutoUnlink($unlink) {
+        $this->unlink = (bool) $unlink;
+        return $this;
+    }
 
     public function store($password)
     {
@@ -50,6 +61,13 @@ class PasswordStash
     public function getFilePath()
     {
         return $this->filePath;
+    }
+
+    public function __destruct()
+    {
+        if($this->unlink === TRUE && $this->filePath) {
+            unlink($this->filePath);
+        }
     }
 
 }
