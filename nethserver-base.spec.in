@@ -31,7 +31,7 @@ Requires: iproute
 Requires: postfix
 
 Requires: nethserver-yum > 1.0.1-1
-Requires: nethserver-lib > 1.1.0-4
+Requires: nethserver-lib > 1.1.2-1
 
 BuildRequires: nethserver-devtools
 BuildRequires: gettext
