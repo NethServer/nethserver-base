@@ -1,2 +1,0 @@
-#!/bin/bash
-/usr/sbin/slapcat -l /var/lib/nethserver/backup/ldap.dump &>/dev/null

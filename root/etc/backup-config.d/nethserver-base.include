@@ -1,3 +1,4 @@
+/var/lib/nethserver/db/
 /etc/e-smith/templates-custom
 /etc/e-smith/templates-user-custom
 /etc/sudoers
