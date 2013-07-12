@@ -80,6 +80,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Fri Jul 12 2013 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.4-1.ns6
+- Backup: implement and document full restore #2043
+
 * Wed May 29 2013 Davide Principi <davide.principi@nethesis.it> - 1.2.3-1.ns6
 - NethServer\Tool\PasswordStash: added setAutoUnlink() method #1746 
 
