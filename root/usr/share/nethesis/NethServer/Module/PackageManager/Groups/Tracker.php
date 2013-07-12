@@ -1,8 +1,8 @@
 <?php
-namespace NethServer\Module\PackageManager;
+namespace NethServer\Module\PackageManager\Groups;
 
 /*
- * Copyright (C) 2012 Nethesis S.r.l.
+ * Copyright (C) 2013 Nethesis S.r.l.
  *
  * This script is part of NethServer.
  *
@@ -26,7 +26,7 @@ namespace NethServer\Module\PackageManager;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class StatusTracker extends \Nethgui\Controller\AbstractController
+class Tracker extends \Nethgui\Controller\Collection\AbstractAction
 {
     private $done = FALSE;
 
@@ -39,27 +39,30 @@ class StatusTracker extends \Nethgui\Controller\AbstractController
         if ($this->getRequest()->isValidated()) {
             $process = $this->getPlatform()->getDetachedProcess('PackageManager');
             if ($process === FALSE) {
-                $this->done = TRUE;
-            } elseif (is_object($process)) {
+                $this->done = TRUE;                
+            } elseif (is_object($process)) {                
+                $view->getCommandList()->show();
+
                 if ($process->readExecutionState() === \Nethgui\System\ProcessInterface::STATE_EXITED) {
                     $output = $process->getOutputArray();
-                    $ret = json_decode(\Nethgui\array_end(array_filter($process->getOutputArray())),true);
+                    $ret = json_decode(\Nethgui\array_end(array_filter($process->getOutputArray())), true);
                     // ret is now an array with two elements
                     //    exit_code => program exit code
                     //    msg => error description if exit_code = 1
-                    if ($ret['exit_code'] == 0) { 
+                    if ($ret['exit_code'] === 0) {
                         $view->getCommandList('/Notification')->showMessage($view->translate("package_success"), \Nethgui\Module\Notification\AbstractNotification::NOTIFY_SUCCESS);
                     } else {
-                        $view->getCommandList('/Notification')->showMessage($ret['msg'], \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR);
-                    } 
+                        $view->getCommandList('/Notification')->showMessage(is_string($ret['msg']) ? $ret['msg'] : $view->translate("Unknown_error_label"), \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR);
+                    }
                     $this->getLog()->notice(sprintf('%s: PackageManager process `%s` exit code: %d', __CLASS__, $process->getIdentifier(), $ret['exit_code']));
                     $this->done = TRUE;
+                    $view->getCommandList()->sendQuery('/PackageManager/Packages');
                     if ( ! $process->isDisposed()) {
                         $process->dispose();
                     }
                 } else {
                     NETHGUI_DEBUG && $this->getLog()->notice(sprintf('%s: PackageManager process `%s` is still running..', __CLASS__, $process->getIdentifier()));
-                    $view->getCommandList()->reloadData(2000);
+                    $view->getCommandList()->reloadData(4000);
                 }
             }
         }
@@ -67,8 +70,7 @@ class StatusTracker extends \Nethgui\Controller\AbstractController
 
     public function nextPath()
     {
-        return $this->done === TRUE ? 'read' : FALSE;
+        return $this->done === TRUE ? '/PackageManager/Groups/Select' : FALSE;
     }
-    
 
 }

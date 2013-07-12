@@ -26,8 +26,13 @@ namespace NethServer\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class PackageManager extends \Nethgui\Controller\TableController
+class PackageManager extends \Nethgui\Controller\TabsController implements \Nethgui\Utility\SessionConsumerInterface
 {
+    /**
+     *
+     * @var \Nethgui\Utility\SessionInterface
+     */
+    private $session;
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $attributes)
     {
@@ -36,48 +41,19 @@ class PackageManager extends \Nethgui\Controller\TableController
 
     public function initialize()
     {
-        $adapter = new PackageManager\YumAdapter($this->getPlatform());
-
-        $columns = array(
-            'Name',
-            'Status',
-            'Actions'
-        );
-
-        $this
-            ->setTableAdapter($adapter)
-            ->setColumns($columns)
-            ->addRowAction(new PackageManager\Operation('Add'))
-            ->addRowAction(new PackageManager\Operation('Remove'))
-            ->addTableAction(new \Nethgui\Controller\Table\Help('Help'))
-            ->addChild(new PackageManager\StatusTracker())
-        ;
-
+        $this->loadChildrenDirectory();
+        foreach ($this->getChildren() as $child) {
+            if ($child instanceof \Nethgui\Utility\SessionConsumerInterface) {
+                $child->setSession($this->session);
+            }
+        }
         parent::initialize();
     }
 
-    public function bind(\Nethgui\Controller\RequestInterface $request)
+    public function setSession(\Nethgui\Utility\SessionInterface $session)
     {
-        $this->getAdapter()->setLanguage($request->getUser()->getLanguageCode());
-        parent::bind($request);
-    }
-
-    public function prepareViewForColumnActions(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
-    {
-        $cellView = $action->prepareViewForColumnActions($view, $key, $values, $rowMetadata);
-
-        if ($values['Status'] === 'available') {
-            unset($cellView['Remove']);
-        } else {
-            unset($cellView['Add']);
-        }
-
-        return $cellView;
-    }
-
-    public function prepareViewForColumnStatus(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
-    {
-        return $view->translate($values['Status']);
+        $this->session = $session;
+        return $this;
     }
 
 }
