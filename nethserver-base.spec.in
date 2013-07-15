@@ -80,6 +80,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Mon Jul 15 2013 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.5-1.ns6
+- Fix static route generations #2057
+
 * Fri Jul 12 2013 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.4-1.ns6
 - Backup: implement and document full restore #2043
 
