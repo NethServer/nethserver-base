@@ -61,10 +61,13 @@ sub _write_route_file() {
     my $out = sprintf "#NAME=%s\n",  $i->key;
     my %props = $i->props;
     my $role = $props{'role'} || '';
+    my $ipaddr = $props{'ipaddr'} || '';
+    my $netmask = $props{'netmask'} || '';
     return unless ($role ne '');
     # we will need to support routes on red interfaces when we'll have multiple reds
     return unless ($role ne 'red');
-    my ($net,$msk) = Net::IPv4Addr::ipv4_network($props{'ipaddr'}, $props{'netmask'});
+    return unless (($ipaddr ne '') || ($netmask ne ''));
+    my ($net,$msk) = Net::IPv4Addr::ipv4_network($ipaddr, $netmask);
     foreach my $network ($idb->networks) {
 	# Skip local network
 	my $system = $network->prop('SystemLocalNetwork') || "no";
