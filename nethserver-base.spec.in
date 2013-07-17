@@ -80,6 +80,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Jul 17 2013 Davide Principi <davide.principi@nethesis.it> - 1.3.1-1.ns6
+- Lib: synchronize service status prop and chkconfig - Feature #2067 [NethServer]
+
 * Mon Jul 15 2013 Davide Principi <davide.principi@nethesis.it> - 1.3.0-1.ns6
 - Imported PackageManager UI module - Feature #1767 [NethServer]
 - Select multiple items in package-manager - Enhancement #1748 [NethServer]
