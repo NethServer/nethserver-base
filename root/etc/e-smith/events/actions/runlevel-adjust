@@ -29,21 +29,6 @@ my $event = shift || die("Missing event argument!");
 my $confDb = esmith::ConfigDB->open_ro();
 my $errors = 0;
 
-sub chkconfig
-{
-    my $runlevels = shift;
-    my $service = shift;
-    my $action = shift;
-
-    if(system('/sbin/chkconfig', '--level', $runlevels, $service, $action) != 0) {
-	warn "runlevel-adjust: " . $! . "\n";
-	$errors ++;
-	return 0; # FAILURE
-    }
-
-    return 1; # OK
-}
-
 my %configured = {};
 my @files = glob "/etc/e-smith/db/configuration/defaults/*";
 for my $file (@files) {
@@ -59,37 +44,26 @@ for my $file (@files) {
 foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
 
     my $serviceName = $serviceRecord->key;
-    my $runLevels = $serviceRecord->prop('Runlevels');
-
-    if( ! defined($runLevels)) {
-	next;
-    }
-
-    $runLevels = join('', split(',', $runLevels));
-
-    if( ! $runLevels =~ m/\d+/ ) {
-	warn "Invalid runlevel specification on service $serviceName: $runLevels";
-	$errors ++;
-	next;
-    }
     
-    # test if service is orphan: service record exists but no db default defined
-    if(!exists($configured{$serviceName})) {
-        warn "Stopping orphan service `$serviceName`\n";
-	NethServer::Service::stop($serviceName);
+    #
+    # Test if service is orphan: service record exists but no db default defined
+    #
+    if( ! exists($configured{$serviceName})) {
+        warn "[INFO] Stopping orphan service `$serviceName`\n";
+	NethServer::Service::stop($serviceName) || $errors++;
+	NethServer::Service::set_service_startup($serviceName, 0) || $errors++;
         next;
     }
 
-    # Start the service if is enabled in current runlevel
-    if(NethServer::Service::is_enabled($serviceName)) {
-	chkconfig($runLevels, $serviceName, 'on') != 0 || next;		
-	if( ! NethServer::Service::start($serviceName)) {
-	    warn "runlevel-adjust: error while starting `$serviceName`\n";
-	    $errors ++;
-	}
+    #
+    # Synchronize service status with "status" prop:
+    #
+    if(NethServer::Service::is_enabled($serviceName, $confDb)) {
+	NethServer::Service::start($serviceName) || $errors ++;
+	NethServer::Service::set_service_startup($serviceName, 1) || $errors++;
     } else {
-	chkconfig($runLevels, $serviceName, 'off') != 0 || next;
-	NethServer::Service::stop($serviceName);
+	NethServer::Service::stop($serviceName) || $errors ++;
+	NethServer::Service::set_service_startup($serviceName, 0) || $errors++;
     }
     
 

@@ -30,8 +30,8 @@ Requires: nc
 Requires: iproute
 Requires: postfix
 
-Requires: nethserver-yum > 1.0.1-1
-Requires: nethserver-lib > 1.1.2-1
+Requires: nethserver-yum >= 1.1.0
+Requires: nethserver-lib >= 1.2.0
 
 BuildRequires: nethserver-devtools
 BuildRequires: gettext
