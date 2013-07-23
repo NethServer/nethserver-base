@@ -158,8 +158,7 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction implements \N
                 $arguments[] = implode(',', $selectedOptionals);
             }
 
-            $this->getPlatform()->exec('/usr/bin/setsid /usr/bin/sudo /sbin/e-smith/pkgaction ${@}', $arguments, TRUE)->setIdentifier('PackageManager');
-            //$this->getPlatform()->exec('/bin/sleep 10', $arguments, TRUE)->setIdentifier('PackageManager');
+            $this->getPlatform()->exec('/usr/bin/sudo /sbin/e-smith/pkgaction ${@}', $arguments, TRUE)->setIdentifier('PackageManager');
         }
     }
 
