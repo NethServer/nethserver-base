@@ -1,0 +1,7 @@
+{
+    #
+    # 01httpd_admin_pkg
+    #
+    push @cmnd_alias_httpd_admin, qw(/sbin/e-smith/pkgaction /sbin/e-smith/pkginfo);
+    '';
+}
