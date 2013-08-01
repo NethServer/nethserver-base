@@ -1,42 +1,64 @@
-#!/bin/sh
+#!/bin/bash
+
+#
+# Copyright (C) 2013 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+
 
 for card in `ls /sys/class/net`; do
 
-	#Check if this is an Ethernet device (type=1)
-	if [ `cat /sys/class/net/$card/type` == "1" ]; then
-		hwaddr=`cat /sys/class/net/$card/address`
+    # Check if this is an Ethernet device (type=1)
+    if [ `cat /sys/class/net/$card/type` == "1" ]; then
+        hwaddr=`cat /sys/class/net/$card/address`
 
-		#Check that is no VLAN if
-		if [[ ! "$card" =~ "[.]" ]]; then
+        # Check that is no VLAN if
+        if [[ ! "$card" =~ "[.]" ]]; then
 
-			#check if this not a bridge
-			if [ ! -e /sys/class/net/$card/brforward ]; then
+            # Check if this not a bridge
+            if [ ! -e /sys/class/net/$card/brforward ]; then
 
-				#Check if mac is valid (not 00:00... or FF:FF...)
-				if [ ! "$hwaddr" == "00:00:00:00:00:00" ];then
-				if [ ! "$hwaddr" == "ff:ff:ff:ff:ff:ff" ];then
+                # Check if mac is valid (not 00:00... or FF:FF...)
+                if [ ! "$hwaddr" == "00:00:00:00:00:00" ];then
+                    if [ ! "$hwaddr" == "ff:ff:ff:ff:ff:ff" ];then
 
-					driver=`basename $(ls -l /sys/class/net/$card/device/driver | awk '{print$NF}' )`
-					type=`basename $(ls -l /sys/class/net/$card/device/subsystem | awk '{print$NF}' )`
+			driver=`basename $(ls -l /sys/class/net/$card/device/driver | awk '{print$NF}' )`
+			type=`basename $(ls -l /sys/class/net/$card/device/subsystem | awk '{print$NF}' )`
 
-					#Default if not avaiable in /sys/class/net
-					if [ "a$type" == "a" ]; then
-						type="???"
-					fi
-					if [ "a$driver" == "a" ]; then
-						driver="Unknown Network Interface ($card)"
-					fi
-                                        curr=`/sbin/e-smith/db networks get $card`
-					if [ "x$curr" == "x" ]; then
-						# add to networks db
-						/sbin/e-smith/db networks set $card ethernet hwaddr $hwaddr 
-						/sbin/e-smith/db networks setprop $card role '' 
-					fi   
-				fi
-				fi
+                        # Default if not avaiable in /sys/class/net
+			if [ "a$type" == "a" ]; then
+                            type="???"
 			fi
-		fi
-	fi
+			if [ "a$driver" == "a" ]; then
+                            driver="Unknown Network Interface ($card)"
+			fi
+                        curr=`/sbin/e-smith/db networks get $card`
+			if [ "x$curr" == "x" ]; then
+                            # Add to networks db
+                            /sbin/e-smith/db networks set $card ethernet hwaddr $hwaddr 
+                            /sbin/e-smith/db networks setprop $card role '' 
+			fi   
+                    fi
+                fi
+            fi
+        fi
+    fi
 done
 
 exit 0
