@@ -29,6 +29,7 @@ Requires: perl-suidperl
 Requires: nc
 Requires: iproute
 Requires: postfix
+Requires: udev >= 147
 
 Requires: nethserver-yum >= 1.1.0
 Requires: nethserver-lib >= 1.2.0

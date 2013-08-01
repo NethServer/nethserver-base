@@ -20,7 +20,18 @@
 # along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+# Import udev functions
+. /lib/udev/rule_generator.functions
 
+# Exit now, if db directory is not writable
+if ! writeable /var/lib/nethserver/db; then
+    exit 0;
+fi
+
+# Exit now, if networks db has not been initialized (on first-boot)
+if ! [ -e /var/lib/nethserver/db/networks ]; then
+    exit 0;
+fi
 
 for card in `ls /sys/class/net`; do
 
