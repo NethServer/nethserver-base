@@ -35,8 +35,6 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
     public function initialize()
     {
 
-        //FIXME
-        $this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/update-networks-db'); 
 
         $columns = array(
             'Key',
