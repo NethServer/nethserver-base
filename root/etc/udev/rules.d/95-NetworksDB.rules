@@ -1,0 +1,5 @@
+#
+# Update NetworksDB 
+#
+SUBSYSTEM=="net", ACTION=="*", KERNEL=="*", RUN="/usr/libexec/nethserver/update-networks-db" 
+
