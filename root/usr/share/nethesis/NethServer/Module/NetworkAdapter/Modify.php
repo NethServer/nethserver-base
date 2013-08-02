@@ -83,7 +83,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
             // Array of informations about NIC.
             // Fields: name, hwaddr, bus, model, driver, speed, link
             // Eg: green,08:00:27:77:fd:be,pci,Intel Corporation 82540EM Gigabit Ethernet Controller (rev 02),e1000,1000,1
-            $nicInfo = str_getcsv($this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/nic-info ' . $this->parameters['device'])->getOutput());
+            $nicInfo = str_getcsv($this->getPlatform()->exec('/usr/libexec/nethserver/nic-info ' . $this->parameters['device'])->getOutput());
         }
         
         $v['bus'] = isset($nicInfo[2]) ? $nicInfo[2] : "";
