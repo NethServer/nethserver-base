@@ -27,6 +27,7 @@ use Nethgui\System\PlatformInterface as Validate;
  */
 class NetworkAdapter extends \Nethgui\Controller\TableController
 {
+
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
         return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($base, 'Configuration', 10);
@@ -34,8 +35,6 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
 
     public function initialize()
     {
-
-
         $columns = array(
             'Key',
             'hwaddr',
@@ -46,7 +45,7 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
         );
 
         $this
-            ->setTableAdapter($this->getPlatform()->getTableAdapter('networks','ethernet'))
+            ->setTableAdapter($this->getPlatform()->getTableAdapter('networks', 'ethernet'))
             ->setColumns($columns)
             ->addTableAction(new \Nethgui\Controller\Table\Help('Help'))
             ->addRowAction(new \NethServer\Module\NetworkAdapter\Modify('update'))
@@ -58,11 +57,30 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
 
     public function prepareViewForColumnKey(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
-        if (!isset($values['role']) || !$values['role']) {
+        if ( ! isset($values['role']) || ! $values['role']) {
             $rowMetadata['rowCssClass'] = trim($rowMetadata['rowCssClass'] . ' user-locked');
         }
         return strval($key);
     }
-        
-}
 
+    /**
+     * Override prepareViewForColumnActions to hide/show delete action
+     * @param \Nethgui\View\ViewInterface $view
+     * @param string $key The data row key
+     * @param array $values The data row values
+     * @return \Nethgui\View\ViewInterface
+     */
+    public function prepareViewForColumnActions(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        $cellView = $action->prepareViewForColumnActions($view, $key, $values, $rowMetadata);
+
+        // Remove "delete" link on unconfigured interfaces:
+        if($values['role'] === '') {
+            unset($cellView['delete']);
+        }
+
+        return $cellView;
+
+    }
+
+}
