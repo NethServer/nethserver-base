@@ -242,6 +242,13 @@ validator_actions('logfile', qw(
 		  logfile 10
 ));
 
+#
+# Validator for network configuration consistency (#2103)
+# 
+validator_actions('interface-config', qw(
+		  interface-role 10
+));
+
 
 exit 0;
 
