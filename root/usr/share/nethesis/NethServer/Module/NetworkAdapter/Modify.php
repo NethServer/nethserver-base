@@ -38,13 +38,6 @@ class Modify extends \Nethgui\Controller\Table\Modify
      */
     private $roles = array('green', 'red');
 
-    /**
-     * @var Array of information about nic.
-     * Fields: name, hwaddr, bus, model, driver, speed, link
-     * Eg: green,08:00:27:77:fd:be,pci,Intel Corporation 82540EM Gigabit Ethernet Controller (rev 02),e1000,1000,1
-     */
-    private $nicInfo = null;
-
     public function initialize()
     {
         $parameterSchema = array(
@@ -57,7 +50,6 @@ class Modify extends \Nethgui\Controller\Table\Modify
             array('gateway', Validate::IPv4_OR_EMPTY, \Nethgui\Controller\Table\Modify::FIELD),
         );
 
-
         $this->setSchema($parameterSchema);
         $this->setDefaultValue('bootproto', 'static');
 
@@ -69,39 +61,53 @@ class Modify extends \Nethgui\Controller\Table\Modify
         parent::bind($request);
         // The delete case does not actually delete the record: it set role prop
         // to ''. See also delete()
-        if($this->getIdentifier() === 'delete') {
+        if ($this->getIdentifier() === 'delete') {
             $this->parameters['role'] = '';
             $this->parameters['bootproto'] = '';
         }
     }
 
-    public function process()
+    /**
+     * Parse nic-info helper command output
+     *
+     * @param \Nethgui\View\ViewInterface $view
+     * @return type
+     */
+    private function getNicInfo(\Nethgui\View\ViewInterface $view)
     {
-        if ($this->getIdentifier() === 'update') {
-            if ( ! $this->nicInfo) {
-                $this->nicInfo = str_getcsv($this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/nic-info ' . $this->parameters['device'])->getOutput());
-            }
+        $v = array();
+        $nicInfo = array();
+
+        // only execute helper if request has been validated:
+        if ($this->getRequest()->isValidated()) {
+            // Array of informations about NIC.
+            // Fields: name, hwaddr, bus, model, driver, speed, link
+            // Eg: green,08:00:27:77:fd:be,pci,Intel Corporation 82540EM Gigabit Ethernet Controller (rev 02),e1000,1000,1
+            $nicInfo = str_getcsv($this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/nic-info ' . $this->parameters['device'])->getOutput());
         }
-        parent::process();
+        
+        $v['bus'] = isset($nicInfo[2]) ? $nicInfo[2] : "";
+        $v['model'] = isset($nicInfo[3]) ? $nicInfo[3] : "";
+        $v['driver'] = isset($nicInfo[4]) ? $nicInfo[4] : "";
+        $v['speed'] = isset($nicInfo[5]) ? $nicInfo[5] : "";
+        if ( ! isset($nicInfo[6]) || (intval($nicInfo[6]) < 0)) {
+            $v['link'] = "N/A";
+        } else {
+            $v['link'] = $nicInfo[6] ? $view->translate('Yes') : $view->translate('No');
+        }
+
+        return $v;
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
-        $view['roleDatasource'] = array_map(function($fmt) use ($view) {
-                return array($fmt, $view->translate($fmt . '_label'));
-            }, $this->roles);
-
+        
         if ($this->getIdentifier() === 'update') {
-            $view['bus'] = isset($this->nicInfo[2]) ? $this->nicInfo[2] : "";
-            $view['model'] = isset($this->nicInfo[3]) ? $this->nicInfo[3] : "";
-            $view['driver'] = isset($this->nicInfo[4]) ? $this->nicInfo[4] : "";
-            $view['speed'] = isset($this->nicInfo[5]) ? $this->nicInfo[5] : "";
-            if ( ! isset($this->nicInfo[6]) || (intval($this->nicInfo[6]) < 0)) {
-                $view['link'] = "N/A";
-            } else {
-                $view['link'] = $this->nicInfo[6] ? $view->translate('Yes') : $view->translate('No');
-            }
+            $view['roleDatasource'] = array_map(function($fmt) use ($view) {
+                    return array($fmt, $view->translate($fmt . '_label'));
+                }, $this->roles);
+            $view->copyFrom($this->getNicInfo($view));
         }
 
         $templates = array(
@@ -117,7 +123,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
         parent::validate($report);
         if ($this->getRequest()->isMutation()) {
             $v = $this->createValidator()->platform('interface-config');
-            if ( ! $v->evaluate(json_encode($this->parameters->getArrayCopy()))) {                               
+            if ( ! $v->evaluate(json_encode($this->parameters->getArrayCopy()))) {
                 $report->addValidationError($this, 'device', $v);
             }
         }
