@@ -64,6 +64,17 @@ class Modify extends \Nethgui\Controller\Table\Modify
         parent::initialize();
     }
 
+    public function bind(\Nethgui\Controller\RequestInterface $request)
+    {
+        parent::bind($request);
+        // The delete case does not actually delete the record: it set role prop
+        // to ''. See also delete()
+        if($this->getIdentifier() === 'delete') {
+            $this->parameters['role'] = '';
+            $this->parameters['bootproto'] = '';
+        }
+    }
+
     public function process()
     {
         if ($this->getIdentifier() === 'update') {
@@ -113,12 +124,14 @@ class Modify extends \Nethgui\Controller\Table\Modify
     }
 
     /**
-     * Delete the record after the event has been successfully completed
+     * Parent's implementation deletes the record. Here, don't delete
+     * the record: we set role prop to '' in bind()
+     * 
      * @param string $key
      */
     protected function processDelete($key)
     {
-        parent::processDelete($key);
+        // skip parent's implementation
     }
 
     protected function onParametersSaved($changedParameters)
