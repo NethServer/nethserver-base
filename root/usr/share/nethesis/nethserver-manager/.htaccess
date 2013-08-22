@@ -1,6 +1,0 @@
-Options +FollowSymlinks
-RewriteEngine on 
-RewriteBase /
-RewriteRule ^(js/|css/|images/|icons/|.+\.php) - [PT,L]
-RewriteRule ^favicon.ico$ images/favicon.ico [L]
-RewriteRule ^(.*)$ index.php/$1 [L] 
