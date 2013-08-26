@@ -38,6 +38,7 @@ echo "</div>";
 
 $root_title = $T('root_title');
 $root_df_id = $view->getClientEventTarget('root_df');
+$moduleUrl = json_encode($view->getModuleUrl("/Dashboard/SystemStatus/Resources"));
 echo "<div class='dashboard-item'>";
 echo $view->header()->setAttribute('template',$root_title);
 echo "<dl class='$root_df_id'></dl>";
@@ -74,7 +75,7 @@ $view->includeJavascript("
     function loadPage() {
         $.Nethgui.Server.ajaxMessage({
             isMutation: false,
-            url: '/Dashboard/SystemStatus/Resources'
+            url: $moduleUrl
         });
     } 
 

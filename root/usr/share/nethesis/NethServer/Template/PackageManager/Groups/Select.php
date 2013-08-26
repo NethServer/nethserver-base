@@ -2,7 +2,6 @@
 
 /* @var $view \Nethgui\Renderer\Xhtml */
 
-//echo $view->header('Id')->setAttribute('template', $T('Select_label'));
 // 'groups' contains an array of views..
 echo $view->objectsCollection('groups')
     ->setAttribute('template', function ($view) use ($T) {
@@ -32,15 +31,3 @@ $view->includeCss("
 .${groupsTarget} .FieldsetSwitchPanel {position: relative; top: -0.5em}
     ");
 
-//$view->includeJavascript("
-//(function ( $ ) {
-//    $(document).ready(function() {
-//        $.Nethgui.Server.ajaxMessage({
-//            isMutation: false,
-//            url: '/PackageManager/Groups/Index'
-//        });
-//    });
-//    $('.$groupsTarget').ObjectsCollection('startThrobbing')
-//        .one('ajaxStop', function() { $(this).ObjectsCollection('endThrobbing'); });
-//}) ( jQuery );
-//");

@@ -11,6 +11,7 @@ echo "</div>";
 
 $interfaces_title = $T('interfaces_title');
 $interfaces_id = $view->getClientEventTarget('interfaces');
+$moduleUrl = json_encode($view->getModuleUrl("/Dashboard/SystemStatus/Network"));
 echo "<div class='dashboard-item'>";
 echo $view->header()->setAttribute('template',$interfaces_title);
 echo "<div class='{$interfaces_id}'></div>";
@@ -26,7 +27,7 @@ $view->includeJavascript("
    function loadPage() {
         $.Nethgui.Server.ajaxMessage({
             isMutation: false,
-            url: '/Dashboard/SystemStatus/Network'
+            url: $moduleUrl
         });
     } 
  

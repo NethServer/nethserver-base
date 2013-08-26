@@ -14,6 +14,7 @@ echo $view->objectsCollection('packages')
     ->setAttribute('key', 'name');
 
 $packagesTarget = $view->getClientEventTarget('packages');
+$moduleUrl = json_encode($view->getModuleUrl('/PackageManager/Packages'));
 
 $view->includeCss("
 table.SmallTable {width: auto;  font-size: 12px}
@@ -26,7 +27,7 @@ $view->includeJavascript("
     $(document).ready(function() {
         $.Nethgui.Server.ajaxMessage({
             isMutation: false,
-            url: '/PackageManager/Packages'
+            url: $moduleUrl
         });
         $('.$packagesTarget').ObjectsCollection('startThrobbing')
             .one('ajaxStop', function() { $(this).ObjectsCollection('endThrobbing'); });

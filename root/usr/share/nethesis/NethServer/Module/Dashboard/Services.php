@@ -126,12 +126,14 @@ class Services extends \Nethgui\Controller\TableController
            tr.stopped td:nth-child(3) { color: red }
        ";
        $view->getCommandList('/Resource/css')->appendCode($cssCode, 'css');
+       $moduleUrl = json_encode($view->getModuleUrl("/Dashboard/Services"));
+
        $jsCode = "
 (function ( $ ) {
     $(document).ready(function() {
         $.Nethgui.Server.ajaxMessage({
             isMutation: false,
-            url: '/Dashboard/Services'
+            url: $moduleUrl
         });
     });
 } ( jQuery ));
