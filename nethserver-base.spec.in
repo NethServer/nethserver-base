@@ -81,6 +81,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Aug 28 2013 Davide Principi <davide.principi@nethesis.it> - 1.4.1-1.ns6
+- Import nethserver-manager code from nethserver-base - Enhancement #2110 [NethServer]
+- Base: validate configuration from NetworkAdapter UI module - Enhancement #2103 [NethServer]
+- Update NetworksDB on udev events - Enhancement #2075 [NethServer]
+
 * Thu Jul 25 2013 Davide Principi <davide.principi@nethesis.it> - 1.4.0-1.ns6
 - Base: bootstrap-console type default is "configuration" - Enhancement #2079 [NethServer]
 - Lib: synchronize service status prop and running state - Feature #2078 [NethServer]
