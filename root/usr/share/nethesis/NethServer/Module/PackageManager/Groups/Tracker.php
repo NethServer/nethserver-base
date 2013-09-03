@@ -56,7 +56,7 @@ class Tracker extends \Nethgui\Controller\Collection\AbstractAction
                     }
                     $this->getLog()->notice(sprintf('%s: PackageManager process `%s` exit code: %d', __CLASS__, $process->getIdentifier(), $ret['exit_code']));
                     $this->done = TRUE;
-                    $view->getCommandList()->sendQuery('/PackageManager/Packages');
+                    $view->getCommandList()->sendQuery($view->getModuleUrl('/PackageManager/Packages'));
                     if ( ! $process->isDisposed()) {
                         $process->dispose();
                     }
