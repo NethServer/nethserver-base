@@ -1,0 +1,47 @@
+# see "man logrotate" for details
+{ 
+    my $rotate = $logrotate{'Rotate'} || 'weekly';
+    $OUT.="$rotate\n";
+}
+
+# keep 4 times worth of backlogs
+{ 
+    my $times = $logrotate{'Times'} || '4';
+    $OUT.="rotate $times\n";
+}
+
+# create new (empty) log files after rotating old ones
+create
+
+# use date as a suffix of the rotated file
+dateext
+
+# uncomment this if you want your log files compressed
+{ 
+    my $compress = $logrotate{'Compression'} || 'disabled';
+    if ($compress eq 'enabled') {
+        $OUT.="compress\n";
+    } else {
+        $OUT.="#compress\n";
+    } 
+}
+
+# RPM packages drop log rotation information into this directory
+include /etc/logrotate.d
+
+# no packages own wtmp and btmp -- we'll rotate them here
+/var/log/wtmp \{
+    monthly
+    create 0664 root utmp
+	minsize 1M
+    rotate 1
+\}
+
+/var/log/btmp \{
+    missingok
+    monthly
+    create 0600 root utmp
+    rotate 1
+\}
+
+# system-specific logs may be also be configured here.
