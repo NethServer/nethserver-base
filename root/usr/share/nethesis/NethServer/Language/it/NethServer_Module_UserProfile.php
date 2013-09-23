@@ -9,3 +9,7 @@ $L['UserProfile_Description'] = 'Modifica preferenze utente';
 $L['UserProfile_Header'] = 'Profilo dell\'utente ${0}'; 
 $L['UserProfile_Title'] = 'Profilo utente';
 $L['UserProfile_Tags'] = 'utente profilo preferenze';
+$L['Dept_label'] = 'Dipartimento';
+$L['Street_label'] = 'Via';
+$L['City_label'] = 'Città';
+$L['Phone_label'] = 'Telefono';
