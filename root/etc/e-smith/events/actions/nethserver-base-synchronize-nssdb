@@ -1,0 +1,50 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2013 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use esmith::util;
+use File::Temp;
+use esmith::ConfigDB;
+
+my $event = shift;
+my $nssPath = shift;
+my $keySecret = "/etc/pki/nssdb/password";
+
+my $configDb = esmith::ConfigDB->open_ro() || die("Could not open ConfigDB");
+my $certName = join('.', $configDb->get_value('SystemName'), $configDb->get_value('DomainName'));
+
+if( ! $nssPath) {
+    $nssPath = '/etc/pki/nssdb/';
+}
+
+esmith::util::genRandomPassword($keySecret);
+
+my $certFile = File::Temp::tempnam('/tmp', 'certXXXXXX');
+
+# Export certificate+key to pkcs12 format
+system("cat /etc/pki/tls/private/NSRV.key /etc/pki/tls/certs/NSRV.crt | /usr/bin/openssl pkcs12 -export -name $certName -out $certFile -password file:$keySecret") == 0 or die("[ERROR] Certificate exportation failed");
+
+# Import certificate+key into NSS DB
+system("/usr/bin/pk12util -v -i $certFile -d $nssPath -k $keySecret -w $keySecret") == 0 or die("[ERROR] Certificate importation failed");
+
+END {
+    unlink $certFile;
+}
