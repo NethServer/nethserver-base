@@ -44,8 +44,14 @@ class Read extends \Nethgui\Controller\AbstractController
             $this->logFile = '/' . $this->logFile;
         }
 
-        $this->offset = $request->hasArgument('o') ? $request->getArgument('o') : 0;
-        $this->query = $request->hasArgument('q') ? $request->getArgument('q') : NULL;
+        // Obtain the innermost request values:
+        $subrequest = $request;
+        foreach($request->getPath() as $path) {
+            $subrequest = $subrequest->spawnRequest($path);
+        }
+
+        $this->offset = $subrequest->hasParameter('o') ? $subrequest->getParameter('o') : 0;
+        $this->query = $subrequest->hasParameter('q') ? $subrequest->getParameter('q') : NULL;
     }
 
     public function validate(\Nethgui\Controller\ValidationReportInterface $report)
