@@ -108,6 +108,7 @@ safe_symlink(
 # actions for interface-modify event #1532
 #--------------------------------------------------
 event_actions('interface-update', qw(
+              interface-config-adjust    04
               interface-config-reset     25
               interface-config-write     30
               interface-config-restart   70
