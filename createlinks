@@ -259,6 +259,19 @@ validator_actions('interface-config', qw(
 		  interface-role 10
 ));
 
+#--------------------------------------------------
+# password-modify event
+#--------------------------------------------------
+event_actions('password-modify', qw(
+              password-set 25
+              password-cleanup 90
+));
+
+#--------------------------------------------------
+# validate passwords
+#--------------------------------------------------
+validator_actions('password-strength',
+                  'password-strength' => '10');
 
 exit 0;
 
