@@ -1,2 +1,2 @@
 #!/bin/bash
-/usr/bin/nohup /sbin/new-kernel-pkg --package kernel --mkinitrd --dracut --depmod --update $(uname -r) &>/dev/null &
+/usr/bin/nohup plymouth-set-default-theme text -R  &>/dev/null &
