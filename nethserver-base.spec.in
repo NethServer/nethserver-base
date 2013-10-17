@@ -81,6 +81,14 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Thu Oct 17 2013 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.4.3-1.ns6d
+- Add AdminIsNotRoot to keep admin and root password in sync #2277
+- Store root server certificate in NSS database #2248
+- Avoid resolv.conf overwrite by dhclient #2213
+- Fix lokkit configuration #2205
+- Add language code to URLs #2113 [Nethgui]
+- Implement configurable log rotation and retention policies #2053
+
 * Wed Aug 28 2013 Davide Principi <davide.principi@nethesis.it> - 1.4.1-1.ns6
 - Import nethserver-manager code from nethserver-base - Enhancement #2110 [NethServer]
 - Base: validate configuration from NetworkAdapter UI module - Enhancement #2103 [NethServer]
