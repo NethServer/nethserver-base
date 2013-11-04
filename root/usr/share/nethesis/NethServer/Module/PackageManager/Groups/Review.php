@@ -1,4 +1,5 @@
 <?php
+
 namespace NethServer\Module\PackageManager\Groups;
 
 /*
@@ -122,8 +123,8 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction implements \N
             $arguments = array();
 
             $prependAt = function($n) {
-                    return '@' . $n;
-                };
+                return '@' . $n;
+            };
 
             if ($this->parameters['addGroups']) {
                 $arguments[] = '--install';
@@ -166,10 +167,10 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction implements \N
     {
         $defaultRpms = array();
 
-        foreach($this->getAdapter() as $group) {
+        foreach ($this->getAdapter() as $group) {
             $defaultRpms = array_merge($defaultRpms, $group['dpackages']);
         }
-        
+
         return $defaultRpms;
     }
 
@@ -194,7 +195,7 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction implements \N
 
             // mark all the mandatory packages:
             foreach ($group['mpackages'] as $rpm) {
-                if( ! isset($rpms[$rpm]) ) {
+                if ( ! isset($rpms[$rpm])) {
                     $rpms[$rpm] = 0;
                 }
                 $rpms[$rpm] |= $action;
@@ -269,15 +270,17 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction implements \N
         $adapter = $this->getAdapter();
 
         $mapGroupName = function($k) use ($adapter) {
-                return isset($adapter[$k]) ? $adapter[$k]['name'] : $k;
-            };
+            return isset($adapter[$k]) ? $adapter[$k]['name'] : $k;
+        };
 
         if ( ! empty($this->selection['add'])) {
-            $messages[] = $t->translate($this, 'GroupsToAdd_label', array(count($this->selection['add']), implode(', ', array_map($mapGroupName, $this->selection['add']))));
+            $messages[] = $t->translate($this, 'GroupsToAdd_label', array(count($this->selection['add']),
+                implode(', ', array_map($mapGroupName, $this->selection['add']))));
         }
 
         if ( ! empty($this->selection['remove'])) {
-            $messages[] = $t->translate($this, 'GroupsToRemove_label', array(count($this->selection['remove']), implode(', ', array_map($mapGroupName, $this->selection['remove']))));
+            $messages[] = $t->translate($this, 'GroupsToRemove_label', array(count($this->selection['remove']),
+                implode(', ', array_map($mapGroupName, $this->selection['remove']))));
         }
 
         return $messages;
