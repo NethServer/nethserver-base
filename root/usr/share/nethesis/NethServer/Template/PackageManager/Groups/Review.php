@@ -38,6 +38,6 @@ echo $view->hidden('addGroups');
 echo $view->hidden('removeGroups');
 
 echo $view->buttonList()
-    ->insert($view->button('Apply', $view::BUTTON_SUBMIT))
+    ->insert($view->button('Run', $view::BUTTON_SUBMIT))
     ->insert($view->button('Cancel', $view::BUTTON_CANCEL))
 ;

@@ -26,51 +26,74 @@ namespace NethServer\Module\PackageManager\Groups;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Tracker extends \Nethgui\Controller\Collection\AbstractAction
+class Tracker extends \NethServer\Tool\Tracker
 {
-    private $done = FALSE;
+    private $failedEvents = array();
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
 
-        /* @var $process \Nethgui\System\ProcessInterface */
+        if ( ! $this->getRequest()->isValidated()) {
+            return;
+        }
 
-        if ($this->getRequest()->isValidated()) {
-            $process = $this->getPlatform()->getDetachedProcess('PackageManager');
-            if ($process === FALSE) {
-                $this->done = TRUE;                
-            } elseif (is_object($process)) {                
-                $view->getCommandList()->show();
+        $view['failedEvents'] = array();
+        $view['message'] = '';
 
-                if ($process->readExecutionState() === \Nethgui\System\ProcessInterface::STATE_EXITED) {
-                    $output = $process->getOutputArray();
-                    $ret = json_decode(\Nethgui\array_end(array_filter($process->getOutputArray())), true);
-                    // ret is now an array with two elements
-                    //    exit_code => program exit code
-                    //    msg => error description if exit_code = 1
-                    if ($ret['exit_code'] === 0) {
-                        $view->getCommandList('/Notification')->showMessage($view->translate("package_success"), \Nethgui\Module\Notification\AbstractNotification::NOTIFY_SUCCESS);
-                    } else {
-                        $view->getCommandList('/Notification')->showMessage(is_string($ret['msg']) ? $ret['msg'] : $view->translate("Unknown_error_label"), \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR);
-                    }
-                    $this->getLog()->notice(sprintf('%s: PackageManager process `%s` exit code: %d', __CLASS__, $process->getIdentifier(), $ret['exit_code']));
-                    $this->done = TRUE;
-                    $view->getCommandList()->sendQuery($view->getModuleUrl('/PackageManager/Packages'));
-                    if ( ! $process->isDisposed()) {
-                        $process->dispose();
-                    }
-                } else {
-                    NETHGUI_DEBUG && $this->getLog()->notice(sprintf('%s: PackageManager process `%s` is still running..', __CLASS__, $process->getIdentifier()));
-                    $view->getCommandList()->reloadData(4000);
-                }
+        $view->getCommandList()->show();
+
+        $state = $this->getProgress();
+        if (is_array($state)) {
+            $view['progress'] = intval(100 * $state['progress']);
+
+            $parts = array();
+            if ( ! empty($state['last']['title']) && ! empty($state['last']['id'])) {
+                $parts[] = $view->translate($state['last']['title']);
             }
+            if ( ! empty($state['last']['message'])) {
+                $parts[] = $view->translate($state['last']['message']);
+            }
+            $view['message'] = implode(' - ', $parts);
+        } else {
+            $view['progress'] = FALSE;
+        }
+        $view['exitCode'] = $this->getExitCode();
+        $view['FormAction'] = $view->getModuleUrl($this->getTaskId());
+
+        if ($this->getExitCode() === FALSE) {
+            // Still running
+            $view->getCommandList()->reloadData(4000);
+        } else {
+            $this->findFailedEvents(array('children' => $this->getTasks()), $this->failedEvents);
+            if (empty($this->failedEvents)) {
+                $view->getCommandList('/Notification')->showMessage($view->translate("package_success"), \Nethgui\Module\Notification\AbstractNotification::NOTIFY_SUCCESS);
+            } else {
+                $message = $view->translate('Failed_events_label', array(
+                    count($this->failedEvents)));
+                $view['failedEvents'] = $this->failedEvents;
+                $view['message'] = $message;
+                $view->getCommandList('/Notification')->showMessage($message, \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR);
+            }
+        }
+    }
+
+    private function findFailedEvents($currentTask, &$failures)
+    {
+        if ( ! is_array($currentTask['children'])) {
+            return;
+        }
+        foreach ($currentTask['children'] as $task) {
+            if ($task['code'] != 0 && substr($task['title'], 0, 5) == 'Event') {
+                $failures[] = $task['title'];
+            }
+            $this->findFailedEvents($task, $failures);
         }
     }
 
     public function nextPath()
     {
-        return $this->done === TRUE ? '/PackageManager/Groups/Select' : FALSE;
+        return ($this->getExitCode() === FALSE) ? FALSE : '/PackageManager/Groups/Select';
     }
 
 }

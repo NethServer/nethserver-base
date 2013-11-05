@@ -14,7 +14,7 @@ $L['available'] = 'disponibile';
 $L['installed'] = 'installato'; 
 $L['installing'] = 'installazione in corso..'; 
 $L['mandatory_packages'] = 'Pacchetti obbligatori:'; 
-$L['package_success'] = 'Operazione completata correttamente'; 
+$L['package_success'] = 'Operazione completata correttamente';
 $L['removing'] = 'rimozione in corso..';
 
 $L['rpm_name'] = 'Nome';
@@ -24,7 +24,8 @@ $L['rpm_release'] = 'Rilascio';
 $L['Groups_Title'] = 'Gruppi';
 $L['Packages_Title'] = 'Pacchetti RPM';
 $L['Review_header'] = 'Conferma le modifiche da apportare al sistema';
-$L['Next_label'] = 'Avanti';
+$L['ApplySelection_label'] = 'Applica';
+$L['Run_label'] = 'Avvia installazione';
 
 $L['GroupsToAdd_label'] = 'Aggiungi (${0}): ${1}';
 $L['GroupsToRemove_label'] = 'Rimuovi (${0}): ${1}';
@@ -33,5 +34,5 @@ $L['Transaction_summary_label'] = 'Modifiche ai gruppi';
 $L['Optional_packages_label'] = 'Scelta dei pacchetti opzionali';
 $L['Empty_optionals_label'] = 'Nessun pacchetto opzionale è disponibile';
 
-$L['Unknown_error_label'] = 'Errore sconosciuto: consultare il log di sistema';
+$L['Failed_events_label'] = 'Uno o più eventi (${0}) hanno riportato errori.  Per ulteriori dettagli vedere i log di sistema.';
 $L['Please_wait_label'] = 'Installazione software in corso. Attendere...';

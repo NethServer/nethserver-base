@@ -14,7 +14,7 @@ $L['available'] = 'available';
 $L['installed'] = 'installed'; 
 $L['installing'] = 'installing..'; 
 $L['mandatory_packages'] = 'Mandatory packages:'; 
-$L['package_success'] = 'Operation completed successfully'; 
+$L['package_success'] = 'Operation completed successfully';
 $L['removing'] = 'removing..'; 
 
 $L['rpm_name'] = 'Name';
@@ -24,7 +24,8 @@ $L['rpm_release'] = 'Release';
 $L['Groups_Title'] = 'Groups';
 $L['Packages_Title'] = 'RPM packages';
 $L['Review_header'] = 'Confirm system changes';
-$L['Next_label'] = 'Next';
+$L['ApplySelection_label'] = 'Apply';
+$L['Run_label'] = 'Run installation';
 
 $L['GroupsToAdd_label'] = 'Add (${0}): ${1}';
 $L['GroupsToRemove_label'] = 'Remove (${0}): ${1}';
@@ -33,5 +34,5 @@ $L['Transaction_summary_label'] = 'Group changes';
 $L['Optional_packages_label'] = 'Choose optional packages';
 $L['Empty_optionals_label'] = 'No optional packages are available';
 
-$L['Unknown_error_label'] = 'Unknown error: see system log';
+$L['Failed_events_label'] = 'One or more events (${0}) reported an error.  See the system logs for more details.';
 $L['Please_wait_label'] = 'Installing software. Please wait...';

@@ -159,7 +159,8 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction implements \N
                 $arguments[] = implode(',', $selectedOptionals);
             }
 
-            $this->getPlatform()->exec('/usr/bin/sudo /sbin/e-smith/pkgaction ${@}', $arguments, TRUE)->setIdentifier('PackageManager');
+            $this->taskIdentifier = $this->getPlatform()->exec('/usr/bin/sudo /sbin/e-smith/pkgaction ${@}', $arguments, TRUE)->getIdentifier();
+            $this->getPhpWrapper()->sleep(3); // Wait for ptrack server to start
         }
     }
 
@@ -225,6 +226,9 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction implements \N
             $view->getCommandList()->show();
             $view['addGroups'] = implode(',', isset($this->selection['add']) ? $this->selection['add'] : array());
             $view['removeGroups'] = implode(',', isset($this->selection['remove']) ? $this->selection['remove'] : array());
+        } elseif ($this->getRequest()->isValidated() && $this->getRequest()->isMutation()) {
+            // FIXME EXPERIMENTAL
+            $view->getCommandList()->httpHeader('HTTP/1.1 202 Accepted');
         }
     }
 
@@ -289,10 +293,10 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction implements \N
     public function nextPath()
     {
         if ($this->getRequest()->isMutation()) {
-            $process = $this->getPlatform()->getDetachedProcess('PackageManager');
+            $process = $this->getPlatform()->getDetachedProcess($this->taskIdentifier);
             if ($process->readExecutionState() === \Nethgui\System\ProcessInterface::STATE_RUNNING) {
-                return '/PackageManager/Groups/Tracker';
-            }
+                return '/PackageManager/Groups/Tracker/' . $this->taskIdentifier;
+        }
             return '/PackageManager/Groups/Select';
         }
         return parent::nextPath();
