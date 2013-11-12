@@ -58,13 +58,13 @@ class Shutdown extends \Nethgui\Controller\AbstractController
             }
 
             $this->process = $this->getPlatform()->exec('/usr/bin/sudo ${1}', array($cmd));
-            //$this->process = $this->getPlatform()->exec('/bin/date');
+            sleep(5);
 
-        } elseif ($this->getRequest()->hasArgument('wait')) {
+        } elseif ($this->getRequest()->hasParameter('wait')) {
             // parse /sbin/runlevel output to get the current runlevel value:
-            $this->process = $this->getPlatform()->exec('/usr/bin/sudo ${1}', array('/sbin/runlevel'));
+            $this->process = $this->getPlatform()->exec('/sbin/runlevel');
             $runlevel = \Nethgui\array_end(explode(' ', $this->process->getOutput()));
-            NETHGUI_DEBUG && $this->getLog()->notice($runlevel . ' ' . join(', ', $this->getRequest()->getArgumentNames()));
+            NETHGUI_DEBUG && $this->getLog()->notice('RUNLEVEL ' . $runlevel . ' ' . join(', ', $this->getRequest()->getParameterNames()));
 
             // runlevel validation:
             if ($runlevel === '0' || $runlevel === '6') {
@@ -72,8 +72,8 @@ class Shutdown extends \Nethgui\Controller\AbstractController
                 sleep(10);
             } else {
                 // wait argument is allowed only on reboot and halt runlevels!
-                throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1355301177);
                 sleep(2);
+                throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1355301177);          
             }
         }
     }

@@ -31,10 +31,7 @@ $view->includeCss("
 
 $view->includeJavascript("
 (function ( $ ) {
-    // FIXME: define in jquery.nethgui.base.js -- A translator helper:
-    var T = function () {
-        return $.Nethgui.Translator.translate.apply($.Nethgui.Translator, Array.prototype.slice.call(arguments, 0));
-    };
+    var T = $.Nethgui.T;
 
     var _url;
     var _shutdownStatus = 0;
