@@ -1,6 +1,6 @@
 <?php
-$view->includeFile('NethServer/Js/jquery.masonry.min.js');
 $view->useFile("css/jquery.jqplot.min.css");
+$view->useFile('js/jquery.masonry.min.js');
 $view->useFile("js/jquery.jqplot.min.js");
 
 $view->includeCSS("

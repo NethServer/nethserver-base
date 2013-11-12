@@ -1,4 +1,6 @@
 <?php
+/* @var $view \Nethgui\Renderer\Xhtml */
+
 $filename = basename(__FILE__);
 $bootstrapJs = <<<"EOJS"
 /*
@@ -12,15 +14,41 @@ jQuery(document).ready(function($) {
 });
 EOJS;
 
+$globalUseFile = new \ArrayObject();
+
+/*
+ * jQuery & jQueryUI libraries:
+ */
+if (defined('NETHGUI_DEBUG') && NETHGUI_DEBUG === TRUE) {
+    $globalUseFile->append('js/jquery-1.7.1.js');
+    $globalUseFile->append('js/jquery-ui-1.8.18.custom.js');
+} else {
+    // require global javascript resources:
+    $globalUseFile->append('js/jquery-1.7.1.min.js');
+    $globalUseFile->append('js/jquery-ui-1.8.18.custom.min.js');
+}
+
+/*
+ * jQuery plugins
+ */
+$globalUseFile->append('js/jquery.dataTables.min.js');
+$globalUseFile->append('js/jquery.qtip.min.js');
+
+$lang = $view->getTranslator()->getLanguageCode();
+if ($lang !== 'en') {
+    $globalUseFile->append(sprintf('js/jquery.ui.datepicker-%s.js', $lang));
+}
+
+
 $view
-    // Javascript:
+    ->includeFile('Nethgui/Js/jquery.nethgui.loading.js')
+    ->includeFile('Nethgui/Js/jquery.nethgui.helparea.js')
     ->includeJavascript($bootstrapJs)
     // CSS:
     ->useFile('css/ui/jquery-ui-1.8.16.custom.css')
     ->useFile('css/jquery.qtip.min.css')
-    ->useFile('css/base.css')    
+    ->useFile('css/base.css')
 ;
-
 ?><!DOCTYPE html>
 <html lang="<?php echo $view['lang'] ?>">
     <head>
@@ -40,11 +68,16 @@ $view
             <?php endif; ?>
             <div id="pageContent">
                 <div class="primaryContent" role="main">
-                    <?php echo $view['currentModuleOutput'] ?>                    
+                    <?php echo $view['currentModuleOutput'] ?>
                 </div>
                 <?php if ( ! $view['disableMenu']): ?><div class="secondaryContent" role="menu"><div class="contentWrapper"><h2><?php echo htmlspecialchars($view->translate('Other modules')) ?></h2><?php echo $view['menuOutput'] . $view['logoutOutput'] ?></div></div><?php endif; ?>
             </div><?php echo $view['helpAreaOutput'] ?>
             <?php if ( ! $view['disableFooter']): ?><div id="footer"><p><?php echo htmlspecialchars($view['company'] . ' - ' . $view['address']) ?></p></div><?php endif; ?>
-        </div><?php echo $view->literal($view['Resource']['js']) ?>
+        </div><?php
+        array_map(function ($f) use ($view) {
+            printf("<script src='%s%s'></script>", $view->getPathUrl(), $f);
+        }, iterator_to_array($globalUseFile));
+        echo $view->literal($view['Resource']['js'])
+        ?>
     </body>
 </html>
