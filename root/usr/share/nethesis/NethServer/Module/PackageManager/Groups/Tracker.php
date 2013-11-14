@@ -75,6 +75,7 @@ class Tracker extends \NethServer\Tool\Tracker
                 $view['message'] = $message;
                 $view->getCommandList('/Notification')->showMessage($message, \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR);
             }
+            $view->getCommandList()->sendQuery($view->getModuleUrl('/PackageManager/Packages'), 0, FALSE);
         }
     }
 
