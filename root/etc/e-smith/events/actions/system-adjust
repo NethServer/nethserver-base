@@ -3,8 +3,13 @@
 import sys
 sys.path.append('/usr/lib/yum-plugins')
 
-import nethserver
+import nethserver_events
 
-nethserver.reconfigure_all_packages()
-nethserver.adjust_all_services()
+events = nethserver_events.filter_update_events(nethserver_events.read_package_list())
 
+events.append('firewall-adjust')
+events.append('runlevel-adjust')
+
+success = nethserver_events.run_events(events)
+
+sys.exit(0 if success else 1)
