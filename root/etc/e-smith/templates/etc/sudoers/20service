@@ -1,7 +1,0 @@
-{
-    #
-    # 20service
-    #
-    push @cmnd_alias_httpd_admin, "/sbin/service [a-zA-Z0-9_-]* status";
-    '';
-}

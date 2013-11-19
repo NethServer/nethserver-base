@@ -68,12 +68,17 @@ class Services extends \Nethgui\Controller\TableController
      */
     public function prepareViewForColumnRunning(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
+        static $serviceStatusCache;
         $ret = "...";
         $request = $this->getRequest();
+
         if (isset($request) && $this->getRequest()->getExtension() === 'json') {
-            $ret = "-";
-            $p = $this->getPlatform()->exec('/usr/bin/sudo /sbin/service ${1} status', array($key));
-            if ($p->getExitCode() === 0) {
+            if( ! isset($serviceStatusCache)) {
+                $serviceStatusCache = json_decode($this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/read-service-status')->getOutput(), TRUE);
+            }
+            if($serviceStatusCache === FALSE) {
+                return "N/A";
+            } elseif (isset($serviceStatusCache[$key]['running']) && $serviceStatusCache[$key]['running']) {
                $ret = $view->translate("running_label");
                $rowMetadata['rowCssClass'] .= ' running ';
             } else {
