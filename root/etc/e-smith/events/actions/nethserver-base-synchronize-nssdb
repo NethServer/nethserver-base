@@ -20,7 +20,7 @@
 # along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-use esmith::util;
+use NethServer::Password;
 use File::Temp;
 use esmith::ConfigDB;
 
@@ -35,7 +35,7 @@ if( ! $nssPath) {
     $nssPath = '/etc/pki/nssdb/';
 }
 
-esmith::util::genRandomPassword($keySecret);
+NethServer::Password::store($keySecret);
 
 my $certFile = File::Temp::tempnam('/tmp', 'certXXXXXX');
 
