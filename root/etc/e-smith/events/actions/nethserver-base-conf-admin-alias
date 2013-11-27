@@ -40,9 +40,14 @@ if ! id admin &>/dev/null; then
     exit 2
 fi
 
+if [ "`/sbin/e-smith/db configuration getprop admin KeepMessageCopy`" == "yes" ]; then
+    keep_copy=1
+fi
+
 ADMIN_EMAIL=`/sbin/e-smith/db configuration getprop admin EmailAddress`
 
 if [ -n "${ADMIN_EMAIL}" ]; then
+    ADMIN_EMAIL="${ADMIN_EMAIL}${keep_copy:+, admin}"
     if ! grep -q '^admin:' $ALIASES_DB; then
 	echo "Enabling admin external mail address forwarding"
 	echo -e "admin:\t\t${ADMIN_EMAIL}" >> ${ALIASES_DB}    
