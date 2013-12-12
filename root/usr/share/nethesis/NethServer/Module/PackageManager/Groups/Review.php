@@ -1,5 +1,4 @@
 <?php
-
 namespace NethServer\Module\PackageManager\Groups;
 
 /*
@@ -293,11 +292,7 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction implements \N
     public function nextPath()
     {
         if ($this->getRequest()->isMutation()) {
-            $process = $this->getPlatform()->getDetachedProcess($this->taskIdentifier);
-            if ($process->readExecutionState() === \Nethgui\System\ProcessInterface::STATE_RUNNING) {
-                return '/PackageManager/Groups/Tracker/' . $this->taskIdentifier;
-        }
-            return '/PackageManager/Groups/Select';
+            return '/PackageManager/Groups/Tracker/' . $this->taskIdentifier;
         }
         return parent::nextPath();
     }

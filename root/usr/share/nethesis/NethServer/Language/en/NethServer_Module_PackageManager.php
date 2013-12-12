@@ -36,3 +36,5 @@ $L['Empty_optionals_label'] = 'No optional packages are available';
 
 $L['Failed_events_label'] = 'One or more events (${0}) reported an error.  See the system logs for more details.';
 $L['Please_wait_label'] = 'Installing software. Please wait...';
+$L['Installer_Message_Failure'] = 'Message from the install process: ${0}';
+$L['Installer_Generic_Failure'] = 'The install process exited unexpectedly. See system logs for details.';

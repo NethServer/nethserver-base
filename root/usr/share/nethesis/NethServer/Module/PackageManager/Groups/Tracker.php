@@ -64,7 +64,7 @@ class Tracker extends \NethServer\Tool\Tracker
         if ($this->getExitCode() === FALSE) {
             // Still running
             $view->getCommandList()->reloadData(4000);
-        } else {
+        } elseif ($this->getExitCode() === 0) {
             $this->findFailedEvents(array('children' => $this->getTasks()), $this->failedEvents);
             if (empty($this->failedEvents)) {
                 $view->getCommandList('/Notification')->showMessage($view->translate("package_success"), \Nethgui\Module\Notification\AbstractNotification::NOTIFY_SUCCESS);
@@ -75,6 +75,15 @@ class Tracker extends \NethServer\Tool\Tracker
                 $view['message'] = $message;
                 $view->getCommandList('/Notification')->showMessage($message, \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR);
             }
+            $view->getCommandList()->sendQuery($view->getModuleUrl('/PackageManager/Packages'), 0, FALSE);
+        } else {
+            $process = $this->getPlatform()->getDetachedProcess($this->getTaskId());
+            if($process && $process->getOutput()) {
+                $message = $view->translate('Installer_Message_Failure', array(substr($process->getOutput(), 0, 255)));
+            } else {
+                $message = $view->translate('Installer_Generic_Failure');
+            }
+            $view->getCommandList('/Notification')->showMessage($message, \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR);
             $view->getCommandList()->sendQuery($view->getModuleUrl('/PackageManager/Packages'), 0, FALSE);
         }
     }
