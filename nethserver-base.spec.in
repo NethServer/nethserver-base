@@ -45,14 +45,6 @@ and template system.
 %prep
 %setup
 
-%pre
-# ensure admin user exists:
-if ! id admin >/dev/null 2>&1 ; then
-   useradd -M admin
-fi
-
-%post
-
 %build
 
 perl createlinks
