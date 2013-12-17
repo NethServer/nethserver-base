@@ -81,7 +81,7 @@ my $city = substr($contact->{City} || 'SomeCity', 0, 64);
 my $company = substr($contact->{Company} || 'SomeCompany', 0, 64);
 my $department = substr($contact->{Department} || 'SomeDepartment', 0, 64);
 my $commonName = substr($pki->{CommonName} || $fqdn , 0, 64);
-my $email = substr($conf{admin}{EmailAddress} || 'admin@' . $fqdn, 0, 64);
+my $email = substr('root@' . $fqdn, 0, 64);
 
 open(FH, '|-', join(' ', '/usr/bin/openssl',
 		    'req',
