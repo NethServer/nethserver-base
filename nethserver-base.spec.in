@@ -81,6 +81,13 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Dec 18 2013 Davide Principi <davide.principi@nethesis.it> - 1.5.0-1.ns6
+- Remove external JS libraries from source repositories - Enhancement #2167 [NethServer]
+- Always deliver mail to local admin user - Enhancement #2102 [NethServer]
+- Directory: backup service accounts passwords  - Enhancement #2063 [NethServer]
+- Process tracking and notifications - Feature #2029 [NethServer]
+- Service supervision with Upstart - Feature #2014 [NethServer]
+
 * Thu Oct 17 2013 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.4.3-1.ns6d
 - Add AdminIsNotRoot to keep admin and root password in sync #2277
 - Store root server certificate in NSS database #2248
