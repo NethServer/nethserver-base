@@ -1,0 +1,25 @@
+{
+    #
+    # 00adm_commands
+    #
+    @adm_commands = qw(
+        /sbin/e-smith/db 
+        /sbin/e-smith/signal-event 
+        /sbin/e-smith/validate 
+        /sbin/e-smith/pam-authenticate-pw
+
+        /sbin/poweroff
+        /sbin/reboot
+
+        /sbin/e-smith/logviewer
+
+        /sbin/e-smith/pkgaction 
+        /sbin/e-smith/pkginfo
+
+        /usr/libexec/nethserver/read-service-status
+    );
+
+    push @adm_commands, "/sbin/service [a-zA-Z0-9_-]* status";
+
+    '';
+}

@@ -1,0 +1,8 @@
+#
+# 30nethserver_adm
+#
+Cmnd_Alias NETHSERVER_ADM = { join(', ', @adm_commands, @cmnd_alias_httpd_admin) }
+
+%adm ALL=NOPASSWD: NETHSERVER_ADM
+
+
