@@ -66,7 +66,7 @@ class ChangePassword extends \Nethgui\Controller\Table\AbstractAction
         parent::bind($request);
 
         $userExists = strlen($this->userName) > 0
-            && ($this->userName === 'admin'
+            && ($this->userName === 'root'
             || $this->getPlatform()->getDatabase('accounts')->getType($this->userName) === 'user');
 
         if ( ! $userExists) {

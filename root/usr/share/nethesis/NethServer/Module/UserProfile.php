@@ -49,13 +49,13 @@ class UserProfile extends \Nethgui\Controller\CompositeController implements \Ne
         // Sort child modules so that "Personal" is actually the first (shown by default).
         $firstModule = 'Personal';
         $this->sortChildren(function(\Nethgui\Module\ModuleInterface $a, \Nethgui\Module\ModuleInterface $b) use ($firstModule) {
-                if ($a->getIdentifier() === $firstModule) {
-                    return -1;
-                } elseif ($b->getIdentifier() === $firstModule) {
-                    return 1;
-                }
-                return 0;
-            });
+            if ($a->getIdentifier() === $firstModule) {
+                return -1;
+            } elseif ($b->getIdentifier() === $firstModule) {
+                return 1;
+            }
+            return 0;
+        });
 
         parent::initialize();
     }
@@ -64,8 +64,14 @@ class UserProfile extends \Nethgui\Controller\CompositeController implements \Ne
     {
         $userName = $request->getUser()->getCredential('username');
 
-        // The `admin` user needs a different data source:
-        if ($userName === 'admin') {
+        if($userName === 'admin' &&
+            $this->getPlatform()->getDatabase('accounts')->getType('admin') !== 'user') {
+            # Fake admin user, fallback to root.
+            $userName = 'root';
+        }
+
+        // The root user needs a different data source:
+        if ($userName === 'root') {
             $this->adapter = $this->getPlatform()->getTableAdapter('configuration', 'configuration');
         } else {
             $this->adapter = $this->getPlatform()->getTableAdapter('accounts', 'user');

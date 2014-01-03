@@ -11,7 +11,7 @@ echo $view->fieldset()
     ->insert($view->textInput('EmailAddress'))
 ;
 
-if ($view['username'] !== 'admin')
+if ($view['username'] !== 'root')
     echo $view->fieldset()
         ->setAttribute('template', $T('ExtraInfo_Title'))
         ->insert($view->textInput('Company'))
