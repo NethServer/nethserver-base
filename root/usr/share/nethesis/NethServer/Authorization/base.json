@@ -1,14 +1,14 @@
 [
     {
-        "Id": 1327570198,
+        "Id": 1389104743,
         "Final": true,
         "Effect": "ALLOW",
-        "Subject": "admin",
+        "Subject": ["root", "admin", ".groups HAS adm"],
         "Action": "*",
         "Resource": "*",
 
         "Description":
-            "Admin user has no restriction"
+            "Members of the adm group have no restriction"
     }
     ,
     {
