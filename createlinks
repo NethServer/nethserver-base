@@ -76,7 +76,6 @@ event_templates('nethserver-base-update', qw(
     /etc/fstab
     /etc/resolv.conf
     /etc/selinux/config
-    /etc/libuser.conf
     /etc/pam.d/system-auth-nh
     /etc/pam.d/password-auth-nh
     /etc/sudoers
