@@ -30,48 +30,37 @@ if ! [ -r "${ALIASES_DB}" ]; then
     exit 1
 fi
 
-if [ -n "${USER}" ] && [ "${USER}" != 'admin' ]; then
-    # Give up, if we have USER name which is not "admin":
+if [ -n "${USER}" ] && [ "${USER}" != 'root' ]; then
+    # Give up, if we have USER name which is not "root":
     exit 0
 fi
 
-if ! id admin &>/dev/null; then
-    echo "Could not find admin user"
-    exit 2
-fi
-
-if [ "`/sbin/e-smith/db configuration getprop admin KeepMessageCopy`" == "yes" ]; then
+if [ "`/sbin/e-smith/db configuration getprop root KeepMessageCopy`" == "yes" ]; then
     keep_copy=1
 fi
 
-ADMIN_EMAIL=`/sbin/e-smith/db configuration getprop admin EmailAddress`
+ADMIN_EMAIL=`/sbin/e-smith/db configuration getprop root EmailAddress`
 
 if [ -n "${ADMIN_EMAIL}" ]; then
-    ADMIN_EMAIL="${ADMIN_EMAIL}${keep_copy:+, admin}"
-    if ! grep -q '^admin:' $ALIASES_DB; then
-	echo "Enabling admin external mail address forwarding"
-	echo -e "admin:\t\t${ADMIN_EMAIL}" >> ${ALIASES_DB}    
+    ADMIN_EMAIL="${ADMIN_EMAIL}${keep_copy:+, root}"
+    if ! grep -q '^root:' $ALIASES_DB; then
+	echo "Enabling root external mail address forwarding"
+	echo -e "root:\t\t${ADMIN_EMAIL}" >> ${ALIASES_DB}    
 	REFRESH=1
-    elif ! grep -q $'^admin:\t\t'"${ADMIN_EMAIL}" $ALIASES_DB; then
-	echo "Updating admin external mail address forwarding"
-	sed -i "/^admin:/ c \\
-admin:\t\t${ADMIN_EMAIL}" ${ALIASES_DB}    
+    elif ! grep -q $'^root:\t\t'"${ADMIN_EMAIL}" $ALIASES_DB; then
+	echo "Updating root external mail address forwarding"
+	sed -i "/^root:/ c \\
+root:\t\t${ADMIN_EMAIL}" ${ALIASES_DB}    
 	REFRESH=1	
     fi
 else
-    if grep -q '^admin:' $ALIASES_DB; then
-	echo "Disabling admin external mail address forwarding"
-	sed -i '/^admin:/ d' ${ALIASES_DB}    
+    if grep -q '^root:' $ALIASES_DB; then
+	echo "Disabling root external mail address forwarding"
+	sed -i '/^root:/ d' ${ALIASES_DB}    
 	REFRESH=1
     fi
 fi
 
-if ! grep -q '^root' $ALIASES_DB; then
-    echo "Creating root => admin alias"
-    echo "# NethServer: all root mail to admin account" >> ${ALIASES_DB}
-    echo -e "root:\t\tadmin" >> ${ALIASES_DB}
-    REFRESH=1
-fi
 
 # If we have changed alias DB source file, rebuild binary form:
 if [ ${REFRESH} -ne 0 ]; then
