@@ -1,2 +1,2 @@
 #!/bin/bash
-/usr/bin/nohup plymouth-set-default-theme text -R  &>/dev/null &
+/usr/bin/nohup plymouth-set-default-theme text -R  &>/dev/null

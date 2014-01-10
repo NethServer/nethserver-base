@@ -1,0 +1,144 @@
+#!/usr/bin/perl -w
+
+# This script initializes NethServer e-smith db accordingly to system configuration
+
+use File::Basename;
+
+my $DB = '/sbin/e-smith/db';
+my %config;
+
+sub source_bash {
+    $file = shift;
+    $config = shift;
+    open FILE, $file or die $!;
+    while (<FILE>) {
+        chomp;
+        $_ =~ s/"//g;
+        my ($i, $j) = split(/=/);
+        $config{lc($i)} = $j;
+    }
+    close FILE;
+}
+
+# Read DNS configuration
+open FILE, '/etc/resolv.conf' or die $!;
+my @dns;
+while (<FILE>) {
+    chomp;
+    if ( $_ =~ /^nameserver/ ) {
+        my ($i, $j) = split(/ /);
+        push(@dns,$j);
+     }
+}
+close FILE;
+$config{'dns'} = join(',',@dns);
+
+# Read timezone configuration
+source_bash('/etc/sysconfig/clock', $config);
+# Read gateway and hostname
+source_bash('/etc/sysconfig/network', $config);
+
+# Fallback for hostname if not configured in /etc/sysconfig/network
+$config{'hostname'} = `/bin/hostname` unless defined($config{'hostname'});
+
+my $host = substr($config{'hostname'}, 0, index($config{'hostname'}, '.'));
+my $domain = substr($config{'hostname'}, index($config{'hostname'}, '.')+1);
+system("/sbin/e-smith/db configuration set TimeZone $config{'zone'}");
+system("/sbin/e-smith/db configuration setprop dns NameServers $config{'dns'}");
+system("/sbin/e-smith/db configuration set SystemName $host");
+system("/sbin/e-smith/db configuration set DomainName $domain");
+
+# Grab all ethernet interfaces
+system("/usr/libexec/nethserver/update-networks-db");
+
+# Green interface will be the one used for default gateway
+$config{'green_ipaddr'} = "";
+$config{'green'} = "";
+$config{'gateway'} = "";
+$|++;
+open( N, "/sbin/ip route |") or die "$!\n";
+my @out = (<N>);
+foreach my $line (@out){
+    if ( $line =~ /^default/) {
+        my @words = split(/\s+/,$line);
+        $config{'green'} = $words[4]; # green device
+
+        # Fallback if gateway not configured in /etc/sysconfig/network
+        $config{'gateway'} = $words[2] unless defined($config{'gateway'});
+    }
+}
+
+# Fallback to first available interface
+if ($config{'green'} eq "") {
+    use esmith::NetworksDB;
+    my $idb = esmith::NetworksDB->open_ro;
+    my @interfaces = $idb->interfaces;
+    my $green = $interfaces[0];
+    $config{'green'} = $green->key;
+}
+# Last fallback, just configure eth0
+if ($config{'green'} eq "") {
+   $config{'green'}  = 'eth0'; 
+}
+
+# Fallback for gateway to a static ip
+if ($config{'gateway'} eq "") {
+   $config{'gateway'}  = '192.168.1.1';
+}
+
+
+# Load ethernet interfaces
+# Below snippet of code from /etc/sysconfig/network-scripts/network-functions 
+my $if_files=`ls /etc/sysconfig/network-scripts/ifcfg* | LANG=C sed -e "\$__sed_discard_ignored_files" -e '/\(ifcfg-lo\$\|:\|ifcfg-.*-range\)/d' -e '/ifcfg-[A-Za-z0-9#\._-]\+\$/ { s/^ifcfg-//g;s/[0-9]/ &/}' | LANG=C sort -k 1,1 -k 2n | LANG=C sed 's/ //'`;
+
+foreach my $f (split(/\s+/, $if_files)) {
+    my %interface;
+    my $basename = basename($f);
+    next unless ($basename ne 'ifcfg-lo');
+    my $i =  substr($basename, 6);
+    open FILE, $f or die $!;
+    while (<FILE>) {
+        chomp;
+        next unless ( $_ =~ '/DEVICE|BOOTPROTO|HWADDR|IPADDR|NETMASK|ONBOOT|TYPE/');
+        $_ =~ s/"//g;
+        my ($i, $j) = split(/=/);
+        $interface{lc($i)} = $j;
+    }
+    close FILE;
+    my $type = $interface{'type'} || 'ethernet';
+    my $device = $interface{'device'} || $i;
+    if ( $device eq $config{'green'} ) { # Enable green device
+        system("/sbin/e-smith/db networks set $i $type bootproto $interface{'bootproto'} netmask $interface{'netmask'} onboot yes ipaddr $interface{'ipaddr'} hwaddr $interface{'hwaddr'} device $device gateway $config{'gateway'}") unless not (defined($interface{'hwaddr'}));
+        $config{'green_ipaddr'} = $interface{'ipaddr'};
+    }
+}
+
+# Fallback to ifconfig
+if ($config{'green_ipaddr'} eq "") {
+    $|++;
+    open( N, "/sbin/ifconfig $config{'green'} |") or die "$!\n";
+    my @out = (<N>);
+    foreach my $line (@out){
+        if ( $line =~ /inet addr/) {
+            $mask = $line;
+            $line =~ s/.*inet addr:((?:\d+\.){3}\d+).*/$1/g;
+            $mask =~ s/.*Mask:((?:\d+\.){3}\d+).*/$1/g;
+            $mask =~ s/\s+//g;
+            $line =~ s/\s+//g;
+            $config{'green_ipaddr'} = $line;
+            system("/sbin/e-smith/db networks setprop $config{'green'} bootproto static ipaddr $line netmask $mask gateway $config{'gateway'} onboot yes device $config{'green'}");
+        }
+    }
+}
+
+# Fallback to static ip address
+if ($config{'green_ipaddr'} eq "") {
+    system("/sbin/e-smith/db networks setprop $config{'green'} bootproto static ipaddr 192.168.1.100 netmask 255.255.255.0 gateway 192.168.1.1 onboot yes device $config{'green'}");
+}
+
+
+# Set green interface
+system("/sbin/e-smith/db networks setprop $config{'green'} role green");
+
+# Apply network configuration
+system("/sbin/e-smith/signal-event interface-update");

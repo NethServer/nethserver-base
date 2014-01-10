@@ -163,14 +163,14 @@ foreach (qw(
 }
 
 #--------------------------------------------------
-# actions for first-boot event
+# actions for system-init event
 #--------------------------------------------------
-event_actions('first-boot', qw(
+event_actions('system-init', qw(
     initialize-default-databases      00
     nethserver-base-plymouth-update   40
-    bootstrap-console-start           50
+    nethserver-base-initialize-db     50
     init-repo                         60
-    network-restart                   70
+    system-adjust                     90
 ));
 
 #
