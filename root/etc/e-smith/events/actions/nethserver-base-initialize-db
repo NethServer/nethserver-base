@@ -109,7 +109,7 @@ foreach my $f (split(/\s+/, $if_files)) {
     my $device = $interface{'device'} || $i;
     my $addresses = '';
     if ($interface{'bootproto'} eq 'static') {
-        my $addresses = "netmask $interface{'netmask'} ipaddr $interface{'ipaddr'} gateway $config{'gateway'}";
+        $addresses = "netmask $interface{'netmask'} ipaddr $interface{'ipaddr'} gateway $config{'gateway'}";
     }
     if ( $device eq $config{'green'} ) { # Enable green device
         system("/sbin/e-smith/db networks set $i $type bootproto $interface{'bootproto'} onboot yes hwaddr $interface{'hwaddr'} device $device $addresses") unless not (defined($interface{'hwaddr'}));
