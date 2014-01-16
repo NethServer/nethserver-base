@@ -68,7 +68,8 @@ class Network extends \Nethgui\Controller\AbstractController
                  'netmask'=> isset($props['netmask'])?$props['netmask']:"", 
                  'gateway'=> isset($props['gateway'])?$props['gateway']:"", 
                  'hwaddr'=> isset($props['hwaddr'])?$props['hwaddr']:"", 
-                 'bootproto'=> isset($props['bootproto'])?$props['bootproto']:"" 
+                 'bootproto'=> isset($props['bootproto'])?$props['bootproto']:"", 
+                 'role'=> isset($props['role'])?$props['role']:"none" 
              );
              $tmp['speed'] = file_get_contents("/sys/class/net/".$interface."/speed")." Mb/s";
              $tmp['stats'] = $stats[$interface];
@@ -129,7 +130,7 @@ class Network extends \Nethgui\Controller\AbstractController
         foreach ($this->interfaces as $i=>$props) {
             $tmp = array();
             foreach ($props as $k=>$v) {
-              if ( $k != 'stats' && $k != 'name' ) {
+              if ( $k != 'stats' && $k != 'name' && $k != 'role') {
                   $k = $view->translate($k."_label");
               }
               $tmp[] = array($k,$v);

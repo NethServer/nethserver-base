@@ -47,7 +47,13 @@ $view->includeJavascript("
                 var str = '<dl>';
                 var name = '';
                 var stats;
+                var role;
                 for (var j=0; j<value[i].length; j++) {
+                     if (value[i][j][0] == 'role') {
+                         role = value[i][j][1];
+                         var res = role.match(/\d/g);
+                         role = role.replace(res,'')
+                     }
                      if (value[i][j][0] == 'name') {
                          name = value[i][j][1];
                      } else if (value[i][j][0] == 'stats') {
@@ -64,7 +70,7 @@ $view->includeJavascript("
                 var sent = Math.ceil(((stats.TX_bytes-last_TX[name])/delta)/1024);
                 str += '<dt>RX</dt><dd>'+recv+' KB/s</dd>';
                 str += '<dt>TX</dt><dd>'+sent+' KB/s</dd>';
-                str = '<div><h2>'+name+'</h2><dl>'+str+'</dl></div>';
+                str = '<div><h2 class=\'interface-'+role+'\'>'+name+'</h2><dl>'+str+'</dl></div>';
                 $(this).append(str);
            }
        });
@@ -72,3 +78,14 @@ $view->includeJavascript("
    });
 })( jQuery);
 ");
+
+$view->includeCss("
+    .interface-green {
+        color: green; 
+    }
+    .interface-red {
+        color: red;
+    }
+
+");
+
