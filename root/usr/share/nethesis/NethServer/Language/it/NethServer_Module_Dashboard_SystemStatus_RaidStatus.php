@@ -3,8 +3,8 @@
 /* NethServer_Module_Dashboard_SystemStatus_RaidStatus.php, language: it */
 
 $L['devs'] = 'Dispositivi';
-$L['raidstatus_title'] = 'Stato RAID';
-$L['no_raid'] = 'Nessun raid configurato';
+$L['raidstatus_title'] = 'Stato RAID software';
+$L['no_raid'] = 'Nessun RAID software configurato';
 $L['ok'] = 'OK';
 $L['critical'] = 'CRITICO';
 $L['level'] = 'Livello';
