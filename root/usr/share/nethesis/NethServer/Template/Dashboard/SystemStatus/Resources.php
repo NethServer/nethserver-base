@@ -10,7 +10,6 @@ echo "<dl>";
 echo "<dt>".$T('load1_label')."</dt><dd>"; echo $view->textLabel('load1'); echo "</dd>";
 echo "<dt>".$T('load5_label')."</dt><dd>"; echo $view->textLabel('load5'); echo "</dd>";
 echo "<dt>".$T('load15_label')."</dt><dd>"; echo $view->textLabel('load15'); echo "</dd>";
-echo "<dt>".$T('cpu_num_label')."</dt><dd>"; echo $view->textLabel('cpu_num'); echo "</dd>";
 echo "<dt>".$T('uptime_label')."</dt>";
 echo "<dd>";
 echo $view->textLabel('days').$T('days_label')." ";
@@ -18,8 +17,20 @@ echo $view->textLabel('hours').$T('hours_label')." ";
 echo $view->textLabel('minutes').$T('minutes_label')." ";
 echo $view->textLabel('seconds').$T('seconds_label');
 echo "</dd>";
+echo "<dt>".$T('time_label')."</dt><dd>"; echo $view->textLabel('time'); echo "</dd>";
 echo "</dl>";
 echo "</div>";
+
+echo "<div class='dashboard-item'>";
+echo $view->header()->setAttribute('template',$T('hardware_title'));
+echo "<dl>";
+echo "<dt>".$T('sys_vendor_label')."</dt><dd>"; echo $view->textLabel('sys_vendor'); echo "</dd>";
+echo "<dt>".$T('product_name_label')."</dt><dd>"; echo $view->textLabel('product_name'); echo "</dd>";
+echo "<dt>".$T('cpu_model_label')."</dt><dd>"; echo $view->textLabel('cpu_model'); echo "</dd>";
+echo "<dt>".$T('cpu_num_label')."</dt><dd>"; echo $view->textLabel('cpu_num'); echo "</dd>";
+echo "</dl>";
+echo "</div>";
+
 
 
 $memory_title = $T('memory_title');

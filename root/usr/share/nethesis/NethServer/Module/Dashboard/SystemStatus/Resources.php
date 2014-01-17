@@ -37,7 +37,9 @@ class Resources extends \Nethgui\Controller\AbstractController
     private $memory = array();
     private $uptime = array();
     private $df = array();
-    private $cpuNum = 0;
+    private $cpu = array();
+    private $sys_vendor = '';
+    private $product_name = '';
 
     private function readMemory()
     {
@@ -80,7 +82,7 @@ class Resources extends \Nethgui\Controller\AbstractController
         return $ret;
     }
 
-    private function readCPUNumber() 
+    private function readCPU() 
     {
         $ret = 0;
         $f = file('/proc/cpuinfo');
@@ -89,7 +91,14 @@ class Resources extends \Nethgui\Controller\AbstractController
                 $ret++;
             }
         }
-        return $ret;
+        $tmp = explode(':',$f[4]);
+
+        return array('model' => trim($tmp[1]), 'n' => $ret);
+    }
+
+    private function readDMI($id)
+    {
+        return file_get_contents("/sys/devices/virtual/dmi/id/$id");
     }
 
     public function process()
@@ -98,7 +107,9 @@ class Resources extends \Nethgui\Controller\AbstractController
         $this->memory = $this->readMemory();
         $this->uptime = $this->readUptime();
         $this->df = $this->readDF();
-        $this->cpuNum = $this->readCPUNumber();
+        $this->cpu = $this->readCPU();
+        $this->sys_vendor = $this->readDMI('sys_vendor');
+        $this->product_name = $this->readDMI('product_name');
     }
  
     public function prepareView(\Nethgui\View\ViewInterface $view)
@@ -111,10 +122,11 @@ class Resources extends \Nethgui\Controller\AbstractController
         $view['load5'] = $this->load[1];
         $view['load15'] = $this->load[2];
         
-        if (!$this->cpuNum) {
-            $this->cpuNum = $this->readCPUNumber();
+        if (!$this->cpu) {
+            $this->cpu = $this->readCPU();
         }
-        $view['cpu_num'] = $this->cpuNum; 
+        $view['cpu_num'] = $this->cpu['n']; 
+        $view['cpu_model'] = $this->cpu['model']; 
 
         if ($this->memory) {
             $tmp[] = array($view->translate("mem_total_label"), $this->memory['MemTotal']);
@@ -146,7 +158,13 @@ class Resources extends \Nethgui\Controller\AbstractController
             } 
             $view['root_df']  = $tmp; 
         }
-        
+        $view['time'] = strftime("%a %d %b %Y - %H:%M");
+        if (!$this->product_name) {
+            $view['product_name'] = $this->readDMI('product_name');
+        }
+        if (!$this->sys_vendor) {
+            $view['sys_vendor'] = $this->readDMI('sys_vendor');
+        }
     }
   
 
