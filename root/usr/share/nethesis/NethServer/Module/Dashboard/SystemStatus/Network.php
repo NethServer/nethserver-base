@@ -127,8 +127,12 @@ class Network extends \Nethgui\Controller\AbstractController
             $this->interfaces = $this->readInterfaces();
         }
         $ifaces = array();
+        $view['gateway'] = "-";
         foreach ($this->interfaces as $i=>$props) {
             $tmp = array();
+            if ( $this->interfaces[$i]['role'] == 'green') {
+                $view['gateway'] = $this->interfaces[$i]['gateway'];
+            }
             foreach ($props as $k=>$v) {
               if ( $k != 'stats' && $k != 'name' && $k != 'role') {
                   $k = $view->translate($k."_label");
@@ -138,10 +142,5 @@ class Network extends \Nethgui\Controller\AbstractController
             $ifaces[] = $tmp;
         }
         $view['interfaces'] = $ifaces;
-        if (isset($this->interfaces['green'])) {
-            $view['gateway'] = $this->interfaces['green']['gateway'];
-        } else {
-            $view['gateway'] = "";
-        }
     }
 }
