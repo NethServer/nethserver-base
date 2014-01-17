@@ -1,7 +1,5 @@
 <?php
-$view->useFile("css/jquery.jqplot.min.css");
 $view->useFile('js/jquery.masonry.min.js');
-$view->useFile("js/jquery.jqplot.min.js");
 
 $view->includeCSS("
   div.dashboard-item {
@@ -35,9 +33,6 @@ $view->includeCSS("
     font-size: 120%;
     text-align: center;
     padding: 0.2em;
-  }
-  .dashboard-item table.jqplot-table-legend {
-    width:auto;
   }
 ");
 

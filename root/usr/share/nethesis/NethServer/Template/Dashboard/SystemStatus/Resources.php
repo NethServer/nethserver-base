@@ -1,7 +1,5 @@
 <?php
 
-$view->useFile("js/jqplot.pieRenderer.min.js");
-
 echo "<div id='Dashboard_SystemStatus_Resources_loading'>".$T('Loading')."...</div>";
 
 echo "<div class='dashboard-item'>";
@@ -41,9 +39,9 @@ $swap_title = $T('swap_title');
 echo "<div class='dashboard-item'>";
 echo $view->header()->setAttribute('template',$memory_title);
 echo "<dl class='$memory_id'></dl>";
-echo "<div id='memory_plot' class='dashboard-graph'></div>";
+echo "<div id='memory_plot'><div id='memory_label' class='progress-label'></div></div>";
 echo "<dl class='$swap_id'></dl>";
-echo "<div id='swap_plot' class='dashboard-graph'></div>";
+echo "<div id='swap_plot'><div id='swap_label' class='progress-label'></div></div>";
 echo "</div>";
 
 
@@ -53,13 +51,24 @@ $moduleUrl = json_encode($view->getModuleUrl("/Dashboard/SystemStatus/Resources"
 echo "<div class='dashboard-item'>";
 echo $view->header()->setAttribute('template',$root_title);
 echo "<dl class='$root_df_id'></dl>";
-echo "<div id='root_plot' class='dashboard-graph'></div>";
+echo "<div id='root_plot'><div id='root_label' class='progress-label'></div></div>";
 echo "</div>";
 
 $view->includeCSS("
     #Dashboard_SystemStatus_Resources_loading {
         text-align: center;
         font-size: 1.2em;
+    }
+    .dashboard-item .progress-label {
+        position: absolute;
+        left: 50%;
+        top: 4px;
+    }
+    .dashboard-item .ui-progressbar {
+        position: relative;
+    }
+    .$swap_id {
+        margin-top: 8px;
     }
 ");
 
@@ -69,8 +78,6 @@ $view->includeJavascript("
     var T = function () {
         return $.Nethgui.Translator.translate.apply($.Nethgui.Translator, Array.prototype.slice.call(arguments, 0));
     };
-
-    var plots = [];
 
     function format_df(val)
     {
@@ -90,18 +97,48 @@ $view->includeJavascript("
         });
     } 
 
-    function refreshPlots() {
-        for (var plot in plots) {
-            if (typeof plots[plot] !== 'undefined') {
-                plots[plot].replot();
-            }
-        }
-    }
 
     function refreshMasonry() {
         if ($(window).width() > 500) {
             $('#Dashboard_SystemStatus').masonry();
         }
+    }
+
+    function printLabels(selector, value, format) {
+         if(typeof(format)==='undefined') format = 0;
+         $(selector).empty();
+         for (index = 0; index < value.length; ++index) {
+             if (format) {
+                 $(selector).append('<dt>'+value[index][0]+'</dt><dd>'+format_df(value[index][1])+'</dd>');
+             } else {
+                 $(selector).append('<dt>'+value[index][0]+'</dt><dd>'+value[index][1]+' MB</dd>');
+             }
+         }
+    }
+
+    function updateProgress(name, max, value) {
+         $('#'+name+'_plot').progressbar({max: max, value: value });
+         p = value/max*100;
+         color = 'green';
+         if (p < 70) {
+             color = 'green';
+         } else if (p >=70 && p<=80) {
+             color = 'yellow';
+         } else if (p>80 && p<90) {
+             color = 'orange';
+         } else {
+             color = 'red';
+         }
+         $('#'+name+'_label').text(p.toPrecision(2)+'%');
+         progressbarValue = $('#'+name+'_plot').find('.ui-progressbar-value');
+         progressbarValue.css({ 'background': color });
+         
+    }
+   
+    function refresh() {
+         $('#Dashboard_SystemStatus_Resources_loading').hide();
+         $('.dashboard-item').show();
+         refreshMasonry();
     }
 
     $(document).ready(function() {
@@ -117,85 +154,27 @@ $view->includeJavascript("
         $( '#Dashboard' ).bind( 'tabsshow', function(event, ui) {
             if (ui.panel.id == 'Dashboard_SystemStatus') {
                 refreshMasonry();
-                refreshPlots(); 
             }
         });       
-        
-        // draw plot excluding total field
-        var plot = jQuery.jqplot ('root_plot', [['',1]], 
-        { 
-            seriesDefaults: {
-                renderer: jQuery.jqplot.PieRenderer, 
-                rendererOptions: { showDataLabels: true }
-            }, 
-            legend: { show:true, location: 's' },
-            title: '$root_title'
-         });
-        plots['root'] = plot;
-
-        plot = jQuery.jqplot ('memory_plot', [['',1]], 
-        { 
-            seriesDefaults: {
-                renderer: jQuery.jqplot.PieRenderer, 
-                rendererOptions: { showDataLabels: true }
-            }, 
-            legend: { show:true, location: 's' },
-            title: '$phys_memory_title'
-        });
-        plots['memory'] = plot;
-
-        plot = jQuery.jqplot ('swap_plot', [['',1]],
-        {
-            seriesDefaults: {
-                renderer: jQuery.jqplot.PieRenderer,
-                rendererOptions: { showDataLabels: true }
-            },
-            legend: { show:true, location: 's' },
-            title: '$swap_title'
-        });
-        plots['swap'] = plot;
        
-
+         
         $('.$root_df_id').on('nethguiupdateview', function(event, value, httpStatusCode) {
-            $(this).empty();
-            $('#Dashboard_SystemStatus_Resources_loading').hide();
-            $('.dashboard-item').show(); 
-            plots['root'].series[0].data = value.slice(1,3);
-            plots['root'].replot();
-            //add text label
-            for (var i=0; i<value.length; i++) {
-                $(this).append('<dt>'+value[i][0]+'</dt><dd>'+format_df(value[i][1])+'</dd>');
-            }
-
-            refreshMasonry();
+            printLabels('.$root_df_id',value, 1);
+            updateProgress('root', value[0][1], value[1][1]);
+            refresh();
         }); 
 
 
         $('.$memory_id').on('nethguiupdateview', function(event, value, httpStatusCode) { 
-            $(this).empty();
-            $('#Dashboard_SystemStatus_Resources_loading').hide();
-            $('.dashboard-item').show(); 
-            plots['memory'].series[0].data = value.slice(1,3);
-            plots['memory'].replot();
-            //add text label
-            //add text label
-            for (var i=0; i<value.length; i++) {
-                $(this).append('<dt>'+value[i][0]+'</dt><dd>'+value[i][1]+' MB</dd>');
-            }
+            printLabels('.$memory_id',value);
+            updateProgress('memory', value[0][1], value[1][1]);
+            refresh();
         }); 
 
         $('.$swap_id').on('nethguiupdateview', function(event, value, httpStatusCode) {
-            // draw plot excluding total field
-            $(this).empty();
-            $('#Dashboard_SystemStatus_Resources_loading').hide();
-            $('.dashboard-item').show(); 
-            plots['swap'].series[0].data = value.slice(1,3);
-            plots['swap'].replot();
-
-            //add text label
-            for (var i=0; i<value.length; i++) {
-                $(this).append('<dt>'+value[i][0]+'</dt><dd>'+value[i][1]+' MB</dd>');
-            }
+            printLabels('.$swap_id',value);
+            updateProgress('swap', value[0][1], value[1][1]);
+            refresh();
         });
 
     });
