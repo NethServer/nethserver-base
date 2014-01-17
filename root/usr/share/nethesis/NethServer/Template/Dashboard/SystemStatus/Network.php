@@ -53,8 +53,7 @@ $view->includeJavascript("
                          role = value[i][j][1];
                          var res = role.match(/\d/g);
                          role = role.replace(res,'')
-                     }
-                     if (value[i][j][0] == 'name') {
+                     } else if (value[i][j][0] == 'name') {
                          name = value[i][j][1];
                      } else if (value[i][j][0] == 'stats') {
                          stats = value[i][j][1];
