@@ -2,7 +2,10 @@
 
 /* @var $view \Nethgui\Renderer\Xhtml */
 
-echo $view->buttonList()->insert($view->button('ApplySelection', $view::BUTTON_SUBMIT));
+echo $view->buttonList()
+    ->insert($view->button('ApplySelection', $view::BUTTON_SUBMIT))
+    ->insert($view->button('Help', $view::BUTTON_HELP))
+;
 
 // 'groups' contains an array of views..
 echo $view->objectsCollection('groups')
@@ -21,7 +24,10 @@ echo $view->objectsCollection('groups')
         })
     ->setAttribute('key', 'id');
 
-echo $view->buttonList()->insert($view->button('ApplySelection', $view::BUTTON_SUBMIT));
+echo $view->buttonList()
+    ->insert($view->button('ApplySelection', $view::BUTTON_SUBMIT))
+    ->insert($view->button('Help', $view::BUTTON_HELP))
+;
 
 $groupsTarget = $view->getClientEventTarget('groups');
 
