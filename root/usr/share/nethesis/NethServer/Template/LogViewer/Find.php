@@ -9,7 +9,10 @@ $form = $view->form()->setAttribute('method', 'get');
 
 $form->insert($view->textInput('q', $view::LABEL_NONE))
     ->insert($view->literal(' '))
-      ->insert($view->button('Find'))
+    ->insert($view->buttonList()
+             ->insert($view->button('Find'))
+             ->insert($view->button('Help', $view::BUTTON_HELP))
+        )
 ;
 
 echo $form;
