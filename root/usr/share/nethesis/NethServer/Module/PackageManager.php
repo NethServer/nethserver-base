@@ -36,7 +36,7 @@ class PackageManager extends \Nethgui\Controller\TabsController implements \Neth
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $attributes)
     {
-        return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($attributes, 'Configuration', 20);
+        return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($attributes, 'Configuration', 16);
     }
 
     public function initialize()
