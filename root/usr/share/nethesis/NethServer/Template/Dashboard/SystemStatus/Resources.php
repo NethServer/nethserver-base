@@ -132,7 +132,6 @@ $view->includeJavascript("
          $('#'+name+'_label').text(p.toPrecision(2)+'%');
          progressbarValue = $('#'+name+'_plot').find('.ui-progressbar-value');
          progressbarValue.css({ 'background': color });
-         
     }
    
     function refresh() {
@@ -167,7 +166,10 @@ $view->includeJavascript("
 
         $('.$memory_id').on('nethguiupdateview', function(event, value, httpStatusCode) { 
             printLabels('.$memory_id',value);
-            updateProgress('memory', value[0][1], value[1][1]);
+            $('#memory_plot').progressbar({max: value[0][1], value: value[1][1] });
+            p =  value[1][1]/value[0][1]*100;
+            $('#memory_label').text(p.toPrecision(2)+'%');
+            progressbarValue = $('#memory_plot').find('.ui-progressbar-value');
             refresh();
         }); 
 
