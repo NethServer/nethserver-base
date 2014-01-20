@@ -15,7 +15,7 @@ echo "<div>";
 echo "<dl>";
 echo "<dt>".$T('link_label')."</dt><dd>".$view->textLabel('link')."</dd>";
 echo "<dt>".$T('model_label')."</dt><dd>".$view->textLabel('model')."</dd>";
-echo "<dt>".$T('speed_label')."</dt><dd>".$view->textLabel('speed')."</dd>";
+echo "<dt>".$T('speed_label')."</dt><dd>".$view->textLabel('speed')." Mb/s</dd>";
 echo "<dt>".$T('driver_label')."</dt><dd>".$view->textLabel('driver')."</dd>";
 echo "<dt>".$T('bus_label')."</dt><dd>".$view->textLabel('bus')."</dd>";
 echo "</dl>";
