@@ -72,6 +72,7 @@ class Network extends \Nethgui\Controller\AbstractController
                  'role'=> isset($props['role'])?$props['role']:"none" 
              );
              $tmp['speed'] = file_get_contents("/sys/class/net/".$interface."/speed")." Mb/s";
+             $tmp['link'] = file_get_contents("/sys/class/net/".$interface."/carrier");
              $tmp['stats'] = $stats[$interface];
              $interfaces[$interface] = $tmp;
         }
@@ -134,7 +135,7 @@ class Network extends \Nethgui\Controller\AbstractController
                 $view['gateway'] = $this->interfaces[$i]['gateway'];
             }
             foreach ($props as $k=>$v) {
-              if ( $k != 'stats' && $k != 'name' && $k != 'role') {
+              if (!in_array($k, array('stats','name','role','link'))) {
                   $k = $view->translate($k."_label");
               }
               $tmp[] = array($k,$v);

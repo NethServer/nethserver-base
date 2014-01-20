@@ -12,7 +12,7 @@ echo "</div>";
 $interfaces_title = $T('interfaces_title');
 $interfaces_id = $view->getClientEventTarget('interfaces');
 $moduleUrl = json_encode($view->getModuleUrl("/Dashboard/SystemStatus/Network"));
-echo "<div class='dashboard-item'>";
+echo "<div class='dashboard-item interface-item'>";
 echo $view->header()->setAttribute('template',$interfaces_title);
 echo "<div class='{$interfaces_id}'></div>";
 echo "</div>";
@@ -48,14 +48,20 @@ $view->includeJavascript("
                 var name = '';
                 var stats;
                 var role;
+                var link;
+                var speed;
                 for (var j=0; j<value[i].length; j++) {
                      if (value[i][j][0] == 'role') {
                          role = value[i][j][1];
                          var res = role.match(/\d/g);
                          role = role.replace(res,'')
-                     } else if (value[i][j][0] == 'name') {
+                     } else if (value[i][j][0].toLowerCase() == 'name') {
                          name = value[i][j][1];
-                     } else if (value[i][j][0] == 'stats') {
+                     } else if (value[i][j][0].toLowerCase() == 'link') {
+                         link = value[i][j][1];
+                     } else if (value[i][j][0].toLowerCase() == 'speed') {
+                         speed = value[i][j][1];
+                     } else if (value[i][j][0].toLowerCase() == 'stats') {
                          stats = value[i][j][1];
                      } else {
                          str = str + '<dt>'+value[i][j][0]+'</dt><dd>'+value[i][j][1]+'</dd>';
@@ -67,8 +73,12 @@ $view->includeJavascript("
                 }
                 var recv = Math.ceil(((stats.RX_bytes-last_RX[name])/delta)/1024);
                 var sent = Math.ceil(((stats.TX_bytes-last_TX[name])/delta)/1024);
-                str += '<dt>RX</dt><dd>'+recv+' KB/s</dd>';
-                str += '<dt>TX</dt><dd>'+sent+' KB/s</dd>';
+                if (link) {
+                    str = str + '<dt>Link</dt><dd><span class=\"green\">OK</span> (' + speed +') </dd>';
+                    str += '<span class=\"bold\">RX: </span>'+recv+' KB/s <span class=\"spacer-left bold\">TX: </span>'+sent+' KB/s</dd>';
+                } else {
+                    str = str + '<dt>Link</dt><dd> - </dd>';
+                }
                 str = '<div><h2 class=\'interface-'+role+'\'>'+name+'</h2><dl>'+str+'</dl></div>';
                 $(this).append(str);
            }
@@ -84,6 +94,20 @@ $view->includeCss("
     }
     .interface-red {
         color: red;
+    }
+    .green {
+        color: green;
+        font-weight: bold;
+        margin-right: 10px;,
+    }
+    .bold {
+        font-weight: bold;
+    }
+    .interface-item {
+        min-height: 100px;
+    }
+    .spacer-left {
+        margin-left: 10px;
     }
 
 ");
