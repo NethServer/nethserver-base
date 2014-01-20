@@ -1,7 +1,7 @@
 <?php 
 
 $L['City_label'] = 'Città'; 
-$L['Company_label'] = 'Azienda'; 
+$L['Company_label'] = 'Società'; 
 $L['Department_label'] = 'Ufficio'; 
 $L['Organization configuration'] = '***Organization details configuration'; 
 $L['Organization contacts'] = 'Informazioni di contatto per l\'organizzazione'; 
