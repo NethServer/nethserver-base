@@ -25,20 +25,21 @@
 # configuration
 #
 
+use strict;
 use File::Basename;
 
 my $DB = '/sbin/e-smith/db';
 my %config;
 
 sub source_bash {
-    $file = shift;
-    $config = shift;
+    my $file = shift;
+    my $config = shift;
     open FILE, $file or die $!;
     while (<FILE>) {
         chomp;
         $_ =~ s/"//g;
         my ($i, $j) = split(/=/);
-        $config{lc($i)} = $j;
+        $config->{lc($i)} = $j;
     }
     close FILE;
 }
@@ -57,9 +58,9 @@ close FILE;
 $config{'dns'} = join(',',@dns);
 
 # Read timezone configuration
-source_bash('/etc/sysconfig/clock', $config);
+source_bash('/etc/sysconfig/clock', \%config);
 # Read gateway and hostname
-source_bash('/etc/sysconfig/network', $config);
+source_bash('/etc/sysconfig/network', \%config);
 
 # Fallback for hostname if not configured in /etc/sysconfig/network
 $config{'hostname'} = `/bin/hostname` unless defined($config{'hostname'});
@@ -144,6 +145,7 @@ if ($config{'green_ipaddr'} eq "") {
     $|++;
     open( N, "/sbin/ifconfig $config{'green'} |") or die "$!\n";
     my @out = (<N>);
+    my $mask;
     foreach my $line (@out){
         if ( $line =~ /inet addr/) {
             $mask = $line;
