@@ -170,6 +170,7 @@ event_actions('system-init', qw(
     nethserver-base-initialize-db     50
     init-repo                         60
     system-adjust                     90
+    nethserver-base-interface-update  95
 ));
 
 #
