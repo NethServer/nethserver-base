@@ -54,7 +54,6 @@ system("/usr/libexec/nethserver/update-networks-db");
 # Green interface will be the one used for default gateway
 $config{'green_ipaddr'} = "";
 $config{'green'} = "";
-$config{'gateway'} = "";
 $|++;
 open( N, "/sbin/ip route |") or die "$!\n";
 my @out = (<N>);
@@ -82,7 +81,7 @@ if ($config{'green'} eq "") {
 }
 
 # Fallback for gateway to a static ip
-if ($config{'gateway'} eq "") {
+if (!defined($config{'gateway'}) || $config{'gateway'} eq "") {
    $config{'gateway'}  = '192.168.1.1';
 }
 
