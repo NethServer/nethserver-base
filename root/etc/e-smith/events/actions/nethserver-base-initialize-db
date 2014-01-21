@@ -37,6 +37,10 @@ sub source_bash {
     open FILE, $file or die $!;
     while (<FILE>) {
         chomp;
+	if($_ =~ /^(#.*|\s*)$/) {
+	    # skip comments and whitespace lines
+	    next;
+	}
         $_ =~ s/"//g;
         my ($i, $j) = split(/=/);
         $config->{lc($i)} = $j;
@@ -67,10 +71,10 @@ $config{'hostname'} = `/bin/hostname` unless defined($config{'hostname'});
 
 my $host = substr($config{'hostname'}, 0, index($config{'hostname'}, '.'));
 my $domain = substr($config{'hostname'}, index($config{'hostname'}, '.')+1);
-system("/sbin/e-smith/db configuration set TimeZone $config{'zone'}");
-system("/sbin/e-smith/db configuration setprop dns NameServers $config{'dns'}");
-system("/sbin/e-smith/db configuration set SystemName $host");
-system("/sbin/e-smith/db configuration set DomainName $domain");
+system("$DB configuration set TimeZone $config{'zone'}");
+system("$DB configuration setprop dns NameServers $config{'dns'}");
+system("$DB configuration set SystemName $host");
+system("$DB configuration set DomainName $domain");
 
 # Grab all ethernet interfaces
 system("/usr/libexec/nethserver/update-networks-db");
@@ -135,7 +139,7 @@ foreach my $f (split(/\s+/, $if_files)) {
         $addresses = "netmask $interface{'netmask'} ipaddr $interface{'ipaddr'} gateway $config{'gateway'}";
     }
     if ( $device eq $config{'green'} ) { # Enable green device
-        system("/sbin/e-smith/db networks set $i $type bootproto $interface{'bootproto'} onboot yes hwaddr $interface{'hwaddr'} device $device $addresses") unless not (defined($interface{'hwaddr'}));
+        system("$DB networks set $i $type bootproto $interface{'bootproto'} onboot yes hwaddr $interface{'hwaddr'} device $device $addresses") unless not (defined($interface{'hwaddr'}));
         $config{'green_ipaddr'} = $interface{'ipaddr'};
     }
 }
@@ -154,17 +158,17 @@ if ($config{'green_ipaddr'} eq "") {
             $mask =~ s/\s+//g;
             $line =~ s/\s+//g;
             $config{'green_ipaddr'} = $line;
-            system("/sbin/e-smith/db networks setprop $config{'green'} bootproto static ipaddr $line netmask $mask gateway $config{'gateway'} onboot yes device $config{'green'}");
+            system("$DB networks setprop $config{'green'} bootproto static ipaddr $line netmask $mask gateway $config{'gateway'} onboot yes device $config{'green'}");
         }
     }
 }
 
 # Fallback to static ip address
 if ($config{'green_ipaddr'} eq "") {
-    system("/sbin/e-smith/db networks setprop $config{'green'} bootproto static ipaddr 192.168.1.100 netmask 255.255.255.0 gateway 192.168.1.1 onboot yes device $config{'green'}");
+    system("$DB networks setprop $config{'green'} bootproto static ipaddr 192.168.1.100 netmask 255.255.255.0 gateway 192.168.1.1 onboot yes device $config{'green'}");
 }
 
 
 # Set green interface
-system("/sbin/e-smith/db networks setprop $config{'green'} role green");
+system("$DB networks setprop $config{'green'} role green");
 
