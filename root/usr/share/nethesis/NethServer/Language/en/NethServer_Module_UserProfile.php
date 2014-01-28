@@ -1,7 +1,7 @@
 <?php 
 
 $L['BasicInfo_Title'] = 'Basic informations'; 
-$L['EmailAddress_label'] = 'Email address'; 
+$L['EmailAddress_label'] = 'External email address';
 $L['ExtraInfo_Title'] = 'Contact informations'; 
 $L['FirstName_label'] = 'First name'; 
 $L['LastName_label'] = 'Last name';

@@ -48,7 +48,7 @@ class Personal extends \Nethgui\Controller\Table\AbstractAction
 
     protected function onParametersSaved($changedParameters)
     {
-        parent::onParametersSaved($changedParameters);     
+        parent::onParametersSaved($changedParameters);
         $this->getPlatform()->signalEvent('profile-modify@post-process', array($this->getAdapter()->getKeyValue()));
     }
 
@@ -57,6 +57,20 @@ class Personal extends \Nethgui\Controller\Table\AbstractAction
         parent::prepareView($view);
         $view['username'] = $this->getAdapter()->getKeyValue();
         $view['ChangePassword'] = $view->getModuleUrl('../ChangePassword');
+
+        $defaults = array_merge(array(
+            'Company' => '',
+            'Department' => '',
+            'City' => '',
+            'Street' => '',
+            'PhoneNumber' => '',
+            ), $this->getPlatform()->getDatabase('configuration')->getKey('OrganizationContact')
+        );
+        $view['Default_Company'] = $defaults['Company'];
+        $view['Default_Dept'] = $defaults['Department'];
+        $view['Default_City'] = $defaults['City'];
+        $view['Default_Street'] = $defaults['Street'];
+        $view['Default_Phone'] = $defaults['PhoneNumber'];
     }
 
 }
