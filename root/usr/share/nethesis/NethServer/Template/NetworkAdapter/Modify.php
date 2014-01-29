@@ -11,7 +11,7 @@ $bootproto_id = $view->getClientEventTarget('bootproto');
 
 echo $view->header()->setAttribute('template',$T($headerText));
 
-echo "<div>";
+echo "<div class='network_adatper'>";
 echo "<dl>";
 echo "<dt>".$T('link_label')."</dt><dd>".$view->textLabel('link')."</dd>";
 echo "<dt>".$T('model_label')."</dt><dd>".$view->textLabel('model')."</dd>";
@@ -35,21 +35,21 @@ echo $view->panel()
 echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_CANCEL);
 
 $view->includeCSS("
-  dl {
+  .network_adatper dl {
     padding: 0.2em;
     margin-bottom: 0.5em;
   }
-  dt {
+  .network_adatper dt {
     float: left;
     clear: left;
     width: 100px;
     text-align: right;
     font-weight: bold;
   }
-  dt:after {
+  .network_adatper dt:after {
     content: ':';
   }
-  dd {
+  .network_adatper dd {
     margin: 0 0 0 110px;
     padding: 0 0 0.2em 0;
   }

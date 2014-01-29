@@ -45,7 +45,7 @@ and template system.
 %setup
 
 %build
-
+%{makedocs}
 perl createlinks
 
 # davidep: relocate perl modules under default perl vendorlib directory:
