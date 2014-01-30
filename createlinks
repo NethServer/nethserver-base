@@ -232,6 +232,10 @@ event_actions($event, 'lokkit-apply' => 20);
 #
 # hostname-modify event (#1878)
 #
+event_templates('hostname-modify', qw(
+     /etc/sysconfig/network
+));
+
 event_actions('hostname-modify', qw(
      interface-config-hostname  00
      nethserver-base-check-certificate 95
