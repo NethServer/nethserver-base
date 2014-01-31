@@ -58,7 +58,7 @@ class Shutdown extends \Nethgui\Controller\AbstractController
             }
 
             $this->process = $this->getPlatform()->exec('/usr/bin/sudo ${1}', array($cmd));
-            sleep(5);
+            sleep(1);
 
         } elseif ($this->getRequest()->hasParameter('wait')) {
             // parse /sbin/runlevel output to get the current runlevel value:
