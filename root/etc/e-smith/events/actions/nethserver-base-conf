@@ -47,5 +47,7 @@ if( ! NethServer::Service->new('messagebus')->adjust()) {
     $errors ++;
     warn "[ERROR] failed to adjust messagebus service.";
 }
+# Tell Upstart to reconnect dbus:
+kill "USR1", 1;
 
 exit($errors == 0 ? 0 : 1);
