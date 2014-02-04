@@ -40,4 +40,12 @@ foreach (qw(
     }
 }
 
+# Adjust messagebus (dbus-daemon) service. It is required by
+# NetServer::Service to probe Upstart services status correctly. 
+# Refs #2645
+if( ! NethServer::Service->new('messagebus')->adjust()) {
+    $errors ++;
+    warn "[ERROR] failed to adjust messagebus service.";
+}
+
 exit($errors == 0 ? 0 : 1);
