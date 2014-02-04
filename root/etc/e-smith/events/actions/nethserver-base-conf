@@ -34,7 +34,9 @@ foreach (qw(
 )) {
     my $keyFile = '/etc/pki/rpm-gpg/' . $_;
     if ( -f $keyFile ) {
-	system('/bin/rpm', '--import', $keyFile);
+	if( system('/bin/rpm', '--import', $keyFile) != 0) {
+	    warn "[WARNING] Failed to import RPM GPG key $keyFile.";
+	}
     }
 }
 
