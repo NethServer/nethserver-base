@@ -72,6 +72,18 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Feb 05 2014 Davide Principi <davide.principi@nethesis.it> - 2.0.0-1.ns6
+- Start messagebus service - Enhancement #2645 [NethServer]
+- No feedback from Shutdown UI module - Bug #2629 [NethServer]
+- NethCamp 2014 - Task #2618 [NethServer]
+- Remove bootstrap-console - Enhancement #2582 [NethServer]
+- Move admin user in LDAP DB - Feature #2492 [NethServer]
+- Dashboard: show raid status - Enhancement #2490 [NethServer]
+- Update all inline help documentation - Task #1780 [NethServer]
+- ISO: interactive installer - Feature #1757 [NethServer]
+- Base: avoid double network restart on first boot event - Enhancement #1742 [NethServer]
+- Dashboard: new widgets - Enhancement #1671 [NethServer]
+
 * Wed Dec 18 2013 Davide Principi <davide.principi@nethesis.it> - 1.5.0-1.ns6
 - Remove external JS libraries from source repositories - Enhancement #2167 [NethServer]
 - Always deliver mail to local admin user - Enhancement #2102 [NethServer]
