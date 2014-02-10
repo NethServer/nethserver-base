@@ -12,11 +12,26 @@
 	        next;
             }
             $OUT.="#\tService: ".$serviceRecord->key."\n"; 
-            foreach my $port (split(',', $tcpPorts)) {
-                $OUT.="--port=$port:tcp\n";
+            if ($tcpPorts =~ '-') {
+                my @range = split('-', $tcpPorts);
+                for (my $k = $range[0]; $k<=$range[1]; $k++) {
+                    $OUT.="--port=$k:tcp\n";
+                }
+            } else {
+                foreach my $port (split(',', $tcpPorts)) {
+                    $OUT.="--port=$port:tcp\n";
+                }
             }
-            foreach my $port (split(',', $udpPorts)) {
-                $OUT.="--port=$port:udp\n";
+
+            if ($udpPorts =~ '-') {
+                my @range = split('-', $udpPorts);
+                for (my $k = $range[0]; $k<=$range[1]; $k++) {
+                    $OUT.="--port=$k:udp\n";
+                }
+            } else {
+                foreach my $port (split(',', $udpPorts)) {
+                    $OUT.="--port=$port:udp\n";
+                }
             }
         }
     }
