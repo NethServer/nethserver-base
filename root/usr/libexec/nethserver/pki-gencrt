@@ -39,7 +39,7 @@ pki-gencrt: Generate NethServer default certificate
 Usage:
    pki-gencrt [-s] [-f <filename>] [-h]
 
-   -s Outputs a sample the certificate subject
+   -s Print a sample certificate subject
    -f Set output to <filename> (Default is $crtFile)
    -h this help
 
