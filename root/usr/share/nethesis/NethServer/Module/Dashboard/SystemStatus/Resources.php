@@ -98,7 +98,11 @@ class Resources extends \Nethgui\Controller\AbstractController
 
     private function readDMI($id)
     {
-        return file_get_contents("/sys/devices/virtual/dmi/id/$id");
+        if (file_exists("/sys/devices/virtual/dmi/id/$id")) {
+            return file_get_contents("/sys/devices/virtual/dmi/id/$id");
+        } else {
+            return "-";
+        }
     }
 
     public function process()
