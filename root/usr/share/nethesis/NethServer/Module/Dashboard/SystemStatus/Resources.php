@@ -169,6 +169,7 @@ class Resources extends \Nethgui\Controller\AbstractController
         if (!$this->sys_vendor) {
             $view['sys_vendor'] = $this->readDMI('sys_vendor');
         }
+        $view->getCommandList()->xreload(30000);
     }
   
 

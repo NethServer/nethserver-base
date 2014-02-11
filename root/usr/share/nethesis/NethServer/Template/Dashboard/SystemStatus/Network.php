@@ -32,10 +32,6 @@ $view->includeJavascript("
     } 
  
    $(document).ready(function() {
-       loadPage();
-       setTimeout(loadPage,1000); // populate data for the first time 
-       // reload page after 30 seconds
-       setInterval(loadPage,30000);
 
        $('.$interfaces_id').on('nethguiupdateview', function(event, value, httpStatusCode) {
            var now = new Date().getTime() / 1000;

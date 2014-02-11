@@ -142,8 +142,6 @@ $view->includeJavascript("
 
     $(document).ready(function() {
         loadPage();
-        // reload page after 30 seconds
-        setInterval(loadPage,30000);
         $('.dashboard-item').hide(); 
             
         if ($(window).width() > 500) {
@@ -156,7 +154,11 @@ $view->includeJavascript("
             }
         });       
        
-         
+        $('#Dashboard_SystemStatus_Resources').on('nethguixreload', function (e, arg) { 
+            $.debug(e, arg)
+            setTimeout(loadPage,arg);
+        });
+ 
         $('.$root_df_id').on('nethguiupdateview', function(event, value, httpStatusCode) {
             printLabels('.$root_df_id',value, 1);
             updateProgress('root', value[0][1], value[1][1]);
