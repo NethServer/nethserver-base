@@ -6,7 +6,7 @@ if (count($view['status']['results']) == 0) {
     echo $T('no_raid');
 } else {
     foreach ($view['status']['results'] as $raid) {
-        echo "<h3 class='raid'>".$raid['md']." <span class='raid-".$raid['result']."'>".$T($raid['result'])."</span></h3>";
+        echo "<dt class='raid'>".$raid['md']."</dt> <dd class='raid-".$raid['result']."'>".$T($raid['result'])."</dd>";
         echo "<dl class='raid'>";
         echo "<dt>".$T('level')."</dt><dd>"; echo $raid['level']; echo "</dd>";
         echo "<dt>".$T('devs')."</dt><dd>"; echo $raid['ok_devs'] . "/" . $raid['tot_devs'] ; 
@@ -31,19 +31,19 @@ $view->includeCSS("
      margin-bottom: 0px;
   }
 
-  h3.raid {
+  dt.raid {
       font-size: 1.2em;
       font-weight: bold;
   }
-  .raid-ok {
-      background-color: green;
-      color: #fff;
-      padding: 2px;
+  dd.raid-ok {
+      padding: 3px;
+      color: green;
+      font-weight: bold;
   }
-  .raid-critical {
-      background-color: red;
-      color: #fff;
-      padding: 2px;
+  dd.raid-critical {
+      padding: 3px;
+      color: red;
+      font-weight: bold;
   }
 
 ");
