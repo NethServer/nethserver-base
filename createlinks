@@ -238,7 +238,7 @@ event_templates('hostname-modify', qw(
 ));
 
 event_actions('hostname-modify', qw(
-     interface-config-hostname  00
+     interface-config-hostname  02
      nethserver-base-check-certificate 95
      system-adjust 96
 ));
