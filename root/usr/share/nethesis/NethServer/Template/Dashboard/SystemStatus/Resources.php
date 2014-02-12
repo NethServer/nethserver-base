@@ -142,6 +142,7 @@ $view->includeJavascript("
 
     $(document).ready(function() {
         loadPage();
+        setTimeout(refreshMasonry, 500);
         $('.dashboard-item').hide(); 
             
         if ($(window).width() > 500) {
