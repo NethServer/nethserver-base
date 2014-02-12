@@ -31,6 +31,7 @@ class SystemRelease extends \Nethgui\Controller\AbstractController
     public $sortId = 00;
  
     private $release = "";
+    private $kernel = "";
 
     private function readRelease()
     {
@@ -40,9 +41,20 @@ class SystemRelease extends \Nethgui\Controller\AbstractController
         return "";
     }
 
+    private function readKernel()
+    {
+        if (file_exists("/proc/version")) {
+            $tmp = explode(' ',file_get_contents("/proc/version"));
+            return trim($tmp[2]);
+        }
+        return "";
+    }
+
+
     public function process()
     {
         $this->release = $this->readRelease();
+        $this->kernel = $this->readKernel();
     }
  
     public function prepareView(\Nethgui\View\ViewInterface $view)
@@ -50,7 +62,11 @@ class SystemRelease extends \Nethgui\Controller\AbstractController
         if (!$this->release) {
             $this->release = $this->readRelease();
         }
+        if (!$this->kernel) {
+            $this->kernel = $this->readKernel();
+        }
 
         $view['release'] = $this->release;
+        $view['kernel'] = $this->kernel;
     }
 }
