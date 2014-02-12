@@ -72,6 +72,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Feb 12 2014 Davide Principi <davide.principi@nethesis.it> - 2.0.1-1.ns6
+- Customizable X509 email field - Enhancement #2650 [NethServer]
+
 * Wed Feb 05 2014 Davide Principi <davide.principi@nethesis.it> - 2.0.0-1.ns6
 - Start messagebus service - Enhancement #2645 [NethServer]
 - No feedback from Shutdown UI module - Bug #2629 [NethServer]
