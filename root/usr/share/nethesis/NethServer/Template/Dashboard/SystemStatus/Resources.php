@@ -5,15 +5,11 @@ echo "<div id='Dashboard_SystemStatus_Resources_loading'>".$T('Loading')."...</d
 echo "<div class='dashboard-item'>";
 echo $view->header()->setAttribute('template',$T('general_title'));
 echo "<dl>";
-echo "<dt>".$T('load1_label')."</dt><dd>"; echo $view->textLabel('load1'); echo "</dd>";
-echo "<dt>".$T('load5_label')."</dt><dd>"; echo $view->textLabel('load5'); echo "</dd>";
-echo "<dt>".$T('load15_label')."</dt><dd>"; echo $view->textLabel('load15'); echo "</dd>";
+echo "<dt>".$T('load_label')."</dt><dd>"; echo $view->textLabel('load1').' / '.$view->textLabel('load5').' / '.$view->textLabel('load15'); echo "</dd>";
 echo "<dt>".$T('uptime_label')."</dt>";
 echo "<dd>";
-echo $view->textLabel('days').$T('days_label')." ";
-echo $view->textLabel('hours').$T('hours_label')." ";
-echo $view->textLabel('minutes').$T('minutes_label')." ";
-echo $view->textLabel('seconds').$T('seconds_label');
+echo $view->textLabel('hours')." ".$T('hours_label')." ";
+echo $view->textLabel('minutes')." ".$T('minutes_label')." ";
 echo "</dd>";
 echo "<dt>".$T('time_label')."</dt><dd>"; echo $view->textLabel('time'); echo "</dd>";
 echo "</dl>";
@@ -156,7 +152,6 @@ $view->includeJavascript("
         });       
        
         $('#Dashboard_SystemStatus_Resources').on('nethguixreload', function (e, arg) { 
-            $.debug(e, arg)
             setTimeout(loadPage,arg);
         });
  
