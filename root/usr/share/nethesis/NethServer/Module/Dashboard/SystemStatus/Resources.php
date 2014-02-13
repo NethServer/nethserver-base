@@ -77,7 +77,7 @@ class Resources extends \Nethgui\Controller\AbstractController
             }
             $tmp = explode(" ", preg_replace( '/\s+/', ' ', $out[$i]));
             // skip fs ($tmp[0]) and perc_used ($tmp[4])
-            $ret[$tmp[5]] = array('total' => intval($tmp[1]), 'used' => intval($tmp[2]), 'avail' => intval($tmp[3]));
+            $ret[$tmp[5]] = array('total' => intval($tmp[1]), 'used' => intval($tmp[2]), 'free' => intval($tmp[3]));
         }
         return $ret;
     }
@@ -132,16 +132,17 @@ class Resources extends \Nethgui\Controller\AbstractController
         $view['cpu_num'] = $this->cpu['n']; 
         $view['cpu_model'] = $this->cpu['model']; 
 
-        if ($this->memory) {
-            $tmp[] = array($view->translate("mem_total_label"), $this->memory['MemTotal']);
-            $tmp[] = array($view->translate("mem_used_label"), $this->memory['MemTotal']-$this->memory['MemFree']);
-            $tmp[] = array($view->translate("mem_free_label"), $this->memory['MemFree']);
+        if (!$this->memory) {
+            $this->memory = $this->readMemory();
+            $tmp["total"] = $this->memory['MemTotal'];
+            $tmp["used"] = $this->memory['MemTotal']-$this->memory['MemFree'];
+            $tmp["free"] = $this->memory['MemFree'];
             $view['memory'] = $tmp;
-
+ 
             $tmp = array();
-            $tmp[] = array($view->translate("swap_total_label"), $this->memory['SwapTotal']);
-            $tmp[] = array($view->translate("swap_used_label"), $this->memory['SwapTotal']-$this->memory['SwapFree']);
-            $tmp[] = array($view->translate("swap_free_label"), $this->memory['SwapFree']);
+            $tmp["total"] = $this->memory['SwapTotal'];
+            $tmp["used"] =  $this->memory['SwapTotal']-$this->memory['SwapFree'];
+            $tmp["free"] = $this->memory['SwapFree'];
             $view['swap'] = $tmp;
         }
 
@@ -155,21 +156,17 @@ class Resources extends \Nethgui\Controller\AbstractController
         $view['minutes'] = $this->uptime['minutes'];
         $view['seconds'] = $this->uptime['seconds'];
         
-        if ($this->df) {
-            $tmp = array(); 
-            foreach($this->df['/'] as $k=>$v) {
-                $tmp[] = array($view->translate($k."_label"),$v);
-            } 
-            $view['root_df']  = $tmp; 
+        if (!$this->df) {
+            $this->df = $this->readDF();
         }
-        $view['time'] = strftime("%a %d %b %Y - %H:%M");
+        $view['df']  = $this->df; 
+        $view['time'] = $this->getPlatform()->exec('/bin/date +"%a %d %b %Y - %H:%M"')->getOutput();
         if (!$this->product_name) {
             $view['product_name'] = $this->readDMI('product_name');
         }
         if (!$this->sys_vendor) {
             $view['sys_vendor'] = $this->readDMI('sys_vendor');
         }
-        $view->getCommandList()->xreload(30000);
     }
   
 

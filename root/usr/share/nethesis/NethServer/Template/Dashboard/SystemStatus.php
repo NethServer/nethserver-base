@@ -7,6 +7,8 @@ $view->includeCSS("
     padding: 5px;
     border: 1px solid #ccc;
     width: 300px;
+    min-height: 50px;
+    float: left;
   }
   .dashboard-item dt {
     float: left;
@@ -32,7 +34,9 @@ $view->includeCSS("
     font-weight: bold;
     font-size: 120%;
     text-align: center;
-    padding: 0.2em;
+    border-radius: 0px;
+    margin: -5px -5px 5px -5px;
+    background: #ccc;
   }
 ");
 

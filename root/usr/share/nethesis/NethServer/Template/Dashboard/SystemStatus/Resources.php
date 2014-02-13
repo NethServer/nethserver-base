@@ -1,6 +1,14 @@
 <?php
 
-echo "<div id='Dashboard_SystemStatus_Resources_loading'>".$T('Loading')."...</div>";
+function formatDF($val, $printUnit = false) {
+    $unit = 'MB';
+    $val = $val / 1024; //MB
+    if ($val >= 1024) {
+        $val = $val / 1024; //GB
+        $unit = 'GB';
+    }
+    return number_format($val,2) . ($printUnit?" $unit":'');
+}
 
 echo "<div class='dashboard-item'>";
 echo $view->header()->setAttribute('template',$T('general_title'));
@@ -20,8 +28,8 @@ echo $view->header()->setAttribute('template',$T('hardware_title'));
 echo "<dl>";
 echo "<dt>".$T('sys_vendor_label')."</dt><dd>"; echo $view->textLabel('sys_vendor'); echo "</dd>";
 echo "<dt>".$T('product_name_label')."</dt><dd>"; echo $view->textLabel('product_name'); echo "</dd>";
-echo "<dt>".$T('cpu_model_label')."</dt><dd>"; echo $view->textLabel('cpu_model'); echo "</dd>";
-echo "<dt>".$T('cpu_num_label')."</dt><dd>"; echo $view->textLabel('cpu_num'); echo "</dd>";
+echo "<dt>".$T('cpu_model_label')."</dt><dd> "; echo $view->textLabel('cpu_num'); 
+echo " x "; echo $view->textLabel('cpu_model'); echo "</dd>";
 echo "</dl>";
 echo "</div>";
 
@@ -29,15 +37,19 @@ echo "</div>";
 
 $memory_title = $T('memory_title');
 $phys_memory_title = $T('phys_memory_title');
-$memory_id = $view->getClientEventTarget('memory');
-$swap_id = $view->getClientEventTarget('swap');
 $swap_title = $T('swap_title');
 echo "<div class='dashboard-item'>";
 echo $view->header()->setAttribute('template',$memory_title);
-echo "<dl class='$memory_id'></dl>";
-echo "<div id='memory_plot'><div id='memory_label' class='progress-label'></div></div>";
-echo "<dl class='$swap_id'></dl>";
-echo "<div id='swap_plot'><div id='swap_label' class='progress-label'></div></div>";
+echo "<dl>";
+echo "<dt>".$T('usage_label')."</dt><dd>{$view['memory']['used']} / {$view['memory']['total']} MB</dd>";
+echo "<dt>".$T('mem_free_label')."</dt><dd>{$view['memory']['free']} MB</dd>";
+echo "</dl>";
+echo "<div id='memory_plot' value='{$view['memory']['used']}' max='{$view['memory']['total']}'><div id='memory_label' class='progress-label'></div></div>";
+echo "<dl>";
+echo "<dt>".$T('usage_label')."</dt><dd>{$view['swap']['used']} / {$view['swap']['total']} MB</dd>";
+echo "<dt>".$T('swap_free_label')."</dt><dd>{$view['swap']['free']} MB</dd>";
+echo "</dl>";
+echo "<div id='swap_plot' value='{$view['swap']['used']}' max='{$view['swap']['total']}'><div id='swap_label' class='progress-label'></div></div>";
 echo "</div>";
 
 
@@ -46,15 +58,14 @@ $root_df_id = $view->getClientEventTarget('root_df');
 $moduleUrl = json_encode($view->getModuleUrl("/Dashboard/SystemStatus/Resources"));
 echo "<div class='dashboard-item'>";
 echo $view->header()->setAttribute('template',$root_title);
-echo "<dl class='$root_df_id'></dl>";
-echo "<div id='root_plot'><div id='root_label' class='progress-label'></div></div>";
+echo "<dl>";
+echo "<dt>".$T('usage_label')."</dt><dd>".formatDF($view['df']['/']['used']) ." / " . formatDF($view['df']['/']['total'],1)."</dd>";
+echo "<dt>".$T('avail_label')."</dt><dd>".formatDF($view['df']['/']['free'],1)."</dd>";
+echo "</dl>";
+echo "<div id='root_plot' value='{$view['df']['/']['used']}' max='{$view['df']['/']['total']}' ><div id='root_label' class='progress-label'></div></div>";
 echo "</div>";
 
 $view->includeCSS("
-    #Dashboard_SystemStatus_Resources_loading {
-        text-align: center;
-        font-size: 1.2em;
-    }
     .dashboard-item .progress-label {
         position: absolute;
         left: 50%;
@@ -63,17 +74,10 @@ $view->includeCSS("
     .dashboard-item .ui-progressbar {
         position: relative;
     }
-    .$swap_id {
-        margin-top: 8px;
-    }
 ");
 
 $view->includeJavascript("
 (function ( $ ) {
-    // FIXME: define in jquery.nethgui.base.js -- A translator helper:
-    var T = function () {
-        return $.Nethgui.Translator.translate.apply($.Nethgui.Translator, Array.prototype.slice.call(arguments, 0));
-    };
 
     function format_df(val)
     {
@@ -86,35 +90,26 @@ $view->includeJavascript("
       }
     }
 
-    function loadPage() {
-        $.Nethgui.Server.ajaxMessage({
-            isMutation: false,
-            url: $moduleUrl
-        });
-    } 
-
-
     function refreshMasonry() {
         if ($(window).width() > 500) {
-            $('#Dashboard_SystemStatus').masonry();
+            $('#Dashboard_SystemStatus').masonry({ 
+                itemSelector: '.dashboard-item',
+                isAnimated: false,
+            });
         }
     }
 
-    function printLabels(selector, value, format) {
-         if(typeof(format)==='undefined') format = 0;
-         $(selector).empty();
-         for (index = 0; index < value.length; ++index) {
-             if (format) {
-                 $(selector).append('<dt>'+value[index][0]+'</dt><dd>'+format_df(value[index][1])+'</dd>');
-             } else {
-                 $(selector).append('<dt>'+value[index][0]+'</dt><dd>'+value[index][1]+' MB</dd>');
-             }
-         }
-    }
-
-    function updateProgress(name, max, value) {
-         $('#'+name+'_plot').progressbar({max: max, value: value });
+    function updateProgress(name, max, value, colorize) {
          p = value/max*100;
+         $('#'+name+'_plot').progressbar( { value: p });
+         $('#'+name+'_label').text(p.toPrecision(2)+'%');
+         progressbarValue = $('#'+name+'_plot').find('.ui-progressbar-value');
+    
+         if (!colorize) {
+             progressbarValue.css({ 'background': '#eee' });
+             return;
+         }
+
          color = 'green';
          if (p < 70) {
              color = 'green';
@@ -125,58 +120,21 @@ $view->includeJavascript("
          } else {
              color = 'red';
          }
-         $('#'+name+'_label').text(p.toPrecision(2)+'%');
-         progressbarValue = $('#'+name+'_plot').find('.ui-progressbar-value');
          progressbarValue.css({ 'background': color });
+         
     }
    
-    function refresh() {
-         $('#Dashboard_SystemStatus_Resources_loading').hide();
-         $('.dashboard-item').show();
-         refreshMasonry();
-    }
-
     $(document).ready(function() {
-        loadPage();
-        setTimeout(refreshMasonry, 500);
-        $('.dashboard-item').hide(); 
-            
-        if ($(window).width() > 500) {
-            $('#Dashboard_SystemStatus').masonry({ itemSelector: '.dashboard-item'  }); 
-        }
-
+        updateProgress('memory', $('#memory_plot').attr('max'), $('#memory_plot').attr('value'), 0) ;
+        updateProgress('swap', $('#swap_plot').attr('max'), $('#swap_plot').attr('value'), 1) ;
+        updateProgress('root', $('#root_plot').attr('max'), $('#root_plot').attr('value'), 1) ;
+        setTimeout(refreshMasonry,100);
         $( '#Dashboard' ).bind( 'tabsshow', function(event, ui) {
             if (ui.panel.id == 'Dashboard_SystemStatus') {
                 refreshMasonry();
             }
         });       
        
-        $('#Dashboard_SystemStatus_Resources').on('nethguixreload', function (e, arg) { 
-            setTimeout(loadPage,arg);
-        });
- 
-        $('.$root_df_id').on('nethguiupdateview', function(event, value, httpStatusCode) {
-            printLabels('.$root_df_id',value, 1);
-            updateProgress('root', value[0][1], value[1][1]);
-            refresh();
-        }); 
-
-
-        $('.$memory_id').on('nethguiupdateview', function(event, value, httpStatusCode) { 
-            printLabels('.$memory_id',value);
-            $('#memory_plot').progressbar({max: value[0][1], value: value[1][1] });
-            p =  value[1][1]/value[0][1]*100;
-            $('#memory_label').text(p.toPrecision(2)+'%');
-            progressbarValue = $('#memory_plot').find('.ui-progressbar-value');
-            refresh();
-        }); 
-
-        $('.$swap_id').on('nethguiupdateview', function(event, value, httpStatusCode) {
-            printLabels('.$swap_id',value);
-            updateProgress('swap', value[0][1], value[1][1]);
-            refresh();
-        });
-
     });
 } ( jQuery ));
 ");   

@@ -5,9 +5,9 @@
 $L['avail_label'] = 'Disponibile';
 $L['cpu_num_label'] = 'Numero CPU';
 $L['days_label'] = 'giorni';
-$L['general_title'] = 'General informations';
+$L['general_title'] = 'Informazioni generali';
 $L['hours_label'] = 'ore';
-$L['load_label'] = 'Carico 1/5/15 minuti';
+$L['load_label'] = 'Carico 1 / 5 / 15 min.';
 $L['mem_free_label'] = 'Memoria libera';
 $L['memory_avail_label'] = 'Memoria disp.';
 $L['memory_title'] = 'Memoria';
@@ -31,3 +31,4 @@ $L['sys_vendor_label'] = 'Produttore';
 $L['product_name_label'] = 'Modello';
 $L['time_label'] = 'Data e ora';
 $L['hardware_title'] = 'Hardware';
+$L['usage_label'] = 'Utilizzo';

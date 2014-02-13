@@ -35,26 +35,8 @@ class Network extends \Nethgui\Controller\AbstractController
     private $hostname = "";
     private $domain = "";
 
-    private function readNetStats()
-    {
-        $ret = array();
-        $stats = file("/proc/net/dev");
-        $stats = array_slice($stats,2); #remove headers
-        foreach ($stats as $line) {
-             $tmp = explode(":",trim($line)); # get device name
-             $values = preg_split("/\s+|:/",trim($tmp[1])); # get values
-             $ret[$tmp[0]] = array(
-                 'RX_bytes' => $values[1], 'RX_pkts' => $values[0], 'RX_errs' => $values[2], 'RX_drops' => $values[3],
-                 'TX_bytes' => $values[8], 'TX_pkts' => $values[9], 'TX_errs' => $values[10], 'TX_drops' => $values[11]
-             );
-             $ret[$tmp[0]] = array_map(function($v) { return intval($v); }, $ret[$tmp[0]]);
-        }
-        return $ret;
-    }
-
     private function readInterfaces()
     {
-        $stats = $this->readNetStats();
         $interfaces = $this->getPlatform()->getDatabase('networks')->getAll('ethernet');
         foreach ($interfaces as $interface => $props) {
              # remove non existing interfaces
@@ -73,7 +55,6 @@ class Network extends \Nethgui\Controller\AbstractController
              );
              $tmp['speed'] = file_get_contents("/sys/class/net/".$interface."/speed")." Mb/s";
              $tmp['link'] = file_get_contents("/sys/class/net/".$interface."/carrier");
-             $tmp['stats'] = $stats[$interface];
              $interfaces[$interface] = $tmp;
         }
         return $interfaces;
@@ -130,18 +111,10 @@ class Network extends \Nethgui\Controller\AbstractController
         $ifaces = array();
         $view['gateway'] = "-";
         foreach ($this->interfaces as $i=>$props) {
-            $tmp = array();
             if ( $this->interfaces[$i]['role'] == 'green') {
                 $view['gateway'] = $this->interfaces[$i]['gateway'];
             }
-            foreach ($props as $k=>$v) {
-              if (!in_array($k, array('stats','name','role','link'))) {
-                  $k = $view->translate($k."_label");
-              }
-              $tmp[] = array($k,$v);
-            }
-            $ifaces[] = $tmp;
         }
-        $view['interfaces'] = $ifaces;
+        $view['interfaces'] = $this->interfaces;
     }
 }

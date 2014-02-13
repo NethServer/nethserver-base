@@ -8,7 +8,7 @@ if (count($view['status']['results']) == 0) {
     foreach ($view['status']['results'] as $raid) {
         echo "<dt class='raid'>".$raid['md']."</dt> <dd class='raid-".$raid['result']."'>".$T($raid['result'])."</dd>";
         echo "<dl class='raid'>";
-        echo "<dt>".$T('level')."</dt><dd>"; echo $raid['level']; echo "</dd>";
+        echo "<dt>".$T('level')."</dt><dd>RAID"; echo $raid['level']; echo "</dd>";
         echo "<dt>".$T('devs')."</dt><dd>"; echo $raid['ok_devs'] . "/" . $raid['tot_devs'] ; 
         echo " (".($raid['active_devs']=='none'?$T("none"):$raid['active_devs']).")";
         echo "</dd>";
