@@ -49,6 +49,20 @@ $view
     ->useFile('css/jquery.qtip.min.css')
     ->useFile('css/base.css')
 ;
+// Custom colors
+if (isset($view['colors']) && count($view['colors']) == 3) {
+    $view->includeCss("
+        #pageHeader {
+            background: {$view['colors'][0]} !important;
+        }
+        .secondaryContent .contentWrapper {
+            background: {$view['colors'][1]} !important;
+        }
+        .DataTable th.ui-state-default, .Navigation.Flat a.currentMenuItem, .Navigation.Flat a:hover, .header {
+            color: {$view['colors'][2]} !important;
+        }
+    ");
+}
 ?><!DOCTYPE html>
 <html lang="<?php echo $view['lang'] ?>">
     <head>
@@ -63,7 +77,7 @@ $view
                 <div id="pageHeader">
                     <div id="headerMenu"><a href="<?php echo $view->getModuleUrl('/UserProfile') ?>"><?php echo $T('UserProfile_Title'); ?></a></div>
                     <h1 id="ModuleTitle"><?php echo htmlspecialchars($view['moduleTitle']) ?></h1>
-                    <div id="productTitle">NethServer</div>
+                    <div id="productTitle"><img src='<?php echo $view['logo']; ?>'/></div>
                 </div>
             <?php endif; ?>
             <div id="pageContent">
