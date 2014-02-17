@@ -61,6 +61,13 @@ if (isset($view['colors']) && count($view['colors']) == 3) {
         .DataTable th.ui-state-default, .Navigation.Flat a.currentMenuItem, .Navigation.Flat a:hover, .header {
             color: {$view['colors'][2]} !important;
         }
+        #Login .ui-widget-header {
+             background: {$view['colors'][1]} !important;
+        }
+        #Login {
+            border: 1px solid {$view['colors'][1]} !important;
+        }
+
     ");
 }
 ?><!DOCTYPE html>
