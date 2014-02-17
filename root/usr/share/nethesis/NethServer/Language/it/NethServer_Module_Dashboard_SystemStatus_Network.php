@@ -14,3 +14,4 @@ $L['name_label'] = 'Dispositivo';
 $L['netmask_label'] = 'Netmask';
 $L['network_title'] = 'Rete';
 $L['speed_label'] = 'Velocità';
+$L['link_label'] = 'Link';

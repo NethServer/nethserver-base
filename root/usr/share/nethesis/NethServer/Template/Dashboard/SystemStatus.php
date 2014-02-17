@@ -8,7 +8,7 @@ $view->includeCSS("
     border: 1px solid #ccc;
     width: 300px;
     min-height: 50px;
-    float: left;
+    background: #fff;
   }
   .dashboard-item dt {
     float: left;
