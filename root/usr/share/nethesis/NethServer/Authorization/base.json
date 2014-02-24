@@ -97,5 +97,15 @@
 
         "Description":
             "Administrators and Managers can set other users' password -- #1580"
+    },
+    {
+        "Id": 1393241895,
+        "Effect": "ALLOW",
+        "Subject": ".authenticated",
+        "Action": "QUERY OR INSTANTIATE",
+        "Resource": "NethServer\\Module\\Dashboard:Dashboard",
+
+        "Description":
+            "Authenticated users can see the Dashboard"
     }
 ]

@@ -32,11 +32,16 @@ class Dashboard extends \Nethgui\Controller\TabsController
         return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($base, 'Status', 10);
     }
 
-    public function initialize()
+    public function bind(\Nethgui\Controller\RequestInterface $request)
     {
-        parent::initialize();
-        $this->loadChildrenDirectory();
-        $this->sortChildren(array($this,"sortPlugin"));
+        $user = $request->getUser();
+
+        $this->loadChildrenDirectory($this,
+            $user->hasCredential('groups') && in_array('adm',
+                $user->getCredential('groups')) ? 'Dashboard' : 'UserDashboard');
+        $this->sortChildren(array($this, "sortPlugin"));
+
+        parent::bind($request);
     }
 
     public function sortPlugin($a, $b)
@@ -51,4 +56,3 @@ class Dashboard extends \Nethgui\Controller\TabsController
     }
 
 }
-
