@@ -36,7 +36,7 @@ class Dashboard extends \Nethgui\Controller\TabsController
     {
         $user = $request->getUser();
 
-        $isAdmin = ($user->hasCredential('username') && $user->getCredential('username') === 'root') 
+        $isAdmin = ($user->hasCredential('username') && in_array($user->getCredential('username'), array('admin', 'root')))
             || ($user->hasCredential('groups') && in_array('adm', $user->getCredential('groups')));
         
         $this->loadChildrenDirectory($this,
