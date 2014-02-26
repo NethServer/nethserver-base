@@ -72,6 +72,14 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Feb 26 2014 Davide Principi <davide.principi@nethesis.it> - 2.1.0-1.ns6
+- Rebranding fails when new kernel is installed - Bug #2664 [NethServer]
+- Installer improvements - Enhancement #2660 [NethServer]
+- Revamp web UI style - Enhancement #2656 [NethServer]
+- Default module for non-admin users - Bug #2630 [NethServer]
+- Dashboard: infinite loop on XHR failure - Bug #2628 [NethServer]
+- Implement hostname-modify event for samba  - Enhancement #2626 [NethServer]
+
 * Wed Feb 12 2014 Davide Principi <davide.principi@nethesis.it> - 2.0.1-1.ns6
 - Customizable X509 email field - Enhancement #2650 [NethServer]
 
