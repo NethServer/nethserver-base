@@ -78,6 +78,16 @@
     }
     ,
     {
+        "Id": 1394033087,
+        "Effect": "ALLOW",
+        "Subject": ".authenticated",
+        "Action": "WRITE",
+        "Resource": "Nethgui\\System\\EsmithDatabase:accounts",
+        "Description":
+            "Authenticated users can change their own account props"
+    }
+    ,
+    {
         "Id": 1354619788,
         "Effect": "ALLOW",
         "Subject": "NOT (.groups HAS administrators)",
