@@ -72,6 +72,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Mon Mar 10 2014 Davide Principi <davide.principi@nethesis.it> - 2.1.2-1.ns6
+- User can't set his own UserProfile fields - Bug #2684 [NethServer]
+- Backup Notification to System administrator fails by default - Bug #2675 [NethServer]
+
 * Wed Feb 26 2014 Davide Principi <davide.principi@nethesis.it> - 2.1.1-1.ns6
 - Fix for default module for non-admin users - Bug #2630 [NethServer]
 
