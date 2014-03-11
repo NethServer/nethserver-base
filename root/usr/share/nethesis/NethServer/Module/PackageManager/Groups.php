@@ -26,13 +26,8 @@ namespace NethServer\Module\PackageManager;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Groups extends \Nethgui\Controller\CollectionController implements \Nethgui\Utility\SessionConsumerInterface
+class Groups extends \Nethgui\Controller\CollectionController
 {
-    /**
-     *
-     * @var \Nethgui\Utility\SessionInterface
-     */
-    private $session;
     private $language;
 
     public function initialize()
@@ -43,29 +38,18 @@ class Groups extends \Nethgui\Controller\CollectionController implements \Nethgu
             ->addCollectionAction(new Groups\Tracker())
         ;
         parent::initialize();
-        foreach ($this->getChildren() as $child) {
-            if ($child instanceof \Nethgui\Utility\SessionConsumerInterface) {
-                $child->setSession($this->session);
-            }
-        }
-    }
-
-    public function setSession(\Nethgui\Utility\SessionInterface $session)
-    {
-        $this->session = $session;
-        return $this;
     }
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
-        $this->language = $request->getUser()->getLanguageCode();
+        $this->language = $request->getLanguageCode();
         parent::bind($request);
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         if ( ! isset($this->language)) {
-            $this->language = $view->getTranslator()->getLanguageCode();
+            $this->language = $this->getRequest()->getLanguageCode();
         }
         parent::prepareView($view);
     }

@@ -15,7 +15,7 @@ echo $view->objectsCollection('packages')
     ->setAttribute('key', 'name');
 
 $packagesTarget = $view->getClientEventTarget('packages');
-$moduleUrl = json_encode($view->getModuleUrl('Packages'));
+$moduleUrl = json_encode($view->getModuleUrl());
 
 $view->includeCss("
 table.SmallTable {width: auto;  font-size: 12px}

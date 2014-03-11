@@ -28,46 +28,29 @@ use Nethgui\System\PlatformInterface as Validate;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Review extends \Nethgui\Controller\Collection\AbstractAction implements \Nethgui\Utility\SessionConsumerInterface
+class Review extends \Nethgui\Controller\Collection\AbstractAction
 {
-    /**
-     *
-     * @var \Nethgui\Utility\SessionInterface
-     */
-    private $session;
-
-    /**
-     *
-     * @var string
-     */
-    private $sessionKey;
-
     /**
      *
      * @var array 
      */
     private $selection = array();
 
-    public function setSession(\Nethgui\Utility\SessionInterface $session)
-    {
-        $this->session = $session;
-        return $this;
-    }
-
     public function initialize()
     {
         parent::initialize();
         $this->declareParameter('addGroups', Validate::ANYTHING);
         $this->declareParameter('removeGroups', Validate::ANYTHING);
-        $this->declareParameter('optionals', Validate::ANYTHING_COLLECTION);
-        $this->sessionKey = get_class($this->getParent());
+        $this->declareParameter('optionals', Validate::ANYTHING_COLLECTION);      
     }
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
-        if ($this->session->retrieve($this->sessionKey) instanceof \ArrayObject) {
-            $this->selection = $this->session->retrieve($this->sessionKey)->getArrayCopy();
-        }
+        $key = get_class($this->getParent());
+        $sessionDb = $this->getPlatform()->getDatabase('SESSION');
+        $this->selection['add'] = $sessionDb->getProp($key, 'add');
+        $this->selection['remove'] = $sessionDb->getProp($key, 'remove');
+        $this->selection['keep'] = $sessionDb->getProp($key, 'keep');
         parent::bind($request);
     }
 
@@ -117,7 +100,7 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction implements \N
         parent::process();
         if ($this->getRequest()->isMutation()) {
             // Destroy the session storage:
-            $this->session->store($this->sessionKey, NULL);
+            $this->getPlatform()->getDatabase('SESSION')->deleteKey(get_class($this->getParent()));
 
             $arguments = array();
 

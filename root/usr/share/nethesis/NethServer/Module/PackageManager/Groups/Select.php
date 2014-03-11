@@ -28,14 +28,8 @@ use Nethgui\System\PlatformInterface as Validate;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Select extends \Nethgui\Controller\Collection\AbstractAction implements \Nethgui\Utility\SessionConsumerInterface
+class Select extends \Nethgui\Controller\Collection\AbstractAction
 {
-    /**
-     *
-     * @var \Nethgui\Utility\SessionInterface
-     */
-    private $session;
-
     public function initialize()
     {
         parent::initialize();
@@ -66,15 +60,17 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction implements \N
         parent::process();
         if ($this->getRequest()->isMutation()) {
             $txOrder = $this->prepareTransactionOrder();
-            $this->session->store(get_class($this->getParent()), $txOrder);
+            $this->getPlatform()
+                ->getDatabase('SESSION')
+                ->setKey(get_class($this->getParent()), 'array', $txOrder);
         }
     }
 
     /**
      * Compare the request and the currently installed package groups, returning
-     * a Serializable ArrayObject that specifies what to do.
+     * an array that specifies what to do.
      * 
-     * @return \ArrayObject
+     * @return array
      */
     private function prepareTransactionOrder()
     {
@@ -104,7 +100,7 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction implements \N
         $removeList = array_diff($unselectedList, $availableList);
         $keepList = array_diff(array_keys($this->parameters['groups']), $addList, $removeList);
 
-        return new \ArrayObject(array('add' => array_values($addList), 'remove' => array_values($removeList), 'keep' => array_values($keepList)));
+        return array('add' => array_values($addList), 'remove' => array_values($removeList), 'keep' => array_values($keepList));
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
@@ -118,12 +114,6 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction implements \N
         if ($this->getRequest()->isValidated()) {
             $view->getCommandList()->show();
         }
-    }
-
-    public function setSession(\Nethgui\Utility\SessionInterface $session)
-    {
-        $this->session = $session;
-        return $this;
     }
 
     public function nextPath()

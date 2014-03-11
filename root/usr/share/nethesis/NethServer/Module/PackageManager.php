@@ -26,13 +26,8 @@ namespace NethServer\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class PackageManager extends \Nethgui\Controller\TabsController implements \Nethgui\Utility\SessionConsumerInterface
+class PackageManager extends \Nethgui\Controller\TabsController
 {
-    /**
-     *
-     * @var \Nethgui\Utility\SessionInterface
-     */
-    private $session;
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $attributes)
     {
@@ -42,18 +37,7 @@ class PackageManager extends \Nethgui\Controller\TabsController implements \Neth
     public function initialize()
     {
         $this->loadChildrenDirectory();
-        foreach ($this->getChildren() as $child) {
-            if ($child instanceof \Nethgui\Utility\SessionConsumerInterface) {
-                $child->setSession($this->session);
-            }
-        }
         parent::initialize();
-    }
-
-    public function setSession(\Nethgui\Utility\SessionInterface $session)
-    {
-        $this->session = $session;
-        return $this;
     }
 
 }
