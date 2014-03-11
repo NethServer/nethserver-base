@@ -1,5 +1,4 @@
-<?php
-namespace NethServer\Module\PackageManager;
+<?php namespace NethServer\Module\PackageManager;
 
 /*
  * Copyright (C) 2013 Nethesis S.r.l.
@@ -28,7 +27,6 @@ namespace NethServer\Module\PackageManager;
  */
 class Packages extends \Nethgui\Controller\AbstractController
 {
-
     private $adapter;
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
@@ -36,34 +34,38 @@ class Packages extends \Nethgui\Controller\AbstractController
         parent::bind($request);
         $platform = $this->getPlatform();
         $log = $this->getLog();
-        $this->adapter = new \Nethgui\Adapter\LazyLoaderAdapter(function () use ($platform, $log) {
-                $loader = new \ArrayObject();
 
-                $process = $platform->exec("/bin/rpm -qa --queryformat '%{NAME}\t%{VERSION}\t%{RELEASE}\t%{URL}\n'");
-                if ($process->getExitCode() === 0) {
-                    foreach ($process->getOutputArray() as $line) {
-                        list($name, $version, $release, $url) = explode("\t", trim($line, "\n"));
+        $loaderFunction = function () use ($platform, $log) {
+            $loader = new \ArrayObject();
 
-                        if( ! preg_match('/\.ns6/', $release)) {
-                            continue;
-                        }
+            $process = $platform->exec("/bin/rpm -qa --queryformat '%{NAME}\t%{VERSION}\t%{RELEASE}\t%{URL}\n'");
+            if ($process->getExitCode() !== 0) {
+                $log->error($process->getOutput());
+                return $loader;
+            }
+            
+            foreach ($process->getOutputArray() as $line) {
+                list($name, $version, $release, $url) = explode("\t", trim($line, "\n"));
 
-                        if($url === '(none)') {
-                            $url = '#';
-                        }
-
-                        $loader[] = array(
-                            'name' => array($name, $url),
-                            'version' => $version,
-                            'release' => $release,                            
-                        );
-                    }
-                } else {
-                    $log->error($process->getOutput());
+                if ( ! preg_match('/\.ns6/', $release)) {
+                    continue;
                 }
 
-                return $loader;
-            });
+                if ($url === '(none)') {
+                    $url = '#';
+                }
+
+                $loader[] = array(
+                    'name' => array($name, $url),
+                    'version' => $version,
+                    'release' => $release,
+                );
+            }
+            
+            return $loader;
+        };
+
+        $this->adapter = new \Nethgui\Adapter\LazyLoaderAdapter($loaderFunction);
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
@@ -73,8 +75,8 @@ class Packages extends \Nethgui\Controller\AbstractController
             $view['packages'] = array();
             $values = iterator_to_array($this->adapter);
             usort($values, function($a, $b) {
-                    return strcmp($a['name'][0], $b['name'][0]);
-                });
+                return strcmp($a['name'][0], $b['name'][0]);
+            });
             $view['packages'] = $values;
         }
     }
