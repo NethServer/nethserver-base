@@ -40,4 +40,52 @@ class PackageManager extends \Nethgui\Controller\TabsController
         parent::initialize();
     }
 
+    public function yumGroupsLoader()
+    {
+        /*
+         * NOTE on package groups; packages:
+         *  - "optional" are not automatic but can be checked
+         *  - "default" are, but can be unchecked in a gui tool
+         *  - "mandatory" are always brought in (if group is selected),
+         *    and not visible in the Package Selection dialog.
+         *  - "conditional" are brought in if their requires package is
+         *    installed
+         *
+         * See http://fedoraproject.org/wiki/How_to_use_and_edit_comps.xml_for_package_groups
+         */
+
+        $data = json_decode($this->getPlatform()->exec('/usr/bin/sudo /sbin/e-smith/pkginfo grouplist')->getOutput(), TRUE);
+
+        $loader = new \ArrayObject();
+
+        $lang = $this->getRequest()->getLanguageCode();
+
+        // Flatten the data structure:
+        foreach (array('installed', 'available') as $dState) {
+            if ( ! isset($data[$dState])) {
+                continue;
+            }
+
+            $translate = function($dGroup, $field) use ($lang) {
+                    $tfield = 'translated_' . $field;
+                    return isset($dGroup[$tfield][$lang]) ? $dGroup[$tfield][$lang] : $dGroup[$field];
+                };
+
+            foreach ($data[$dState] as $dGroup) {
+                $loader[$dGroup['id']] = array(
+                    'id' => $dGroup['id'],
+                    'name' => $translate($dGroup, 'name'),
+                    'description' => $translate($dGroup, 'description'),
+                    'status' => $dState,
+                    'mpackages' => $dGroup['mandatory_packages'],
+                    'opackages' => $dGroup['optional_packages'],
+                    'cpackages' => $dGroup['conditional_packages'],
+                    'dpackages' => $dGroup['default_packages'],
+                );
+            }
+        }
+
+        return $loader;
+    }
+
 }
