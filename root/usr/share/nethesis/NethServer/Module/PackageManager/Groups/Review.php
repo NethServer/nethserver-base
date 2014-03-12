@@ -32,9 +32,9 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
 {
     /**
      *
-     * @var array 
+     * @var string
      */
-    private $selection = array();
+    private $taskIdentifier;
 
     public function initialize()
     {
@@ -42,16 +42,6 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
         $this->declareParameter('addGroups', Validate::ANYTHING);
         $this->declareParameter('removeGroups', Validate::ANYTHING);
         $this->declareParameter('optionals', Validate::ANYTHING_COLLECTION);      
-    }
-
-    public function bind(\Nethgui\Controller\RequestInterface $request)
-    {
-        $key = get_class($this->getParent());
-        $sessionDb = $this->getPlatform()->getDatabase('SESSION');
-        $this->selection['add'] = $sessionDb->getProp($key, 'add');
-        $this->selection['remove'] = $sessionDb->getProp($key, 'remove');
-        $this->selection['keep'] = $sessionDb->getProp($key, 'keep');
-        parent::bind($request);
     }
 
     public function validate(\Nethgui\Controller\ValidationReportInterface $report)
@@ -196,25 +186,39 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
         return $removeList;
     }
 
+    private function getSelection()
+    {
+        $key = get_class($this->getParent());
+        $sessionDb = $this->getPlatform()->getDatabase('SESSION');
+        return array(
+            'add' => is_array($sessionDb->getProp($key, 'add')) ? $sessionDb->getProp($key, 'add') : array(),
+            'remove' => is_array($sessionDb->getProp($key, 'remove')) ? $sessionDb->getProp($key, 'remove') : array(),
+            'keep' => is_array($sessionDb->getProp($key, 'keep')) ? $sessionDb->getProp($key, 'keep') : array()
+        );
+    }
+
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
 
         $view['Back'] = $view->getModuleUrl('../Select');
+        $this->trackerPath = sprintf('/%s/%s', implode('/', $view->resolvePath('../Tracker')), $this->taskIdentifier);
 
-        if ($this->getRequest()->isValidated() && ! $this->getRequest()->isMutation()) {
-            $view['optionals'] = $this->getOptionalRpms();
-            $view['messages'] = $this->getMessagesText($view->getTranslator());
-            $view->getCommandList()->show();
-            $view['addGroups'] = implode(',', isset($this->selection['add']) ? $this->selection['add'] : array());
-            $view['removeGroups'] = implode(',', isset($this->selection['remove']) ? $this->selection['remove'] : array());
+        if ( ! $this->getRequest()->isMutation()) {
+            $selection = $this->getSelection();
+            $view['optionals'] = $this->getOptionalRpms($selection);
+            $view['messages'] = $this->getMessagesText($view->getTranslator(), $selection);
+            $view['addGroups'] = implode(',', $selection['add']);
+            $view['removeGroups'] = implode(',', $selection['remove']);
         } elseif ($this->getRequest()->isValidated() && $this->getRequest()->isMutation()) {
             // FIXME EXPERIMENTAL
             $view->getCommandList()->httpHeader('HTTP/1.1 202 Accepted');
+            // Implemented in view template:
+            $view->getCommandList()->showTracker();
         }
     }
 
-    private function getOptionalRpms()
+    private function getOptionalRpms($selection)
     {
         $installedRpms = $this->getInstalledRpms();
         $optionals = array();
@@ -223,7 +227,7 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
         foreach ($this->getAdapter() as $group) {
 
             // skip unselected groups:
-            if ($group['status'] === 'available' && ! in_array($group['id'], $this->selection['add'])) {
+            if ($group['status'] === 'available' && ! in_array($group['id'], $selection['add'])) {
                 continue;
             }
 
@@ -248,7 +252,7 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
         return array_values($optionals);
     }
 
-    private function getMessagesText(\Nethgui\View\TranslatorInterface $t)
+    private function getMessagesText(\Nethgui\View\TranslatorInterface $t, $selection)
     {
         $messages = array();
 
@@ -259,14 +263,14 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
             return isset($adapter[$k]) ? $adapter[$k]['name'] : $k;
         };
 
-        if ( ! empty($this->selection['add'])) {
-            $messages[] = $t->translate($this, 'GroupsToAdd_label', array(count($this->selection['add']),
-                implode(', ', array_map($mapGroupName, $this->selection['add']))));
+        if ( ! empty($selection['add'])) {
+            $messages[] = $t->translate($this, 'GroupsToAdd_label', array(count($selection['add']),
+                implode(', ', array_map($mapGroupName, $selection['add']))));
         }
 
-        if ( ! empty($this->selection['remove'])) {
-            $messages[] = $t->translate($this, 'GroupsToRemove_label', array(count($this->selection['remove']),
-                implode(', ', array_map($mapGroupName, $this->selection['remove']))));
+        if ( ! empty($selection['remove'])) {
+            $messages[] = $t->translate($this, 'GroupsToRemove_label', array(count($selection['remove']),
+                implode(', ', array_map($mapGroupName, $selection['remove']))));
         }
 
         return $messages;
@@ -275,7 +279,7 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
     public function nextPath()
     {
         if ($this->getRequest()->isMutation()) {
-            return '/PackageManager/Groups/Tracker/' . $this->taskIdentifier;
+            return $this->trackerPath;
         }
         return parent::nextPath();
     }

@@ -41,8 +41,6 @@ class Tracker extends \NethServer\Tool\Tracker
         $view['failedEvents'] = array();
         $view['message'] = '';
 
-        $view->getCommandList()->show();
-
         $state = $this->getProgress();
         if (is_array($state)) {
             $view['progress'] = intval(100 * $state['progress']);
@@ -75,7 +73,7 @@ class Tracker extends \NethServer\Tool\Tracker
                 $view['message'] = $message;
                 $view->getCommandList('/Notification')->showMessage($message, \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR);
             }
-            $view->getCommandList()->sendQuery($view->getModuleUrl('/PackageManager/Packages'), 0, FALSE);
+            $view->getCommandList()->sendQuery($view->getModuleUrl('../../Packages'), 0, FALSE);
         } else {
             $process = $this->getPlatform()->getDetachedProcess($this->getTaskId());
             if($process && $process->getOutput()) {
@@ -84,7 +82,7 @@ class Tracker extends \NethServer\Tool\Tracker
                 $message = $view->translate('Installer_Generic_Failure');
             }
             $view->getCommandList('/Notification')->showMessage($message, \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR);
-            $view->getCommandList()->sendQuery($view->getModuleUrl('/PackageManager/Packages'), 0, FALSE);
+            $view->getCommandList()->sendQuery($view->getModuleUrl('../../Packages'), 0, FALSE);
         }
     }
 
@@ -103,7 +101,7 @@ class Tracker extends \NethServer\Tool\Tracker
 
     public function nextPath()
     {
-        return ($this->getExitCode() === FALSE) ? FALSE : '/PackageManager/Groups/Select';
+        return ($this->getExitCode() === FALSE) ? FALSE : 'Select';
     }
 
 }

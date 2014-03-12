@@ -111,16 +111,12 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction
                 return strcmp($a['name'], $b['name']);
             });
         $view['groups'] = $values;
-        if ($this->getRequest()->isValidated()) {
-            $view->getCommandList()->show();
-        }
     }
 
     public function nextPath()
     {
         if ($this->getRequest()->isMutation()) {
-            // FIXME: Absolute path, to avoid next view "prefeching"
-            return '/PackageManager/Groups/Review';
+            return 'Review';
         }
         return parent::nextPath();
     }
