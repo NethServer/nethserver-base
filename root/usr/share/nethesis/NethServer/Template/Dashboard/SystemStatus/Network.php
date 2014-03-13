@@ -12,18 +12,19 @@ echo "</dl>";
 echo "</div>";
 
 $interfaces_title = $T('interfaces_title');
-$interfaces_id = $view->getClientEventTarget('interfaces');
 $moduleUrl = json_encode($view->getModuleUrl("/Dashboard/SystemStatus/Network"));
 echo "<div class='dashboard-item interface-item'>";
+
 echo $view->header()->setAttribute('template',$interfaces_title);
-echo "<div>";
+
+echo "<div id='interfaces-tabs'>";
+echo "<ul>";
 foreach ($view['interfaces'] as $interface) {
-     echo "<a href='#' data='{$interface['name']}' class='interface-link {$interface['role']}'>{$interface['name']}</a>";
+     echo "<li><a href='#interface-info-{$interface['name']}' class='{$interface['role']}'>{$interface['name']}</a></li>";
 }
-echo "</div>";
-echo "<div class='{$interfaces_id}'></div>";
+echo "</ul>";
 foreach ($view['interfaces'] as $interface) {
-     echo "<div class='interface-info interface-{$interface['role']}' id='interface-info-{$interface['name']}'>";
+     echo "<div id='interface-info-{$interface['name']}'>";
      echo "<dt>".$T('hwaddr_label')."</dt><dd>{$interface['hwaddr']}</dd>";
      echo "<dt>".$T('link_label')."</dt><dd>";
      if ($interface['link']) {
@@ -33,21 +34,24 @@ foreach ($view['interfaces'] as $interface) {
      }
      echo "</dd>";
      if ($interface['role']) {
-         echo "<dt>".$T('ipaddr_label')." / ".$T('netmask_label')."</dt><dd>{$interface['ipaddr']} / {$interface['netmask']}</dd>";
+         echo "<dt>".$T('ipaddr_label')." / ".$T('netmask_label')."</dt><dd>";
+         if($interface['ipaddr']) {
+             echo "{$interface['ipaddr']} / {$interface['netmask']}";
+         } else {
+             echo "-";
+         }
+         echo "</dd>";
          echo "<dt>".$T('bootproto_label')."</dt><dd>{$interface['bootproto']}</dd>";
      } 
      echo "</div>";
 }
 echo "</div>";
 
+echo "</div>";
+
 $view->includeJavascript("
 (function ( $ ) {
-    $('.interface-info').hide();
-    $('.interface-green').show();
-    $('.interface-link').on('click', function(e) {
-        $('.interface-info').hide();
-        $('#interface-info-' + $(this).attr('data')).show();
-    });
+ $( '#interfaces-tabs' ).tabs();
 } ( jQuery ));
 ");   
 
@@ -65,5 +69,11 @@ $view->includeCss("
         padding: 5px;
     }
 
+    #interfaces-tabs a {
+        padding-left: 4px;
+        padding-right: 4px;
+        padding-bottom: 2px;
+        padding-top: 4px;
+    }
 ");
 
