@@ -1,4 +1,5 @@
 <?php
+
 namespace NethServer\Module;
 
 /*
@@ -28,6 +29,11 @@ namespace NethServer\Module;
  */
 class PackageManager extends \Nethgui\Controller\TabsController
 {
+    /**
+     *
+     * @var string
+     */
+    private $language;
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $attributes)
     {
@@ -38,6 +44,41 @@ class PackageManager extends \Nethgui\Controller\TabsController
     {
         $this->loadChildrenDirectory();
         parent::initialize();
+    }
+
+    private function mapLang($lang)
+    {
+        $langMap = array(
+            'en' => 'en_GB',
+            'it' => 'it_IT',
+            '' => 'en_GB',
+        );
+        if (isset($langMap[$lang])) {
+            return $langMap[$lang];
+        }
+        return 'C';
+    }
+
+    public function prepareView(\Nethgui\View\ViewInterface $view)
+    {
+        $this->language = $view->getTranslator()->getLanguageCode();
+        parent::prepareView($view);
+    }
+
+    private function readYumCompsDump()
+    {
+        static $data;
+        if ( ! isset($data)) {
+            $lang = $this->getRequest()->getLanguageCode() ? $this->getRequest()->getLanguageCode() : $this->language;
+            $data = json_decode($this->getPlatform()->exec(sprintf("/bin/env LANG=%s /usr/bin/sudo /sbin/e-smith/pkginfo grouplist", $this->mapLang($lang)))->getOutput(), TRUE);
+        }
+        return $data;
+    }
+
+    public function yumCategories()
+    {
+        $data = $this->readYumCompsDump();
+        return isset($data['categories']) ? $data['categories'] : array();
     }
 
     public function yumGroupsLoader()
@@ -53,12 +94,8 @@ class PackageManager extends \Nethgui\Controller\TabsController
          *
          * See http://fedoraproject.org/wiki/How_to_use_and_edit_comps.xml_for_package_groups
          */
-
-        $data = json_decode($this->getPlatform()->exec('/usr/bin/sudo /sbin/e-smith/pkginfo grouplist')->getOutput(), TRUE);
-
+        $data = $this->readYumCompsDump();
         $loader = new \ArrayObject();
-
-        $lang = $this->getRequest()->getLanguageCode();
 
         // Flatten the data structure:
         foreach (array('installed', 'available') as $dState) {
@@ -66,16 +103,11 @@ class PackageManager extends \Nethgui\Controller\TabsController
                 continue;
             }
 
-            $translate = function($dGroup, $field) use ($lang) {
-                    $tfield = 'translated_' . $field;
-                    return isset($dGroup[$tfield][$lang]) ? $dGroup[$tfield][$lang] : $dGroup[$field];
-                };
-
             foreach ($data[$dState] as $dGroup) {
                 $loader[$dGroup['id']] = array(
                     'id' => $dGroup['id'],
-                    'name' => $translate($dGroup, 'name'),
-                    'description' => $translate($dGroup, 'description'),
+                    'name' => $dGroup['name'],
+                    'description' => $dGroup['description'],
                     'status' => $dState,
                     'mpackages' => $dGroup['mandatory_packages'],
                     'opackages' => $dGroup['optional_packages'],

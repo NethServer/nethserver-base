@@ -108,7 +108,7 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction
         parent::prepareView($view);
         $values = iterator_to_array($this->getAdapter());
         usort($values, function($a, $b) {
-                return strcmp($a['name'], $b['name']);
+                return strcasecmp($a['name'], $b['name']);
             });
         $view['groups'] = $values;
     }
