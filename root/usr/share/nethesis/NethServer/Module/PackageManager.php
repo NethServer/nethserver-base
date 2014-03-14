@@ -98,6 +98,18 @@ class PackageManager extends \Nethgui\Controller\CompositeController
         $data = $this->readYumCompsDump();
         $loader = new \ArrayObject();
 
+        $categories = $this->yumCategories();
+
+        $getCategories = function ($groupId) use ($categories) {
+            $matches = array();
+            foreach($categories as $c) {
+                if(in_array($groupId, $c['groups'])) {
+                    $matches[] = $c['id'];
+                }
+            }
+            return $matches;
+        };
+
         // Flatten the data structure:
         foreach (array('installed', 'available') as $dState) {
             if ( ! isset($data[$dState])) {
@@ -114,6 +126,7 @@ class PackageManager extends \Nethgui\Controller\CompositeController
                     'opackages' => $dGroup['optional_packages'],
                     'cpackages' => $dGroup['conditional_packages'],
                     'dpackages' => $dGroup['default_packages'],
+                    'categories' => implode(' ', $getCategories($dGroup['id']))
                 );
             }
         }

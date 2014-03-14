@@ -111,6 +111,7 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction
                 return strcasecmp($a['name'], $b['name']);
             });
         $view['groups'] = $values;
+        $view['categories'] = $this->getParent()->getParent()->yumCategories();
     }
 
     public function nextPath()
