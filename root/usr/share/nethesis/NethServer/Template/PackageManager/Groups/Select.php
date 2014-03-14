@@ -2,8 +2,11 @@
 
 /* @var $view \Nethgui\Renderer\Xhtml */
 
+echo $view->header()->setAttribute('template', $T('Select_header'));
+
 echo $view->buttonList()
     ->insert($view->button('ApplySelection', $view::BUTTON_SUBMIT))
+    ->insert($view->button('Packages', $view::BUTTON_LINK)->setAttribute('value', $view->getModuleUrl('../../Packages')))
     ->insert($view->button('Help', $view::BUTTON_HELP))
 ;
 
@@ -26,6 +29,7 @@ echo $view->objectsCollection('groups')
 
 echo $view->buttonList()
     ->insert($view->button('ApplySelection', $view::BUTTON_SUBMIT))
+    ->insert($view->button('Packages', $view::BUTTON_LINK)->setAttribute('value', $view->getModuleUrl('../../Packages')))
     ->insert($view->button('Help', $view::BUTTON_HELP))
 ;
 

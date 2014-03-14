@@ -3,6 +3,8 @@
 
 $view->requireFlag($view::INSET_DIALOG);
 
+echo $view->header()->setAttribute('template', $T('Tracker_header'));
+
 $imagesUrl = $view->getPathUrl() . 'images';
 $pleaseWaitLabel = htmlspecialchars($T('Please_wait_label'));
 

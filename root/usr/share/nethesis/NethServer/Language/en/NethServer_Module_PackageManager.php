@@ -22,7 +22,10 @@ $L['rpm_version'] = 'Version';
 $L['rpm_release'] = 'Release';
 
 $L['Groups_Title'] = 'Groups';
+$L['Select_header'] = 'Package manager';
 $L['Packages_Title'] = 'RPM packages';
+$L['Packages_label'] = 'RPM packages';
+$L['Packages_header'] = 'RPM packages';
 $L['Review_header'] = 'Confirm system changes';
 $L['ApplySelection_label'] = 'Apply';
 $L['Run_label'] = 'Run installation';

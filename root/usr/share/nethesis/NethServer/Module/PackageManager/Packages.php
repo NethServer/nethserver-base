@@ -1,4 +1,6 @@
-<?php namespace NethServer\Module\PackageManager;
+<?php
+
+namespace NethServer\Module\PackageManager;
 
 /*
  * Copyright (C) 2013 Nethesis S.r.l.
@@ -43,7 +45,7 @@ class Packages extends \Nethgui\Controller\AbstractController
                 $log->error($process->getOutput());
                 return $loader;
             }
-            
+
             foreach ($process->getOutputArray() as $line) {
                 list($name, $version, $release, $url) = explode("\t", trim($line, "\n"));
 
@@ -61,7 +63,7 @@ class Packages extends \Nethgui\Controller\AbstractController
                     'release' => $release,
                 );
             }
-            
+
             return $loader;
         };
 
@@ -71,13 +73,14 @@ class Packages extends \Nethgui\Controller\AbstractController
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
-        if ($this->adapter) {
+        if ($this->adapter instanceof \Nethgui\Adapter\AdapterInterface) {
             $view['packages'] = array();
             $values = iterator_to_array($this->adapter);
             usort($values, function($a, $b) {
                 return strcmp($a['name'][0], $b['name'][0]);
             });
             $view['packages'] = $values;
+            $view->getCommandList()->show();
         }
     }
 

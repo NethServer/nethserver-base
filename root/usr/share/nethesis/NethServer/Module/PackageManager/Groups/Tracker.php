@@ -73,7 +73,6 @@ class Tracker extends \NethServer\Tool\Tracker
                 $view['message'] = $message;
                 $view->getCommandList('/Notification')->showMessage($message, \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR);
             }
-            $view->getCommandList()->sendQuery($view->getModuleUrl('../../Packages'), 0, FALSE);
         } else {
             $process = $this->getPlatform()->getDetachedProcess($this->getTaskId());
             if($process && $process->getOutput()) {
@@ -82,7 +81,6 @@ class Tracker extends \NethServer\Tool\Tracker
                 $message = $view->translate('Installer_Generic_Failure');
             }
             $view->getCommandList('/Notification')->showMessage($message, \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR);
-            $view->getCommandList()->sendQuery($view->getModuleUrl('../../Packages'), 0, FALSE);
         }
     }
 

@@ -1,7 +1,8 @@
 <?php 
 /* @var $view \Nethgui\Renderer\Xhtml */
 $view->rejectFlag($view::INSET_FORM);
-echo $view->buttonList($view::BUTTON_HELP);
+
+echo $view->header()->setAttribute('template', $T('Packages_header'));
 
 ?><table class="SmallTable"><thead>
         <tr style="border-bottom: 1px solid gray"><th><?php echo $T('rpm_name') ?></th>
@@ -15,27 +16,15 @@ echo $view->objectsCollection('packages')
     ->setAttribute('key', 'name');
 
 $packagesTarget = $view->getClientEventTarget('packages');
-$moduleUrl = json_encode($view->getModuleUrl());
 
 $view->includeCss("
 table.SmallTable {width: auto;  font-size: 12px}
 .SmallTable td {padding: 0 1ex 4px 0}
 .SmallTable th {text-align: left; padding: 0 1ex 4px 0}
 ");
+?></table><?php
 
-$view->includeJavascript("
-(function ( $ ) {
-    $(document).ready(function() {
-        $.Nethgui.Server.ajaxMessage({
-            isMutation: false,
-            url: $moduleUrl
-        });
-        $('.$packagesTarget').ObjectsCollection('startThrobbing')
-            .one('ajaxStop', function() { $(this).ObjectsCollection('endThrobbing'); });
-    });
-       
-}) ( jQuery );
-");
-?></table>
+
+echo $view->buttonList($view::BUTTON_HELP | $view::BUTTON_CANCEL);
 
     

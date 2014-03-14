@@ -27,7 +27,7 @@ namespace NethServer\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class PackageManager extends \Nethgui\Controller\TabsController
+class PackageManager extends \Nethgui\Controller\CompositeController
 {
     /**
      *
@@ -42,7 +42,8 @@ class PackageManager extends \Nethgui\Controller\TabsController
 
     public function initialize()
     {
-        $this->loadChildrenDirectory();
+        $this->addChild(new \NethServer\Module\PackageManager\Groups());
+        $this->addChild(new \NethServer\Module\PackageManager\Packages());
         parent::initialize();
     }
 
