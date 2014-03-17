@@ -30,6 +30,9 @@ use Nethgui\System\PlatformInterface as Validate;
  */
 class Select extends \Nethgui\Controller\Collection\AbstractAction
 {
+
+    private $txOrder;
+
     public function initialize()
     {
         parent::initialize();
@@ -59,10 +62,10 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction
     {
         parent::process();
         if ($this->getRequest()->isMutation()) {
-            $txOrder = $this->prepareTransactionOrder();
+            $this->txOrder = $this->prepareTransactionOrder();
             $this->getPlatform()
                 ->getDatabase('SESSION')
-                ->setKey(get_class($this->getParent()), 'array', $txOrder);
+                ->setKey(get_class($this->getParent()), 'array', $this->txOrder);
         }
     }
 
@@ -106,11 +109,16 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
-        $values = iterator_to_array($this->getAdapter());
-        usort($values, function($a, $b) {
+        if(isset($this->txOrder)) {
+            $view->getCommandList()->setSelectionChanged(array_map(function ($part) use ($view) {
+                return $view->getUniqueId(sprintf('groups/%s/status', $part));
+            }, array_merge($this->txOrder['add'], $this->txOrder['remove'])));
+        }
+        $groupsState = iterator_to_array($this->getAdapter());
+        usort($groupsState, function($a, $b) {
                 return strcasecmp($a['name'], $b['name']);
             });
-        $view['groups'] = $values;
+        $view['groups'] = $groupsState;
         $view['categories'] = $this->getParent()->getParent()->yumCategories();
     }
 

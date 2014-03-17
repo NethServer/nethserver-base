@@ -25,6 +25,7 @@ table.SmallTable {width: auto;  font-size: 12px}
 ?></table><?php
 
 
-echo $view->buttonList($view::BUTTON_HELP | $view::BUTTON_CANCEL);
+echo $view->buttonList($view::BUTTON_HELP)
+    ->insert($view->button('Back', $view::BUTTON_CANCEL))
+;
 
-    
