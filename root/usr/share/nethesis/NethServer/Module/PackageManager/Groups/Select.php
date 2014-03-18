@@ -83,6 +83,8 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction
         $selectedList = array();
         $unselectedList = array();
 
+        $paramGroups = is_array($this->parameters['groups']) ? $this->parameters['groups'] : array();
+
         foreach ($this->getAdapter() as $id => $element) {
             if ($element['status'] === 'installed') {
                 $installedList[] = $id;
@@ -91,7 +93,7 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction
             }
         }
 
-        foreach ($this->parameters['groups'] as $id => $element) {
+        foreach ($paramGroups as $id => $element) {
             if ($element['status'] === 'installed') {
                 $selectedList[] = $id;
             } else {
@@ -101,7 +103,7 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction
 
         $addList = array_diff($selectedList, $installedList);
         $removeList = array_diff($unselectedList, $availableList);
-        $keepList = array_diff(array_keys($this->parameters['groups']), $addList, $removeList);
+        $keepList = array_diff(array_keys($paramGroups), $addList, $removeList);
 
         return array('add' => array_values($addList), 'remove' => array_values($removeList), 'keep' => array_values($keepList));
     }
@@ -124,10 +126,16 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction
 
     private function getCategories(\Nethgui\View\ViewInterface $view) {
         $groups = array();
+        $categories = $this->getParent()->getParent()->yumCategories();
+
+        if(count($categories) === 0) {
+            return array();
+        }
+
         foreach($this->getAdapter() as $group) {
             $groups[] = $group['id'];
         }
-        $categories = $this->getParent()->getParent()->yumCategories();
+        
         $everything = array(
             'id' => 'everything',
             'name' => $view->translate('Everything_category_label'),

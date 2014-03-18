@@ -131,7 +131,10 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
                 $arguments[] = implode(',', $selectedOptionals);
             }
 
-            $this->taskIdentifier = $this->getPlatform()->exec('/usr/bin/sudo /sbin/e-smith/pkgaction ${@}', $arguments, TRUE)->getIdentifier();
+            if(count($arguments) === 0) {
+                throw new \RuntimeException(sprintf("%s: package action was not specified", __CLASS__), 1395154356);
+            }
+            $this->taskIdentifier = $this->getPlatform()->exec('/usr/bin/sudo /sbin/e-smith/pkgaction ${@}', $arguments, TRUE)->getIdentifier();            
             $this->getPhpWrapper()->sleep(3); // Wait for ptrack server to start
         }
     }
