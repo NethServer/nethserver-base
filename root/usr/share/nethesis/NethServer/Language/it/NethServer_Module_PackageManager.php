@@ -23,9 +23,9 @@ $L['rpm_release'] = 'Rilascio';
 
 $L['Groups_Title'] = 'Gruppi';
 $L['Select_header'] = 'Gestione pacchetti';
-$L['Packages_Title'] = 'Pacchetti RPM';
-$L['Packages_label'] = 'Pacchetti RPM';
-$L['Packages_header'] = 'Pacchetti RPM';
+$L['Packages_Title'] = 'Software installato';
+$L['Packages_label'] = 'Software installato';
+$L['Packages_header'] = 'Software installato';
 $L['Review_header'] = 'Conferma le modifiche da apportare al sistema';
 $L['ApplySelection_label'] = 'Applica';
 $L['Run_label'] = 'Avvia installazione';
@@ -41,3 +41,6 @@ $L['Failed_events_label'] = 'Uno o più eventi (${0}) hanno riportato errori.  P
 $L['Please_wait_label'] = 'Installazione software in corso. Attendere...';
 $L['Installer_Message_Failure'] = 'Messaggio dal processo di installazione: ${0}';
 $L['Installer_Generic_Failure'] = 'Il processo di installazione ha fallito. Consultare i log di sistema per ulteriori dettagli.';
+
+$L['Everything_category_label'] = 'Tutto';
+$L['Everything_category_description'] = 'Mostra i gruppi da qualsiasi categoria';

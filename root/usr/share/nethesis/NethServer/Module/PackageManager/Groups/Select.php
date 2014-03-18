@@ -119,7 +119,25 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction
                 return strcasecmp($a['name'], $b['name']);
             });
         $view['groups'] = $groupsState;
-        $view['categories'] = $this->getParent()->getParent()->yumCategories();
+        $view['categories'] = $this->getCategories($view);
+    }
+
+    private function getCategories(\Nethgui\View\ViewInterface $view) {
+        $groups = array();
+        foreach($this->getAdapter() as $group) {
+            $groups[] = $group['id'];
+        }
+        $categories = $this->getParent()->getParent()->yumCategories();
+        $everything = array(
+            'id' => 'everything',
+            'name' => $view->translate('Everything_category_label'),
+            'description' => $view->translate('Everything_category_description'),
+            'display_order' => 0,
+            'groups' => array_unique($groups),
+            'selected' => TRUE
+            );
+        
+        return array_merge(array($everything), $categories);
     }
 
     public function nextPath()

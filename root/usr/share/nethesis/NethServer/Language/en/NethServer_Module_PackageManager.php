@@ -23,9 +23,9 @@ $L['rpm_release'] = 'Release';
 
 $L['Groups_Title'] = 'Groups';
 $L['Select_header'] = 'Package manager';
-$L['Packages_Title'] = 'RPM packages';
-$L['Packages_label'] = 'RPM packages';
-$L['Packages_header'] = 'RPM packages';
+$L['Packages_Title'] = 'Installed software';
+$L['Packages_label'] = 'Installed software';
+$L['Packages_header'] = 'Installed software';
 $L['Review_header'] = 'Confirm system changes';
 $L['ApplySelection_label'] = 'Apply';
 $L['Run_label'] = 'Run installation';
@@ -41,3 +41,6 @@ $L['Failed_events_label'] = 'One or more events (${0}) reported an error.  See t
 $L['Please_wait_label'] = 'Installing software. Please wait...';
 $L['Installer_Message_Failure'] = 'Message from the install process: ${0}';
 $L['Installer_Generic_Failure'] = 'The install process exited unexpectedly. See system logs for details.';
+
+$L['Everything_category_label'] = 'Everything';
+$L['Everything_category_description'] = 'Show groups from any category';
