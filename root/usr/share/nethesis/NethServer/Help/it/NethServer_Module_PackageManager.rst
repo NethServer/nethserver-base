@@ -2,24 +2,21 @@
 Gestione pacchetti
 ==================
 
-Aggiunge e rimuove i gruppi di pacchetti del sistema abilitando o
-disabilitando le funzionalità correlate.
+La vista principale mostra una lista di componenti software. Gli elementi
+spuntati rappresentano i componenti installati, mentre quelli non spuntati sono
+quelli disponibili. Si può filtrare la lista per categoria.
 
-Gruppi
-======
+.. NOTE::
 
-Elenco delle funzionalità attivabili. Ognuna può richiedere
-l'installazione di uno o più pacchetti RPM.
+    Sia i componenti che le categorie sono definite dai metadati di YUM.
 
-Le funzionalità spuntate sono già state installate sul sistema.
+Per installare o rimuovere i componenti software elencati, aggiungere o togliere
+il segno di spunta, quindi premere il pulsante :guilabel:`Applica`.
 
-Per installare una delle funzionalità in elenco è sufficiente
-selezionarla e fare click sul tasto applica.
+Software installato
+===================
 
-Pacchetti RPM
-=============
-
-Elenco dei pacchetti RPM installati sul sistema. Ove supportato è
+Elenca i pacchetti RPM di NethServer installati sul sistema. Dove supportato è
 possibile, cliccando sul nome del pacchetto, accedere alla pagina di
 documentazione dello sviluppatore.
 
