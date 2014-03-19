@@ -41,14 +41,3 @@ echo $view->buttonList()
     ->insert($view->button('Run', $view::BUTTON_SUBMIT))
     ->insert($view->button('Cancel', $view::BUTTON_CANCEL))
 ;
-
-// FIXME: this helper handler bounces the "show" message to the Tracker dialog
-$reviewId = $view->getUniqueId();
-$trackerId = $view->getUniqueId('../Tracker');
-$view->includeJavascript("
-(function( $ ) {
-    $('#${reviewId}').on('nethguishowtracker', function (e) {
-        $('#${trackerId}').trigger('nethguishow');
-    });
-}( jQuery ));
-");

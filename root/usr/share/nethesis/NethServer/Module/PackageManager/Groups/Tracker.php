@@ -1,4 +1,5 @@
 <?php
+
 namespace NethServer\Module\PackageManager\Groups;
 
 /*
@@ -29,10 +30,40 @@ namespace NethServer\Module\PackageManager\Groups;
 class Tracker extends \NethServer\Tool\Tracker
 {
     private $failedEvents = array();
+    private $nextPathLocator = 'Select';
+
+    public function setNextPath($l)
+    {
+        $this->nextPathLocator = $l;
+        return $this;
+    }
+
+    public function renderXhtml(\Nethgui\Renderer\Xhtml $view)
+    {
+        $view->requireFlag($view::INSET_DIALOG);
+        $headerPart = $view->header()->setAttribute('template', $view->translate('Tracker_header'));
+        $imagesUrl = $view->getPathUrl() . 'images';
+        $pleaseWaitLabel = htmlspecialchars($view->translate('Please_wait_label'));
+
+        $panelPart = $view->panel()
+            //    ->setAttribute('class', 'Dialog noclose')
+            ->insert($view->panel()->setAttribute('class', 'labeled-control')
+                ->insert($view->literal("<img style='vertical-align: middle' src='${imagesUrl}/ajax-loader.gif' alt='${pleaseWaitLabel}' /> ")->setAttribute('escapeHtml', FALSE))
+                ->insert($view->literal($view->translate('Please_wait_label')))
+            )
+            ->insert($view->progressBar('progress'))
+            ->insert($view->textLabel('message'))
+            ->insert($view->textList('failedEvents'))
+        ;
+        return $view->panel()->insert($headerPart)->insert($panelPart);
+    }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
+        if ($view->getTargetFormat() === \Nethgui\View\ViewInterface::TARGET_XHTML) {
+            $view->setTemplate(array($this, 'renderXhtml'));
+        }
 
         if ( ! $this->getRequest()->isValidated()) {
             return;
@@ -75,7 +106,7 @@ class Tracker extends \NethServer\Tool\Tracker
             }
         } else {
             $process = $this->getPlatform()->getDetachedProcess($this->getTaskId());
-            if($process && $process->getOutput()) {
+            if ($process && $process->getOutput()) {
                 $message = $view->translate('Installer_Message_Failure', array(substr($process->getOutput(), 0, 255)));
             } else {
                 $message = $view->translate('Installer_Generic_Failure');
@@ -99,7 +130,7 @@ class Tracker extends \NethServer\Tool\Tracker
 
     public function nextPath()
     {
-        return ($this->getExitCode() === FALSE) ? FALSE : 'Select';
+        return ($this->getExitCode() === FALSE) ? FALSE : $this->nextPathLocator;
     }
 
 }

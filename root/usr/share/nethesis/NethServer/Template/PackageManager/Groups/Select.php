@@ -44,8 +44,6 @@ $view->includeJavascript("
         });
     });
 
-
-
     // update groups-categories association
     $('#${categoriesId}').on('nethguiupdateview', function (e, data) {
         $(this).empty();

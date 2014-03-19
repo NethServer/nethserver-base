@@ -135,7 +135,6 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
                 throw new \RuntimeException(sprintf("%s: package action was not specified", __CLASS__), 1395154356);
             }
             $this->taskIdentifier = $this->getPlatform()->exec('/usr/bin/sudo /sbin/e-smith/pkgaction ${@}', $arguments, TRUE)->getIdentifier();            
-            $this->getPhpWrapper()->sleep(3); // Wait for ptrack server to start
         }
     }
 
@@ -205,7 +204,6 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
         parent::prepareView($view);
 
         $view['Back'] = $view->getModuleUrl('../Select');
-        $this->trackerPath = sprintf('/%s/%s', implode('/', $view->resolvePath('../Tracker')), $this->taskIdentifier);
 
         if ( ! $this->getRequest()->isMutation()) {
             $selection = $this->getSelection();
@@ -215,9 +213,10 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
             $view['removeGroups'] = implode(',', $selection['remove']);
         } elseif ($this->getRequest()->isValidated() && $this->getRequest()->isMutation()) {
             // FIXME EXPERIMENTAL
-            $view->getCommandList()->httpHeader('HTTP/1.1 202 Accepted');
-            // Implemented in view template:
-            $view->getCommandList()->showTracker();
+            $view->getCommandList()
+                ->httpHeader('HTTP/1.1 202 Accepted')
+                ->sendQuery($view->getModuleUrl('../Tracker/' . $this->taskIdentifier), 1000, TRUE)
+            ;
         }
     }
 
@@ -282,7 +281,7 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
     public function nextPath()
     {
         if ($this->getRequest()->isMutation()) {
-            return $this->trackerPath;
+            return 'Tracker';
         }
         return parent::nextPath();
     }

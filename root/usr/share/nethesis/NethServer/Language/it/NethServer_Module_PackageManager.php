@@ -37,8 +37,9 @@ $L['Transaction_summary_label'] = 'Modifiche ai gruppi';
 $L['Optional_packages_label'] = 'Scelta dei pacchetti opzionali';
 $L['Empty_optionals_label'] = 'Nessun pacchetto opzionale è disponibile';
 
+$L['Tracker_header'] = 'Installazione software';
 $L['Failed_events_label'] = 'Uno o più eventi (${0}) hanno riportato errori.  Per ulteriori dettagli vedere i log di sistema.';
-$L['Please_wait_label'] = 'Installazione software in corso. Attendere...';
+$L['Please_wait_label'] = 'Attendere...';
 $L['Installer_Message_Failure'] = 'Messaggio dal processo di installazione: ${0}';
 $L['Installer_Generic_Failure'] = 'Il processo di installazione ha fallito. Consultare i log di sistema per ulteriori dettagli.';
 
