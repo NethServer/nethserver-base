@@ -45,3 +45,4 @@ $L['Installer_Generic_Failure'] = 'Il processo di installazione ha fallito. Cons
 
 $L['Everything_category_label'] = 'Tutto';
 $L['Everything_category_description'] = 'Mostra i gruppi da qualsiasi categoria';
+$L['Back_label'] = 'Indietro';

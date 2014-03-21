@@ -45,3 +45,4 @@ $L['Installer_Generic_Failure'] = 'The install process exited unexpectedly. See 
 
 $L['Everything_category_label'] = 'Everything';
 $L['Everything_category_description'] = 'Show groups from any category';
+$L['Back_label'] = 'Back';
