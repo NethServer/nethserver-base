@@ -72,6 +72,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Mon Mar 24 2014 Davide Principi <davide.principi@nethesis.it> - 2.2.1-1.ns6
+- Built again to fix online documentation - #2700 [NethServer]
+
 * Mon Mar 24 2014 Davide Principi <davide.principi@nethesis.it> - 2.2.0-1.ns6
 - YUM categories in PackageManager - Feature #2694 [NethServer]
 - Remove absolute URLs from PackageManager - Enhancement #2692 [NethServer]
