@@ -72,6 +72,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Mon Mar 24 2014 Davide Principi <davide.principi@nethesis.it> - 2.2.0-1.ns6
+- YUM categories in PackageManager - Feature #2694 [NethServer]
+- Remove absolute URLs from PackageManager - Enhancement #2692 [NethServer]
+
 * Mon Mar 10 2014 Davide Principi <davide.principi@nethesis.it> - 2.1.2-1.ns6
 - User can't set his own UserProfile fields - Bug #2684 [NethServer]
 - Backup Notification to System administrator fails by default - Bug #2675 [NethServer]
