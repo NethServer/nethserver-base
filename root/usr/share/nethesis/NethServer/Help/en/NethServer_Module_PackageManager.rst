@@ -13,6 +13,13 @@ filter the list by category.
 To install or remove the listed software components, change the checkbox states
 then click the :guilabel:`Apply` button.
 
+It's showed a list of optional packages related, check them for install 
+
+
+.. note:: 
+    
+    To install an optional package *AFTER* the installation of relative component, click the :guilabel:`Apply` button and check optional package
+
 Installed software
 ==================
 
