@@ -13,6 +13,14 @@ quelli disponibili. Si può filtrare la lista per categoria.
 Per installare o rimuovere i componenti software elencati, aggiungere o togliere
 il segno di spunta, quindi premere il pulsante :guilabel:`Applica`.
 
+
+Viene mostrata la relativa lista di pacchetti opzionali, selezionarli per l'installazione.
+
+.. note:: 
+    Per installare un pacchetto opzionale *DOPO* l'installazione del componente relativo, cliccare sul bottone :guilabel:`Continua` e selezionare il pacchetto opzionale.
+
+
+
 Software installato
 ===================
 
