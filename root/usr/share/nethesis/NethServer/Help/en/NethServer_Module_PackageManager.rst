@@ -10,24 +10,24 @@ filter the list by category.
 
     Both components and categories are defined by YUM metadata.
 
-To install or remove the listed software components, change the checkbox states
-then click the :guilabel:`Apply` button.
-
-A list of related optional packages is shown, to be selected for
+To install or remove the listed software components, change the
+checkbox states then click the :guilabel:`Apply` button. The next
+screen summarizes what is going to be installed and removed. Also, a
+list of optional packages is shown, to be selected for
 installation.
 
-.. note:: 
+.. NOTE:: 
     
-    To install an optional package *AFTER* the installation of
-    relative component, click the :guilabel:`Apply` button and check
-    optional package.
+   Optional packages can be installed also *after* the installation of
+   the relative component: click the :guilabel:`Apply` button again
+   and select them from the summary screen.
 
 Installed software
 ==================
 
-It lists NethServer RPM packages installed on your system.
-Where available, it is possible to open the development page by clicking on the
-package name. 
+It lists |product| RPM packages installed on your system.  Where
+available, it is possible to open the development page by clicking on
+the package name.
 
 Packages are sorted alphabetically. Displayed fields are:
 
