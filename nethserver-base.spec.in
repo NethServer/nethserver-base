@@ -13,7 +13,7 @@ Requires: perl(Crypt::Cracklib)
 Requires: perl(Date::Manip)
 Requires: perl(Data::UUID)
 Requires: perl(Net::IPv4Addr)
-Requires: perl(Net::Addr)
+Requires: perl(NetAddr::IP)
 Requires: perl-TimeDate
 Requires: perl-DateTime-Format-Mail
 Requires: perl-Mail-RFC822-Address
