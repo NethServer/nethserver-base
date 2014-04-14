@@ -190,6 +190,20 @@ sub interfaces {
     return grep { $_->prop('type') =~ /^(ethernet|bridge|bond|alias|ipsec)$/ } $self->get_all();
 }
 
+=item I<zones>
+
+    my @zones = $interfaces->zones;
+
+Returns a list of all records of type 'zone'.
+
+=cut
+
+sub zones {
+    my ($self) = @_;
+    return $self->get_all_by_prop('type' => 'zone');
+}
+
+
 
 =item I<ethernets>
 
