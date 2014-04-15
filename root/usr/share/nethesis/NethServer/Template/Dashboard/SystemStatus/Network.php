@@ -59,10 +59,23 @@ $view->includeJavascript("
 $view->includeCss("
     .red {
         color: red !important;
+        font-weight: bold;
     }
     .green {
         color: green !important;
         font-weight: bold;
+    }
+    .orange {
+        color: orange !important;
+        font-weight: bold;
+    }
+    .blue {
+        color: blue !important;
+        font-weight: bold;
+    }
+    
+
+    span.green {
         margin-right: 10px;,
     }
     .interface-info {

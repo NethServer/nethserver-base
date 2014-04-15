@@ -37,7 +37,7 @@ class Network extends \Nethgui\Controller\AbstractController
 
     private function readInterfaces()
     {
-        $interfaces = $this->getPlatform()->getDatabase('networks')->getAll('ethernet');
+        $interfaces = $this->getPlatform()->getDatabase('networks')->getAll();
         foreach ($interfaces as $interface => $props) {
              # remove non existing interfaces
              if (!file_exists("/sys/class/net/$interface")) {
@@ -46,12 +46,12 @@ class Network extends \Nethgui\Controller\AbstractController
              }
              $tmp = array(
                  'name' => $interface,
-                 'ipaddr'=> isset($props['ipaddr'])?$props['ipaddr']:'', 
-                 'netmask'=> isset($props['netmask'])?$props['netmask']:"", 
-                 'gateway'=> isset($props['gateway'])?$props['gateway']:"", 
-                 'hwaddr'=> isset($props['hwaddr'])?$props['hwaddr']:"", 
-                 'bootproto'=> isset($props['bootproto'])?$props['bootproto']:"", 
-                 'role'=> isset($props['role'])?$props['role']:"none" 
+                 'ipaddr'=> isset($props['ipaddr'])?$props['ipaddr']:'-', 
+                 'netmask'=> isset($props['netmask'])?$props['netmask']:"-", 
+                 'gateway'=> isset($props['gateway'])?$props['gateway']:"-", 
+                 'hwaddr'=> isset($props['hwaddr'])?$props['hwaddr']:"-", 
+                 'bootproto'=> isset($props['bootproto'])?$props['bootproto']:"-", 
+                 'role'=> isset($props['role'])?$props['role']:"-" 
              );
              $tmp['speed'] = file_get_contents("/sys/class/net/".$interface."/speed")." Mb/s";
              $tmp['link'] = file_get_contents("/sys/class/net/".$interface."/carrier");
