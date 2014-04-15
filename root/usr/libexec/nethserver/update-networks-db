@@ -35,6 +35,10 @@ fi
 
 for card in `ls /sys/class/net`; do
 
+    if [ "$card" == "bonding_masters" ]; then
+        continue
+    fi
+
     # Check if this is an Ethernet device (type=1)
     if [ `cat /sys/class/net/$card/type` == "1" ]; then
         hwaddr=`cat /sys/class/net/$card/address`
@@ -42,29 +46,37 @@ for card in `ls /sys/class/net`; do
         # Check that is no VLAN if
         if [[ ! "$card" =~ "[.]" ]]; then
 
-            # Check if this not a bridge
-            if [ ! -e /sys/class/net/$card/brforward ]; then
+            # Check if this not a tun/tap
+            if [ ! -e /sys/class/net/$card/tun_flags ]; then
+                if [ -e /sys/class/net/$card/brforward ] && [[ $card != virbr* ]]; then
+                    dev=`/sbin/e-smith/db networks get $card`
+                    if [ "x$dev" == "x" ]; then
+                         /sbin/e-smith/db networks set $card bridge
+                         /sbin/e-smith/db networks setprop $card role '' 
+                    fi
+                else
 
-                # Check if mac is valid (not 00:00... or FF:FF...)
-                if [ ! "$hwaddr" == "00:00:00:00:00:00" ];then
-                    if [ ! "$hwaddr" == "ff:ff:ff:ff:ff:ff" ];then
+                    # Check if mac is valid (not 00:00... or FF:FF...)
+                    if [ ! "$hwaddr" == "00:00:00:00:00:00" ];then
+                        if [ ! "$hwaddr" == "ff:ff:ff:ff:ff:ff" ];then
 
-			driver=`basename $(ls -l /sys/class/net/$card/device/driver | awk '{print$NF}' )`
-			type=`basename $(ls -l /sys/class/net/$card/device/subsystem | awk '{print$NF}' )`
+			    driver=`basename $(ls -l /sys/class/net/$card/device/driver 2>/dev/null | awk '{print$NF}' ) 2>/dev/null`
+			    type=`basename $(ls -l /sys/class/net/$card/device/subsystem 2>/dev/null | awk '{print$NF}' ) 2>/dev/null`
 
-                        # Default if not avaiable in /sys/class/net
-			if [ "a$type" == "a" ]; then
-                            type="???"
-			fi
-			if [ "a$driver" == "a" ]; then
-                            driver="Unknown Network Interface ($card)"
-			fi
-                        curr=`/sbin/e-smith/db networks get $card`
-			if [ "x$curr" == "x" ]; then
-                            # Add to networks db
-                            /sbin/e-smith/db networks set $card ethernet hwaddr $hwaddr 
-                            /sbin/e-smith/db networks setprop $card role '' 
-			fi   
+                            # Default if not avaiable in /sys/class/net
+			    if [ "a$type" == "a" ]; then
+                                type="???"
+			    fi
+			    if [ "a$driver" == "a" ]; then
+                                driver="Unknown Network Interface ($card)"
+			    fi
+                            curr=`/sbin/e-smith/db networks get $card`
+			    if [ "x$curr" == "x" ]; then
+                                # Add to networks db
+                                /sbin/e-smith/db networks set $card ethernet hwaddr $hwaddr 
+                                /sbin/e-smith/db networks setprop $card role '' 
+			    fi   
+                        fi
                     fi
                 fi
             fi

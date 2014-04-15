@@ -12,8 +12,8 @@ if [ `cat /sys/class/net/$card/type` == "1" ]; then
 	#Check that is no VLAN if
 	if [[ ! "$card" =~ "[.]" ]]; then
 
-		#check if this not a bridge
-		if [ ! -e /sys/class/net/$card/brforward ]; then
+                # Check if this not a bridge or a tun/tap
+                if [ ! -e /sys/class/net/$card/brforward ] && [ ! -e /sys/class/net/$card/tun_flags ]; then
 
 			#Check if mac is valid (not 00:00... or FF:FF...)
 			if [ ! "$hwaddr" == "00:00:00:00:00:00" ];then
