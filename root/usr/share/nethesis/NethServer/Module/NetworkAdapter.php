@@ -39,14 +39,19 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
             'Key',
             'hwaddr',
             'role',
-            'bootproto',
             'ipaddr',
             'Actions'
         );
 
+        $tableAdapter = new NetworkAdapter\InterfaceAdapter($this->getPlatform());
+
         $this
-            ->setTableAdapter($this->getPlatform()->getTableAdapter('networks', 'ethernet'))
+            #->setTableAdapter($this->getPlatform()->getTableAdapter('networks', 'ethernet'))
+            #->setTableAdapter($this->getPlatform()->getTableAdapter('networks'))
+            ->setTableAdapter($tableAdapter)
             ->setColumns($columns)
+            ->addTableAction(new \NethServer\Module\NetworkAdapter\Modify('create'))            
+            ->addTableAction(new \NethServer\Module\NetworkAdapter\Apply('apply'))            
             ->addTableAction(new \Nethgui\Controller\Table\Help('Help'))
             ->addRowAction(new \NethServer\Module\NetworkAdapter\Modify('update'))
             ->addRowAction(new \NethServer\Module\NetworkAdapter\Modify('delete'))
@@ -63,6 +68,22 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
         return strval($key);
     }
 
+    public function prepareViewForColumnRole(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        $rowMetadata['rowCssClass'] = trim($rowMetadata['rowCssClass'] . ' ' . $values['role']);
+        $role = $view->translate($values['role']."_label");
+
+        if ($values['role'] == 'slave') {
+            return "$role (".$values['master'].")";
+        }
+        if ($values['role'] == 'bridged') {
+            return "$role (".$values['bridge'].")";
+        }
+      
+        return $role;
+    }
+
+
     /**
      * Override prepareViewForColumnActions to hide/show delete action
      * @param \Nethgui\View\ViewInterface $view
@@ -73,6 +94,12 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
     public function prepareViewForColumnActions(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
         $cellView = $action->prepareViewForColumnActions($view, $key, $values, $rowMetadata);
+
+        if ($values['role'] == 'slave' || $values['role'] == 'bridged') {
+            unset($cellView['delete']);
+            unset($cellView['update']);
+        }
+
 
         // Remove "delete" link on unconfigured interfaces:
         if($values['role'] === '') {

@@ -26,9 +26,9 @@ use Nethgui\Controller\Table\Modify as Table;
 /**
  * Modify domain
  *
- * Generic class to create/update/delete Domain records
+ * Generic class to create/update/delete system interfaces
  * 
- * @author Davide Principi <davide.principi@nethesis.it>
+ * @author Giacomo Sanchietti <giacomo.sanchietti@nethesis.it>
  * @since 1.0
  */
 class Modify extends \Nethgui\Controller\Table\Modify
@@ -36,12 +36,25 @@ class Modify extends \Nethgui\Controller\Table\Modify
     /**
      * @var Array list of valid roles
      */
-    private $roles = array('green', 'red');
+    private $roles = array('green', 'red', 'blue', 'orange');
+    
+    /**
+     * @var Array list of valid interface type
+     */
+    private $types = array('alias', 'bridge', 'bond', 'vlan', 'ethernet');
+    
+    /**
+     * @var Array list of system interfaces
+     */
+    private $interfaces;
+
+
 
     public function initialize()
     {
         $parameterSchema = array(
             array('device', Validate::USERNAME, \Nethgui\Controller\Table\Modify::KEY),
+            array('type', $this->getPlatform()->createValidator()->memberOf($this->types), \Nethgui\Controller\Table\Modify::FIELD),
             array('hwaddr', Validate::MACADDRESS, \Nethgui\Controller\Table\Modify::FIELD),
             array('role', $this->getPlatform()->createValidator()->memberOf($this->roles), \Nethgui\Controller\Table\Modify::FIELD),
             array('bootproto', $this->getPlatform()->createValidator()->memberOf(array('dhcp', 'static')), \Nethgui\Controller\Table\Modify::FIELD),
@@ -49,6 +62,10 @@ class Modify extends \Nethgui\Controller\Table\Modify
             array('netmask', Validate::NETMASK_OR_EMPTY, \Nethgui\Controller\Table\Modify::FIELD),
             array('gateway', Validate::IPv4_OR_EMPTY, \Nethgui\Controller\Table\Modify::FIELD),
         );
+
+        if(!$this->interfaces) {
+            $this->interfaces = $this->readInterfaces();
+        }
 
         $this->setSchema($parameterSchema);
         $this->setDefaultValue('bootproto', 'static');
@@ -59,13 +76,25 @@ class Modify extends \Nethgui\Controller\Table\Modify
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
         parent::bind($request);
-        // The delete case does not actually delete the record: it set role prop
+        // The delete case does not actually delete the record: it sets role prop
         // to ''. See also delete()
         if ($this->getIdentifier() === 'delete') {
             $this->parameters['role'] = '';
             $this->parameters['bootproto'] = '';
         }
     }
+
+    private function readInterfaces() {
+        $ret = array();
+        $interfaces = $this->getPlatform()->getDatabase('networks')->getAll();
+        foreach ($interfaces as $key => $props) {
+            if (in_array($props['type'], $this->types)) {
+                $ret[$key] = $props;
+            }
+        }
+        return $ret;
+    }
+
 
     /**
      * Parse nic-info helper command output
@@ -102,13 +131,45 @@ class Modify extends \Nethgui\Controller\Table\Modify
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
-        
-        if ($this->getIdentifier() === 'update') {
-            $view['roleDatasource'] = array_map(function($fmt) use ($view) {
-                    return array($fmt, $view->translate($fmt . '_label'));
-                }, $this->roles);
-            $view->copyFrom($this->getNicInfo($view));
+       
+        if(!$this->interfaces) {
+            $this->interfaces = $this->readInterfaces();
         }
+
+        $bond = array();
+        foreach($this->interfaces as $key => $props) {
+            if ($props['type'] == 'ethernet') {
+                $bond[] = array($key,$key);
+            }
+        }
+        $view['bondInterfaceDatasource'] = $bond;
+        $view['vlanInterfaceDatasource'] = $bond;
+   
+        $alias = array();
+        foreach($this->interfaces as $key => $props) {
+            if ($props['type'] != 'alias') {
+                $alias[] = array($key,$key);
+            }
+        }
+        $view['aliasInterfaceDatasource'] = $alias;
+
+
+        $bridge = array();
+        foreach($this->interfaces as $key => $props) {
+            if ($props['type'] != 'bridge' && $props['type'] != 'alias') {
+                $bridge[] = array($key,$key);
+            }
+        }
+        $view['bridgeInterfaceDatasource'] = $bridge;
+
+
+        $view['roleDatasource'] = array_map(function($fmt) use ($view) {
+                return array($fmt, $view->translate($fmt . '_label'));
+            }, $this->roles);
+        $view->copyFrom($this->getNicInfo($view));
+        $view['typeDatasource'] = array_map(function($fmt) use ($view) {
+                return array($fmt, $view->translate($fmt . '_label'));
+            }, $this->types);
 
         $templates = array(
             'create' => 'NethServer\Template\NetworkAdapter\Modify',
@@ -138,11 +199,6 @@ class Modify extends \Nethgui\Controller\Table\Modify
     protected function processDelete($key)
     {
         // skip parent's implementation
-    }
-
-    protected function onParametersSaved($changedParameters)
-    {
-        $this->getPlatform()->signalEvent('interface-update@post-response &');
     }
 
 }

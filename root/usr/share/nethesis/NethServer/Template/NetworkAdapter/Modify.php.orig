@@ -1,45 +1,29 @@
 <?php
 
 if ($view->getModule()->getIdentifier() == 'update') {
-    echo $view->header()->setAttribute('template',$T('update_header_label'));
-
-    echo "<div class='network_adatper'>";
-    echo "<dl>";
-    echo "<dt>".$T('link_label')."</dt><dd>".$view->textLabel('link')."</dd>";
-    echo "<dt>".$T('model_label')."</dt><dd>".$view->textLabel('model')."</dd>";
-    echo "<dt>".$T('speed_label')."</dt><dd>".$view->textLabel('speed')." Mb/s</dd>";
-    echo "<dt>".$T('driver_label')."</dt><dd>".$view->textLabel('driver')."</dd>";
-    echo "<dt>".$T('bus_label')."</dt><dd>".$view->textLabel('bus')."</dd>";
-    echo "</dl>";
-    echo "</div>";
+    $headerText = 'update_header_label';
 } else {
-    echo $view->header()->setAttribute('template',$T('create_header_label'));
+    $headerText = 'create_header_label';
 }
 
 $role_id = $view->getClientEventTarget('role');
 $bootproto_id = $view->getClientEventTarget('bootproto');
 
+echo $view->header()->setAttribute('template',$T($headerText));
 
-$panel = $view->panel();
-    if ($view->getModule()->getIdentifier() == 'update') {
-        $panel->insert($view->textInput('device', $view::STATE_READONLY))
-            ->insert($view->fieldsetSwitch('type', 'ethernet', $view::FIELDSETSWITCH_EXPANDABLE)
-                ->insert($view->textInput('hwaddr', ($view->getModule()->getIdentifier() == 'update' ? $view::STATE_READONLY : 0)))
-        );
-    }
-    $panel->insert($view->fieldsetSwitch('type', 'alias', $view::FIELDSETSWITCH_EXPANDABLE)
-        ->insert($view->selector('aliasInterface', $view::SELECTOR_DROPDOWN))
-    )
-    ->insert($view->fieldsetSwitch('type', 'bond', $view::FIELDSETSWITCH_EXPANDABLE)
-        ->insert($view->selector('bondInterface', $view::SELECTOR_MULTIPLE))
-    )
-    ->insert($view->fieldsetSwitch('type', 'bridge', $view::FIELDSETSWITCH_EXPANDABLE)
-        ->insert($view->selector('bridgeInterface', $view::SELECTOR_MULTIPLE))
-    )
-    ->insert($view->fieldsetSwitch('type', 'vlan', $view::FIELDSETSWITCH_EXPANDABLE)
-        ->insert($view->textInput('tag'))
-        ->insert($view->selector('vlanInterface', $view::SELECTOR_DROPDOWN))
-    )
+echo "<div class='network_adatper'>";
+echo "<dl>";
+echo "<dt>".$T('link_label')."</dt><dd>".$view->textLabel('link')."</dd>";
+echo "<dt>".$T('model_label')."</dt><dd>".$view->textLabel('model')."</dd>";
+echo "<dt>".$T('speed_label')."</dt><dd>".$view->textLabel('speed')." Mb/s</dd>";
+echo "<dt>".$T('driver_label')."</dt><dd>".$view->textLabel('driver')."</dd>";
+echo "<dt>".$T('bus_label')."</dt><dd>".$view->textLabel('bus')."</dd>";
+echo "</dl>";
+echo "</div>";
+
+echo $view->panel()
+    ->insert($view->textInput('device', ($view->getModule()->getIdentifier() == 'update' ? $view::STATE_READONLY : 0)))
+    ->insert($view->textInput('hwaddr', ($view->getModule()->getIdentifier() == 'update' ? $view::STATE_READONLY : 0)))
     ->insert($view->selector('role', $view::SELECTOR_DROPDOWN))
     ->insert($view->fieldsetSwitch('bootproto', 'static', $view::FIELDSETSWITCH_EXPANDABLE)
         ->insert($view->textInput('ipaddr'))
@@ -48,7 +32,6 @@ $panel = $view->panel();
      )
     ->insert($view->fieldsetSwitch('bootproto', 'dhcp'));
 
-echo $panel;
 echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_CANCEL);
 
 $view->includeCSS("
@@ -70,24 +53,6 @@ $view->includeCSS("
     margin: 0 0 0 110px;
     padding: 0 0 0.2em 0;
   }
-  tr td:first-child  {
-      font-weight: bold;
-      color: #333;
-  }
-  tr.red td:first-child  {
-       color: red;
-  }
-  tr.blue td:first-child  {
-       color: blue;
-  }
-  tr.orange td:first-child  {
-       color: orange;
-  }
-  tr.green td:first-child  {
-       color: green;
-  }
-
-
 ");
 
 $view->includeJavascript("
