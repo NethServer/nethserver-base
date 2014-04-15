@@ -71,13 +71,13 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
     public function prepareViewForColumnRole(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
         $rowMetadata['rowCssClass'] = trim($rowMetadata['rowCssClass'] . ' ' . $values['role']);
-        $role = $view->translate($values['role']."_label");
+        $role = isset($values['role']) ? $values['role'] : 'undefined';
+        $roleLabel = $view->translate($role ."_label");
 
-        if ($values['role'] == 'slave') {
-            return "$role (".$values['master'].")";
-        }
-        if ($values['role'] == 'bridged') {
-            return "$role (".$values['bridge'].")";
+        if ($role === 'slave') {
+            return $roleLabel . " (".$values['master'].")";
+        } elseif ($role === 'bridged') {
+            return $roleLabel . " (".$values['bridge'].")";
         }
       
         return $role;
