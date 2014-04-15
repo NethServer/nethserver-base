@@ -41,14 +41,10 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
             'role',
             'ipaddr',
             'Actions'
-        );
+        );        
 
-        $tableAdapter = new NetworkAdapter\InterfaceAdapter($this->getPlatform());
-
-        $this
-            #->setTableAdapter($this->getPlatform()->getTableAdapter('networks', 'ethernet'))
-            #->setTableAdapter($this->getPlatform()->getTableAdapter('networks'))
-            ->setTableAdapter($tableAdapter)
+        $this          
+            ->setTableAdapter($this->getPlatform()->getTableAdapter('networks', NULL))
             ->setColumns($columns)
             ->addTableAction(new \NethServer\Module\NetworkAdapter\Modify('create'))            
             ->addTableAction(new \NethServer\Module\NetworkAdapter\Apply('apply'))            

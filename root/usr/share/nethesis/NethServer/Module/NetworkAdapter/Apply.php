@@ -27,9 +27,11 @@ namespace NethServer\Module\NetworkAdapter;
  */
 class Apply extends \Nethgui\Controller\Table\AbstractAction
 {
-    protected function onParametersSaved($changedParameters)
+    public function process()
     {
-        $this->getPlatform()->signalEvent('interface-update@post-response &');
+        parent::process();
+        if($this->getRequest()->isMutation()) {
+            $this->getPlatform()->signalEvent('interface-update@post-response &');
+        }
     }
-
 }
