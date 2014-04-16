@@ -137,31 +137,33 @@ class Modify extends \Nethgui\Controller\Table\Modify
         }
 
         $bond = array();
+        $alias = array();
+        $bridge = array();
+        $bondi = array();
+        $bridgei = array();
         foreach($this->interfaces as $key => $props) {
             if ($props['type'] == 'ethernet') {
                 $bond[] = array($key,$key);
             }
-        }
-        $view['bondInterfaceDatasource'] = $bond;
-        $view['vlanInterfaceDatasource'] = $bond;
-   
-        $alias = array();
-        foreach($this->interfaces as $key => $props) {
-            if ($props['type'] != 'alias') {
-                $alias[] = array($key,$key);
-            }
-        }
-        $view['aliasInterfaceDatasource'] = $alias;
-
-
-        $bridge = array();
-        foreach($this->interfaces as $key => $props) {
             if ($props['type'] != 'bridge' && $props['type'] != 'alias') {
                 $bridge[] = array($key,$key);
             }
+            if ($props['type'] != 'alias') {
+                $alias[] = array($key,$key);
+            }
+            if ($props['role'] == 'bridged') {
+                $bridgei[] = $key;
+            }
+            if ($props['role'] == 'slave') {
+                $bondi[] = $key;
+            }
         }
+        $view['bondInterfaceDatasource'] = $bond;
+        $view['bondInterface'] = $bondi;
+        $view['vlanInterfaceDatasource'] = $bond;
+        $view['aliasInterfaceDatasource'] = $alias;
         $view['bridgeInterfaceDatasource'] = $bridge;
-
+        $view['bridgeInterface'] = $bridgei;
 
         $view['roleDatasource'] = array_map(function($fmt) use ($view) {
                 return array($fmt, $view->translate($fmt . '_label'));

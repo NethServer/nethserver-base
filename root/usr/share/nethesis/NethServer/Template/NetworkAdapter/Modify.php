@@ -1,4 +1,9 @@
 <?php
+$role_id = $view->getClientEventTarget('role');
+$bootproto_id = $view->getClientEventTarget('bootproto');
+$type_id = $view->getClientEventTarget('type');
+$viewid = $view->getUniqueId();
+$panel = $view->panel();
 
 if ($view->getModule()->getIdentifier() == 'update') {
     echo $view->header()->setAttribute('template',$T('update_header_label'));
@@ -12,21 +17,28 @@ if ($view->getModule()->getIdentifier() == 'update') {
     echo "<dt>".$T('bus_label')."</dt><dd>".$view->textLabel('bus')."</dd>";
     echo "</dl>";
     echo "</div>";
+        
+
+    $panel->insert($view->textInput('device', $view::STATE_READONLY))
+        ->insert($view->fieldsetSwitch('type', 'ethernet', $view::FIELDSETSWITCH_EXPANDABLE)
+            ->insert($view->textInput('hwaddr', $view::STATE_READONLY)));
+
+    
+    // hide all types different from the selected one
+    $view->includeJavascript('
+    (function ( $ ) {
+        var t =  $(".$type_id:checked");
+        $(".'.$type_id.'[value!=\'+t+\']").parent().hide();
+        if ( t != "ethernet" ) {
+            $(".network_adatper").hide();
+        }
+    } ( jQuery ));
+    ');
+
 } else {
     echo $view->header()->setAttribute('template',$T('create_header_label'));
 }
 
-$role_id = $view->getClientEventTarget('role');
-$bootproto_id = $view->getClientEventTarget('bootproto');
-
-
-$panel = $view->panel();
-    if ($view->getModule()->getIdentifier() == 'update') {
-        $panel->insert($view->textInput('device', $view::STATE_READONLY))
-            ->insert($view->fieldsetSwitch('type', 'ethernet', $view::FIELDSETSWITCH_EXPANDABLE)
-                ->insert($view->textInput('hwaddr', ($view->getModule()->getIdentifier() == 'update' ? $view::STATE_READONLY : 0)))
-        );
-    }
     $panel->insert($view->fieldsetSwitch('type', 'alias', $view::FIELDSETSWITCH_EXPANDABLE)
         ->insert($view->selector('aliasInterface', $view::SELECTOR_DROPDOWN))
     )
@@ -108,7 +120,6 @@ $view->includeJavascript("
            $('.".$bootproto_id."[value=static]').trigger('click');
            $('.".$bootproto_id."[value=dhcp]').parent().parent().FieldsetSwitch('disable');
            $('.".$bootproto_id."[value=dhcp]').attr('disabled','disabled');
-console.log('.".$bootproto_id."[value=dhcp]');
        }
     }
 
