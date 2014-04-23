@@ -1,16 +1,17 @@
 # NethServer-base translations
 # Copyright (C) 2013 Nethesis - wwww.nethesis.it
 # This file is distributed under the same license as nethserver-base package.
-# Giacomo Sanchietti <giacomo.sanchietti@nethesis.it>, 2013
-#
+#Victor Moreno Ruiz <victor@nethesis.it>, 2014
+#Ana Fernandez Munoz <ana@nethesis.it>, 2014
+
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: bootstrap-console\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-05 18:31+0000\n"
-"PO-Revision-Date: 2013-04-08 12:00+0000\n"
-"Last-Translator: Giacomo Sanchietti <giacomo.sanchietti@nethesis.it>\n"
+"POT-Creation-Date: 2014-04-22 09:31+0000\n"
+"PO-Revision-Date: 2014-04-23 14:58+0000\n"
+"Last-Translator: Victor Moreno Ruiz <victor@nethesis.it>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
