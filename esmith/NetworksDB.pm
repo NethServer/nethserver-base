@@ -335,27 +335,16 @@ sub yellow {
     return $self->get_by_role('yellow');
 }
 
-=item I<red1>
+=item I<red>
 
-Returns the interface(s) with red1 role.
+Returns the interface(s) with red role.
 
 =cut
 
-sub red1 {
+sub red {
     my ($self) = @_;
-    return $self->get_by_role('red1');
+    return $self->get_by_role('red');
 }
-
-=item I<red2>
-
-Returns the interface(s) with red2 role.
-
-=cut
-
-sub red2 {
-    my ($self) = @_;
-    return $self->get_by_role('red2');
-} 
 
 
 =back
