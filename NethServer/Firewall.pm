@@ -193,7 +193,7 @@ sub getZone($)
             } elsif ($i->prop('role') eq 'green') {
                 return "loc:$value";
             } else {
-                return $i->key.":$value";
+                return substr($i->key, 0, 5).":$value"; # truncate zone name to 5 chars
             }
         }
     }
