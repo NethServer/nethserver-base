@@ -4,16 +4,16 @@
 
 $L['avail_label'] = 'Disponibile';
 $L['cpu_num_label'] = 'Numero CPU';
-$L['days_label'] = 'giorni';
+$L['days_label'] = 'g';
 $L['general_title'] = 'Informazioni generali';
-$L['hours_label'] = 'ore';
+$L['hours_label'] = 'h';
 $L['load_label'] = 'Carico 1 / 5 / 15 min.';
 $L['mem_free_label'] = 'Memoria libera';
 $L['memory_avail_label'] = 'Memoria disp.';
 $L['memory_title'] = 'Memoria';
 $L['mem_total_label'] = 'Memoria totale';
 $L['mem_used_label'] = 'Memoria utiliz.';
-$L['minutes_label'] = 'minuti';
+$L['minutes_label'] = 'm';
 $L['phys_memory_title'] = 'Memoria fisica';
 $L['Resources_Title'] = 'Risorse';
 $L['root_title'] = 'Partizione root';

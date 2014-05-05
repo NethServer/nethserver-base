@@ -16,6 +16,7 @@ echo "<dl>";
 echo "<dt>".$T('load_label')."</dt><dd>"; echo $view->textLabel('load1').' / '.$view->textLabel('load5').' / '.$view->textLabel('load15'); echo "</dd>";
 echo "<dt>".$T('uptime_label')."</dt>";
 echo "<dd>";
+echo $view->textLabel('days')." ".$T('days_label')." ";
 echo $view->textLabel('hours')." ".$T('hours_label')." ";
 echo $view->textLabel('minutes')." ".$T('minutes_label')." ";
 echo "</dd>";
