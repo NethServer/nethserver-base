@@ -52,7 +52,6 @@ perl createlinks
 # davidep: relocate perl modules under default perl vendorlib directory:
 mkdir -p root%{perl_vendorlib}
 mv -v esmith root%{perl_vendorlib}
-mv -v NethServer root%{perl_vendorlib}
 
 for f in `/bin/ls root/usr/share/locale/*/LC_MESSAGES/server-console.po`; do
    out=`dirname $f`
