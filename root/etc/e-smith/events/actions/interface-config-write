@@ -40,16 +40,28 @@ foreach my $i (@interfaces) {
 sub _write_config_file() {
     my ($i) = @_;
     my $file = sprintf "%s/ifcfg-%s", $output_dir, $i->key;
-    my $out = sprintf "NAME=%s\n",  $i->key;
+    my $out = sprintf "DEVICE=%s\n",  $i->key;
     my %props = $i->props;
     my $role = $props{'role'} || '';
-    return unless ($role ne '');
+
+    if($role eq '') {
+	return;
+    }
+
+    $out .= "ONBOOT=yes\n";
+    $out .= "NM_CONTROLLED=no\n";
+    $out .= "USERCTL=no\n";
+
+    if($role eq 'slave') {
+	$out .= "SLAVE=yes\n";
+    }
+
     foreach my $prop (sort { $a cmp $b } keys %props) {
         next unless ($prop ne 'role'); # skip role
         my $val = $props{$prop};
         $val = ucfirst($val) unless ($prop ne 'type');  #first letter of type must be capitalized
         $out .= sprintf "%s=%s\n", uc($prop), $val;
-    }
+    }    
     open (my $fh, '>', $file);
     print $fh $out; 
     close ($fh);
