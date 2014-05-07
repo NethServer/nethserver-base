@@ -42,6 +42,6 @@ for i in $interfaces; do
 done
 
 # remove all aliases
-rm $ESMITH_NETWORK_OUT_DIR/ifcfg-*\:? 2>/dev/null
+rm -f $ESMITH_NETWORK_OUT_DIR/ifcfg-*\:? 2>/dev/null
 
 exit 0
