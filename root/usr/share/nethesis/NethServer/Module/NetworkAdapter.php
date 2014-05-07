@@ -1,4 +1,5 @@
 <?php
+
 namespace NethServer\Module;
 
 /*
@@ -20,17 +21,31 @@ namespace NethServer\Module;
  * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Nethgui\System\PlatformInterface as Validate;
-
 /**
  * Configure network adapters
  */
 class NetworkAdapter extends \Nethgui\Controller\TableController
 {
+    /**
+     *
+     * @var array
+     */
+    private $types = array('ethernet', 'bridge', 'bond', 'vlan', 'alias');
+    private $roles = array('green', 'red', 'blue', 'orange');
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
         return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($base, 'Configuration', 14);
+    }
+
+    public function getNetworkAdapterTypes()
+    {
+        return $this->types;
+    }
+
+    public function getInterfaceRoles()
+    {
+        return $this->roles;
     }
 
     public function initialize()
@@ -41,19 +56,30 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
             'role',
             'ipaddr',
             'Actions'
-        );        
+        );
 
-        $this          
-            ->setTableAdapter($this->getPlatform()->getTableAdapter('networks', NULL))
+        $this
+            ->setTableAdapter($this->getPlatform()->getTableAdapter('networks', $this->getNetworkAdapterTypes()))
             ->setColumns($columns)
-            ->addTableAction(new \NethServer\Module\NetworkAdapter\Modify('create'))            
-            ->addTableAction(new \NethServer\Module\NetworkAdapter\Apply('apply'))            
-            ->addTableAction(new \Nethgui\Controller\Table\Help('Help'))
-            ->addRowAction(new \NethServer\Module\NetworkAdapter\Modify('update'))
-            ->addRowAction(new \NethServer\Module\NetworkAdapter\Modify('delete'))
+            // Creation of logical interface wizard
+            ->addChild(new \NethServer\Module\NetworkAdapter\SetIpAddress())
+            ->addTableAction(new \NethServer\Module\NetworkAdapter\CreateLogicalInterface())
+            ->addChild(new \NethServer\Module\NetworkAdapter\ConfirmInterfaceCreation())
+
+            // Row actions
+            ->addRowAction(new \NethServer\Module\NetworkAdapter\Edit())
+            ->addRowAction(new \NethServer\Module\NetworkAdapter\DeleteLogicalInterface())
+            ->addRowAction(new \NethServer\Module\NetworkAdapter\ReleasePhysicalInterface())
+            ->addRowAction(new \NethServer\Module\NetworkAdapter\CreateIpAlias())
+            ->addTableAction(new \Nethgui\Controller\Table\Help())
         ;
 
         parent::initialize();
+    }
+
+    public function prepareViewForColumnDescription(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        return strval(isset($values['hwaddr']) ? $values['hwaddr'] : 'n/a');
     }
 
     public function prepareViewForColumnKey(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
@@ -64,21 +90,36 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
         return strval($key);
     }
 
-    public function prepareViewForColumnRole(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    public function getRoleText(\Nethgui\View\ViewInterface $view, $key, $values = NULL)
     {
-        $rowMetadata['rowCssClass'] = trim($rowMetadata['rowCssClass'] . ' ' . $values['role']);
-        $role = isset($values['role']) ? $values['role'] : 'undefined';
-        $roleLabel = $view->translate($role ."_label");
+        if (is_null($values)) {
+            $values = $this->getAdapter()->offsetGet($key);
+        }
+        $role = isset($values['role']) ? $values['role'] : '';
+        $rowMetadata['rowCssClass'] = trim($rowMetadata['rowCssClass'] . ' ' . $role);
+        $roleLabel = $view->translate($role . "_label");
 
         if ($role === 'slave') {
-            return $roleLabel . " (".$values['master'].")";
+            return $roleLabel . " (" . $values['master'] . ")";
         } elseif ($role === 'bridged') {
-            return $roleLabel . " (".$values['bridge'].")";
+            return $roleLabel . " (" . $values['bridge'] . ")";
         }
-      
+
         return $role;
     }
 
+    public function prepareViewForColumnIpaddr(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        if(isset($values['bootproto']) && $values['bootproto'] === 'dhcp') {
+            return 'DHCP';
+        }
+        return strval($values['ipaddr']);
+    }
+
+    public function prepareViewForColumnRole(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        return $this->getRoleText($view, $key, $values);
+    }
 
     /**
      * Override prepareViewForColumnActions to hide/show delete action
@@ -91,19 +132,84 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
     {
         $cellView = $action->prepareViewForColumnActions($view, $key, $values, $rowMetadata);
 
-        if ($values['role'] == 'slave' || $values['role'] == 'bridged') {
-            unset($cellView['delete']);
-            unset($cellView['update']);
+        $role = isset($values['role']) ? $values['role'] : '';
+
+        $isLogicalDevice = in_array($values['type'], array('alias', 'bridge', 'bond', 'vlan'));
+        $isPhysicalInterface = in_array($values['type'], array('ethernet'));
+        $isEditable = $values['type'] !== 'alias' && ! in_array($role, array('slave', 'bridged'));
+        $canHaveIpAlias = $values['type'] !== 'alias' && ! in_array($role, array('slave', 'bridged'));
+
+        if ( ! $isLogicalDevice) {
+            unset($cellView['DeleteLogicalInterface']);
         }
 
+        if ( ! $isPhysicalInterface || $role === '') {
+            unset($cellView['ReleasePhysicalInterface']);
+        }
 
-        // Remove "delete" link on unconfigured interfaces:
-        if($values['role'] === '') {
-            unset($cellView['delete']);
+        if ( ! $isEditable) {
+            unset($cellView['Edit']);
+        }
+
+        if ( ! $canHaveIpAlias) {
+            unset($cellView['CreateIpAlias']);
         }
 
         return $cellView;
-
     }
 
+    public function getDeviceParts($device)
+    {
+        if ( ! isset($device) || ! $this->getAdapter()->offsetExists($device)) {
+            return array();
+        }
+
+        $parts = array();
+
+        $type = $this->getAdapter()->offsetGet($device)->offsetGet('type');
+
+        if ($type === 'bond') {
+            $link = 'master';
+        } elseif ($type === 'bridge') {
+            $link = 'bridge';
+        } else {
+            return array();
+        }
+
+        foreach ($this->getAdapter() as $key => $props) {
+            $roleMatch = isset($props['role']) && (($props['role'] === 'bridged' && $type === 'bridge') || ($props['role'] === 'slave' && $type === 'bond'));
+            if ($roleMatch && isset($props[$link]) && $props[$link] === $device) {
+                $parts[] = $key;
+            }
+        }
+
+        return $parts;
+    }
+
+    public function hasSiblings($device)
+    {
+        $props = $this->getAdapter()->offsetGet($device);
+        if ( ! isset($props)) {
+            return FALSE;
+        }
+        if ($props['role'] === 'slave') {
+            $hasSiblings = count($this->getDeviceParts($props['master'])) > 1;
+        } elseif ($props['role'] === 'bridged') {
+            $hasSiblings = count($this->getDeviceParts($props['bridge'])) > 1;
+        } else {
+            $hasSiblings = FALSE;
+        }
+
+        return $hasSiblings;
+    }
+
+    public function hasParent($device)
+    {
+        $A = $this->getAdapter();
+        if( ! isset($A[$device])) {
+            return FALSE;
+        }
+        return in_array($A[$device]['role'], array('slave', 'bridged'));
+    }
+    
 }
