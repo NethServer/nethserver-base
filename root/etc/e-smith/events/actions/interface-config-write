@@ -26,10 +26,12 @@
 
 
 use esmith::NetworksDB;
+use esmith::ConfigDB;
 use strict;
 
 our $output_dir = $output_dir || $ENV{ESMITH_NETWORK_OUT_DIR} || "/etc/sysconfig/network-scripts";
 my $idb = esmith::NetworksDB->open_ro();
+my $rdb = esmith::ConfigDB->open_ro('routes');
 my @interfaces = $idb->interfaces;
 
 foreach my $i (@interfaces) {
@@ -70,7 +72,7 @@ sub _write_route_file() {
     return unless ($role ne '');
     return unless (($ipaddr ne '') || ($netmask ne ''));
     my ($net,$msk) = Net::IPv4Addr::ipv4_network($ipaddr, $netmask);
-    foreach my $network ($idb->get_all_by_prop( type => 'route')) {
+    foreach my $network ($rdb->get_all_by_prop( type => 'route')) {
 	# Skip anything we don't know how to or don't need to route
 	my $router = $network->prop('Router') || "default";
 	next if $router eq "default";
