@@ -112,6 +112,7 @@ event_actions('interface-update', qw(
               interface-config-write     30
               network-start              70
               interface-config-hostname  75
+              firewall-adjust            90
 ));
 
 event_templates('interface-update', qw(
