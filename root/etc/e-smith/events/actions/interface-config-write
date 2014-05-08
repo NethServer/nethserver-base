@@ -40,14 +40,44 @@ foreach my $i (@interfaces) {
 }
 
 sub _write_config_file() {
+    my %defaults = (
+        'onboot' => 'yes',
+        'bootproto' => 'none',
+        'nm_controlled' => 'no',
+        'userctl' => 'no',
+    );
     my ($i) = @_;
     my $file = sprintf "%s/ifcfg-%s", $output_dir, $i->key;
     my $out = sprintf "DEVICE=%s\n",  $i->key;
     my %props = $i->props;
-    my $role = $props{'role'} || '';
-    
+    my $role = $props{'role'} || '';    
+
     if($role eq '') {
 	return;
+    }
+
+    if($role eq 'slave') {
+	$defaults{'slave'} = 'yes';
+    }
+
+    # If we are a firewall ignore gateway settings:
+    if(scalar $idb->red()) {
+	delete($props{'gateway'});
+    }
+
+    if($props{'bootproto'} eq 'dhcp') {
+	delete($props{'ipaddr'}); # not needed
+	delete($props{'netmask'});
+	delete($props{'gateway'});
+	$defaults{'persistent_dhclient'} = 'y'; # always renew DHCP lease
+	$defaults{'peerdns'} = 'no'; # do not overwrite /etc/resolv.conf
+    }
+
+    # Apply default values:
+    foreach(keys %defaults) {
+	if( ! defined $props{$_} ) {
+	    $props{$_} = $defaults{$_};
+	}
     }
 
     foreach my $prop (sort { $a cmp $b } keys %props) {
