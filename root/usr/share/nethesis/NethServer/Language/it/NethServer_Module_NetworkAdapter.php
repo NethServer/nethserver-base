@@ -3,8 +3,8 @@
 /* NethServer_Module_NetworkAdapter translation, language: en */
 
 $L['bootproto_dhcp_label'] = 'DHCP';
-$L['bootproto_label'] = 'Tipo';
-$L['bootproto_static_label'] = 'Statico';
+$L['bootproto_label'] = 'Assegnamento IP';
+$L['bootproto_none_label'] = 'Statico';
 $L['bus_label'] = 'Bus';
 $L['device_label'] = 'Scheda';
 $L['driver_label'] = 'Driver';

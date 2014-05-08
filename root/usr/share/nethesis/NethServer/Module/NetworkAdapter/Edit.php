@@ -37,7 +37,7 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
         $this->setSchema(array(
             array('device', Validate::ANYTHING, \Nethgui\Controller\Table\RowAbstractAction::KEY),
             array('role', $this->createValidator()->memberOf($this->getParent()->getInterfaceRoles()), \Nethgui\Controller\Table\RowAbstractAction::FIELD),
-            array('bootproto', $this->createValidator()->memberOf('dhcp', 'static'), \Nethgui\Controller\Table\RowAbstractAction::FIELD),
+            array('bootproto', $this->createValidator()->memberOf('dhcp', 'none'), \Nethgui\Controller\Table\RowAbstractAction::FIELD),
             array('ipaddr', Validate::IPv4, \Nethgui\Controller\Table\RowAbstractAction::FIELD),
             array('netmask', Validate::IPv4_NETMASK, \Nethgui\Controller\Table\RowAbstractAction::FIELD),
             array('gateway', Validate::IP_OR_EMPTY, \Nethgui\Controller\Table\RowAbstractAction::FIELD),
@@ -101,7 +101,7 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
     {
         parent::prepareView($view);
         $view['deviceInfos'] = $this->getNicInfo($view);
-        $view['bootproto'] = $view['bootproto'] ? $view['bootproto'] : 'static';
+        $view['bootproto'] = $view['bootproto'] ? $view['bootproto'] : 'none';
         $view['roleDatasource'] = array_map(function($fmt) use ($view) {
             return array($fmt, $view->translate($fmt . '_label'));
         }, $this->getParent()->getInterfaceRoles());

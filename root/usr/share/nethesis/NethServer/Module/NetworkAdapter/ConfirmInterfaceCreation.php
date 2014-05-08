@@ -81,7 +81,7 @@ class ConfirmInterfaceCreation extends \Nethgui\Controller\Table\AbstractAction
         $actions[] = $view->translate("Action_create_${data['type']}", $data);
         if ($data['bootproto'] === 'dhcp') {
             $actions[] = $view->translate('Action_use_dhcp', $data);
-        } elseif ($data['bootproto'] === 'static') {
+        } elseif ($data['bootproto'] === 'none') {
             $actions[] = $view->translate('Action_set_static_ip', $data);
             if ($data['gateway']) {
                 $actions[] = $view->translate('Action_use_gateway', $data);
@@ -115,8 +115,8 @@ class ConfirmInterfaceCreation extends \Nethgui\Controller\Table\AbstractAction
 
             $props = array('role' => $state['role']);
 
-            if ($state['bootproto'] === 'static') {
-                $props['bootproto'] = 'static';
+            if ($state['bootproto'] === 'none') {
+                $props['bootproto'] = 'none';
                 $props['ipaddr'] = $state['ipaddr'];
                 $props['netmask'] = $state['netmask'];
                 $props['gateway'] = $state['gateway'];

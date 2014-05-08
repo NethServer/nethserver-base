@@ -5,7 +5,7 @@ echo $view->header()->setAttribute('template', $T('SetIpAddress_header'));
 
 echo $view->radioButton('bootproto', 'dhcp');
 
-echo $view->fieldsetSwitch('bootproto', 'static', $view::FIELDSETSWITCH_EXPANDABLE)
+echo $view->fieldsetSwitch('bootproto', 'none', $view::FIELDSETSWITCH_EXPANDABLE)
     ->insert($view->textInput('ipaddr'))
     ->insert($view->textInput('netmask'))
     ->insert($view->textInput('gateway'));

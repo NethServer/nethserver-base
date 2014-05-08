@@ -38,7 +38,7 @@ class SetIpAddress extends \Nethgui\Controller\Table\AbstractAction
 
         $sessionKey = get_class($this->getParent());
 
-        $this->declareParameter('bootproto', $this->createValidator()->memberOf('static', 'dhcp'), array('SESSION', $sessionKey, 'bootproto'));
+        $this->declareParameter('bootproto', $this->createValidator()->memberOf('none', 'dhcp'), array('SESSION', $sessionKey, 'bootproto'));
         $this->declareParameter('ipaddr', $this->createValidator(Validate::IPv4), array('SESSION', $sessionKey, 'ipaddr'));
         $this->declareParameter('netmask', $this->createValidator(Validate::NETMASK), array('SESSION', $sessionKey, 'netmask'));
         $this->declareParameter('gateway', $this->createValidator(Validate::IPv4_OR_EMPTY), array('SESSION', $sessionKey, 'gateway'));

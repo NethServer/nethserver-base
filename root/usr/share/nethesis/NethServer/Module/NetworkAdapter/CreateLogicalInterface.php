@@ -97,7 +97,7 @@ class CreateLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
 
     private function getRoleIpSettings($role)
     {
-        $defaultBootproto = $role === 'red' ? 'dhcp' : 'static';
+        $defaultBootproto = $role === 'red' ? 'dhcp' : 'none';
 
         foreach ($this->getAdapter() as $key => $row) {
             if (isset($row['role']) && $row['role'] == $role) {
