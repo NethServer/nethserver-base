@@ -105,7 +105,7 @@ sub _write_route_file() {
     return unless (($ipaddr ne '') || ($netmask ne ''));
     my ($net,$msk) = Net::IPv4Addr::ipv4_network($ipaddr, $netmask);
     my @routes = $rdb->get_all_by_prop( type => 'static');
-    push(@routes, $rdb->get_all_by_prop( type => 'provider-static');
+    push(@routes, $rdb->get_all_by_prop( type => 'provider-static'));
     foreach my $network (@routes) {
 	# Skip anything we don't know how to or don't need to route
 	my $router = $network->prop('Router') || "default";

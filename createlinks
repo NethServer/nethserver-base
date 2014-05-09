@@ -270,5 +270,18 @@ event_actions('password-modify', qw(
 validator_actions('password-strength',
                   'password-strength' => '10');
 
-exit 0;
 
+#--------------------------------------------------
+# actions for static-routes-save event
+#--------------------------------------------------
+
+$event = "static-routes-save";
+
+event_actions($event, qw(
+    network-route-down          15
+    interface-config-write      25
+    network-route-up            35
+));
+
+
+exit 0;
