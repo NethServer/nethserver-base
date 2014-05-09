@@ -136,6 +136,14 @@ foreach my $f (split(/\s+/, $if_files)) {
     my $device = $interface{'device'} || $i;
     my $addresses = '';
 
+    # Avoid null string concatenation warnings:
+    if ( ! defined($interface{'ipaddr'})) {
+	$interface{'ipaddr'} = '';
+    }
+    if ( ! defined($interface{'netmask'})) {
+	$interface{'netmask'} = '';
+    }
+
     # Sanitize bootproto parameter
     if ( ! defined($interface{'bootproto'})
 	 || $interface{'bootproto'} eq ''
@@ -144,10 +152,10 @@ foreach my $f (split(/\s+/, $if_files)) {
     }
 
     if ($interface{'bootproto'} eq 'none') {
-        $addresses = "netmask $interface{'netmask'} ipaddr $interface{'ipaddr'} gateway $config{'gateway'}";
+        $addresses = "netmask '$interface{'netmask'}' ipaddr '$interface{'ipaddr'}' gateway '$config{'gateway'}'";
     }
     if ( $device eq $config{'green'} ) { # Enable green device
-        system("$DB networks set $i $type bootproto $interface{'bootproto'} onboot yes hwaddr $interface{'hwaddr'} device $device $addresses") unless not (defined($interface{'hwaddr'}));
+        system("$DB networks set $i $type bootproto '$interface{'bootproto'}' onboot yes hwaddr '$interface{'hwaddr'}' device $device $addresses") unless not (defined($interface{'hwaddr'}));
         $config{'green_ipaddr'} = $interface{'ipaddr'};
     }
 }
