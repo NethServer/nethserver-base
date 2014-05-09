@@ -135,7 +135,15 @@ foreach my $f (split(/\s+/, $if_files)) {
     my $type = $interface{'type'} || 'ethernet';
     my $device = $interface{'device'} || $i;
     my $addresses = '';
-    if ($interface{'bootproto'} eq 'static') {
+
+    # Sanitize bootproto parameter
+    if ( ! defined($interface{'bootproto'})
+	 || $interface{'bootproto'} eq ''
+	 || $interface{'bootproto'} eq 'static') {
+	$interface{'bootproto'} = 'none';
+    }
+
+    if ($interface{'bootproto'} eq 'none') {
         $addresses = "netmask $interface{'netmask'} ipaddr $interface{'ipaddr'} gateway $config{'gateway'}";
     }
     if ( $device eq $config{'green'} ) { # Enable green device
@@ -158,14 +166,14 @@ if ($config{'green_ipaddr'} eq "") {
             $mask =~ s/\s+//g;
             $line =~ s/\s+//g;
             $config{'green_ipaddr'} = $line;
-            system("$DB networks setprop $config{'green'} bootproto static ipaddr $line netmask $mask gateway $config{'gateway'} onboot yes device $config{'green'}");
+            system("$DB networks setprop $config{'green'} bootproto none ipaddr $line netmask $mask gateway $config{'gateway'} onboot yes device $config{'green'}");
         }
     }
 }
 
 # Fallback to static ip address
 if ($config{'green_ipaddr'} eq "") {
-    system("$DB networks setprop $config{'green'} bootproto static ipaddr 192.168.1.100 netmask 255.255.255.0 gateway 192.168.1.1 onboot yes device $config{'green'}");
+    system("$DB networks setprop $config{'green'} bootproto none ipaddr 192.168.1.100 netmask 255.255.255.0 gateway 192.168.1.1 onboot yes device $config{'green'}");
 }
 
 

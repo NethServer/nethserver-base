@@ -71,6 +71,8 @@ sub _write_config_file() {
 	delete($props{'gateway'});
 	$defaults{'persistent_dhclient'} = 'y'; # always renew DHCP lease
 	$defaults{'peerdns'} = 'no'; # do not overwrite /etc/resolv.conf
+    } elsif($props{'bootproto'} eq 'static') {
+	$props{'bootproto'} = 'none'; # replace "static" word with "none"
     }
 
     # Apply default values:
