@@ -23,21 +23,21 @@ namespace NethServer\Module;
 use Nethgui\System\PlatformInterface as Validate;
 
 /**
- * Manage local networks
+ * Manage static routes
  */
-class LocalNetwork extends \Nethgui\Controller\TableController
+class StaticRoutes extends \Nethgui\Controller\TableController
 {
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
-        return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($base, 'Security', 20);
+        return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($base, 'Configuration');
     }
 
     public function initialize()
     {
         $columns = array(
             'Key',
-            'Mask',
+            'Router',
             'Description',
             'Actions'
         );
@@ -45,29 +45,30 @@ class LocalNetwork extends \Nethgui\Controller\TableController
         $parameterSchema = array(
             array('network', Validate::IPv4, \Nethgui\Controller\Table\Modify::KEY),
             array('Mask', Validate::IPv4, \Nethgui\Controller\Table\Modify::FIELD),
+            array('Router', Validate::IPv4, \Nethgui\Controller\Table\Modify::FIELD),
             array('Description', Validate::ANYTHING, \Nethgui\Controller\Table\Modify::FIELD),
         );
 
         $this
-            ->setTableAdapter($this->getPlatform()->getTableAdapter('networks', 'network'))
+            ->setTableAdapter($this->getPlatform()->getTableAdapter('routes', 'static'))
             ->setColumns($columns)
-            ->addTableAction(new \Nethgui\Controller\Table\Modify('create', $parameterSchema, 'NethServer\Template\LocalNetwork\CreateUpdate'))            
+            ->addTableAction(new \Nethgui\Controller\Table\Modify('create', $parameterSchema, 'NethServer\Template\StaticRoutes\CreateUpdate'))            
             ->addTableAction(new \Nethgui\Controller\Table\Help('Help'))
-            ->addRowAction(new \Nethgui\Controller\Table\Modify('update', $parameterSchema, 'NethServer\Template\LocalNetwork\CreateUpdate'))
+            ->addRowAction(new \Nethgui\Controller\Table\Modify('update', $parameterSchema, 'NethServer\Template\StaticRoutes\CreateUpdate'))
             ->addRowAction(new \Nethgui\Controller\Table\Modify('delete', $parameterSchema, 'Nethgui\Template\Table\Delete'))
         ;
 
         parent::initialize();
     }
 
+    public function prepareViewForColumnKey(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        return "$key / ".$values['Mask'];
+    }
+
     public function onParametersSaved(\Nethgui\Module\ModuleInterface $currentAction, $changes, $parameters)
     {
-        $eventName = strtolower($currentAction->getIdentifier());
-        // Update is replaced by "modify":
-        if($eventName === 'update') {
-            $eventName = 'modify';
-        }
-        $this->getPlatform()->signalEvent(sprintf('network-%s@post-process', $eventName));
+        $this->getPlatform()->signalEvent('static-routes-save@post-process');
     }
 
 }
