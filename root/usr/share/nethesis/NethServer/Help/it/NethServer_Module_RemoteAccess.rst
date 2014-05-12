@@ -7,10 +7,10 @@ all'interfaccia web, inserendo le reti abilitate qui.
 
 I computer abilitati potranno accedere all'interfaccia web in HTTPS.
 
-Accesso web
-===========
+Server Manager
+==============
 
-Accesso all'interfaccia web di configurazione.
+Configura accesso all'interfaccia web Server Manager.
 
 Indirizzo di rete
     È l'indirizzo dal quale sarà consentito accedere all'interfaccia
