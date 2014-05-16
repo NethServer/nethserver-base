@@ -96,7 +96,6 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
             $values = $this->getAdapter()->offsetGet($key);
         }
         $role = isset($values['role']) ? $values['role'] : '';
-        $rowMetadata['rowCssClass'] = trim($rowMetadata['rowCssClass'] . ' ' . $role);
         $roleLabel = $view->translate($role . "_label");
 
         if ($role === 'slave') {
@@ -113,11 +112,13 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
         if(isset($values['bootproto']) && $values['bootproto'] === 'dhcp') {
             return 'DHCP';
         }
-        return strval($values['ipaddr']);
+        return strval(isset($values['ipaddr']) ? $values['ipaddr'] : '');
     }
 
     public function prepareViewForColumnRole(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
+        $role = isset($values['role']) ? $values['role'] : '';
+        $rowMetadata['rowCssClass'] = trim($rowMetadata['rowCssClass'] . ' ' . $role);
         return $this->getRoleText($view, $key, $values);
     }
 
