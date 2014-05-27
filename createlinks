@@ -212,6 +212,7 @@ event_actions($event, 'runlevel-adjust' => 20);
 
 $event = "lokkit-save";
 templates2events('/etc/sysconfig/system-config-firewall', $event);
+templates2events('/etc/sysconfig/ipv4_services_custom', $event);
 event_actions($event, 'lokkit-apply' => 20);
 
 

@@ -5,6 +5,7 @@
 
     foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
         my $access = $serviceRecord->prop('access') || 'private';
+        next if ($access eq 'none');
 	my $tcpPorts = $serviceRecord->prop('TCPPorts') || $serviceRecord->prop('TCPPort') || '';
 	my $udpPorts = $serviceRecord->prop('UDPPorts') || $serviceRecord->prop('UDPPort') || '';
         if($tcpPorts || $udpPorts) {
