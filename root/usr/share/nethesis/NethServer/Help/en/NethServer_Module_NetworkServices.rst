@@ -1,0 +1,43 @@
+================
+Network services
+================
+
+The table shows all network services running locally on the server.
+
+Each service can have multiple TCP/UDP ports open.
+Ports are open into the firewall accordingly to the `access` property.
+The access property has three valid values:
+
+* private: the service is accessible only from local networks (eg. green interfaces)
+* public: the service is accessible from all networks, including Internet
+* none: the service is accessible only from the server itself (localhost)
+
+When the service access is set to private or public, the administrator
+can specify a list of hosts always allowed (or denied) to access the service. 
+
+Edit
+====
+
+Edit the access of a network service.
+
+Access only from local networks (private)
+    Select this if the service must be accessible only from local networks.
+    For example: a critical database server should be accessible from LAN.
+
+Access from all networks (public)
+    Select this if the service must be from all networks, including Internet.
+    For example: the mail server should be accessible from anyone.
+
+Access only from localhost (none)
+    Select this if the service must be accessible only from the server itself.
+    For example: on a public VPS access to LDAP server should be denied from any network.
+
+Allow hosts
+    Specify a comma separated list of IP address. Listed hosts will be always granted access to 
+    the network service. (Applied only if access is public or private)
+
+Deny hosts
+    Specify a comma separated list of IP address. Listed hosts will be always denied access to 
+    the network service. (Applied only if access is public or private)
+
+
