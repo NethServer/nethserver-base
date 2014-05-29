@@ -73,3 +73,7 @@ $L['successor_label'] = 'Successore';
 $L['NoSuccessor_label'] = 'Nessuno';
 $L['bond_label'] = 'Bond';
 $L['bridge_label'] = 'Bridge';
+$L['green_label'] = 'LAN (green)';
+$L['orange_label'] = 'DMZ (orange)';
+$L['red_label'] = 'Internet (red)';
+$L['blue_label'] = 'Ospiti (blue)';

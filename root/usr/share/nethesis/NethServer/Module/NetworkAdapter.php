@@ -31,7 +31,6 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
      * @var array
      */
     private $types = array('ethernet', 'bridge', 'bond', 'vlan', 'alias');
-    private $roles = array('green', 'red', 'blue', 'orange');
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
@@ -45,7 +44,12 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
 
     public function getInterfaceRoles()
     {
-        return $this->roles;
+        $event = $this->getPlatform()->getDatabase('configuration')->getProp('firewall', 'event');
+        if ($event == 'lokkit-save') {
+            return array('green');
+        } else {
+            return array('green', 'red', 'blue', 'orange');
+        }
     }
 
     public function initialize()
@@ -73,6 +77,7 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
             ->addRowAction(new \NethServer\Module\NetworkAdapter\CreateIpAlias())
             ->addTableAction(new \Nethgui\Controller\Table\Help())
         ;
+
 
         parent::initialize();
     }
