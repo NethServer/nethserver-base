@@ -45,7 +45,7 @@ class NetworkServices extends \Nethgui\Controller\TableController
         );
 
         $this
-            ->setTableAdapter($this->getPlatform()->getTableAdapter('configuration','service', function($record) {
+            ->setTableAdapter($this->getPlatform()->getTableAdapter('configuration','service', function($key, $record) {
                 if (!isset($record['TCPPorts']) && !isset($record['UDPPorts']) && !isset($record['TCPPort']) && !isset($record['UDPPort']) ) {
                     return false;
                 }
