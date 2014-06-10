@@ -100,16 +100,18 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
         if (is_null($values)) {
             $values = $this->getAdapter()->offsetGet($key);
         }
-        $role = isset($values['role']) ? $values['role'] : '';
-        $roleLabel = $view->translate($role . "_label");
+        if (!isset($values['role']) || !$values['role']) {
+            return '';
+        }
+        $roleLabel = $view->translate($values['role'] . "_label");
 
-        if ($role === 'slave') {
+        if ($values['role'] === 'slave') {
             return $roleLabel . " (" . $values['master'] . ")";
-        } elseif ($role === 'bridged') {
+        } elseif ($values['role'] === 'bridged') {
             return $roleLabel . " (" . $values['bridge'] . ")";
         }
 
-        return $role;
+        return $roleLabel;
     }
 
     public function prepareViewForColumnIpaddr(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
