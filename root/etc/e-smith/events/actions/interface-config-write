@@ -36,7 +36,6 @@ my @interfaces = $idb->interfaces;
 
 foreach my $i (@interfaces) {
     _write_config_file($i);
-#    _write_route_file($i);
 }
 
 
@@ -104,7 +103,9 @@ sub _write_config_file() {
 
     # If we are a firewall ignore gateway settings:
     if(scalar $idb->red()) {
-	delete($props{'gateway'});
+        if ($role ne 'red') {
+	    delete($props{'gateway'});
+        }
     }
 
     if($props{'bootproto'} eq 'dhcp') {
