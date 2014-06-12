@@ -29,10 +29,6 @@ use File::Path;
 event_templates('network-create', qw(
 		/etc/localnetworks
 ));
-event_actions('network-create', qw(
-    interface-config-write      25
-    network-route-up	        35
-));
 
 #--------------------------------------------------
 # actions for network-modify event
@@ -40,22 +36,12 @@ event_actions('network-create', qw(
 event_templates('network-modify', qw(
 		/etc/localnetworks
 ));
-event_actions('network-modify', qw(
-    network-route-down	        15
-    interface-config-write      25
-    network-route-up	        35
-));
 
 #--------------------------------------------------
 # actions for network-delete event
 #--------------------------------------------------
 event_templates('network-delete', qw(
 		/etc/localnetworks
-));
-event_actions('network-delete', qw(
-    network-route-down	        15
-    interface-config-write      25
-    network-route-up	        35
 ));
 
 #--------------------------------------------------
@@ -107,12 +93,12 @@ safe_symlink(
 # actions for interface-modify event #1532
 #--------------------------------------------------
 event_actions('interface-update', qw(
-              interface-config-adjust    04
               network-stop               04
               interface-config-reset     25
               interface-config-write     30
               network-start              70
               interface-config-hostname  75
+              firewall-adjust            90
 ));
 
 event_templates('interface-update', qw(
@@ -226,6 +212,7 @@ event_actions($event, 'runlevel-adjust' => 20);
 
 $event = "lokkit-save";
 templates2events('/etc/sysconfig/system-config-firewall', $event);
+templates2events('/etc/sysconfig/ipv4_services_custom', $event);
 event_actions($event, 'lokkit-apply' => 20);
 
 
@@ -270,5 +257,18 @@ event_actions('password-modify', qw(
 validator_actions('password-strength',
                   'password-strength' => '10');
 
-exit 0;
 
+#--------------------------------------------------
+# actions for static-routes-save event
+#--------------------------------------------------
+
+$event = "static-routes-save";
+
+event_actions($event, qw(
+    network-route-down          15
+    interface-config-write      25
+    network-route-up            35
+));
+
+
+exit 0;

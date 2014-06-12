@@ -99,7 +99,8 @@ if ($chain ne "") {
 
 my $srcNetworkDb = esmith::DB::db->open_ro(join('', $sourceDir, $esmithDbDir, '/networks')) || die("Could not open source networks db in $sourceDir \n");
 
-my $dstNetworkDb = esmith::DB::db->open('networks') || die("Could not open destination account db\n");
+my $dstNetworkDb = esmith::DB::db->open('networks') || die("Could not open destination networls db\n");
+my $routesDb = esmith::DB::db->open('routes') || die("Could not open destination routes db\n");
 
 my @srcNetworks = $srcNetworkDb->get_all_by_prop(type=>'network');
 
@@ -107,6 +108,7 @@ foreach my $srcNetwork (@srcNetworks) {
     my $network = $srcNetwork->key;
 
     my $local = $srcNetwork->prop('SystemLocalNetwork') || '';
+    my $router = $srcNetwork->prop('Router') || '';
 
     # skip SystemLocalNetwork, is calculted on-the-fly when needed
     if ($local eq 'yes') {
@@ -118,9 +120,20 @@ foreach my $srcNetwork (@srcNetworks) {
         warn "[WARNING] Network $network is already registered in networks DB\n";
         next;
     }
-    my %defaults = ( 'type' => 'network', 'Description' => '', 'Router' => '' );
-    my $new = $dstNetworkDb->new_record($network, \%defaults);
-    $new->merge_props($srcNetwork->props());
+    $dstNetworkDb->set_prop($network, 'Mask', $srcNetwork->prop('Mask'), type => 'network');
+
+    # create static route
+    if ($router ne '') {
+         # skip an existing routes
+        if($routesDb->get($network)) {
+            warn "[WARNING] Route $network is already registered in routes DB\n";
+            next;
+        }
+        $routesDb->set_prop($network, 'Mask',  $srcNetwork->prop('Mask'), type => 'static');
+        $routesDb->set_prop($network, 'Router', $router);
+        $routesDb->set_prop($network, 'Description', 'Migrated from local network');
+    }
+
 }
 
 

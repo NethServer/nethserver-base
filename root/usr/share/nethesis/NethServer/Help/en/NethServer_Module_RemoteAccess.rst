@@ -6,10 +6,10 @@ It is possible to allow access to the web interface from computers in remote net
 
 Enabled hosts can access the web interface over HTTPS.
 
-Web access
-===========
+Server Manager
+==============
 
-Access to  configuration web interface.
+Configure access to Server Manager web interface.
 
 Network address
     This is the address from which access to the web interface will be allowed

@@ -1,0 +1,37 @@
+{
+    use NethServer::Service;
+    use esmith::ConfigDB;
+    my $confDb = esmith::ConfigDB->open();
+
+    foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
+        my $access = $serviceRecord->prop('access') || 'private';
+        next if ($access eq 'none');
+	my $tcpPorts = $serviceRecord->prop('TCPPorts') || $serviceRecord->prop('TCPPort') || '';
+	my $udpPorts = $serviceRecord->prop('UDPPorts') || $serviceRecord->prop('UDPPort') || '';
+        my $allow = $serviceRecord->prop('AllowHosts') || '';
+        my $deny = $serviceRecord->prop('DenyHosts') || '';
+
+        if($tcpPorts || $udpPorts) {
+            if( ! NethServer::Service::is_enabled($serviceRecord->key) ) {
+	        next;
+            }
+            $OUT.="#\tService: ".$serviceRecord->key."\n"; 
+            foreach my $port (split(',', $tcpPorts)) {
+                foreach my $host (split(/,/,$allow)) {
+                    $OUT.="-I INPUT -m state --state NEW -m tcp -p tcp --dport $port -j ACCEPT --src $host\n";
+                }
+                foreach my $host (split(/,/,$deny)) {
+                    $OUT.="-I INPUT -m state --state NEW -m tcp -p tcp --dport $port -j REJECT --src $host\n";
+                }
+            }
+            foreach my $port (split(',', $udpPorts)) {
+                foreach my $host (split(/,/,$allow)) {
+                    $OUT.="-I INPUT -m state --state NEW -m udp -p udp --dport $port -j ACCEPT --src $host\n";
+                }
+                foreach my $host (split(/,/,$deny)) {
+                    $OUT.="-I INPUT -m state --state NEW -m udp -p udp --dport $port -j REJECT --src $host\n";
+                }
+            }
+        }
+    }
+}

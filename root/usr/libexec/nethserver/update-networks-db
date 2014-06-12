@@ -43,12 +43,12 @@ for card in `ls /sys/class/net`; do
     if [ `cat /sys/class/net/$card/type` == "1" ]; then
         hwaddr=`cat /sys/class/net/$card/address`
 
-        # Check that is no VLAN if
-        if [[ ! "$card" =~ "[.]" ]]; then
+        # Skip: vlan, macvtap and virbr 
+        if [[ ! "$card" =~ "[.]" ]] && [[ ! "$card" = virbr*  ]]  && [[ ! "$card" = macvtap*  ]]; then
 
             # Check if this not a tun/tap
             if [ ! -e /sys/class/net/$card/tun_flags ]; then
-                if [ -e /sys/class/net/$card/brforward ] && [[ $card != virbr* ]]; then
+                if [ -e /sys/class/net/$card/brforward ]; then
                     dev=`/sbin/e-smith/db networks get $card`
                     if [ "x$dev" == "x" ]; then
                          /sbin/e-smith/db networks set $card bridge

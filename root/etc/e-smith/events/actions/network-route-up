@@ -36,7 +36,6 @@ foreach my $i (@interfaces) {
     my %props = $i->props;
     my $role = $props{'role'} || '';
     next unless ($role ne '');
-    next unless ($role ne 'red');
 
     system("/etc/sysconfig/network-scripts/ifup-routes $if &>/dev/null");
 }

@@ -38,15 +38,15 @@ foreach my $i (@interfaces) {
     my %props = $i->props;
     my $role = $props{'role'} || '';
     next unless ($role ne '');
-    next unless ($role ne 'red');
 
-    open FILE, "<", "$output_dir/route-$if" or die $!;
+    next unless (-f "$output_dir/route-$if");
+    open FILE, "<", "$output_dir/route-$if";
 
     while (<FILE>) {
-    s/#.*//;            # ignore comments by erasing them
-    next if /^(\s)*$/;  # skip blank lines
-    chomp;              # remove trailing newline characters
-    system("ip ro del $_");
+        s/#.*//;            # ignore comments by erasing them
+        next if /^(\s)*$/;  # skip blank lines
+        chomp;              # remove trailing newline characters
+        system("ip ro del $_");
     }
 }
 

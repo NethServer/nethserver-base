@@ -26,62 +26,111 @@
 
 
 use esmith::NetworksDB;
+use esmith::ConfigDB;
 use strict;
 
 our $output_dir = $output_dir || $ENV{ESMITH_NETWORK_OUT_DIR} || "/etc/sysconfig/network-scripts";
 my $idb = esmith::NetworksDB->open_ro();
+my $rdb = esmith::ConfigDB->open_ro('routes');
 my @interfaces = $idb->interfaces;
 
 foreach my $i (@interfaces) {
     _write_config_file($i);
-    _write_route_file($i);
 }
 
+
+foreach my $i (@interfaces) {
+    my $file = sprintf "%s/route-%s", $output_dir, $i->key;
+    if ( -f $file ) {
+        unlink($file);
+    }
+}
+
+my $out = '';
+my @routes = $rdb->get_all_by_prop( type => 'static');
+push(@routes, $rdb->get_all_by_prop( type => 'provider-static'));
+foreach my $network (@routes) {
+    # Skip anything we don't know how to or don't need to route
+    my $router = $network->prop('Router') || next;
+    my $write_static = 1;
+  
+    foreach my $i (@interfaces) {
+        my %props = $i->props;
+        my $role = $props{'role'} || next;
+        my $ipaddr = $props{'ipaddr'} || next;
+        my $netmask = $props{'netmask'} || next;
+        my ($net,$msk) = Net::IPv4Addr::ipv4_network($ipaddr, $netmask);
+        next if not Net::IPv4Addr::ipv4_in_network($net, $msk, $router);
+
+        $write_static = 0;
+        my $file = sprintf "%s/route-%s", $output_dir, $i->key;
+        my ($dnet,$dmsk) = Net::IPv4Addr::ipv4_network($network->key, $network->prop('Mask'));
+        my $file = sprintf "%s/route-%s", $output_dir, $i->key;
+        open (my $fh, '>>', $file);
+        print $fh "$dnet/$dmsk via $router dev ".$i->key." \n";
+        close ($fh);
+    }
+
+    if ($write_static) {
+        $out .= sprintf "any host %s gw %s\n", $network->key, $router;
+    }
+}
+
+open (my $fh, '>', '/etc/sysconfig/static-routes');
+print $fh $out;
+close ($fh);
+
 sub _write_config_file() {
+    my %defaults = (
+        'onboot' => 'yes',
+        'bootproto' => 'none',
+        'nm_controlled' => 'no',
+        'userctl' => 'no',
+    );
     my ($i) = @_;
     my $file = sprintf "%s/ifcfg-%s", $output_dir, $i->key;
-    my $out = sprintf "NAME=%s\n",  $i->key;
+    my $out = sprintf "DEVICE=%s\n",  $i->key;
     my %props = $i->props;
-    my $role = $props{'role'} || '';
-    return unless ($role ne '');
+    my $role = $props{'role'} || '';    
+
+    if($role eq '') {
+	return;
+    }
+
+    if($role eq 'slave') {
+	$defaults{'slave'} = 'yes';
+    }
+
+    # If we are a firewall ignore gateway settings:
+    if(scalar $idb->red()) {
+        if ($role ne 'red') {
+	    delete($props{'gateway'});
+        }
+    }
+
+    if($props{'bootproto'} eq 'dhcp') {
+	delete($props{'ipaddr'}); # not needed
+	delete($props{'netmask'});
+	delete($props{'gateway'});
+	$defaults{'persistent_dhclient'} = 'y'; # always renew DHCP lease
+	$defaults{'peerdns'} = 'no'; # do not overwrite /etc/resolv.conf
+    } elsif($props{'bootproto'} eq 'static') {
+	$props{'bootproto'} = 'none'; # replace "static" word with "none"
+    }
+
+    # Apply default values:
+    foreach(keys %defaults) {
+	if( ! defined $props{$_} ) {
+	    $props{$_} = $defaults{$_};
+	}
+    }
+
     foreach my $prop (sort { $a cmp $b } keys %props) {
         next unless ($prop ne 'role'); # skip role
         my $val = $props{$prop};
         $val = ucfirst($val) unless ($prop ne 'type');  #first letter of type must be capitalized
         $out .= sprintf "%s=%s\n", uc($prop), $val;
-    }
-    open (my $fh, '>', $file);
-    print $fh $out; 
-    close ($fh);
-}
-
-sub _write_route_file() {
-    my ($i) = @_;
-    my $file = sprintf "%s/route-%s", $output_dir, $i->key;
-    my $out = sprintf "#NAME=%s\n",  $i->key;
-    my %props = $i->props;
-    my $role = $props{'role'} || '';
-    my $ipaddr = $props{'ipaddr'} || '';
-    my $netmask = $props{'netmask'} || '';
-    return unless ($role ne '');
-    # we will need to support routes on red interfaces when we'll have multiple reds
-    return unless ($role ne 'red');
-    return unless (($ipaddr ne '') || ($netmask ne ''));
-    my ($net,$msk) = Net::IPv4Addr::ipv4_network($ipaddr, $netmask);
-    foreach my $network ($idb->networks) {
-	# Skip local network
-	my $system = $network->prop('SystemLocalNetwork') || "no";
-	next if $system eq "yes";
-
-	# Skip anything we don't know how to or don't need to route
-	my $router = $network->prop('Router') || "default";
-	next if $router eq "default";
-	next if not Net::IPv4Addr::ipv4_in_network($net, $msk, $router);
-
-	my ($dnet,$dmsk) = Net::IPv4Addr::ipv4_network($network->key, $network->prop('Mask'));
-
-        $out .= sprintf "%s/%s via %s dev %s\n", $dnet, $dmsk, $router, $i->key;
-    }
+    }    
     open (my $fh, '>', $file);
     print $fh $out; 
     close ($fh);
