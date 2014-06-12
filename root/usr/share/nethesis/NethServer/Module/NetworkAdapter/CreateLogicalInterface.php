@@ -137,6 +137,12 @@ class CreateLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
 
             $view['bondDatasource'] = array_map($dsMap, $this->getBondParts());
             $view['bridgeDatasource'] = array_map($dsMap, $this->getBridgeParts());
+
+            if ($this->getRequest()->isMutation()) {
+                $view->getCommandList()->sendQuery($view->getModuleUrl('../SetIpAddress'));
+            } else {
+                $view->getCommandList()->show();
+            }
         }
 
         if ( ! $view['type']) {
@@ -146,10 +152,7 @@ class CreateLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
 
     public function nextPath()
     {
-        if ($this->getRequest()->isMutation()) {
-            return 'SetIpAddress';
-        }
-        return parent::nextPath();
+        return FALSE;
     }
 
 }

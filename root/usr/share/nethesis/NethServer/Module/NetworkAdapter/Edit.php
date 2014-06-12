@@ -63,13 +63,23 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
         parent::bind($request);
     }
 
+    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
+    {
+        parent::validate($report);
+        if ($this->getRequest()->isMutation()) {
+            $v = $this->createValidator()->platform('interface-config');
+            if ( ! $v->evaluate(json_encode($this->parameters->getArrayCopy()))) {
+                $report->addValidationError($this, 'interface-config', $v);
+            }
+        }
+    }
+
     private function getNicInfo(\Nethgui\View\ViewInterface $view)
     {
         $v = array();
         $nicInfo = array();
 
-        // only execute helper if request has been validated:
-        if ($this->getRequest()->isValidated() && $this->getAdapter()->offsetGet('type') === 'ethernet') {
+        if ($this->getAdapter()->offsetGet('type') === 'ethernet') {
             // Array of informations about NIC.
             // Fields: name, hwaddr, bus, model, driver, speed, link
             // Eg: green,08:00:27:77:fd:be,pci,Intel Corporation 82540EM Gigabit Ethernet Controller (rev 02),e1000,1000,1
@@ -100,7 +110,9 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
-        $view['deviceInfos'] = $this->getNicInfo($view);
+        if ( ! $this->getRequest()->isMutation() && $this->getRequest()->isValidated()) {
+            $view['deviceInfos'] = $this->getNicInfo($view);
+        }
         $view['bootproto'] = $view['bootproto'] ? $view['bootproto'] : 'none';
         $view['roleDatasource'] = array_map(function($fmt) use ($view) {
             return array($fmt, $view->translate($fmt . '_label'));

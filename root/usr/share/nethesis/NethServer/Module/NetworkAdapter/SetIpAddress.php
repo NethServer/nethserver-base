@@ -54,6 +54,12 @@ class SetIpAddress extends \Nethgui\Controller\Table\AbstractAction
         parent::validate($report);
     }
 
+    public function prepareView(\Nethgui\View\ViewInterface $view)
+    {
+        parent::prepareView($view);
+        $view['role'] = $this->getPlatform()->getDatabase('SESSION')->getProp(get_class($this->getParent()), 'role');
+    }
+
     public function nextPath()
     {
         if ($this->getRequest()->isMutation()) {

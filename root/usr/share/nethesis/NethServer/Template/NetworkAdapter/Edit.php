@@ -34,3 +34,23 @@ $view->includeCSS("
   }
 ");
 
+$roleId = $view->getClientEventTarget('role');
+$bootprotoId = $view->getClientEventTarget('bootproto');
+$view->includeJavascript("
+(function ( $ ) {
+    function toggleDHCP() {
+       if ($('.${roleId}').val().indexOf('red') !== -1) {
+           $('.${bootprotoId}[value=dhcp]').prop('disabled', false);
+       } else {
+            // role is not red
+           $('.${bootprotoId}[value=static]').trigger('click');
+           $('.${bootprotoId}[value=dhcp]').prop('disabled', true);
+       }
+    }
+    $(document).ready(function() {
+       toggleDHCP();
+       $('.${roleId}').change(toggleDHCP);
+       $('.${roleId}').on('nethguiupdateview', toggleDHCP);
+    });
+} ( jQuery ));
+");

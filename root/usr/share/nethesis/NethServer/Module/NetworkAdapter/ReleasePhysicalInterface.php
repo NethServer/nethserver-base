@@ -50,8 +50,13 @@ class ReleasePhysicalInterface extends \Nethgui\Controller\Table\AbstractAction
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1399456809);
         }
 
-        parent::bind($request);
-        $this->parameters['parent'] = $props['role'] === 'slave' ? $props['master'] : $props['bridge'];
+        parent::bind($request);        
+        if ($props['role'] === 'slave') {
+            $parent = isset($props['master']) ? $props['master'] : '';
+        } else {
+            $parent = isset($props['bridge']) ? $props['bridge'] : '';
+        }
+        $this->parameters['parent'] = $parent;
         $this->parameters['role'] = $props['role'];
         $this->parameters['device'] = $keyValue;
     }

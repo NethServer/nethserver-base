@@ -20,6 +20,7 @@ $L['NetworkAdapter_Title'] = 'Network';
 $L['red_label'] = 'Internet (red)';
 $L['role_label'] = 'Role';
 $L['update_header_label'] = 'Update device';
+$L['interface-config_label'] = 'Interface configuration';
 $L['valid_platform,interface-config,interface-role,3'] = "DHCP can be used only with red interfaces";
 $L['valid_platform,interface-config,interface-role,4'] = "Cannot delete the last green interface";
 $L['No'] = 'No';
