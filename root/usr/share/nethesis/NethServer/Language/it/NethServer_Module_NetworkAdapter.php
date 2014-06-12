@@ -67,6 +67,7 @@ $L['DeleteLogicalInterface_header'] = 'Conferma l\'eliminazione di ${0}';
 $L['DeleteLogicalInterface_bond_message'] = "Si sta per eliminare il bond \${device}.\nScegliere un successore tra le sue interfacce slave per ereditare il ruolo e le impostazioni IP correnti.";
 $L['DeleteLogicalInterface_bridge_message'] = "Si sta per eliminare il bridge \${device}.\nScegliere un successore tra i componenti del bridge per ereditare il ruolo e le impostazioni IP correnti.";
 $L['DeleteLogicalInterface_vlan_message'] = "Confermare l'eliminazione della VLAN \${device}.";
+$L['DeleteLogicalInterface_alias_message'] = "Confermare l'eliminazione dell'alias \${device}.";
 $L['ReleasePhysicalInterface_label'] = 'Elimina';
 $L['CreateIpAlias_label'] = 'Crea un alias IP';
 $L['successor_label'] = 'Successore';
