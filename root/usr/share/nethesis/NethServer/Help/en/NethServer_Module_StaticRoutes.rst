@@ -1,5 +1,5 @@
 ==============
-Statir routes
+Static routes
 ==============
 
 The panel can used to configure static routes
