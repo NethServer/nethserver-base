@@ -53,13 +53,6 @@ perl createlinks
 mkdir -p root%{perl_vendorlib}
 mv -v esmith root%{perl_vendorlib}
 
-for f in `/bin/ls root/usr/share/locale/*/LC_MESSAGES/server-console.po`; do
-   out=`dirname $f`
-   /usr/bin/msgfmt $f -o $out/server-console.mo
-   rm -f $f
-done
-
-
 %install
 rm -rf $RPM_BUILD_ROOT
 (cd root   ; find . -depth -not -name '*.orig' -print  | cpio -dump $RPM_BUILD_ROOT)
