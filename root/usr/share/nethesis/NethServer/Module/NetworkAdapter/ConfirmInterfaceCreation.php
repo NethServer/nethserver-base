@@ -128,10 +128,10 @@ class ConfirmInterfaceCreation extends \Nethgui\Controller\Table\AbstractAction
             }
             foreach ($this->getParts($state['device']) as $key) {
                 if ($state['type'] === 'bridge') {
-                    $ndb->delProp($key, array('master', 'ipaddr', 'netmask', 'gateway'));
+                    $ndb->delProp($key, array('master', 'ipaddr', 'netmask', 'gateway', 'vlan'));
                     $ndb->setProp($key, array('role' => 'bridged', 'bootproto' => 'none', 'bridge' => $state['device']));
                 } elseif ($state['type'] === 'bond') {
-                    $ndb->delProp($key, array('bridge', 'ipaddr', 'netmask', 'gateway'));
+                    $ndb->delProp($key, array('bridge', 'ipaddr', 'netmask', 'gateway', 'vlan'));
                     $ndb->setProp($key, array('role' => 'slave', 'bootproto' => 'none', 'master' => $state['device']));
                 }
             }

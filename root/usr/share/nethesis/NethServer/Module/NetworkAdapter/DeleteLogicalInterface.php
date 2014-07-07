@@ -70,7 +70,7 @@ class DeleteLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
     private function releasePart($partKey)
     {
         $ndb = $this->getPlatform()->getDatabase('networks');
-        $ndb->delProp($partKey, array('bridge', 'master'));
+        $ndb->delProp($partKey, array('bridge', 'master', 'vlan'));
         if ($partKey === $this->parameters['successor']) {
             $props = array();
             foreach ($ndb->getKey($this->parameters['device']) as $key => $value) {

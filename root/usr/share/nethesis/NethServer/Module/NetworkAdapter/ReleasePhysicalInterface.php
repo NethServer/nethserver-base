@@ -66,7 +66,7 @@ class ReleasePhysicalInterface extends \Nethgui\Controller\Table\AbstractAction
         parent::process();
         if ($this->getRequest()->isMutation()) {
             $ndb = $this->getPlatform()->getDatabase('networks');
-            $ndb->delProp($this->parameters['device'], array('role', 'master', 'bridge', 'bootproto', 'ipaddr', 'netmask', 'gateway'));
+            $ndb->delProp($this->parameters['device'], array('role', 'master', 'bridge', 'bootproto', 'ipaddr', 'netmask', 'gateway', 'vlan'));
             $this->getAdapter()->flush();
             $this->getPlatform()->signalEvent('interface-update &');
         }

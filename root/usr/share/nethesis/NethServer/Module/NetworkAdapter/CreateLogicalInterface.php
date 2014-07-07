@@ -43,7 +43,7 @@ class CreateLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
         $this->declareParameter('bond', $this->getMemberOfOrEmptyValidator($this->getBondParts()), array('SESSION', $this->sessionKey, 'bond', ','));
         $this->declareParameter('vlan', $this->createValidator()->memberOf($this->getBondParts()), array('SESSION', $this->sessionKey, 'vlan'));
 
-        $this->declareParameter('vlanTag', '/[a-z0-9]+/i', array('SESSION', $this->sessionKey, 'vlanTag'));
+        $this->declareParameter('vlanTag', $this->createValidator(\Nethgui\System\PlatformInterface::POSITIVE_INTEGER), array('SESSION', $this->sessionKey, 'vlanTag'));
     }
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
