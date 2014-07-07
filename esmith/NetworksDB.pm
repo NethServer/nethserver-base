@@ -187,7 +187,7 @@ Returns a list of all interface records in the database.
 
 sub interfaces {
     my ($self) = @_;
-    return grep { $_->prop('type') =~ /^(ethernet|bridge|bond|alias|ipsec)$/ } $self->get_all();
+    return grep { $_->prop('type') =~ /^(ethernet|bridge|bond|alias|ipsec|vlan)$/ } $self->get_all();
 }
 
 =item I<zones>
