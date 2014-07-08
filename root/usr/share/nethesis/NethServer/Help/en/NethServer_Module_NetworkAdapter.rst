@@ -38,10 +38,13 @@ MAC Address
     changed.
 
 Role
-    The role indicates the destination of use of the interface, for example:
+    The role indicates the destination use of the interface, for example:
 
-    * Green -> LAN Business
-    * Red -> Internet, public IP
+    * Green: local LAN
+    * Blue: guest network
+    * Orange: DMZ network
+    * Red: Internet, public IP
+
 
 Mode
     Indicates which method will be used to assign the IP address to
@@ -57,3 +60,11 @@ Static
 DHCP
     The configuration is dynamically allocated (available only for
     RED interfaces)
+
+Logical interfaces
+    Logical interfaces are special network configurations. Supported logical interfaces are:
+
+    * Alias: associate more than one IP address to an existing network interface. The alias has the same role of its associated physical interface
+    * Bond: arrange two or more network interfaces, provides load balancing and fault tolerance
+    * Bridge: connect two different networks, it's often used for bridged VPN and virtual machine
+    * VLAN (Virtual Local Area Network): create two or more physically separated networks using a single interface

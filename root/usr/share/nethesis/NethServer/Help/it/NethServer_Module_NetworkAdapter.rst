@@ -40,10 +40,12 @@ Indirizzo MAC
 
 Ruolo
     Il ruolo indica la destinazione d'uso dell'interfaccia, ad esempio:
-    
-    * Green -> LAN Aziendale
-    * Red -> Internet, ip pubblici
 
+    * Green: LAN locale
+    * Blue: rete ospiti
+    * Orange: rete DMZ
+    * Red: Internet, IP pubblico
+    
 Modalità
     Indica quale metodo verrà usato per attribuire l'indirizzo IP alla
     scheda di rete, valori i possibili sono *Statico* e *DHCP*.
@@ -58,4 +60,12 @@ Statico
 DHCP
     La configurazione è attribuita dinamicamente (disponibile solo per interfacce
     RED)
+
+Interfacce logiche
+    Le interfacce logiche sono speciali configurazioni di rete. I tipi supportati sono:
+
+    * Alias: associa uno o più IP ad una scheda esistenza. L'aloas ha lo stesso ruolo della scheda fisica associata
+    * Bond: combina due o più interfacce, arantisce bilanciamento del traffico e tolleranza ai guasti
+    * Bridge: collega due reti distinte, è spesso utilizzata per le VPN in bridge e le macchine virtuali
+    * VLAN (Virtual Local Area Network): crea due o più reti fisicamente separate usando una singola interfaccia
 
