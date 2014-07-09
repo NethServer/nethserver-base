@@ -68,22 +68,28 @@ $old = $srcConfigDb->get('modSSL');
 $new = $dstConfigDb->get('pki') || $dstConfigDb->new_record('pki');
 my $crt = $old->prop('crt') || "";
 my $key = $old->prop('key') || "";
+my $oldKey = '/home/e-smith/ssl.key/'.$srcConfigDb->get('SystemName')->prop('type').".".$srcConfigDb->get('DomainName')->prop('type').'.key';
+my $oldCrt = '/home/e-smith/ssl.crt/'.$srcConfigDb->get('SystemName')->prop('type').".".$srcConfigDb->get('DomainName')->prop('type').'.crt';
+my $oldPem = '/home/e-smith/ssl.pem/'.$srcConfigDb->get('SystemName')->prop('type').".".$srcConfigDb->get('DomainName')->prop('type').'.pem';
 
 # copy default self-signed cert and key
 if ($crt eq "" && $key eq "") {
     $new->set_prop('CrtFile','');
     $new->set_prop('KeyFile','');
-    my $oldKey = '/home/e-smith/ssl.key/'.$srcConfigDb->get('SystemName')->prop('type').".".$srcConfigDb->get('DomainName').'.key';
-    my $oldCrt = '/home/e-smith/ssl.crt/'.$srcConfigDb->get('SystemName')->prop('type').".".$srcConfigDb->get('DomainName').'.crt';
-    my $oldPem = '/home/e-smith/ssl.pem/'.$srcConfigDb->get('SystemName')->prop('type').".".$srcConfigDb->get('DomainName').'.pem';
     copy("$sourceDir/$oldKey","/etc/pki/tls/private/NSRV.key");
     copy("$sourceDir/$oldCrt","/etc/pki/tls/certs/NSRV.crt");
     if ( -f "$sourceDir/$oldPem") { 
         copy("$sourceDir/$oldPem","/etc/pki/tls/NSRV.pem");
     }
 } else {  # copy custom cert and key
-    my $oldKey = basename($key);
-    my $oldCrt = basename($crt);
+    if ($key eq '') {
+        $key = $oldKey;
+    }
+    $oldKey = basename($key);
+    if ($crt eq '') {
+        $crt = $oldCrt;
+    }
+    $oldCrt = basename($crt);
     $new->set_prop('KeyFile',"/etc/pki/tls/private/$oldKey");
     $new->set_prop('CrtFile',"/etc/pki/tls/certs/$oldCrt");
     copy("$sourceDir/$key","/etc/pki/tls/private/$oldKey");
