@@ -28,8 +28,13 @@ use Nethgui\System\PlatformInterface as Validate;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Select extends \Nethgui\Controller\Collection\AbstractAction
+class Select extends \Nethgui\Controller\Collection\AbstractAction implements \Nethgui\Component\DependencyConsumer
 {
+    /**
+     *
+     * @var \Nethgui\Model\UserNotifications
+     */
+    private $notifications;
 
     private $txOrder;
 
@@ -122,6 +127,10 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction
             });
         $view['groups'] = $groupsState;
         $view['categories'] = $this->getCategories($view);
+
+        if($this->getRequest()->hasParameter('installSuccess')) {
+            $this->notifications->message($view->translate('package_success'));
+        }
     }
 
     private function getCategories(\Nethgui\View\ViewInterface $view) {
@@ -146,6 +155,17 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction
             );
         
         return array_merge(array($everything), $categories);
+    }
+
+    public function setUserNotifications(\Nethgui\Model\UserNotifications $n)
+    {
+        $this->notifications = $n;
+        return $this;
+    }
+   
+    public function getDependencySetters()
+    {
+        return array('UserNotifications' => array($this, 'setUserNotifications'));
     }
 
     public function nextPath()

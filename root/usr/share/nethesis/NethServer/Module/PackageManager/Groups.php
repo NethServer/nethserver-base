@@ -35,7 +35,6 @@ class Groups extends \Nethgui\Controller\CollectionController
         $this->setAdapter(new \Nethgui\Adapter\LazyLoaderAdapter(array($this->getParent(), 'yumGroupsLoader')))
             ->setIndexAction(new Groups\Select)
             ->addCollectionAction(new Groups\Review())
-            ->addCollectionAction(new Groups\Tracker())
         ;
         parent::initialize();
     }

@@ -1,4 +1,5 @@
 <?php
+
 namespace NethServer\Module\PackageManager\Groups;
 
 /*
@@ -30,18 +31,13 @@ use Nethgui\System\PlatformInterface as Validate;
  */
 class Review extends \Nethgui\Controller\Collection\AbstractAction
 {
-    /**
-     *
-     * @var string
-     */
-    private $taskIdentifier;
 
     public function initialize()
     {
         parent::initialize();
         $this->declareParameter('addGroups', Validate::ANYTHING);
         $this->declareParameter('removeGroups', Validate::ANYTHING);
-        $this->declareParameter('optionals', Validate::ANYTHING_COLLECTION);      
+        $this->declareParameter('optionals', Validate::ANYTHING_COLLECTION);
     }
 
     public function validate(\Nethgui\Controller\ValidationReportInterface $report)
@@ -131,10 +127,11 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
                 $arguments[] = implode(',', $selectedOptionals);
             }
 
-            if(count($arguments) === 0) {
+            if (count($arguments) === 0) {
                 throw new \RuntimeException(sprintf("%s: package action was not specified", __CLASS__), 1395154356);
             }
-            $this->taskIdentifier = $this->getPlatform()->exec('/usr/bin/sudo /sbin/e-smith/pkgaction ${@}', $arguments, TRUE)->getIdentifier();            
+
+            $this->installProcess = $this->getPlatform()->exec('/usr/bin/sudo /sbin/e-smith/pkgaction ${@}', $arguments, TRUE);
         }
     }
 
@@ -211,11 +208,18 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
             $view['messages'] = $this->getMessagesText($view->getTranslator(), $selection);
             $view['addGroups'] = implode(',', $selection['add']);
             $view['removeGroups'] = implode(',', $selection['remove']);
-        } elseif ($this->getRequest()->isValidated() && $this->getRequest()->isMutation()) {
-            // FIXME EXPERIMENTAL
-            $view->getCommandList()
-                ->httpHeader('HTTP/1.1 202 Accepted')
-                ->sendQuery($view->getModuleUrl('../Tracker/' . $this->taskIdentifier), 1000, TRUE)
+        } elseif (isset($this->installProcess)) {
+            $this->installProcess
+                ->on('success', array(
+                    'location' => array(
+                        'url' => $view->getModuleUrl('../Select?installSuccess'),
+                        'freeze' => TRUE,
+                )))
+                ->on('failure', array(
+                    'location' => array(
+                        'url' => $view->getModuleUrl('../Select'),
+                        'freeze' => TRUE
+                )))
             ;
         }
     }
@@ -281,7 +285,7 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
     public function nextPath()
     {
         if ($this->getRequest()->isMutation()) {
-            return 'Tracker';
+            return 'Select';
         }
         return parent::nextPath();
     }
