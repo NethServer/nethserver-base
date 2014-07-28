@@ -67,7 +67,7 @@ class LocalNetwork extends \Nethgui\Controller\TableController
         if($eventName === 'update') {
             $eventName = 'modify';
         }
-        $this->getPlatform()->signalEvent(sprintf('network-%s@post-process', $eventName));
+        $this->getPlatform()->signalEvent(sprintf('network-%s &', $eventName));
     }
 
 }
