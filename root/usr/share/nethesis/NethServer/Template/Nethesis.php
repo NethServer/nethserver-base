@@ -1,5 +1,5 @@
 <?php
-/* @var $view \Nethgui\Renderer\Xhtml */
+/* @var $view \Nethgui\Renderer\Xhtml */ 
 
 $filename = basename(__FILE__);
 $bootstrapJs = <<<"EOJS"
@@ -47,6 +47,7 @@ $view
     // CSS:
     ->useFile('css/ui/jquery-ui-1.8.16.custom.css')
     ->useFile('css/jquery.qtip.min.css')
+    ->useFile('css/font-awesome.css')
     ->useFile('css/base.css')
 ;
 // Custom colors
@@ -79,17 +80,22 @@ if (isset($view['colors']) && count($view['colors']) == 3) {
         <script>document.write('<style type="text/css">#allWrapper {display:none}</style>')</script><?php echo $view->literal($view['Resource']['css']) ?>
     </head>
     <body>
-        <div id="allWrapper"><?php echo $view['notificationOutput'] ?>
+        <div id="allWrapper">
+            <div id="pageHeader">
             <?php if ( ! $view['disableHeader']): ?>
-                <div id="pageHeader">
+                
                     <div id="headerMenu"><a href="<?php echo $view->getModuleUrl('/UserProfile') ?>"><?php echo $T('UserProfile_Title'); ?></a></div>
                     <h1 id="ModuleTitle"><?php echo htmlspecialchars($view['moduleTitle']) ?></h1>
                     <div id="productTitle"><img src='<?php echo $view['logo']; ?>'/></div>
-                </div>
             <?php endif; ?>
-            <div id="pageContent">
+            </div>
+            <div id="pageContent">                
                 <div class="primaryContent" role="main">
-                    <?php echo $view['currentModuleOutput'] ?>
+                    <?php 
+                         echo $view['notificationOutput'];
+                         echo $view['trackerOutput'];
+                         echo $view['currentModuleOutput'];
+                    ?>
                 </div>
                 <?php if ( ! $view['disableMenu']): ?><div class="secondaryContent" role="menu"><div class="contentWrapper"><h2><?php echo htmlspecialchars($view->translate('Other modules')) ?></h2><?php echo $view['menuOutput'] . $view['logoutOutput'] ?></div></div><?php endif; ?>
             </div><?php echo $view['helpAreaOutput'] ?>
