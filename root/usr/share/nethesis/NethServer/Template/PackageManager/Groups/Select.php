@@ -48,6 +48,9 @@ $view->includeJavascript("
     $('#${categoriesId}').on('nethguiupdateview', function (e, data) {
         $(this).empty();
         var self = this;
+        if( ! $.isArray(data)) {
+            return;
+        }
         $.each(data, function(index, category) {
 
             // Create the category (radio)button:

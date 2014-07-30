@@ -1,9 +1,9 @@
 <?php
 
-namespace NethServer\Module\PackageManager;
+namespace NethServer\Module\PackageManager\Groups;
 
 /*
- * Copyright (C) 2013 Nethesis S.r.l.
+ * Copyright (C) 2014  Nethesis S.r.l.
  *
  * This script is part of NethServer.
  *
@@ -22,25 +22,31 @@ namespace NethServer\Module\PackageManager;
  */
 
 /**
- * Manage YUM categories and group installation/removal
+ * Fake Tracker module for backward compatibility
+ *
+ * TODO Remove this class in future release
  *
  * @author Davide Principi <davide.principi@nethesis.it>
- * @since 1.0
+ * @since 1.6
  */
-class Groups extends \Nethgui\Controller\CollectionController
+class Tracker extends \Nethgui\Controller\AbstractController
 {
 
     public function initialize()
     {
-        // FIXME: Workaround for httpd-admin update problems to Nethgui 1.6:
-        if ( ! interface_exists('\Nethgui\Component\DependencyConsumer')) {
-            eval("namespace NethServer\Module\PackageManager\Groups; class Select extends \Nethgui\Controller\Collection\AbstractAction { }");
-        }
-        $this->setAdapter(new \Nethgui\Adapter\LazyLoaderAdapter(array($this->getParent(), 'yumGroupsLoader')))
-            ->setIndexAction(new Groups\Select())
-            ->addCollectionAction(new Groups\Review())
-        ;
         parent::initialize();
+        $this->setViewTemplate(FALSE);
+    }
+
+    public function prepareView(\Nethgui\View\ViewInterface $view)
+    {
+        parent::prepareView($view);
+        $view->getCommandList()->reloadData(4000);
+    }
+    
+    public function setNextPath($p)
+    {
+        return $this;
     }
 
 }
