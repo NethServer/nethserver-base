@@ -66,6 +66,20 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Aug 20 2014 Davide Principi <davide.principi@nethesis.it> - 2.3.0-1.ns6
+- Embed Nethgui 1.6.0 into httpd-admin RPM - Enhancement #2820 [NethServer]
+- Base: remove rsyslog.conf template - Bug #2772 [NethServer]
+- Firewall: allow and deny access to local services - Enhancement #2752 [NethServer]
+- Certificate migration fails if "key" prop is missing - Bug #2745 [NethServer]
+- Base: split 'local networks' into 'static routes' and 'trusted networks' - Enhancement #2743 [NethServer]
+- Remove obsolete console and bootstrap-console commands - Enhancement #2734 [NethServer]
+- Web UI: advanced network configuration  - Feature #2719 [NethServer]
+- Custom firewall rules - Feature #2716 [NethServer]
+- Firewall: select default policy - Feature #2714 [NethServer]
+- Dashboard: uptime is incomplete - Bug #2708 [NethServer]
+- Firewall: support custom objects - Feature #2705 [NethServer]
+- Firewall-base: add support for multi-wan - Feature #2332 [NethServer]
+
 * Mon Mar 24 2014 Davide Principi <davide.principi@nethesis.it> - 2.2.1-1.ns6
 - Built again to fix online documentation - #2700 [NethServer]
 
