@@ -1,0 +1,11 @@
+#!/bin/bash
+
+EVENT=$1
+DIR=$2
+
+if [ "x$DIR" = "x" ] ||  [ ! -d $DIR ]; then
+   echo "No such directory: $DIR"
+   exit
+fi
+
+/bin/find $DIR -type f -exec /usr/bin/iconv -cs -t utf-8 -o '{}' '{}' \;
