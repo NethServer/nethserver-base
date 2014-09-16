@@ -10,7 +10,7 @@ jQuery(document).ready(function($) {
     $('script.unobstrusive').remove();
     $('#pageContent').Component();
     $('.HelpArea').HelpArea();
-    $('#allWrapper').css('display', 'block');
+    $('#hiddenAllWrapperCss').remove();
 });
 EOJS;
 
@@ -77,7 +77,7 @@ if (isset($view['colors']) && count($view['colors']) == 3) {
         <title><?php echo htmlspecialchars($view['company'] . " - " . $view['moduleTitle']) ?></title>
         <link rel="icon"  type="image/png"  href="<?php echo $view['favicon'] ?>" />
         <meta name="viewport" content="width=device-width" />  
-        <script>document.write('<style type="text/css">#allWrapper {display:none}</style>')</script><?php echo $view->literal($view['Resource']['css']) ?>
+        <script>document.write('<style id="hiddenAllWrapperCss" type="text/css">#allWrapper {display:none}</style>')</script><?php echo $view->literal($view['Resource']['css']) ?>
     </head>
     <body>
         <div id="allWrapper">
