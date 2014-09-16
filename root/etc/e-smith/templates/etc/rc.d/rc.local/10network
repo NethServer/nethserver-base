@@ -1,0 +1,2 @@
+# Reset network interface if needed
+/bin/plymouth quit && /usr/libexec/nethserver/network-reset

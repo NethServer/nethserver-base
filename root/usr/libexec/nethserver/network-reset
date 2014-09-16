@@ -1,0 +1,157 @@
+#!/usr/bin/perl -w
+#
+# Copyright (C) 2014 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see .
+#
+
+use esmith::NetworksDB;
+use esmith::event;
+my $ndb = esmith::NetworksDB->open();
+
+my @removed;
+my @free;
+my $old_green;
+my $reset = 1;
+
+sub get_mac {
+    my $eth = shift;
+    my $f = "/sys/class/net/$eth/address";
+    if (! -e $f) {
+       return '';
+    }
+    open(FILE,$f);
+    local $/;
+    my $mac = <FILE>;
+    $mac =~ s/\s+$//;
+    close(FILE);
+    
+    return $mac;
+}
+
+sub get_link {
+    my $eth = shift;
+    my $f = "/sys/class/net/$eth/carrier";
+    if (! -e $f) {
+       return 'No';
+    }
+    # force the ethernet
+    system("/sbin/ip link set up $eth");
+    open(FILE,$f);
+    local $/;
+    my $link = <FILE>;
+    $link =~ s/\s+$//;
+    chomp $link;
+    close(FILE);
+
+    return "Yes" if ($link eq "1");
+    return "No";
+}
+
+sub print_choices {
+    my $arr = shift;
+    my $k = 1;
+    print "\n******************\n";
+    print "    ATTENTION    \n";
+    print "******************\n\n";
+    print "Network configuration will be reset.\n\nChoose the new GREEN network interface:\n\n";
+    foreach (@$arr) {
+        print $k.") ".uc($_)."\n\tMAC: ".get_mac($_)."\n\tLink: ".get_link($_)."\n\n";
+        $k++;
+    }
+    print "\n0) EXIT - Manual configuration required\n";
+}
+
+
+#
+# Search for free and removed interfaces
+#
+foreach ($ndb->ethernets()) {
+    if ( ! -e "/sys/class/net/".$_->key) {
+        push(@removed, $_->key);
+        my $role = $_->prop('role') || '';
+        $old_green = $_ if ($role eq 'green');
+        $_->set_prop('role',''); # clean role 
+    } else {
+        my $role = $_->prop('role') || '';
+        push (@free, $_->key) if ($role eq '');
+    }
+}
+
+
+#
+# Exit if there is at least one configured green device
+#
+foreach ($ndb->interfaces()) {
+    my $role = $_->prop('role') || '';
+    if ($role eq 'green') {
+        $reset = 0;
+    }
+}
+exit 0 if ($reset == 0);
+
+#
+# Quit after timeout
+#
+eval {
+    local $SIG{ALRM} = sub { die("Timeout\n"); };
+    alarm 120;
+};
+
+
+#
+# One green interface, just swap it with the old one
+#
+if (scalar(@free) == 1) {
+    my $new = $ndb->get($free[0]);
+    $old_green->delete_prop('hwaddr');
+    $new->merge_props($old_green->props);
+    $new->set_prop('device',$new->key);
+    $new->set_prop('role','green');
+}
+ 
+#
+# Ask for a new green
+#
+if (scalar(@free) > 1) {
+    my $choice;
+    my $input = -1;
+    while ($input < 0) {
+        print_choices(\@free);
+        $input = <STDIN>;
+        chomp ($input);
+        if (!defined($free[$input-1])) {
+            $input = -1;
+        }
+    }
+    if ($input == 0) {
+        print "\nNetwork configuration not updated: you will not be able to access the sever\n".
+        exit 1;
+    }
+    my $new = $ndb->get($free[$input-1]);
+    $old_green->delete_prop('hwaddr');
+    $new->merge_props($old_green->props);
+    $new->set_prop('device',$new->key);
+    $new->set_prop('role','green');
+}
+
+#
+# Apply configuration
+#
+print "\nReconfiguring network...\n";
+exit 1 if(event_signal('interface-update') == 0);
+exit 0;
