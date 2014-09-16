@@ -49,7 +49,7 @@ $old = $srcConfigDb->get('syslog');
 $new = $dstConfigDb->get('rsyslog') || $dstConfigDb->new_record('rsyslog');
 $new->merge_props($old->props);
 
-my @keys = ('ConsoleMode', 'MinUid', 'maxAcctNameLength', 'maxAcctNameLength', 'maxGroupNameLength', 'maxIbayNameLength');
+my @keys = ('MinUid', 'maxAcctNameLength', 'maxAcctNameLength', 'maxGroupNameLength', 'maxIbayNameLength');
 foreach my $key (@keys) {
     $old = $srcConfigDb->get($key);
     $new = $dstConfigDb->get($key) || $dstConfigDb->new_record($key);
