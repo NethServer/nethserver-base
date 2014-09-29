@@ -190,7 +190,6 @@ templates2events('/etc/fstab', $event);
 #--------------------------------------------------
 
 $event = "migration-import";
-event_actions($event, 'nethserver-base-encode-db' => 10);
 event_actions($event, 'nethserver-base-migrate' => 20);
 
 #--------------------------------------------------
