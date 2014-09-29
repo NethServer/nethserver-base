@@ -181,7 +181,7 @@ if ($config{'green_ipaddr'} eq "") {
 
 # Fallback to static ip address
 if ($config{'green_ipaddr'} eq "") {
-    system("$DB networks setprop $config{'green'} bootproto none ipaddr 192.168.1.100 netmask 255.255.255.0 gateway 192.168.1.1 onboot yes device $config{'green'}");
+    system("$DB networks setprop $config{'green'} bootproto none ipaddr 192.168.1.1 netmask 255.255.255.0 gateway '' onboot yes device $config{'green'}");
 }
 
 

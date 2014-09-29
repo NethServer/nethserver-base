@@ -25,13 +25,14 @@ use esmith::ConfigDB;
 use esmith::event;
 
 my $event = shift || die("Missing event argument!");
-my $confDb = esmith::ConfigDB->open();
 my $fevent = "";
 
-my $firewall = $confDb->get('firewall');
-if ($firewall) {
-   $fevent = $firewall->prop("event") || "";
-}
+my $package = `rpm -q --whatprovides --queryformat "%{NAME}" nethserver-firewall`;
+if ( -e "/etc/e-smith/events/".$package."-save") {
+    $fevent = $package."-save";
+} else {
+    $fevent = "lokkit-save";
+} 
 
 if( ! esmith::event::event_signal($fevent, $event)) {
     exit(1);
