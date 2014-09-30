@@ -65,15 +65,16 @@ sub get_link {
 sub print_choices {
     my $arr = shift;
     my $k = 1;
-    print "\n******************\n";
+    print "\033[2J\n******************\n";
     print "    ATTENTION    \n";
     print "******************\n\n";
-    print "Network configuration will be reset.\n\nChoose the new GREEN network interface:\n\n";
+    print "Network configuration will be reset. Choose the new GREEN network interface:\n";
     foreach (@$arr) {
-        print $k.") ".uc($_)."\n\tMAC: ".get_mac($_)."\n\tLink: ".get_link($_)."\n\n";
+        printf("%d) %-8s MAC: %s    Link: %s\n", $k, uc($_), get_mac($_), get_link($_));
         $k++;
     }
-    print "\n0) EXIT - Manual configuration required\n";
+    print "\n0) Skip     (Manual configuration required)\n";
+    printf("Please, type your choice number (0-%d), then press ENTER: ", $k-1);
 }
 
 
