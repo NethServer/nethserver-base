@@ -66,6 +66,15 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Thu Oct 02 2014 Davide Principi <davide.principi@nethesis.it> - 2.4.0-1.ns6
+- Notification "${0}%" string flashes on login screen - Bug #2876 [NethServer]
+- Handle nethserver-firewall-base uninstallation - Enhancement #2873 [NethServer]
+- System initialization: change default ip addresses - Enhancement #2872 [NethServer]
+- Reconfigure networking on NIC replacement - Feature #2837 [NethServer]
+- Cannot access Server Manager after migration - Bug #2786 [NethServer]
+- Remove obsolete console and bootstrap-console commands - Enhancement #2734 [NethServer]
+- Web UI: advanced network configuration  - Feature #2719 [NethServer]
+
 * Wed Aug 20 2014 Davide Principi <davide.principi@nethesis.it> - 2.3.0-1.ns6
 - Embed Nethgui 1.6.0 into httpd-admin RPM - Enhancement #2820 [NethServer]
 - Base: remove rsyslog.conf template - Bug #2772 [NethServer]
