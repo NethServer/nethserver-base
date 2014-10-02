@@ -83,7 +83,9 @@ class Services extends \Nethgui\Controller\TableController
                $rowMetadata['rowCssClass'] .= ' running ';
             } else {
                $ret = $view->translate("stopped_label");
-               $rowMetadata['rowCssClass'] .= ' stopped ';
+               if ($values['status'] == 'enabled') {
+                   $rowMetadata['rowCssClass'] .= ' stopped ';
+               }
             }
 
         }

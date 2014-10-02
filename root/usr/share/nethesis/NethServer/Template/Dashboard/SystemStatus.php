@@ -43,3 +43,32 @@ $view->includeCSS("
 foreach($view->getModule()->getChildren() as $child) {
     echo $view->inset($child->getIdentifier());
 }
+
+$moduleUrl = json_encode($view->getModuleUrl("/Dashboard/Services"));
+
+$view->includeJavascript("
+(function ( $ ) {
+
+  function loadPage() {
+        $.Nethgui.Server.ajaxMessage({
+            isMutation: false,
+            url: $moduleUrl
+        });
+  } 
+
+  $(document).ready(function() {
+      loadPage();
+  });
+
+})( jQuery);
+");
+
+$view->includeCss("
+    tr.running td:nth-child(3n+3) {
+        color: green;
+    }
+    tr.stopped td:nth-child(3n+3) {
+        color: red;
+        font-weight: bold;
+    }
+");
