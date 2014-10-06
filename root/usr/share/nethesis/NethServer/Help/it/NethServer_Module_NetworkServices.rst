@@ -33,11 +33,11 @@ Accesso solo dal server stesso
     Esempio: in una macchina virtuale pubblica (VPS) l'accesso al demone LDAP dovrebbe essere disabilitato da qualsiasi rete.
 
 Consenti host
-    Inserire una lista di indirizzi IP separati da virgole. Gli host elencati potranno sempre accedere
+    Inserire una lista di indirizzi IP, o reti in formato CIDR, separati da virgole. Gli host elencati potranno sempre accedere
     al servizio di rete. (Si applica solo se l'accesso è pubblico o privato)
 
 Blocca host
-    Inserire una lista di indirizzi IP separati da virgole. Gli host elencati non potranno mai accedere
+    Inserire una lista di indirizzi IP, o reti in formato CIDR, separati da virgole. Gli host elencati non potranno mai accedere
     al servizio di rete. (Si applica solo se l'accesso è pubblico o privato)
 
 

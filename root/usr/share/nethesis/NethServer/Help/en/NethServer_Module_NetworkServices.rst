@@ -33,11 +33,11 @@ Access only from localhost
     For example: on a public VPS access to LDAP server should be denied from any network.
 
 Allow hosts
-    Specify a comma separated list of IP address. Listed hosts will be always granted access to 
+    Specify a comma separated list of IP address or CIDR networks. Listed hosts will be always granted access to 
     the network service. (Applied only if access is public or private)
 
 Deny hosts
-    Specify a comma separated list of IP address. Listed hosts will be always denied access to 
+    Specify a comma separated list of IP address or CIDR networks. Listed hosts will be always denied access to 
     the network service. (Applied only if access is public or private)
 
 

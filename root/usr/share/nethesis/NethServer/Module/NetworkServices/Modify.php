@@ -52,8 +52,9 @@ class Modify extends \Nethgui\Controller\Table\Modify
     {
         $ips = explode(',',$this->parameters['AllowHosts']);
         $ipvalidator = $this->createValidator(Validate::IPv4_OR_EMPTY);
+        $cidrvalidator = $this->createValidator(Validate::CIDR_BLOCK);
         foreach($ips as $ip) {
-            if(!$ipvalidator->evaluate($ip)) {
+            if(!$ipvalidator->evaluate($ip) && !$cidrvalidator->evaluate($ip)) {
                 $report->addValidationErrorMessage($this, 'AllowHosts', 'AllowHosts_validator');
             }
         }
@@ -61,7 +62,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
         $ips = explode(',',$this->parameters['DenyHosts']);
         $ipvalidator = $this->createValidator(Validate::IPv4_OR_EMPTY);
         foreach($ips as $ip) {
-            if(!$ipvalidator->evaluate($ip)) {
+            if(!$ipvalidator->evaluate($ip) && !$cidrvalidator->evaluate($ip)) {
                 $report->addValidationErrorMessage($this, 'DenyHosts', 'DenyHosts_validator');
             }
         }
