@@ -23,3 +23,24 @@ echo $view->panel()->insert($access);
 
 
 echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_CANCEL | $view::BUTTON_HELP);
+
+$view->includeCss("
+    .ns-green {
+        color: green;
+        font-weight: bold;
+        padding-right: 5px;
+    }
+    .ns-red {
+        color: red;
+        font-weight: bold;
+    }
+    .ns-black {
+        color: black;
+        font-weight: bold;
+    }
+    .ns-grey {
+        color: grey;
+        font-weight: bold;
+    }
+
+");

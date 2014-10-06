@@ -62,6 +62,22 @@ class NetworkServices extends \Nethgui\Controller\TableController
         parent::initialize();
     }
 
+    public function prepareViewForColumnAccess(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        $nets = '';
+        if (isset($values['AllowHosts']) || isset($values['DenyHosts'])) {
+            return '<span class="ns-black">custom</span>';
+        }
+        if ($values['access'] == 'private') {
+            $nets = '<span class="ns-green">green</span>';
+        } else if ($values['access'] == 'public') {
+            $nets = '<span class="ns-green">green</span> <span class="ns-red">red</span>';
+        } else {
+            $nets = '<span class="ns-grey">localhost</span>';
+        }
+
+        return $nets;
+    }
 
     /**
      *
