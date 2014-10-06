@@ -9,7 +9,7 @@ Ports are open into the firewall accordingly to the `access` property.
 The access property has three valid values:
 
 * private: the service is accessible only from local networks (eg. green interfaces)
-* public: the service is accessible from all networks, including Internet
+* public: the service is accessible from local and external networks, but not from orange and blue
 * none: the service is accessible only from the server itself (localhost)
 
 When the service access is set to private or public, the administrator
@@ -20,15 +20,15 @@ Edit
 
 Edit the access of a network service.
 
-Access only from local networks (private)
+Access only from green networks
     Select this if the service must be accessible only from local networks.
     For example: a critical database server should be accessible from LAN.
 
-Access from all networks (public)
+Access from green and red networks
     Select this if the service must be from all networks, including Internet.
     For example: the mail server should be accessible from anyone.
 
-Access only from localhost (none)
+Access only from localhost
     Select this if the service must be accessible only from the server itself.
     For example: on a public VPS access to LDAP server should be denied from any network.
 

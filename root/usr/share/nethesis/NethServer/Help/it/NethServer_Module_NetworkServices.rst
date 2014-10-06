@@ -8,8 +8,8 @@ Ogni servizio può avere più porte TCP/UDP aperte.
 Le porte sono aperte sul firewall rispettando la proprietà `accesso`.
 Tale proprietà può avere tre valori:
 
-* privato: il servizio è accessibile solo dalle reti locali (es. interfacce verdi)
-* pubblico: il servizio è accessibile da tutte le reti, compreso Internet
+* privato: il servizio è accessibile solo dalle reti locali (es. interfacce green)
+* pubblico: il servizio è accessibile dalle reti green e red, ma non dalle reti blue e orange
 * nessuno: il servizio è accessibile solo dal server stesso (localhost)
 
 Quando l'accesso è configurato come pubblico o privato, l'amministratore può
@@ -20,15 +20,15 @@ Modifica
 
 Modifica l'accesso ad un servizio di rete.
 
-Accesso solo dalle reti locali (privato)
+Accesso solo dalle reti green
     Selezionare se il servizio deve essere accessibile solo dalle reti locali.
     Esempio: un server database dovrebbe essere accessibile solo dalla LAN.
 
-Accesso da tutte le reti (pubblico)
+Accesso dalle reti green e red
     Selezionare se il servizio deve essere accessibile da tutte le reti, incluso Internet.
     Esempio: il server di posta deve essere accessibile da chiunque.
 
-Accesso solo dal server stesso (nessuno)
+Accesso solo dal server stesso
     Selezionare se il servizio deve essere accessibile solo dal server stesso (localhost).
     Esempio: in una macchina virtuale pubblica (VPS) l'accesso al demone LDAP dovrebbe essere disabilitato da qualsiasi rete.
 
