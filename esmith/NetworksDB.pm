@@ -137,13 +137,15 @@ sub local_access_spec
     my @localAccess = ("127.0.0.1");    
 
     if($self && $self->green()) {
-	my $greenNetwork = esmith::util::computeLocalNetworkSpec(
-	    $self->green()->prop('ipaddr'),
-	    $self->green()->prop('netmask')
-	);
-	if($greenNetwork) {
-	    push @localAccess, $greenNetwork;
-	}
+        foreach ($self->green) {
+	    my $greenNetwork = esmith::util::computeLocalNetworkSpec(
+	        $_->prop('ipaddr'),
+	        $_->prop('netmask')
+	    );
+	    if($greenNetwork) {
+	        push @localAccess, $greenNetwork;
+	    }
+        }
     }
 
     if ( $access eq "localhost" )
