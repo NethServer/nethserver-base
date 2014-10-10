@@ -58,6 +58,7 @@ class SetIpAddress extends \Nethgui\Controller\Table\AbstractAction
     {
         parent::prepareView($view);
         $view['role'] = $this->getPlatform()->getDatabase('SESSION')->getProp(get_class($this->getParent()), 'role');
+        $view['role_header'] = $view->translate($view['role'] . '_label');
     }
 
     public function nextPath()

@@ -34,23 +34,35 @@ $view->includeCSS("
   }
 ");
 
-$roleId = $view->getClientEventTarget('role');
+$roleId = $view->getUniqueId('role');
 $bootprotoId = $view->getClientEventTarget('bootproto');
+$gatewayId = $view->getUniqueId('gateway');
 $view->includeJavascript("
 (function ( $ ) {
-    function toggleDHCP() {
-       if ($('.${roleId}').val().indexOf('red') !== -1) {
-           $('.${bootprotoId}[value=dhcp]').prop('disabled', false);
-       } else {
-            // role is not red
-           $('.${bootprotoId}[value=static]').trigger('click');
-           $('.${bootprotoId}[value=dhcp]').prop('disabled', true);
-       }
-    }
-    $(document).ready(function() {
-       toggleDHCP();
-       $('.${roleId}').change(toggleDHCP);
-       $('.${roleId}').on('nethguiupdateview', toggleDHCP);
+    var updateFormState = function () {
+
+        // hide `gateway` field if role is not green or red
+        if ($('#${roleId}').val().indexOf('green') !== -1 || $('#${roleId}').val().indexOf('red') !== -1) {
+            $('#${gatewayId}').prop('disabled', false).parent().show();
+        } else {
+            $('#${gatewayId}').prop('disabled', true).parent().hide();
+        }
+
+        // show DHCP/Static radio buttons only for red role
+        if ($('#${roleId}').val().indexOf('red') !== -1) {
+            $('#${gatewayId}').closest('fieldset').css('margin-left', '');
+            $('.${bootprotoId}[value=none]').trigger('click').parent().show();
+            $('.${bootprotoId}[value=dhcp]').prop('disabled', false).parent().show();
+        } else {
+            $('#${gatewayId}').closest('fieldset').css('margin-left', 0);
+            $('.${bootprotoId}[value=none]').trigger('click').parent().hide();
+            $('.${bootprotoId}[value=dhcp]').prop('disabled', true).parent().hide();
+        }
+    };
+
+    // bind the updateFormState method after widgets have been created:
+    $('.${roleId}').on('nethguicreate', function() {
+        $('#${roleId}').on('nethguiupdateview change', updateFormState);
     });
 } ( jQuery ));
 ");

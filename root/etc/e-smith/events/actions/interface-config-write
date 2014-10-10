@@ -105,11 +105,10 @@ sub _write_config_file() {
     }
 
 
-    # If we are a firewall ignore gateway settings:
-    if(scalar $idb->red()) {
-        if ($role ne 'red') {
-	    delete($props{'gateway'});
-        }
+    # Ignore gateway settings if have any red interface
+    # or role is different from green:
+    if((scalar $idb->red() && $role ne 'red') || $role ne 'green') {
+	delete($props{'gateway'});
     }
 
     if($props{'bootproto'} eq 'dhcp') {

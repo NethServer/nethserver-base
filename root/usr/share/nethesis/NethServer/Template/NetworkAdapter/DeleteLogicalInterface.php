@@ -11,3 +11,26 @@ echo $view->buttonList()
     ->insert($view->button('DeleteLogicalInterface', $view::BUTTON_SUBMIT))
     ->insert($view->button('Cancel', $view::BUTTON_CANCEL))
 ;
+
+$successorId = $view->getUniqueId('successor');
+
+$view->includeJavascript("
+(function ( $ ) {
+    // Hide successor selector if non is available
+    var updateFormState = function () {
+        var action = 'hide';
+        $('#${successorId}').children().each(function (option) {
+            if($(option).prop('value')) {
+                action = 'show';
+            }
+        });
+        $('#${successorId}').parent()[action]();
+    };
+
+    // bind the updateFormState method:
+    $(document).ready(function() {
+        $('#${successorId}').on('nethguiupdateview', updateFormState);
+    });
+} ( jQuery ));
+");
+
