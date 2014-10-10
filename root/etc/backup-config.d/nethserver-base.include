@@ -1,9 +1,4 @@
-/var/lib/nethserver/db/
+/var/lib/nethserver/db
 /etc/e-smith/templates-custom
 /etc/e-smith/templates-user-custom
-/etc/sudoers
-/etc/passwd
-/etc/shadow
-/etc/group
-/etc/gshadow
 /etc/pki
