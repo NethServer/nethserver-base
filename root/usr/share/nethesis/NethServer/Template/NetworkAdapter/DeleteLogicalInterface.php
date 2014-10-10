@@ -12,24 +12,25 @@ echo $view->buttonList()
     ->insert($view->button('Cancel', $view::BUTTON_CANCEL))
 ;
 
-$successorId = $view->getUniqueId('successor');
+$successorId = $view->getClientEventTarget('successor');
 
 $view->includeJavascript("
 (function ( $ ) {
     // Hide successor selector if non is available
     var updateFormState = function () {
         var action = 'hide';
-        $('#${successorId}').children().each(function (option) {
-            if($(option).prop('value')) {
+        $('.${successorId}').children().each(function (index, option) {
+            if($(option).attr('value') != '') {
                 action = 'show';
+                return false;
             }
         });
-        $('#${successorId}').parent()[action]();
+        $('.${successorId}').parent()[action]();
     };
 
     // bind the updateFormState method:
-    $(document).ready(function() {
-        $('#${successorId}').on('nethguiupdateview', updateFormState);
+    $('.${successorId}').on('nethguicreate', function() {
+        $('.${successorId}').on('nethguiupdateview', updateFormState);
     });
 } ( jQuery ));
 ");
