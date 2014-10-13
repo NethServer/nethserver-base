@@ -1,0 +1,22 @@
+{
+    #
+    # Enhancement #2807 -- NetworkAdapter: adaptive UI fields
+    #
+    # The bootproto=static is an invalid value and must be fixed
+    # otherwise the UI is inconsistent. 
+    #
+    # Remove fragment on next major release.
+    #
+
+    use esmith::NetworksDB;
+
+    my $ndb = esmith::NetworksDB->open();
+
+    foreach( $ndb->interfaces() ) {
+        if(($_->prop('bootproto') || '') eq 'static') {
+            $_->set_prop('bootproto', 'none');
+        }
+    }
+
+    '';
+}
