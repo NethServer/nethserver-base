@@ -1,4 +1,5 @@
 /var/lib/nethserver/db
 /etc/e-smith/templates-custom
 /etc/e-smith/templates-user-custom
-/etc/pki
+/etc/pki/tls/certs/NSRV.crt
+/etc/pki/tls/private/NSRV.key
