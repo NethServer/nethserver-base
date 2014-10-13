@@ -1,4 +1,5 @@
 /var/lib/nethserver/db
+/var/lib/nethserver/secrets
 /etc/e-smith/templates-custom
 /etc/e-smith/templates-user-custom
 /etc/pki/tls/certs/NSRV.crt
