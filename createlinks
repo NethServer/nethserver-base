@@ -30,6 +30,10 @@ event_templates('network-create', qw(
 		/etc/localnetworks
 ));
 
+event_actions('network-create', qw(
+    firewall-adjust      70
+));
+
 #--------------------------------------------------
 # actions for network-modify event
 #--------------------------------------------------
@@ -37,11 +41,19 @@ event_templates('network-modify', qw(
 		/etc/localnetworks
 ));
 
+event_actions('network-modify', qw(
+    firewall-adjust      70
+));
+
 #--------------------------------------------------
 # actions for network-delete event
 #--------------------------------------------------
 event_templates('network-delete', qw(
 		/etc/localnetworks
+));
+
+event_actions('network-delete', qw(
+    firewall-adjust      70
 ));
 
 #--------------------------------------------------
