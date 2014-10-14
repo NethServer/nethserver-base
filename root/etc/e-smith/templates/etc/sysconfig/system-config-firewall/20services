@@ -12,12 +12,14 @@
             if( ! NethServer::Service::is_enabled($serviceRecord->key) ) {
 	        next;
             }
-            $OUT.="#\tService: ".$serviceRecord->key."\n"; 
-            foreach my $port (split(',', $tcpPorts)) {
-                $OUT.="--port=$port:tcp\n";
-            }
-            foreach my $port (split(',', $udpPorts)) {
-                $OUT.="--port=$port:udp\n";
+            $OUT.="#\tService: ".$serviceRecord->key."\n";
+            if ($access eq 'public') { 
+                foreach my $port (split(',', $tcpPorts)) {
+                    $OUT.="--port=$port:tcp\n";
+                }
+                foreach my $port (split(',', $udpPorts)) {
+                    $OUT.="--port=$port:udp\n";
+                }
             }
         }
     }

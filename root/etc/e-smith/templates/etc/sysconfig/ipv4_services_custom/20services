@@ -1,7 +1,17 @@
 {
     use NethServer::Service;
     use esmith::ConfigDB;
+    use esmith::NetworksDB;
     my $confDb = esmith::ConfigDB->open();
+    my $ndb = esmith::NetworksDB->open();
+
+    my @trusted;
+    foreach ($ndb->networks()) {
+        push(@trusted, esmith::util::computeLocalNetworkShortSpec($_->key,$_->prop('Mask')));
+    }
+    foreach ($ndb->green()) {
+        push(@trusted, esmith::util::computeLocalNetworkShortSpec($_->prop('ipaddr'),$_->prop('netmask')));
+    }
 
     foreach my $serviceRecord ($confDb->get_all_by_prop('type' => 'service')) {
         my $access = $serviceRecord->prop('access') || 'private';
@@ -17,6 +27,13 @@
             }
             $OUT.="#\tService: ".$serviceRecord->key."\n"; 
             foreach my $port (split(',', $tcpPorts)) {
+                # generate rules for green and trusted networks
+                if ($access eq 'private') {
+                    foreach (@trusted) {
+                        $OUT.="-I INPUT -m state --state NEW -m tcp -p tcp --dport $port -j ACCEPT --src $_\n";
+                    }
+                }
+
                 foreach my $host (split(/,/,$allow)) {
                     $OUT.="-I INPUT -m state --state NEW -m tcp -p tcp --dport $port -j ACCEPT --src $host\n";
                 }
@@ -25,6 +42,13 @@
                 }
             }
             foreach my $port (split(',', $udpPorts)) {
+                # generate rules for green and trusted networks
+                if ($access eq 'private') {
+                    foreach (@trusted) {
+                        $OUT.="-I INPUT -m state --state NEW -m udp -p udp --dport $port -j ACCEPT --src $_\n";
+                    }
+                }
+
                 foreach my $host (split(/,/,$allow)) {
                     $OUT.="-I INPUT -m state --state NEW -m udp -p udp --dport $port -j ACCEPT --src $host\n";
                 }
