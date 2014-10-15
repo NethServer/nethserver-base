@@ -20,13 +20,13 @@ Edit
 
 Edit the access of a network service.
 
-Access only from green networks
-    Select this if the service must be accessible only from local networks.
-    For example: a critical database server should be accessible from LAN.
-
 Access from green and red networks
     Select this if the service must be from all networks, including Internet.
     For example: the mail server should be accessible from anyone.
+
+Access only from green networks
+    Select this if the service must be accessible only from local networks.
+    For example: a critical database server should be accessible from LAN.
 
 Access only from localhost
     Select this if the service must be accessible only from the server itself.

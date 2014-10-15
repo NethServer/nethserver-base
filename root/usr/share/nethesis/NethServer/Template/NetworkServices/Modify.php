@@ -8,11 +8,11 @@ $deny = $view->panel()
     ->insert($view->textInput('DenyHosts'));
 
 $access = $view->panel()
-    ->insert($view->fieldsetSwitch('access', 'private', $view::FIELDSETSWITCH_EXPANDABLE)
+    ->insert($view->fieldsetSwitch('access', 'public', $view::FIELDSETSWITCH_EXPANDABLE)
         ->insert($allow)
         ->insert($deny)
     )
-    ->insert($view->fieldsetSwitch('access', 'public', $view::FIELDSETSWITCH_EXPANDABLE)
+    ->insert($view->fieldsetSwitch('access', 'private', $view::FIELDSETSWITCH_EXPANDABLE)
         ->insert($allow)
         ->insert($deny)
     )

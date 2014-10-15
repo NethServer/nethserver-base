@@ -20,13 +20,13 @@ Modifica
 
 Modifica l'accesso ad un servizio di rete.
 
-Accesso solo dalle reti green
-    Selezionare se il servizio deve essere accessibile solo dalle reti locali.
-    Esempio: un server database dovrebbe essere accessibile solo dalla LAN.
-
 Accesso dalle reti green e red
     Selezionare se il servizio deve essere accessibile da tutte le reti, incluso Internet.
     Esempio: il server di posta deve essere accessibile da chiunque.
+
+Accesso solo dalle reti green
+    Selezionare se il servizio deve essere accessibile solo dalle reti locali.
+    Esempio: un server database dovrebbe essere accessibile solo dalla LAN.
 
 Accesso solo dal server stesso
     Selezionare se il servizio deve essere accessibile solo dal server stesso (localhost).
