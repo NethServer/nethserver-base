@@ -8,9 +8,11 @@ Ogni servizio può avere più porte TCP/UDP aperte.
 Le porte sono aperte sul firewall rispettando la proprietà `accesso`.
 Tale proprietà può avere tre valori:
 
-* privato: il servizio è accessibile solo dalle reti locali (es. interfacce green)
-* pubblico: il servizio è accessibile dalle reti green e red, ma non dalle reti blue e orange
-* nessuno: il servizio è accessibile solo dal server stesso (localhost)
+* localhost: il servizio è accessibile solo dal server stesso
+* green: il servizio è accessibile solo dalle interfacce green e dalle reti fidate
+* green red: il servizio è accessibile dalle reti green e red, ma non dalle reti blue e orange
+* custom: il servizio ha accesso personalizzato configurato usando `Consenti host` o `Blocca host`
+
 
 Quando l'accesso è configurato come pubblico o privato, l'amministratore può
 specificare una lista di di host il cui accesso al servizio è sempre consentito (o negato).

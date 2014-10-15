@@ -8,9 +8,10 @@ Each service can have multiple TCP/UDP ports open.
 Ports are open into the firewall accordingly to the `access` property.
 The access property has three valid values:
 
-* private: the service is accessible only from local networks (eg. green interfaces)
-* public: the service is accessible from local and external networks, but not from orange and blue
-* none: the service is accessible only from the server itself (localhost)
+* localhost: the service is accessible only from the server itself
+* green: the service is accessible only from green interfaces and trusted networks
+* green red: the service is accessible from local and external networks, but not from orange and blue
+* custom: the service has custom access configured via `Allow hosts` or `Deny hosts`
 
 When the service access is set to private or public, the administrator
 can specify a list of hosts always allowed (or denied) to access the service. 
