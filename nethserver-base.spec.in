@@ -66,6 +66,14 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Oct 15 2014 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.5.0-1.ns6
+- Access to server-manager from multiple green networks - Bug #2896
+- Network services: refactor web interface - Enhancement #2895
+- Dashboard: running status of service is not displayed - Bug #2875
+- Support DHCP on multiple interfaces - Feature #2849
+- NetworkAdapter: adaptive UI fields - Enhancement #2807
+- Backup config: list only relevant files - Feature #2739
+
 * Thu Oct 02 2014 Davide Principi <davide.principi@nethesis.it> - 2.4.0-1.ns6
 - Notification "${0}%" string flashes on login screen - Bug #2876 [NethServer]
 - Handle nethserver-firewall-base uninstallation - Enhancement #2873 [NethServer]
