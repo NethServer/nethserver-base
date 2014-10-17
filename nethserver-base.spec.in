@@ -66,6 +66,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Fri Oct 17 2014 Davide Principi <davide.principi@nethesis.it> - 2.5.1-1.ns6
+- Red interface: gateway setting wiped out - Bug #2920 [NethServer]
+
 * Wed Oct 15 2014 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.5.0-1.ns6
 - Access to server-manager from multiple green networks - Bug #2896
 - Network services: refactor web interface - Enhancement #2895
