@@ -104,10 +104,10 @@ sub _write_config_file() {
 	$defaults{'vlan'} = 'yes';
     }
 
+    my $serverIsGateway = scalar $idb->red() > 0;
+    my $roleWithGatewayAllowed = $serverIsGateway ? 'red' : 'green';
 
-    # Ignore gateway settings if have any red interface
-    # or role is different from green:
-    if((scalar $idb->red() && $role ne 'red') || $role ne 'green') {
+    if($role ne $roleWithGatewayAllowed) {
 	delete($props{'gateway'});
     }
 
