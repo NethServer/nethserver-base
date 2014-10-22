@@ -27,6 +27,7 @@
             }
             $OUT.="#\tService: ".$serviceRecord->key."\n"; 
             foreach my $port (split(',', $tcpPorts)) {
+                $port =~ s/\-/:/g;
                 # generate rules for green and trusted networks
                 if ($access eq 'private') {
                     foreach (@trusted) {
@@ -42,6 +43,7 @@
                 }
             }
             foreach my $port (split(',', $udpPorts)) {
+                $port =~ s/\-/:/g;
                 # generate rules for green and trusted networks
                 if ($access eq 'private') {
                     foreach (@trusted) {
