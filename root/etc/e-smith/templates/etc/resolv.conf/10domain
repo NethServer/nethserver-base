@@ -1,1 +1,2 @@
 domain { $DomainName }
+search { $DomainName }

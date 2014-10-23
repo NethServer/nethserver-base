@@ -1,8 +1,9 @@
-{ 
+{
     # Ask the first two NameServers:
     if($dns{role} eq 'none') {
-        foreach (split ',', $dns{NameServers}, 2) {       
-	    $OUT .= "nameserver $_\n";
-	}
+        my @servers = split /,/, $dns{NameServers};
+        foreach (splice @servers, 0, 2) {
+            $OUT .= sprintf("nameserver %s\n", $_);
+        }
     }
 }
