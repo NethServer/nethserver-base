@@ -66,6 +66,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Thu Oct 23 2014 Davide Principi <davide.principi@nethesis.it> - 2.5.2-1.ns6
+- Lokkit: missing port range support for network services - Bug #2923 [NethServer]
+- Dnsmasq: daemon doesn't start if NameServers property contains more than 2 addresses - Bug #2918 [NethServer]
+
 * Fri Oct 17 2014 Davide Principi <davide.principi@nethesis.it> - 2.5.1-1.ns6
 - Red interface: gateway setting wiped out - Bug #2920 [NethServer]
 
