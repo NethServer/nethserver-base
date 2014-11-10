@@ -31,7 +31,7 @@ class Shutdown extends \Nethgui\Controller\AbstractController
     /**
      *
      *
-     * @var \Nethgui\System\ProcessInterface
+     * @var \Symfony\Component\Process\Process
      */
     private $process;
 
