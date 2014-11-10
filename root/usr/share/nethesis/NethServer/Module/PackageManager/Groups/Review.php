@@ -131,7 +131,7 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
                 throw new \RuntimeException(sprintf("%s: package action was not specified", __CLASS__), 1395154356);
             }
 
-            $this->installProcess = $this->getPlatform()->exec('/usr/bin/sudo /sbin/e-smith/pkgaction ${@}', $arguments, TRUE);
+            $this->getPlatform()->exec('/usr/bin/sudo /sbin/e-smith/pkgaction ${@}', $arguments, TRUE);
         }
     }
 
@@ -208,14 +208,14 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
             $view['messages'] = $this->getMessagesText($view->getTranslator(), $selection);
             $view['addGroups'] = implode(',', $selection['add']);
             $view['removeGroups'] = implode(',', $selection['remove']);
-        } elseif (isset($this->installProcess)) {
-            $this->installProcess
-                ->on('success', array(
+        } elseif(method_exists($this->getPlatform(), 'setDetachedProcessCondition')) {
+            $this->getPlatform()
+                ->setDetachedProcessCondition('success', array(
                     'location' => array(
                         'url' => $view->getModuleUrl('../Select?installSuccess'),
                         'freeze' => TRUE,
                 )))
-                ->on('failure', array(
+                ->setDetachedProcessCondition('failure', array(
                     'location' => array(
                         'url' => $view->getModuleUrl('../Select'),
                         'freeze' => TRUE
