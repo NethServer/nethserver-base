@@ -44,7 +44,7 @@ class FQDN extends \Nethgui\Controller\AbstractController
 
     protected function onParametersSaved($changes)
     {
-        $this->getPlatform()->signalEvent('hostname-modify@post-process');
+        $this->getPlatform()->signalEvent('hostname-modify &');
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view) 
