@@ -5,9 +5,10 @@ Nome host e dominio
 Questi campi configurano il nome host e il dominio del server (Fully
 Qualified Domain Name o FQDN).
 
-.. Warning:: Ogni modifica ai dati inseriti causerà la creazione di
-	     nuovi certificati ed una riconfigurazione dell'interno
-	     sistema. L'operazione potrebbe richiedere alcuni minuti.
+.. Warning:: Se il sistema utilizza certificati SSL auto-generati,
+             dopo aver premuto il pulsante :guilabel:`Salva` questi
+             verranno modificati e sarà richiesto di ricaricare la
+             pagina attuale.
 
 Nome host
     Nome del server.
