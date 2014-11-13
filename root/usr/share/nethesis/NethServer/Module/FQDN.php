@@ -51,6 +51,7 @@ class FQDN extends \Nethgui\Controller\AbstractController
     {
         parent::prepareView($view);
 
+        $view['warning'] = $this->getPlatform()->getDatabase('configuration')->getProp('pki', 'KeyFile') ? $view->translate('FQDN_warning_certs_custom') : $view->translate('FQDN_warning_certs_selfsigned');
         $domain = $this->getPlatform()->getDatabase('configuration')->getType('DomainName');
         $system = $this->getPlatform()->getDatabase('configuration')->getType('SystemName');
         $view['FQDN'] = "$system.$domain";

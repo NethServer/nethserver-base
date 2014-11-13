@@ -4,9 +4,9 @@ Host and domain name
 
 These fields configure the server Fully Qualified Domain Name (FQDN).
 
-.. Warning:: any change to the data entered re-creates the SSL
-	     certificates and reconfire the whole system. The process
-	     might take a while.
+.. Warning:: If the system has self-signed SSL certificate, after
+             pressing the :guilabel:`Save` button they are recreated and
+             it will be asked to reload the current page.
 
 Host name
     Enter the server name.
