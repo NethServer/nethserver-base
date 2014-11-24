@@ -47,7 +47,7 @@ class Organization extends \Nethgui\Controller\AbstractController
 
     protected function onParametersSaved($changes)
     {
-        $this->getPlatform()->signalEvent('certificate-update &');
+        $this->getPlatform()->signalEvent('organization-save &');
     }
 
 }
