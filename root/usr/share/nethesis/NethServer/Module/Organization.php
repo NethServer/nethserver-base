@@ -50,5 +50,10 @@ class Organization extends \Nethgui\Controller\AbstractController
         $this->getPlatform()->signalEvent('organization-save &');
     }
 
+    public function prepareView(\Nethgui\View\ViewInterface $view)
+    {
+        parent::prepareView($view);
+        $view['warning'] = $this->getPlatform()->getDatabase('configuration')->getProp('pki', 'KeyFile') ? '' : $view->translate('Organization_warning_certs_selfsigned');
+    }
 }
 
