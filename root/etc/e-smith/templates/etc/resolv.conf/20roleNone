@@ -1,7 +1,8 @@
 {
     # Ask the first two NameServers:
     use NethServer::Service;
-    if( ! NethServer::Service::is_enabled('dnsmasq') ) {
+    my $s = new NethServer::Service('dnsmasq');
+    if( ! ($s->is_owned() && $s->is_enabled()) ) {
         my @servers = split /,/, $dns{NameServers};
         foreach (splice @servers, 0, 2) {
             $OUT .= sprintf("nameserver %s\n", $_);
