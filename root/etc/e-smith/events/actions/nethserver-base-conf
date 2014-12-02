@@ -40,6 +40,17 @@ foreach (qw(
     }
 }
 
+#
+# Drop TCP wrappers -- Refs #2785
+#
+if (system('grep -q "DO NOT MODIFY THIS FILE" /etc/hosts.allow') == 0) {
+    unlink('/etc/hosts.allow');
+}
+if (system('grep -q "DO NOT MODIFY THIS FILE" /etc/hosts.deny') == 0) {
+    unlink('/etc/hosts.deny');
+}
+unlink('/etc/localnetworks');
+
 # Adjust messagebus (dbus-daemon) service. It is required by
 # NetServer::Service to probe Upstart services status correctly. 
 # Refs #2645

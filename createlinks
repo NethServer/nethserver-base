@@ -26,10 +26,6 @@ use File::Path;
 #--------------------------------------------------
 # actions for network-create event
 #--------------------------------------------------
-event_templates('network-create', qw(
-		/etc/localnetworks
-));
-
 event_actions('network-create', qw(
     firewall-adjust      70
 ));
@@ -37,10 +33,6 @@ event_actions('network-create', qw(
 #--------------------------------------------------
 # actions for network-modify event
 #--------------------------------------------------
-event_templates('network-modify', qw(
-		/etc/localnetworks
-));
-
 event_actions('network-modify', qw(
     firewall-adjust      70
 ));
@@ -48,10 +40,6 @@ event_actions('network-modify', qw(
 #--------------------------------------------------
 # actions for network-delete event
 #--------------------------------------------------
-event_templates('network-delete', qw(
-		/etc/localnetworks
-));
-
 event_actions('network-delete', qw(
     firewall-adjust      70
 ));
@@ -77,7 +65,6 @@ event_templates('nethserver-base-update', qw(
     /etc/pam.d/system-auth-nh
     /etc/pam.d/password-auth-nh
     /etc/sudoers
-    /etc/localnetworks
     /etc/shells
     /etc/rc.d/rc.local
     /etc/krb5.conf
@@ -114,7 +101,6 @@ event_actions('interface-update', qw(
 event_templates('interface-update', qw(
      /etc/modprobe.d/bonding.conf
      /etc/sysconfig/network
-     /etc/localnetworks
      /etc/hosts
      /etc/resolv.conf
 ));
