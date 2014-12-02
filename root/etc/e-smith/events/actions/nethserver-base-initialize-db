@@ -27,6 +27,7 @@
 
 use strict;
 use File::Basename;
+use esmith::NetworksDB;
 
 my $DB = '/sbin/e-smith/db';
 my %config;
@@ -95,9 +96,24 @@ foreach my $line (@out){
     }
 }
 
+# Fallback to first enabled interface
+if ($config{'green'} eq "") {
+    my $idb = esmith::NetworksDB->open_ro;
+    foreach ($idb->interfaces) {
+       open(FILE, '/sys/class/net/'.$_->key.'/operstate') or next;
+       local $/;
+       my $state = <FILE>;
+       $state =~ s/\s+$//g;
+       close(FILE);
+       if ($state eq 'up') {
+           $config{'green'} = $_->key;
+           last;
+       }
+    } 
+}
+
 # Fallback to first available interface
 if ($config{'green'} eq "") {
-    use esmith::NetworksDB;
     my $idb = esmith::NetworksDB->open_ro;
     my @interfaces = $idb->interfaces;
     my $green = $interfaces[0];

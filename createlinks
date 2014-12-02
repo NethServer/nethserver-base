@@ -78,8 +78,6 @@ event_templates('nethserver-base-update', qw(
     /etc/pam.d/password-auth-nh
     /etc/sudoers
     /etc/localnetworks
-    /etc/hosts.allow
-    /etc/hosts.deny
     /etc/shells
     /etc/rc.d/rc.local
     /etc/krb5.conf
@@ -127,15 +125,6 @@ event_templates('interface-update', qw(
 #--------------------------------------------------
 validator_actions('remote-port', qw(
 		  open-tcp-connection 10
-));
-
-
-#--------------------------------------------------
-# nethserver-base-save event
-#--------------------------------------------------
-event_templates('nethserver-base-save', qw(
-		/etc/hosts.allow
-		/etc/hosts.deny
 ));
 
 
