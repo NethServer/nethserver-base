@@ -257,12 +257,4 @@ event_actions($event, qw(
     network-route-up            35
 ));
 
-
-#
-# Event organization-save
-#
-event_actions('organization-save', qw(
-    nethserver-base-check-certificate 70
-));
-
 exit 0;
