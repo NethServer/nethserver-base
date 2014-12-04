@@ -53,7 +53,6 @@ event_actions('nethserver-base-update', qw(
     remount-filesystems               10
     nethserver-base-conf              40
     nethserver-base-pam-setup         50
-    nethserver-base-check-certificate 50
     nethserver-base-mail-aliases      50
 ));
 
@@ -212,7 +211,6 @@ event_templates('hostname-modify', qw(
 
 event_actions('hostname-modify', qw(
      interface-config-hostname  02
-     nethserver-base-check-certificate 95
      system-adjust 96
 ));
 

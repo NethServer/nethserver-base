@@ -170,9 +170,5 @@ if($generate) {
 	if ( $? != 0 ) {
 	    exit 7;
 	}
-	if($event eq 'hostname-modify' || $event eq 'organization-save') {
-	    esmith::event::event_signal('certificate-update', $event)
-		|| die("[ERROR] certificate-update event failed.\n");	
-	}
 }
 
