@@ -1,2 +1,0 @@
-# Enables source route verification
-net.ipv4.conf.default.rp_filter = 1

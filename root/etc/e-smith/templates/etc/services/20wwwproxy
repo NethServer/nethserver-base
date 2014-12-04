@@ -1,3 +1,0 @@
-{
-    $SquidParent ? "wwwproxy	$SquidParentPort/tcp" : "#"
-}

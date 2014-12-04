@@ -1,2 +1,0 @@
-# we don't want the MARK ticks
-SYSLOGD_OPTIONS="-m 0"

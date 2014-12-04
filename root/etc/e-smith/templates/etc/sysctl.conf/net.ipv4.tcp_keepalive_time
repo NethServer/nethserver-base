@@ -1,2 +1,0 @@
-{ # We want the keepalive time to be lower than the masquerade timeout }
-net.ipv4.tcp_keepalive_time = 300

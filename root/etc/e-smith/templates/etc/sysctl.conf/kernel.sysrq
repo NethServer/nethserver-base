@@ -1,2 +1,0 @@
-# Disables the magic-sysrq key
-kernel.sysrq = 0
