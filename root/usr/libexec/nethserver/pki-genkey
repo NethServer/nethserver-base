@@ -31,4 +31,4 @@ fi
 
 # Generate a private RSA key
 umask 077
-/usr/bin/openssl genpkey -out "${PRIVATE_KEY}" -algorithm RSA >/dev/null 2>&1
+/usr/bin/openssl genpkey -out "${PRIVATE_KEY}" -algorithm RSA -pkeyopt rsa_keygen_bits:2048 &>/dev/null
