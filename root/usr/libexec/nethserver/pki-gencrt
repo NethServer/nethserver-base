@@ -86,6 +86,7 @@ my $email = substr($pki->{EmailAddress} || ('admin@' . $fqdn), 0, 64);
 open(FH, '|-', join(' ', '/usr/bin/openssl',
 		    'req',
 		    '-x509',
+		    '-sha256',
 		    '-days', $certificateDuration,
 		    '-utf8',
 		    '-new',
