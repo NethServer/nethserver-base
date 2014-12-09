@@ -66,6 +66,14 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Tue Dec 09 2014 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.5.4-1.ns6
+- First-boot: execute system-init event before tty - Enhancement #2952 [NethServer]
+- Modify all users if the ldap organisation contacts is updated - Bug #2931 [NethServer]
+- Notify user if event fails - Enhancement #2927 [NethServer]
+- DNS: remove role property from dns db key - Enhancement #2915 [NethServer]
+- Network config during install is ignored - Bug #2796 [NethServer]
+- Drop TCP wrappers hosts.allow hosts.deny templates - Enhancement #2785 [NethServer]
+
 * Wed Nov 19 2014 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.5.3-1.ns6
 - First-boot: execute system-init event before tty - Enhancement #2952 [NethServer]
 - Notify user if event fails - Enhancement #2927 [NethServer]
