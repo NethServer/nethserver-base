@@ -31,7 +31,9 @@ my $keyFile = "/etc/pki/tls/private/NSRV.key";
 
 getopts('f:sh', \%opts);
 
-if($opts{'h'}) { die qq( 
+sub usage()
+{
+    warn qq( 
 pki-gencrt: Generate NethServer default certificate 
             from OrganizationContact key in configuration 
             database. 
@@ -39,72 +41,75 @@ pki-gencrt: Generate NethServer default certificate
 Usage:
    pki-gencrt [-s] [-f <filename>] [-h]
 
-   -s Print a sample certificate subject
+   -s Print the certificate subject line
    -f Set output to <filename> (Default is $crtFile)
    -h this help
 
-)
+) . "\n";
+}
+
+if($opts{'h'}) { 
+    usage();
+    exit(0);
 }
 
 if($opts{'f'}) {
     $crtFile = $opts{'f'};
-}
-
-if($opts{'s'}) {
-    # Print subject
-    @extraArgs = ('-noout', '-subject', '2>/dev/null');
 } else {
-    # Certificate generation
-    @extraArgs = ('-out', $crtFile, '&>/dev/null');
+    usage();
+    exit(1);
 }
 
 if ( ! -r $keyFile ) {
     die("Could not read $keyFile\n");
 }
 
-my $configDb = esmith::ConfigDB->open_ro() || die("Could not open ConfigDB");
-my %conf = $configDb->as_hash();
 
+sub get_generate_args()
+{
 
-my $contact = $conf{OrganizationContact};
-my $pki = $conf{pki};
-my $certificateDuration = $pki->{CertificateDuration} || "30";
+    my $configDb = esmith::ConfigDB->open_ro() || die("Could not open ConfigDB");
+    my $pki = {$configDb->get('pki')->props};
+    my $org = {$configDb->get('OrganizationContact')->props};
+    my $certificateDuration = $pki->{CertificateDuration} || "30";
+    
+    if ($certificateDuration < 7) {
+	warn "[WARNING] pki CertificateDuration is less than 7 days! Check configuration DB.\n";
+    }
+    
+    my $fqdn = join('.', $configDb->get_value('SystemName'), $configDb->get_value('DomainName'));
 
-if ($certificateDuration < 7) {
-    warn "WARNING: pki CertificateDuration is less than 7 days! Check configuration DB.\n";
+    my %params = (
+	'C' => substr($pki->{CountryCode} || $org->{CountryCode} || '--', 0, 2),
+	'ST' => substr($pki->{State} || $org->{State} || 'SomeState', 0, 32),
+	'L' => substr($pki->{Locality} || $org->{City} || 'SomeLocality', 0, 64),
+	'O' => substr($pki->{Organization} || $org->{Company} || 'SomeOrganization', 0, 64),
+	'OU' => substr($pki->{OrganizationalUnit} || $org->{Department} || 'SomeOrganizationalUnit', 0, 64),
+	'CN' => substr($pki->{CommonName} || $fqdn , 0, 64),
+	'emailAddress' => substr($pki->{EmailAddress} || ('root@' . $fqdn), 0, 64),
+	$pki->{SubjectAltName} ? ('subjectAltName' => $pki->{SubjectAltName}) : ()
+	);
+   
+    my $subj = '/' . join('/', map { sprintf("%s=%s", $_, $params{$_}); } keys %params);
+
+    return (
+	'req',
+	'-x509',
+	'-sha256',
+	'-days', $certificateDuration,
+	'-utf8',
+	'-new', 
+	'-key', $keyFile,
+	'-set_serial', time(),       
+	'-out', $crtFile, 
+	'-subj', $subj
+	);
 }
 
-my $fqdn = join('.', $conf{SystemName}{type}, $conf{DomainName}{type});
-my $countryCode = substr($contact->{CountryCode} || '--', 0, 2);
-my $state = substr($contact->{State} || 'SomeState', 0, 32);
-my $city = substr($contact->{City} || 'SomeCity', 0, 64);
-my $company = substr($contact->{Company} || 'SomeCompany', 0, 64);
-my $department = substr($contact->{Department} || 'SomeDepartment', 0, 64);
-my $commonName = substr($pki->{CommonName} || $fqdn , 0, 64);
-my $email = substr($pki->{EmailAddress} || ('admin@' . $fqdn), 0, 64);
 
-open(FH, '|-', join(' ', '/usr/bin/openssl',
-		    'req',
-		    '-x509',
-		    '-days', $certificateDuration,
-		    '-utf8',
-		    '-new',
-		    '-key', $keyFile,
-		    '-set_serial', time(),
-		    @extraArgs
-		    )
-    ) || die("Could not connect to openssl: $!\n");
-
-foreach (
-    $countryCode,
-    $state,
-    $city,
-    $company,
-    $department,
-    $commonName,
-    $email
-) {
-    print FH ($_ . "\n");
+sub get_subject_args()
+{
+    return qw(x509 -noout -subject -in), $crtFile;
 }
 
-exit (close(FH) ? 0 : 1);
+exec('/usr/bin/openssl', $opts{'s'} ? get_subject_args() : get_generate_args());

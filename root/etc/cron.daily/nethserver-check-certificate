@@ -1,32 +1,77 @@
 #!/bin/bash
+
 #
 # Copyright (C) 2013 Nethesis S.r.l.
 # http://www.nethesis.it - support@nethesis.it
-# 
+#
 # This script is part of NethServer.
-# 
+#
 # NethServer is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License,
 # or any later version.
-# 
+#
 # NethServer is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# Run nethserver-check-certificate action with special event name
-# "checkgen" and compare command exit code value.
-/etc/e-smith/events/actions/nethserver-base-check-certificate checkgen
+program=$(basename $0)
+pki_info=/usr/libexec/nethserver/pki-info
 
-# The 6 value indicates a new certificate has been released: notify
-# daemons.
-if [ $? -eq 6 ]; then
-   [ -d /etc/e-smith/events/certificate-update ] && \
-       /sbin/e-smith/signal-event certificate-update
+# 10 days advance alert
+alert=10
+
+# Have custom certificate?
+cert_custom=$(/sbin/e-smith/config getprop pki CrtFile)
+cert=${cert_custom:-/etc/pki/tls/certs/NSRV.crt}
+
+# Certificate expire timestamp
+exp=$(${pki_info} -e ${cert})
+
+# Stale, if we are in alert period
+is_stale () {
+    perl -MDate::Parse -e '
+$expired = time() > str2time($ARGV[0]);
+$stale = str2time($ARGV[0]) < (time() + ($ARGV[1] * 24 * 3600));
+exit($stale && ! $expired ? 0 : 1);
+' -- "${exp}" "${alert}"
+}
+
+# Renew, if cert is stale and not custom
+must_renew() {
+    perl -MDate::Parse -e '
+$oneday = str2time($ARGV[0]) < (time() + (24 * 3600));
+$auto = ! $ARGV[1];
+exit($oneday && $auto ? 0 : 1);
+' -- "${exp}" "${cert_custom}"
+}
+
+#
+# Send mail to root user
+#
+
+if must_renew; then
+    {
+	/etc/e-smith/events/actions/nethserver-generate-certificate
+	echo "$(hostname) certificate has been automatically generated"
+	echo ""
+	${pki_info} -s ${cert} 2>&1
+    } | mail -s "$(hostname) certificate has been generated" root@localhost
+    echo "[WARNING] $(hostname) certificate has been generated" | logger -t "${program}" -p user.warn
+
+elif is_stale; then
+    {
+	echo "$(hostname) certificate "
+	echo "${cert}"
+	echo "is going to expire on ${exp}"
+	echo ""
+	${pki_info} -s ${cert} 2>&1
+    } | mail -s "$(hostname) certificate is going to expire" root@localhost
+    echo "[WARNING] $(hostname) certificate is going to expire" | logger -t "${program}" -p user.warn
 fi
 

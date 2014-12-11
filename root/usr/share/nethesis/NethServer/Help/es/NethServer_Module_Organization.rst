@@ -2,12 +2,6 @@
 Organización detalles
 =====================
 
-Estos campos contienen valores por defecto para la empresa. Los datos proporcionados se utilizarán como predeterminados al crear nuevos usuarios.
-
-Para cada usuario se pueden especificar diferentes valores en el panel Usuarios, ficha Detalles. La modificación de estos datos reemplaza los valores predeterminados para el los usuarios que no disponen de campos personalizados.
-
-**ADVERTENCIA**: Cualquier cambio en los datos introducidos vuelve a crear los certificados SSL.
-
 Empresa
     Introduzca el nombre de la empresa.
 Ciudad 

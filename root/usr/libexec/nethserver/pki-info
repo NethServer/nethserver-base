@@ -1,0 +1,65 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2014 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+usage () {
+    echo "
+Usage:
+  $0 [ -s | -e | -t ] <CERTFILE>
+
+   -s print the certificate
+   -e print the expire date
+   -t test if cert is expired
+"
+}
+
+print_certificate () {
+    /usr/bin/openssl x509 -in ${1} -noout -text
+}
+
+print_expire_date () {
+    exp_date=$(/usr/bin/openssl x509 -in ${1} -noout -enddate)
+    [[ $? = 0 ]] && date -d "${exp_date##notAfter=}" --rfc-3339=seconds
+}
+
+test_expired () {
+    perl -MDate::Parse -e 'exit(time() < str2time($ARGV[0]));' -- "$(/usr/bin/openssl x509 -in ${1} -noout -enddate | cut -f 2 -d =)"
+}
+
+while getopts "t:e:s:" opt; do
+    case $opt in
+	s)
+	    print_certificate $OPTARG
+	    ;;
+	e)
+	    print_expire_date $OPTARG
+	    ;;
+	t)
+	    if test_expired $OPTARG; then
+		exit 2
+	    fi
+	    ;;
+	\?) # Print help message and exit
+	    usage
+	    exit 1
+	    ;;
+    esac
+done

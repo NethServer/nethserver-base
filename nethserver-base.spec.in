@@ -59,11 +59,17 @@ rm -rf $RPM_BUILD_ROOT
 %{genfilelist} $RPM_BUILD_ROOT > %{name}-%{version}-%{release}-filelist
 echo "%doc COPYING"          >> %{name}-%{version}-%{release}-filelist
 
+mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
+
 %clean 
 rm -rf $RPM_BUILD_ROOT
 
 %files -f %{name}-%{version}-%{release}-filelist
 %defattr(-,root,root)
+%dir %attr(755,root,root) /etc/e-smith/events/organization-save
+%ghost %attr(600,root,root) /etc/pki/tls/private/NSRV.key
+%ghost %attr(644,root,root) /etc/pki/tls/certs/NSRV.crt
+
 
 %changelog
 * Tue Dec 09 2014 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.5.4-1.ns6

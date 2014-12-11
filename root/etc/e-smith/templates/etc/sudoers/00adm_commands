@@ -17,6 +17,7 @@
         /sbin/e-smith/pkginfo
 
         /usr/libexec/nethserver/read-service-status
+        /usr/libexec/nethserver/pki-info
     );
 
     push @adm_commands, "/sbin/service [a-zA-Z0-9_-]* status";

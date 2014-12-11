@@ -53,7 +53,6 @@ event_actions('nethserver-base-update', qw(
     remount-filesystems               10
     nethserver-base-conf              40
     nethserver-base-pam-setup         50
-    nethserver-base-check-certificate 50
     nethserver-base-mail-aliases      50
 ));
 
@@ -141,6 +140,7 @@ foreach (qw(
 event_actions('system-init', qw(
     initialize-default-databases      00
     nethserver-base-initialize-db     50
+    nethserver-generate-certificate   55
     init-repo                         60
     system-adjust                     90
     nethserver-base-interface-update  95
@@ -150,9 +150,8 @@ event_actions('system-init', qw(
 # certificate-update event
 #
 event_actions('certificate-update', qw(
-    nethserver-base-check-certificate 04
+    nethserver-generate-certificate 02
 ));
-
 
 #
 # profile-modify event
@@ -212,7 +211,6 @@ event_templates('hostname-modify', qw(
 
 event_actions('hostname-modify', qw(
      interface-config-hostname  02
-     nethserver-base-check-certificate 95
      system-adjust 96
 ));
 
@@ -255,14 +253,6 @@ event_actions($event, qw(
     network-route-down          15
     interface-config-write      25
     network-route-up            35
-));
-
-
-#
-# Event organization-save
-#
-event_actions('organization-save', qw(
-    nethserver-base-check-certificate 70
 ));
 
 exit 0;
