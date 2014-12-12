@@ -116,7 +116,7 @@ class Generate extends \Nethgui\Controller\AbstractController
                 'L_default' => isset($org['City']) && $org['City'] ? $org['City'] : 'Hometown',
                 'O_default' => isset($org['Company']) && $org['Company'] ? $org['Company'] : 'Example',
                 'OU_default' => isset($org['Department']) && $org['Department'] ? $org['Department'] : 'Main',
-                'CN_default' => sprintf('%s.%s', $cdb->getType('SystemName'), $cdb->getType('DomainName')),
+                'CN_default' => 'NethServer', 
                 'EmailAddress_default' => isset($adm['EmailAddress']) && $adm['EmailAddress'] ? $adm['EmailAddress'] : '',
                 'SubjectAltName_default' => sprintf('*.%s', $cdb->getType('DomainName')),
             );

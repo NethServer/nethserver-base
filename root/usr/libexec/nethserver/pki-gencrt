@@ -85,7 +85,7 @@ sub get_generate_args()
 	'L' => substr($pki->{Locality} || $org->{City} || 'SomeLocality', 0, 64),
 	'O' => substr($pki->{Organization} || $org->{Company} || 'SomeOrganization', 0, 64),
 	'OU' => substr($pki->{OrganizationalUnit} || $org->{Department} || 'SomeOrganizationalUnit', 0, 64),
-	'CN' => substr($pki->{CommonName} || $fqdn , 0, 64),
+	'CN' => substr($pki->{CommonName} || 'NethServer', 0, 64),
 	'emailAddress' => substr($pki->{EmailAddress} || ('root@' . $fqdn), 0, 64),
 	$pki->{SubjectAltName} ? ('subjectAltName' => $pki->{SubjectAltName}) : ()
 	);
