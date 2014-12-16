@@ -32,7 +32,7 @@ class ChangePassword extends \Nethgui\Controller\Table\AbstractAction
     /**
      * @var \NethServer\Tool\PasswordStash
      */
-    private $stash;
+    protected $stash;
 
     /**
      * The user we want to change the password to
