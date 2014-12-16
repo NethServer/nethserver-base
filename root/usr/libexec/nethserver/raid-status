@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl
 
 # Simple parser for /proc/mdstat that outputs status of all
 # or some RAID devices. Possible results are OK and CRITICAL.
