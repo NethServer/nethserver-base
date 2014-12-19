@@ -11,6 +11,13 @@ jQuery(document).ready(function($) {
     $('#pageContent').Component();
     $('.HelpArea').HelpArea();
     $('#hiddenAllWrapperCss').remove();
+
+    // push initial ui state
+    var target = window.location.href.split(/\#!?/, 2)[1];
+    if(target) {
+        $('#' + target).trigger('nethguishow');
+        history.replaceState({'target': target}, '', '#!' + target);
+    }
 });
 EOJS;
 
