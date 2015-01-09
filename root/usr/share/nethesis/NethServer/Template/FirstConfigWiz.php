@@ -11,7 +11,7 @@ $view->includeCss("
 .primaryContent { margin: 0; }
 #${wizId} > div.steps li.current { font-weight: bold }
 #${wizId} > div.steps li { padding: .5em; background-color: #eee; margin-bottom: .5em; font-weight: normal; border: none; list-style: decimal inside }
-
+#headerMenu {display: none}
 @media screen and (min-width: 40em) {
 
 #${wizId} { display: flex; align-content }
@@ -22,14 +22,31 @@ $view->includeCss("
 
 #${wizId} > div.steps { flex-grow: 0; flex-shrink: 0; order: 1; margin-right: 1em; width: 15em }
 #${wizId} > div.steps ol { margin-top: 3em}
-}
+} /* end @media screen */
 ");
 
 $view->includeJavascript("
 (function($) {
-    $('.${stepsTarget}').on('nethguiupdateview', function (e, steps) {       
-       var template = ${stepsTemplateEncoded};
-       $(this).find('ol').first().replaceWith(Mustache.render(template, {'steps': steps}));
+    var stepsState;
+    var template = ${stepsTemplateEncoded};
+    var updateView = function () {
+        if( ! stepsState ) {
+            return;
+        }
+        $('.${stepsTarget}').find('div.steps').first().replaceWith(Mustache.render(template, {'steps': stepsState}));
+    };
+    $('.${stepsTarget}').on('nethguiupdateview', function (e, steps) {
+       stepsState = steps;
+       updateView();
+    });
+    $('.${stepsTarget} > .Controller').on('nethguishow', function (e) {
+        if( ! stepsState ) {
+            return;
+        }
+        $.each(stepsState, function (index, step) {
+            step['current?'] = (step.target === e.target.id);
+        });
+        updateView();
     });
 }(jQuery));
 ");

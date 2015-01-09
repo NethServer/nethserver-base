@@ -29,6 +29,7 @@ namespace NethServer\Module\FirstConfigWiz;
  */
 class RootPassword extends \NethServer\Tool\ChangePassword
 {
+
     public $wizardPosition = 20;
 
     const DEFAULT_PASSWORD = 'Nethesis,1234';
@@ -58,10 +59,16 @@ class RootPassword extends \NethServer\Tool\ChangePassword
 
     public function process()
     {
-        parent::process();
         if ($this->getRequest()->isMutation()) {
             $this->stash->setAutoUnlink(FALSE)->store($this->parameters['newPassword']);
-            $this->getPlatform()->getDatabase('SESSION')->setKey(get_class($this->getParent()), __CLASS__, sprintf('password-modify %s %s', 'root', $this->stash->getFilePath()));
+            $this->getParent()->storeAction(array(
+                'message' => array(
+                    'module' => $this->getIdentifier(),
+                    'id' => 'RootPassword_Action',
+                    'args' => array()
+                ),
+                'events' => array(sprintf('password-modify %s %s', 'root', $this->stash->getFilePath()))
+            ));
         }
     }
 
@@ -84,7 +91,7 @@ class RootPassword extends \NethServer\Tool\ChangePassword
     {
         if ($this->getRequest()->hasParameter('skip') || $this->getRequest()->isMutation()) {
             $successor = $this->getParent()->getSuccessor($this);
-            return $successor ? $successor->getIdentifier() : '/Dashboard';
+            return $successor ? $successor->getIdentifier() : 'Review';
         }
         return parent::nextPath();
     }

@@ -27,17 +27,30 @@ namespace NethServer\Module\FirstConfigWiz;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.6
  */
-class Cover extends \Nethgui\Controller\AbstractController
-{
+class Cover extends \Nethgui\Controller\AbstractController {
+
     public $wizardPosition = 0;
 
-    public function nextPath()
-    {
+    public function process() {
+        parent::process();
+        if ($this->getRequest()->hasParameter('skip')) {
+            $sessDb = $this->getPlatform()->getDatabase('SESSION');
+            $sessDb->deleteKey(get_class($this->getParent()));
+            $sessDb->setType(get_class($this->getParent()), array());
+        }
+    }
+
+    public function nextPath() {
         if ($this->getRequest()->hasParameter('skip')) {
             $successor = $this->getParent()->getSuccessor($this);
-            return $successor ? $successor->getIdentifier() : '/Dashboard';
+            return $successor ? $successor->getIdentifier() : 'Review';
         }
         return parent::nextPath();
+    }
+
+    public function prepareView(\Nethgui\View\ViewInterface $view) {
+        parent::prepareView($view);
+        $view->copyFrom($this->getPlatform()->getDatabase('configuration')->getKey('sysconfig'));
     }
 
 }

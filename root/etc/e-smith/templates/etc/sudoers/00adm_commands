@@ -18,6 +18,7 @@
 
         /usr/libexec/nethserver/read-service-status
         /usr/libexec/nethserver/pki-info
+        /usr/libexec/nethserver/sigev-batch
     );
 
     push @adm_commands, "/sbin/service [a-zA-Z0-9_-]* status";

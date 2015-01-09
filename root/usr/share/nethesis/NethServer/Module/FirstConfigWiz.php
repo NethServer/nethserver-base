@@ -49,12 +49,21 @@ class FirstConfigWiz extends \Nethgui\Controller\CompositeController implements 
         $this->loadChildrenDirectory();
 
         $sortf = function(\Nethgui\Module\ModuleInterface $a, \Nethgui\Module\ModuleInterface $b) {
-            $pa = isset($a->wizardPosition) ? (int) $a->wizardPosition : NULL;
-            $pb = isset($b->wizardPosition) ? (int) $b->wizardPosition : NULL;
+            $pa = isset($a->wizardPosition) ? (int) $a->wizardPosition : 9999;
+            $pb = isset($b->wizardPosition) ? (int) $b->wizardPosition : -9999;
             return $pa - $pb;
         };
 
         $this->sortChildren($sortf);
+    }
+
+    public function bind(\Nethgui\Controller\RequestInterface $request) {
+        parent::bind($request);
+        $curAction = $this->establishCurrentActionId();
+        $action = $this->getAction($curAction);
+        if($action instanceof \Nethgui\Module\ModuleInterface && ! isset($action->wizardPosition)) {
+            throw new \Nethgui\Exception\HttpException('Not found', 404, 1420822725);
+        }
     }
 
     public function setXhtmlDecoratorParams(\ArrayAccess $params)
@@ -74,16 +83,12 @@ class FirstConfigWiz extends \Nethgui\Controller\CompositeController implements 
     {
         parent::prepareView($view);
 
-        $curAction = $this->currentAction ? $this->currentAction : $this->getAction('Cover');
-        $curView = $view->spawnView($curAction);
-
         $this->wizDecorator = $view->spawnView($this, 'Decorator');
-        $this->wizDecorator['wizardPosition'] = $curAction->wizardPosition;
 
-        if ($curAction->getRequest()->hasParameter('skip') || $this->getRequest()->isMutation()) {
-            $nextAction = $this->getSuccessor($curAction);
+        if(isset($this->currentAction)) {
+            $nextAction =  $this->getSuccessor($this->currentAction);
         } else {
-            $nextAction = $curAction;
+            $nextAction = $this->getAction('Cover');
         }
 
         $this->wizDecorator['steps'] = $this->getSteps($view, $nextAction ? $nextAction->getIdentifier() : '');
@@ -94,6 +99,17 @@ class FirstConfigWiz extends \Nethgui\Controller\CompositeController implements 
         }
     }
 
+    public function storeAction($decl)
+    {
+        $v = $this->getPlatform()->getDatabase('SESSION')->getType(__CLASS__);
+        if(! is_array($v)) {
+            $v = array();
+        }
+        $v[] = $decl;
+        $this->getPlatform()->getDatabase('SESSION')->setType(__CLASS__, $v);
+        return $this;
+    }
+
     public function getSteps(\Nethgui\View\ViewInterface $view, $currentModuleIdentifier)
     {
         $steps = array();
@@ -101,7 +117,7 @@ class FirstConfigWiz extends \Nethgui\Controller\CompositeController implements 
             return isset($m->wizardPosition) ? TRUE : FALSE;
         }) as $child) {
             $steps[] = array(
-                'id' => $child->getIdentifier(),
+                'target' => $view->getUniqueId($child->getIdentifier()),
                 'title' => $view->getTranslator()->translate($child, $child->getAttributesProvider()->getTitle()),
                 'description' => $view->getTranslator()->translate($child, $child->getAttributesProvider()->getDescription()),
                 'current?' => $child->getIdentifier() === $currentModuleIdentifier

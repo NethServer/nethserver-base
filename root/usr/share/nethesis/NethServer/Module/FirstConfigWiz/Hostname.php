@@ -38,14 +38,22 @@ class Hostname extends \NethServer\Module\FQDN
 
     protected function onParametersSaved($changes)
     {
-        $this->getPlatform()->getDatabase('SESSION')->setKey(get_class($this->getParent()), __CLASS__, 'hostname-modify');
+        $this->getParent()->storeAction(array(
+            'message' => array(
+                'module' => $this->getIdentifier(),
+                'id' => 'Hostname_Action',
+                'args' => $this->parameters->getArrayCopy()
+            ),
+            'events' => array('hostname-modify')
+        ));
+        $this->getPlatform()->getDatabase('SESSION')->setProp(get_class($this->getParent()), array(__CLASS__ => 'hostname-modify'));
     }
     
     public function nextPath()
     {
         if ($this->getRequest()->hasParameter('skip') ||  $this->getRequest()->isMutation()) {
             $successor = $this->getParent()->getSuccessor($this);
-            return $successor ? $successor->getIdentifier() : '/Dashboard';
+            return $successor ? $successor->getIdentifier() : 'Review';
         }
         return parent::nextPath();
     }

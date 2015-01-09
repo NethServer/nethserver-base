@@ -2,6 +2,8 @@
 
 /* @var $view \Nethgui\Renderer\Xhtml */
 
+include "WizHeader.php";
+
 // Configure the client side validation tests
 
 $lprefix = 'valid_platform,password-strength,password-strength,';
