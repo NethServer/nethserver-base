@@ -105,7 +105,11 @@ class FirstConfigWiz extends \Nethgui\Controller\CompositeController implements 
         if(! is_array($v)) {
             $v = array();
         }
-        $v[] = $decl;
+        if(isset($decl['message']['module'])) {
+            $v[$decl['message']['module']] = $decl;
+        } else {
+            $v[] = $decl;
+        }
         $this->getPlatform()->getDatabase('SESSION')->setType(__CLASS__, $v);
         return $this;
     }
