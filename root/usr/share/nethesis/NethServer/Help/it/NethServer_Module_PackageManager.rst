@@ -27,7 +27,7 @@ opzionali, da selezionare per l'installazione.
 Software installato
 ===================
 
-Elenca i pacchetti RPM di |product| installati sul sistema. Dove
+Elenca i pacchetti RPM installati sul sistema. Dove
 supportato è possibile, cliccando sul nome del pacchetto, accedere
 alla pagina di documentazione dello sviluppatore.
 
