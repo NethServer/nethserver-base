@@ -25,7 +25,7 @@ installation.
 Installed software
 ==================
 
-It lists |product| RPM packages installed on your system.  Where
+It lists RPM packages installed on your system.  Where
 available, it is possible to open the development page by clicking on
 the package name.
 
