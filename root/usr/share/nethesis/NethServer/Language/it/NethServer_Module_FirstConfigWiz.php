@@ -15,3 +15,5 @@ $L['Hostname_Description'] = 'Cambia il nome host completo (FQDN)';
 $L['Review_Title'] = 'Riepilogo modifiche';
 $L['Review_Description'] = 'Applica le modifiche per rendere sicuro il server';
 $L['Changes_label'] = 'Applica le seguenti modifiche:';
+
+$L['redirect_message'] = 'Proseguire alla configurazione delle interfacce di rete, dopo aver applicato le modifiche.';

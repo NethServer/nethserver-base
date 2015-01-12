@@ -16,3 +16,5 @@ $L['Hostname_Description'] = 'Change the host fully qualified domain name (FQDN)
 $L['Review_Title'] = 'Review changes';
 $L['Review_Description'] = 'Apply changes to secure the server configuration';
 $L['Changes_label'] = 'Apply the following changes:';
+
+$L['redirect_message'] = 'Proceed to network interfaces configuration page, after changes have been applied';

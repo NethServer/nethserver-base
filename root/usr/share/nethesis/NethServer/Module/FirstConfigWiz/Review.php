@@ -43,6 +43,8 @@ class Review extends \Nethgui\Controller\AbstractController implements \Nethgui\
      */
     private $defaultModule = '';
 
+    private $redirectModule = 'NetworkAdapter';
+
     public function prepareView(\Nethgui\View\ViewInterface $view) {
         parent::prepareView($view);
 
@@ -54,6 +56,9 @@ class Review extends \Nethgui\Controller\AbstractController implements \Nethgui\
             $changes[] = $view->getTranslator()->translate($module ? $module : $this, $message['id'], $message['args']);
         }
         $view['changes'] = $changes;
+
+        // TODO: fetch the module title instead of the module identifier
+        $view['redirect']  = $view->translate('redirect_message', array('moduleTitle' => $this->redirectModule));
     }
 
     public function process() {
@@ -99,8 +104,8 @@ class Review extends \Nethgui\Controller\AbstractController implements \Nethgui\
     }
 
     public function nextPath() {
-        if ($this->getRequest()->isMutation() && $this->defaultModule) {
-            return '/' . $this->defaultModule;
+        if ($this->getRequest()->isMutation()) {
+            return '/' . $this->redirectModule;
         }
         return parent::nextPath();
     }
