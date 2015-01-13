@@ -78,6 +78,11 @@ class RootPassword extends \NethServer\Tool\ChangePassword
         $sessDb = $this->getPlatform()->getDatabase('SESSION');
         if ( ! $sessDb->getType(__CLASS__)) {
             $v = new \NethServer\Tool\PamValidator('root');
+            $v
+                ->setLog($this->getLog())
+                ->setPhpWrapper($this->getPhpWrapper())
+            ;
+
             if ($v->evaluate(self::DEFAULT_PASSWORD)) {
                 $sessDb->setType(__CLASS__, 'mustchangepw');
             } else {

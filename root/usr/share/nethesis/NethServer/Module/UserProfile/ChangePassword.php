@@ -32,7 +32,10 @@ class ChangePassword extends \NethServer\Tool\ChangePassword
     public function initialize()
     {
         parent::initialize();
-        $this->declareParameter('oldPassword', new \NethServer\Tool\PamValidator());
+        $v = new \NethServer\Tool\PamValidator();
+        $v->setLog($this->getLog());
+        $v->setPhpWrapper($this->getPhpWrapper());
+        $this->declareParameter('oldPassword', $v);
     }
 
     public function bind(\Nethgui\Controller\RequestInterface $request)

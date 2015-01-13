@@ -48,7 +48,7 @@ class PamValidator implements \Nethgui\System\ValidatorInterface, \Nethgui\Utili
 
     /**
      *
-     * @var \Nethgui\Utility\PamAuthenticator
+     * @var \NethServer\Tool\PamAuthenticator
      */
     private $authenticator;
     private $failure;
@@ -56,7 +56,7 @@ class PamValidator implements \Nethgui\System\ValidatorInterface, \Nethgui\Utili
     public function __construct($username = NULL)
     {
         $this->username = $username;
-        $this->authenticator = new \Nethgui\Utility\PamAuthenticator();
+        $this->authenticator = new \NethServer\Tool\PamAuthenticator();
         $this->failure = array();
     }
 
@@ -104,12 +104,14 @@ class PamValidator implements \Nethgui\System\ValidatorInterface, \Nethgui\Utili
     public function setLog(\Nethgui\Log\LogInterface $log)
     {
         $this->log = $log;
+        $this->authenticator->setLog($log);
         return $this;
     }
 
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
         $this->php = $object;
+        $this->authenticator->setPhpWrapper($object);
         return $this;
     }
 
