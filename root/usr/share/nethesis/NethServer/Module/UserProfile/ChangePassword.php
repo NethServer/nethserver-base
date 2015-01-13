@@ -1,4 +1,5 @@
 <?php
+
 namespace NethServer\Module\UserProfile;
 
 /*
@@ -32,22 +33,32 @@ class ChangePassword extends \NethServer\Tool\ChangePassword
     public function initialize()
     {
         parent::initialize();
-        $v = new \NethServer\Tool\PamValidator();
-        $v->setLog($this->getLog());
-        $v->setPhpWrapper($this->getPhpWrapper());
-        $this->declareParameter('oldPassword', $v);
+        $this->declareParameter('oldPassword', \Nethgui\System\PlatformInterface::ANYTHING);
     }
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
         $userName = $this->getAdapter()->getKeyValue();
         $this->setUserName($userName);
-        $this->getValidator('oldPassword')->setUserName($userName);
         parent::bind($request);
+    }
+
+    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
+    {
+        parent::validate($report);
+        if ($this->getRequest()->isMutation()) {
+            $v = new \NethServer\Tool\PamValidator();
+            $v->setLog($this->getLog());
+            $v->setPhpWrapper($this->getPhpWrapper());
+            if ( ! $v->evaluate(array($this->getAdapter()->getKeyValue(), $this->parameters['oldPassword']))) {
+                $report->addValidationError($this, 'oldPassword', $v);
+            }
+        }
     }
 
     public function nextPath()
     {
         return $this->getRequest()->isMutation() ? 'Personal' : parent::nextPath();
     }
+
 }

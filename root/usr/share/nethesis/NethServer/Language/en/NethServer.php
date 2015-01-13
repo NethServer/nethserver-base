@@ -19,5 +19,6 @@ $L['valid_platform,password-strength,password-strength,5'] = 'Missing a digit';
 $L['valid_platform,password-strength,password-strength,6'] = 'Missing a upper case letter';
 $L['valid_platform,password-strength,password-strength,7'] = 'Missing a lower case letter';
 $L['valid_platform,password-strength,password-strength,8'] = 'Missing a symbol';
-$L['InvalidPassword'] = 'Incorrect password';
+$L['PamValidator_HasDefaultPassword'] = 'Please try ${password}';
+$L['PamValidator_InvalidCredentials'] = 'Invalid credentials';
 

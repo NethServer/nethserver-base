@@ -1,4 +1,5 @@
 <?php
+
 namespace NethServer\Tool;
 
 /*
@@ -28,11 +29,10 @@ namespace NethServer\Tool;
  */
 class PamValidator implements \Nethgui\System\ValidatorInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Log\LogConsumerInterface
 {
-    /**
-     *
-     * @var string
-     */
-    private $username;
+
+    const DEFAULT_PASSWORD = 'Nethesis,1234';
+
+    private $failure = array();
 
     /**
      *
@@ -46,43 +46,28 @@ class PamValidator implements \Nethgui\System\ValidatorInterface, \Nethgui\Utili
      */
     private $php;
 
-    /**
-     *
-     * @var \NethServer\Tool\PamAuthenticator
-     */
-    private $authenticator;
-    private $failure;
-
-    public function __construct($username = NULL)
+    public function evaluate($args)
     {
-        $this->username = $username;
-        $this->authenticator = new \NethServer\Tool\PamAuthenticator();
-        $this->failure = array();
-    }
+        $username = $args[0];
+        $password = $args[1];
+        if (isset($args[2])) {
+            $credentials = &$args[2];
+        } else {
+            $credentials = array();
+        }
 
-    /**
-     * Set the user name for which the password will be checked.
-     *
-     * @param string $userName
-     * @return \NethServer\Tool\PamValidator
-     */
-    public function setUserName($userName) {
-        $this->username = $userName;
-        return $this;
-    }
-
-    public function evaluate($value)
-    {
-        $credentials = array();
-
-        if ( ! isset($this->username)) {
+        if ( ! isset($username)) {
             throw new \LogicException(sprintf('%s: the username has not been set', __CLASS__), 1354179502);
         }
 
-        $authenticated = $this->authenticator->authenticate($this->username, $value, $credentials);
+        $authenticated = $this->authenticate($username, $password, $credentials);
 
         if ( ! $authenticated) {
-            $this->failure[] = array('InvalidPassword', array($this->username));
+            if (isset($credentials['hasDefaultPassword']) && $credentials['hasDefaultPassword'] === TRUE) {
+                $this->failure[] = array('PamValidator_HasDefaultPassword', array('username' => $username, 'password' => self::DEFAULT_PASSWORD));
+            } else {
+                $this->failure[] = array('PamValidator_InvalidCredentials', array('username' => $username));
+            }
         }
 
         return $authenticated;
@@ -104,15 +89,64 @@ class PamValidator implements \Nethgui\System\ValidatorInterface, \Nethgui\Utili
     public function setLog(\Nethgui\Log\LogInterface $log)
     {
         $this->log = $log;
-        $this->authenticator->setLog($log);
         return $this;
     }
 
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
         $this->php = $object;
-        $this->authenticator->setPhpWrapper($object);
         return $this;
+    }
+
+    public function getPhpWrapper()
+    {
+        if ( ! isset($this->php)) {
+            $this->php = new \Nethgui\Utility\PhpWrapper(__CLASS__);
+        }
+        return $this->php;
+    }
+
+    private function authenticate($username, $password, &$credentials)
+    {
+        $authenticated = $this->pamAuthenticate($username, $password);
+
+        if ($authenticated) {
+
+            $exitCode = 0;
+            $output = array();
+
+            $command = sprintf('/usr/bin/id -G -n %s 2>&1', escapeshellarg($username));
+
+            $this->getPhpWrapper()->exec($command, $output, $exitCode);
+
+            if ($exitCode === 0) {
+                $groups = array_filter(array_map('trim', explode(' ', implode(' ', $output))));
+            } else {
+                $log->warning(sprintf('%s: failed to execute %s command. Code %d. Output: %s', __CLASS__, $command, $exitCode, implode("\n", $output)));
+                $groups = array();
+            }
+
+            $credentials['groups'] = $groups;
+            $credentials['username'] = $username;
+        } else {
+            // authentication failed: check silently if user has default password:
+            $hasDefaultPassword = $this->pamAuthenticate($username, self::DEFAULT_PASSWORD);
+            $credentials['hasDefaultPassword'] = $hasDefaultPassword;
+        }
+
+        return $authenticated;
+    }
+
+    private function pamAuthenticate($username, $password)
+    {
+        $processPipe = $this->getPhpWrapper()->popen('/usr/bin/sudo /sbin/e-smith/pam-authenticate-pw >/dev/null 2>&1', 'w');
+        if ($processPipe === FALSE) {
+            $this->getLog()->error(sprintf('%s: %s', __CLASS__, implode(' ', $this->getPhpWrapper()->error_get_last())));
+            return FALSE;
+        }
+        $this->getPhpWrapper()->fwrite($processPipe, $username . "\n" . $password);
+        $authenticated = $this->getPhpWrapper()->pclose($processPipe) === 0;
+        return $authenticated;
     }
 
 }
