@@ -13,7 +13,7 @@ if (count($view['status']['results']) == 0) {
         echo " (".($raid['active_devs']=='none'?$T("none"):$raid['active_devs']).")";
         echo "</dd>";
         if ($raid['failed_devs'] != 'none') {
-            echo "<dt>".$T('failed_devs')."</dt><dd>"; echo $raid['failed_dev']; echo "</dd>";
+            echo "<dt>".$T('failed_devs')."</dt><dd>"; echo $raid['failed_devs']; echo "</dd>";
         }
         if ($raid['spare_devs'] != 'none') {
             echo "<dt>".$T('spare_devs')."</dt><dd>"; echo $raid['spare_devs']; echo "</dd>";
