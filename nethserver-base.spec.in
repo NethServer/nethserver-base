@@ -66,6 +66,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Jan 14 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.5.5-1.ns6
+- Raid critical status on dashboard does not show failed partitions - Bug #2995 [NethServer]
+- Correctly handle history back button - Enhancement #2958 [NethServer]
+
 * Tue Dec 09 2014 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.5.4-1.ns6
 - First-boot: execute system-init event before tty - Enhancement #2952 [NethServer]
 - Modify all users if the ldap organisation contacts is updated - Bug #2931 [NethServer]
