@@ -59,6 +59,14 @@ class Review extends \Nethgui\Controller\AbstractController implements \Nethgui\
 
         // TODO: fetch the module title instead of the module identifier
         $view['redirect']  = $view->translate('redirect_message', array('moduleTitle' => $this->redirectModule));
+
+        if($this->getRequest()->isMutation()) {
+            $this->getPlatform()->setDetachedProcessCondition('success', array(
+                    'location' => array(
+                        'url' => $view->getModuleUrl('../Review?redirect'),
+                        'freeze' => TRUE,
+                )));
+        }
     }
 
     public function process() {
@@ -104,7 +112,7 @@ class Review extends \Nethgui\Controller\AbstractController implements \Nethgui\
     }
 
     public function nextPath() {
-        if ($this->getRequest()->isMutation()) {
+        if ($this->getRequest()->hasParameter('redirect')) {
             return '/' . $this->redirectModule;
         }
         return parent::nextPath();
