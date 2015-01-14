@@ -1,0 +1,188 @@
+#!/usr/bin/python
+
+#
+# Copyright (C) 2012 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+from __future__ import division
+from __future__ import print_function
+import yum
+import os
+import sys
+import syslog
+import getopt
+import nethserver.ptrack
+import yum.callbacks
+import yum.Errors
+import yum.i18n # exception2msg
+
+def warning(*objs):
+    print(*objs, file=sys.stderr)
+
+class TransactionCallback( yum.callbacks.ProcessTransNoOutputCallback ):
+    def __init__(self, repos, tracker_client, parent_task_id):
+        self.tracker_client = tracker_client
+        self.parent_task_id = parent_task_id
+        self.repos = repos
+
+    def event(self, state, data=None):
+        if(state == yum.callbacks.PT_DOWNLOAD_PKGS
+           and not data is None 
+           and len(data) > 0):
+            self.trackDownloads(data)
+            
+    def trackDownloads(self, pkgs):            
+        # Set and initialize data for download progress bar callback
+        total_bytes = sum(map(lambda po: po.size, filter(lambda po: po if not hasattr(po, 'pkgtype') or po.pkgtype != 'local' else None, pkgs)))
+        if(total_bytes) > 0:
+            task_id = self.tracker_client.declare_task("Download", self.parent_task_id, 25.0)
+            self.repos.setProgressBar(DownloadCallback(total_bytes, self.tracker_client, task_id))
+
+class DownloadCallback(  yum.callbacks.DownloadBaseCallback ):
+    def __init__(self, totsz, tracker_client, task_id):
+        yum.callbacks.DownloadBaseCallback.__init__(self)
+        if(not isinstance(tracker_client, nethserver.ptrack.TrackerClient)):
+            raise Exception("Invalid nethserver.ptrack.TrackerClient instance")
+        if(totsz <= 0):
+            raise Exception("totsz must be positive integer")
+
+        self.tracker_client = tracker_client
+        self.task_id = task_id
+        self.totsz = totsz
+        self.packages = {}
+
+    def updateProgress(self,name,frac,fread,ftime):
+        self.packages[self.basename] = 0.0 if frac is None or self.size is None else (frac * self.size)
+        progress = float(sum(self.packages.values()) / self.totsz)
+        message = '%s' % (self.basename)
+        self.tracker_client.set_task_progress(self.task_id, progress, message)
+
+class TrackerClientCallBack(yum.rpmtrans.RPMBaseCallback):
+    def __init__(self, tracker_client, parent_task_id):
+        yum.rpmtrans.RPMBaseCallback.__init__(self)
+        if(not isinstance(tracker_client, nethserver.ptrack.TrackerClient)):
+            raise Exception("Invalid nethserver.ptrack.TrackerClient instance")
+        self.tracker_client = tracker_client
+        self.task_id = tracker_client.declare_task("RPM transaction", parent_task_id, 25.0)
+
+    def _get_action_name(self, action):
+        if action in yum.TS_INSTALL_STATES:
+            return 'Installing'
+        elif action in yum.TS_REMOVE_STATES:
+            return 'Removing'
+        else:
+            return ''
+
+    def event(self, package, action, te_current, te_total, ts_current, ts_total):
+        # Element progress
+        c = float(te_current) / float(te_total)
+        # Transaction progress
+        p = min(1.0, (float(ts_current) - 1.0 + c) / float(ts_total))
+        message = "%s %s" % (package, self._get_action_name(action))
+        self.tracker_client.set_task_progress(self.task_id, p, message)
+
+def usage():
+    warning("Usage: %s {<command> {PACKAGE|@GROUP}}..." % sys.argv[0])
+    warning("    command: [--install|--update|--remove]")
+    sys.exit(1)
+
+def main():
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], '', ['install=','update=','remove='])
+    except getopt.GetoptError as err:
+        usage()
+
+    if(len(args) > 0 or len(opts) == 0):
+        usage()
+            
+    actions = {'install': [], 'update': [], 'remove': []}
+    tracker_client = None
+    exitcode = 0
+
+    for key, val in opts:
+        map(lambda x: actions[key[2:]].append(x), val.split(','))
+
+    syslog.openlog('pkgaction',syslog.LOG_PID);
+    tracker_client = nethserver.ptrack.TrackerClient()
+
+    current_task_id = 0
+
+    try:
+
+        ypbc = yum._YumPreBaseConf()
+        ypbc.debuglevel = -1
+        ypbc.errorlevel = -1
+        yb = yum.YumBase()
+        yb.preconf = ypbc
+
+        task_dep_id = tracker_client.declare_task("Initialization", 0, 4.0)
+        task_chn_id = tracker_client.declare_task("Applying changes", 0, 96.0)
+        task_sys_id = tracker_client.declare_task("System configuration", task_chn_id, 50.0)
+        os.environ["PTRACK_TASKID"] = str(task_sys_id)
+
+        current_task_id = task_dep_id
+
+        tracker_client.set_task_progress(task_dep_id, 0.01)
+
+        for action in ['remove', 'update', 'install']:
+            syslog.syslog("%s: %s" % (action, ', '.join(actions[action])))
+            for pkg in actions[action]:
+                getattr(yb, action)(pattern=pkg)
+
+        tracker_client.set_task_progress(task_dep_id, 0.5, 'Resolving RPM dependencies')
+        yb.resolveDeps()
+        tracker_client.set_task_done(task_dep_id)
+
+        current_task_id = task_chn_id
+
+        yb.processTransaction(
+            callback   = TransactionCallback(yb.repos, tracker_client, task_chn_id),
+            rpmDisplay = TrackerClientCallBack(tracker_client, task_chn_id)
+        )
+        
+        current_task_id = task_sys_id
+
+        exitcode = 0 if getattr(yb, 'nethserver_events', True) else 2
+
+        if(exitcode == 0):
+            tracker_client.set_task_done(task_sys_id)
+            tracker_client.set_task_done(task_chn_id)
+        else:
+            # errors from events: set error state on both the parent
+            # and its child.
+            tracker_client.set_task_done(task_sys_id, '', exitcode)
+            tracker_client.set_task_done(task_chn_id, '', exitcode)
+
+    except Exception, e:
+        try:
+            message = "[%s] %s" % (e.__class__.__name__, 
+                                   "\n".join(yum.i18n.exception2msg(e)))
+        except:
+            message = "[%s] %s" % (e.__class__.__name__, yum.i18n.exception2msg(e))
+
+        tracker_client.set_task_done(current_task_id, message, 1)
+        warning(message)
+        syslog.syslog(syslog.LOG_ERR, message)
+        sys.exit(1)
+    
+    sys.exit(exitcode);
+
+if __name__ == "__main__":
+    main()
