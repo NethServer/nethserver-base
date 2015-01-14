@@ -27,12 +27,18 @@ namespace NethServer\Module\FirstConfigWiz;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.6
  */
-class RootPassword extends \NethServer\Tool\ChangePassword
+class RootPassword extends \NethServer\Tool\ChangePassword implements \Nethgui\Component\DependencyConsumer
 {
 
-    public $wizardPosition = 20;
+    const WIZARD_POSITION = 20;
 
-    const DEFAULT_PASSWORD = 'Nethesis,1234';
+    public $wizardPosition = self::WIZARD_POSITION;
+
+    /**
+     *
+     * @var UserInterface;
+     */
+    private $user;
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $attributes)
     {
@@ -43,9 +49,15 @@ class RootPassword extends \NethServer\Tool\ChangePassword
     {
         parent::initialize();
         $this->setAdapter($this->getPlatform()->getTableAdapter('accounts', 'user'));
-        if ( ! $this->hasDefaultPassword()) {
-            $this->wizardPosition = NULL;
-        }
+        $this->wizardPosition = array($this, 'getWizardPosition');
+    }
+
+    /**
+     *  show this page only if the root user has still the default password:
+     *  @return mixed The integer position, or NULL if this page must be hidden
+     */
+    public function getWizardPosition() {
+        return $this->user->getCredential('hasDefaultPassword') === TRUE ? self::WIZARD_POSITION : NULL;
     }
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
@@ -72,26 +84,6 @@ class RootPassword extends \NethServer\Tool\ChangePassword
         }
     }
 
-    private function hasDefaultPassword()
-    {
-
-        $sessDb = $this->getPlatform()->getDatabase('SESSION');
-        if ( ! $sessDb->getType(__CLASS__)) {
-            $v = new \NethServer\Tool\PamValidator('root');
-            $v
-                ->setLog($this->getLog())
-                ->setPhpWrapper($this->getPhpWrapper())
-            ;
-
-            if ($v->evaluate(self::DEFAULT_PASSWORD)) {
-                $sessDb->setType(__CLASS__, 'mustchangepw');
-            } else {
-                $sessDb->setType(__CLASS__, 'pwchanged');
-            }
-        }
-        return $sessDb->getType(__CLASS__) === 'mustchangepw';
-    }
-
     public function nextPath()
     {
         if ($this->getRequest()->hasParameter('skip') || $this->getRequest()->isMutation()) {
@@ -99,6 +91,16 @@ class RootPassword extends \NethServer\Tool\ChangePassword
             return $successor ? $successor->getIdentifier() : 'Review';
         }
         return parent::nextPath();
+    }
+
+    public function getDependencySetters()
+    {
+        $user = &$this->user;
+        return array(
+          'User' => function($u) use (&$user) {
+                $user = $u;
+          }
+        );
     }
 
 }

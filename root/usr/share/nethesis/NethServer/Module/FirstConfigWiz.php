@@ -30,6 +30,7 @@ namespace NethServer\Module;
  */
 class FirstConfigWiz extends \Nethgui\Controller\CompositeController implements \Nethgui\Component\DependencyConsumer
 {
+
     /**
      *
      * @var \Nethgui\View\ViewInterface
@@ -49,19 +50,24 @@ class FirstConfigWiz extends \Nethgui\Controller\CompositeController implements 
         $this->loadChildrenDirectory();
 
         $sortf = function(\Nethgui\Module\ModuleInterface $a, \Nethgui\Module\ModuleInterface $b) {
-            $pa = isset($a->wizardPosition) ? (int) $a->wizardPosition : 9999;
-            $pb = isset($b->wizardPosition) ? (int) $b->wizardPosition : -9999;
-            return $pa - $pb;
+            if ($a instanceof \NethServer\Module\FirstConfigWiz\Cover) {
+                return -1;
+            }
+            if ($b instanceof \NethServer\Module\FirstConfigWiz\Cover) {
+                return 1;
+            }
+            return 0;
         };
 
         $this->sortChildren($sortf);
     }
 
-    public function bind(\Nethgui\Controller\RequestInterface $request) {
+    public function bind(\Nethgui\Controller\RequestInterface $request)
+    {
         parent::bind($request);
         $curAction = $this->establishCurrentActionId();
         $action = $this->getAction($curAction);
-        if($action instanceof \Nethgui\Module\ModuleInterface && ! isset($action->wizardPosition)) {
+        if ($action instanceof \Nethgui\Module\ModuleInterface && ! isset($action->wizardPosition)) {
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1420822725);
         }
     }
@@ -85,8 +91,8 @@ class FirstConfigWiz extends \Nethgui\Controller\CompositeController implements 
 
         $this->wizDecorator = $view->spawnView($this, 'Decorator');
 
-        if(isset($this->currentAction)) {
-            $nextAction =  $this->getSuccessor($this->currentAction);
+        if (isset($this->currentAction)) {
+            $nextAction = $this->getSuccessor($this->currentAction);
         } else {
             $nextAction = $this->getAction('Cover');
         }
@@ -102,10 +108,10 @@ class FirstConfigWiz extends \Nethgui\Controller\CompositeController implements 
     public function storeAction($decl)
     {
         $v = $this->getPlatform()->getDatabase('SESSION')->getType(__CLASS__);
-        if(! is_array($v)) {
+        if ( ! is_array($v)) {
             $v = array();
         }
-        if(isset($decl['message']['module'])) {
+        if (isset($decl['message']['module'])) {
             $v[$decl['message']['module']] = $decl;
         } else {
             $v[] = $decl;
@@ -117,9 +123,7 @@ class FirstConfigWiz extends \Nethgui\Controller\CompositeController implements 
     public function getSteps(\Nethgui\View\ViewInterface $view, $currentModuleIdentifier)
     {
         $steps = array();
-        foreach (array_filter($this->getChildren(), function($m) {
-            return isset($m->wizardPosition) ? TRUE : FALSE;
-        }) as $child) {
+        foreach ($this->getStepList() as $child) {
             $steps[] = array(
                 'target' => $view->getUniqueId($child->getIdentifier()),
                 'title' => $view->getTranslator()->translate($child, $child->getAttributesProvider()->getTitle()),
@@ -130,17 +134,34 @@ class FirstConfigWiz extends \Nethgui\Controller\CompositeController implements 
         return $steps;
     }
 
+    private function getStepList()
+    {
+        static $pos;
+        if(isset($pos)) {
+            return $pos;
+        }
+
+        $pos = array();
+        foreach ($this->getChildren() as $m) {
+            $position = is_callable($m->wizardPosition) ? call_user_func($m->wizardPosition) : $m->wizardPosition;
+            if (isset($position) && $position >= 0) {
+                $pos[$position] = $m;
+            }
+        }
+
+        ksort($pos, \SORT_NUMERIC);
+        return $pos;
+    }
+
     public function getSuccessor(\Nethgui\Module\ModuleInterface $m)
     {
         $successor = NULL;
 
-        $modules = array_filter($this->getChildren(), function($m) {
-            return isset($m->wizardPosition) ? TRUE : FALSE;
-        });
+        $pos = $this->getStepList();
 
-        while ($child = array_shift($modules)) {
+        while ($child = array_shift($pos)) {
             if ($m->getIdentifier() === $child->getIdentifier()) {
-                $successor = array_shift($modules);
+                $successor = array_shift($pos);
                 break;
             }
         }

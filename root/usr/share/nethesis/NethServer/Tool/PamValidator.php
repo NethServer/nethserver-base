@@ -128,6 +128,7 @@ class PamValidator implements \Nethgui\System\ValidatorInterface, \Nethgui\Utili
 
             $credentials['groups'] = $groups;
             $credentials['username'] = $username;
+            $credentials['hasDefaultPassword'] = $password === self::DEFAULT_PASSWORD;
         } else {
             // authentication failed: check silently if user has default password:
             $hasDefaultPassword = $this->pamAuthenticate($username, self::DEFAULT_PASSWORD);
