@@ -1,7 +1,10 @@
 {
+#
+# 10base
+#
 
-use esmith::InterfacesDB;
-my $idb = esmith::InterfacesDB->open_ro();
+use esmith::NetworksDB;
+my $idb = esmith::NetworksDB->open_ro();
 my @bonds = $idb->bonds;
 foreach my $i (@bonds) {
     my $name = $i->key;
