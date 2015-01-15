@@ -37,13 +37,14 @@ class PackageManager extends \Nethgui\Controller\CompositeController
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $attributes)
     {
-        return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($attributes, 'Configuration', 16);
+        return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($attributes, 'Administration', 16);
     }
 
     public function initialize()
     {
         $this->addChild(new \NethServer\Module\PackageManager\Groups());
         $this->addChild(new \NethServer\Module\PackageManager\Packages());
+        $this->addChild(new \NethServer\Module\PackageManager\Update());
         parent::initialize();
     }
 
