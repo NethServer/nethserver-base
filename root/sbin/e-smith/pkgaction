@@ -172,10 +172,9 @@ def main():
 
     except Exception, e:
         try:
-            message = "[%s] %s" % (e.__class__.__name__, 
-                                   "\n".join(yum.i18n.exception2msg(e)))
-        except:
             message = "[%s] %s" % (e.__class__.__name__, yum.i18n.exception2msg(e))
+        except:
+            message = "[%s] %s" % (e.__class__.__name__, e)
 
         tracker_client.set_task_done(current_task_id, message, 1)
         warning(message)
