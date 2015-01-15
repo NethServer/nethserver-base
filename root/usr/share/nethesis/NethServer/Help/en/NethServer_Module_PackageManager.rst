@@ -1,16 +1,16 @@
 ===============
-Package manager
+Software center
 ===============
 
-The main view shows a list of software components. Checked items represents
-installed components, while unchecked items are the available ones. You can
+The main view shows a list of software modules. Checked items represents
+installed modules, while unchecked items are the available ones. You can
 filter the list by category.
 
 .. NOTE::
 
-    Both components and categories are defined by YUM metadata.
+    Both modules and categories are defined by YUM metadata.
 
-To install or remove the listed software components, change the
+To install or remove the listed software modules, change the
 checkbox states then click the :guilabel:`Apply` button. The next
 screen summarizes what is going to be installed and removed. Also, a
 list of optional packages is shown, to be selected for
@@ -18,18 +18,16 @@ installation.
 
 .. NOTE:: 
     
-   Optional packages can be installed also *after* the installation of
-   the relative component: click the :guilabel:`Apply` button again
+   Optional components can be installed also *after* the installation
+   of the relative module: click the :guilabel:`Apply` button again
    and select them from the summary screen.
 
+   
 Installed software
 ==================
 
-It lists RPM packages installed on your system.  Where
-available, it is possible to open the development page by clicking on
-the package name.
-
-Packages are sorted alphabetically. Displayed fields are:
+It lists RPM packages installed on the system. Packages are sorted
+alphabetically. Displayed fields are:
 
 Name
     Name of the RPM package.
@@ -39,3 +37,10 @@ Version
 
 Release
     Release of the installed package.
+
+
+Available software updates
+==========================
+
+This page lists the available RPM updates. Click the :guilabel:`Download
+and install` button to install the listed packages updates.

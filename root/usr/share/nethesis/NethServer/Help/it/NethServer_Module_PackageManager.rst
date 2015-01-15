@@ -1,24 +1,24 @@
-==================
-Gestione pacchetti
-==================
+===============
+Software center
+===============
 
-La vista principale mostra una lista di componenti software. Gli elementi
-spuntati rappresentano i componenti installati, mentre quelli non spuntati sono
-quelli disponibili. Si può filtrare la lista per categoria.
+La vista principale mostra una lista di moduli software. Gli elementi
+spuntati rappresentano i moduli installati, mentre quelli non spuntati
+sono quelli disponibili. Si può filtrare la lista per categoria.
 
 .. NOTE::
 
-    Sia i componenti che le categorie sono definite dai metadati di YUM.
+    Sia i moduli che le categorie sono definite dai metadati di YUM.
 
-Per installare o rimuovere i componenti software elencati, aggiungere
-o togliere il segno di spunta, quindi premere il pulsante
+Per installare o rimuovere i moduli software elencati, aggiungere o
+togliere il segno di spunta, quindi premere il pulsante
 :guilabel:`Applica`.  La schermata successiva riepiloga cosa sarà
-installato e rimosso. Inoltre, viene mostrata la lista di pacchetti
+installato e rimosso. Inoltre, viene mostrata la lista di componenti
 opzionali, da selezionare per l'installazione.
 
 .. NOTE:: 
 
-    I pacchetti opzionali possono essere installati anche *dopo*
+    I componenti opzionali possono essere installati anche *dopo*
     l'installazione del componente relativo: cliccare di nuovo sul
     bottone :guilabel:`Applica` e selezionarli dalla schermata di
     riepilogo.
@@ -27,11 +27,8 @@ opzionali, da selezionare per l'installazione.
 Software installato
 ===================
 
-Elenca i pacchetti RPM installati sul sistema. Dove
-supportato è possibile, cliccando sul nome del pacchetto, accedere
-alla pagina di documentazione dello sviluppatore.
-
-I pacchetti sono ordinati alfabeticamente e vengono indicati:
+Elenca i pacchetti RPM installati sul sistema. I pacchetti sono
+ordinati alfabeticamente e vengono indicati:
 
 Nome
     Nome del pacchetto RPM.
@@ -42,3 +39,10 @@ Versione
 Release
     Release del pacchetto installato.
 
+    
+Aggiornamenti disponibili
+=========================
+
+Questa pagina elenca gli aggiornamenti RPM disponibili. Premere il
+pulsante :guilabel:`Scarica e installa` per procedere con
+l'aggiornamento.

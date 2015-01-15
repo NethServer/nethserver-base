@@ -2,18 +2,18 @@
 
 $L['Add ${0}'] = 'Add ${0}'; 
 $L['Add_label'] = 'Add'; 
-$L['Name_label'] = 'Group name'; 
-$L['PackageManager_Description'] = 'Adds and removes system package groups';
-$L['PackageManager_Tags'] = 'rpm yum addons extras'; 
-$L['PackageManager_Title'] = 'Package manager'; 
+$L['Name_label'] = 'Module name';
+$L['PackageManager_Description'] = 'Adds and removes software modules from the system';
+$L['PackageManager_Tags'] = 'rpm yum addons extras modules packages components';
+$L['PackageManager_Title'] = 'Software center';
 $L['Remove ${0}'] = 'Remove ${0}'; 
 $L['Remove_label'] = 'Remove'; 
-$L['SelectedOptionalPackages_label'] = 'Optional packages'; 
+$L['SelectedOptionalPackages_label'] = 'Optional components';
 $L['Status_label'] = 'Status'; 
 $L['available'] = 'available'; 
 $L['installed'] = 'installed'; 
 $L['installing'] = 'installing..'; 
-$L['mandatory_packages'] = 'Mandatory packages:'; 
+$L['mandatory_packages'] = 'Mandatory components:';
 $L['package_success'] = 'Operation completed successfully';
 $L['removing'] = 'removing..'; 
 
@@ -22,9 +22,9 @@ $L['rpm_version'] = 'Version';
 $L['rpm_release'] = 'Release';
 
 $L['Groups_Title'] = 'Groups';
-$L['Select_header'] = 'Package manager';
+$L['Select_header'] = 'Software center';
 $L['Packages_Title'] = 'Installed software';
-$L['Packages_label'] = 'Installed software';
+$L['Packages_label'] = 'Installed';
 $L['Packages_header'] = 'Installed software';
 $L['Review_header'] = 'Confirm system changes';
 $L['ApplySelection_label'] = 'Apply';
@@ -33,9 +33,9 @@ $L['Run_label'] = 'Run installation';
 $L['GroupsToAdd_label'] = 'Add (${0}): ${1}';
 $L['GroupsToRemove_label'] = 'Remove (${0}): ${1}';
 $L['RequiredBy_label'] = 'Suggested by';
-$L['Transaction_summary_label'] = 'Group changes';
-$L['Optional_packages_label'] = 'Choose optional packages';
-$L['Empty_optionals_label'] = 'No optional packages are available';
+$L['Transaction_summary_label'] = 'Modules changes';
+$L['Optional_packages_label'] = 'Choose optional components';
+$L['Empty_optionals_label'] = 'No optional components are available';
 
 $L['Tracker_header'] = 'Installing software';
 $L['Failed_events_label'] = 'One or more events (${0}) reported an error.  See the system logs for more details.';
@@ -48,7 +48,7 @@ $L['Everything_category_description'] = 'Show groups from any category';
 $L['Back_label'] = 'Back';
 
 $L['noupdates_message'] = 'Installed software is up-to-date';
-$L['Update_label'] = 'Software updates';
+$L['Update_label'] = 'Updates';
 $L['DoUpdate_label'] = 'Download and install';
 $L['Update_header'] = 'Available software updates';
 $L['update_error'] = "An error occurred!\n\${error}";
