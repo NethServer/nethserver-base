@@ -3,7 +3,7 @@
 $L['Add ${0}'] = 'Add ${0}'; 
 $L['Add_label'] = 'Add'; 
 $L['Name_label'] = 'Group name'; 
-$L['PackageManager_Description'] = 'Adds and removes system package groups'; 
+$L['PackageManager_Description'] = 'Adds and removes system package groups';
 $L['PackageManager_Tags'] = 'rpm yum addons extras'; 
 $L['PackageManager_Title'] = 'Package manager'; 
 $L['Remove ${0}'] = 'Remove ${0}'; 
@@ -46,3 +46,11 @@ $L['Installer_Generic_Failure'] = 'The install process exited unexpectedly. See 
 $L['Everything_category_label'] = 'Everything';
 $L['Everything_category_description'] = 'Show groups from any category';
 $L['Back_label'] = 'Back';
+
+$L['noupdates_message'] = 'Installed software is up-to-date';
+$L['Update_label'] = 'Software updates';
+$L['DoUpdate_label'] = 'Download and install';
+$L['Update_header'] = 'Available software updates';
+$L['update_error'] = "An error occurred!\n\${error}";
+$L['updates_label'] = 'Software updates';
+$L['update_success_message'] = 'Software update completed';

@@ -44,6 +44,7 @@ class PackageManager extends \Nethgui\Controller\CompositeController
     {
         $this->addChild(new \NethServer\Module\PackageManager\Groups());
         $this->addChild(new \NethServer\Module\PackageManager\Packages());
+        $this->addChild(new \NethServer\Module\PackageManager\Update());
         parent::initialize();
     }
 

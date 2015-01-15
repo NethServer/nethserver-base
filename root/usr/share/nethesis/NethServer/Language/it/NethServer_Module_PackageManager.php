@@ -46,3 +46,11 @@ $L['Installer_Generic_Failure'] = 'Il processo di installazione ha fallito. Cons
 $L['Everything_category_label'] = 'Tutto';
 $L['Everything_category_description'] = 'Mostra i gruppi da qualsiasi categoria';
 $L['Back_label'] = 'Indietro';
+
+$L['noupdates_message'] = 'Il software installato è aggiornato';
+$L['Update_label'] = 'Aggiornamenti software';
+$L['DoUpdate_label'] = 'Scarica e installa';
+$L['Update_header'] = 'Aggiornamenti disponibili';
+$L['update_error'] = "Si è verificato un errore!\n\${error}";
+$L['updates_label'] = 'Aggiornamenti software';
+$L['update_success_message'] = 'Aggiornamento del software completato';

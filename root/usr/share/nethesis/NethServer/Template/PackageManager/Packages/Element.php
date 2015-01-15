@@ -2,7 +2,7 @@
 /* @var $view \Nethgui\Renderer\Xhtml */
 
 echo $view->textLabel('name')
-    ->setAttribute('template', '<a href=${1}>${0}</a>')
+    ->setAttribute('template', '${0}')
     ->setAttribute('escapeHtml', FALSE);
 
 echo '</td><td>';

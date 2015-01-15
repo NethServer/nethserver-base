@@ -7,6 +7,7 @@ echo $view->header()->setAttribute('template', $T('Select_header'));
 echo $view->buttonList()
     ->insert($view->button('ApplySelection', $view::BUTTON_SUBMIT))
     ->insert($view->button('Packages', $view::BUTTON_LINK)->setAttribute('value', $view->getModuleUrl('../../Packages')))
+    ->insert($view->button('Update', $view::BUTTON_LINK)->setAttribute('value', $view->getModuleUrl('../../Update')))
     ->insert($view->button('Help', $view::BUTTON_HELP))
 ;
 
