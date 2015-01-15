@@ -75,3 +75,4 @@ $L['NoSuccessor_label'] = 'None';
 $L['bond_label'] = 'Bond';
 $L['bridge_label'] = 'Bridge';
 $L['alias_label'] = 'Alias';
+$L['hotspot_label'] = 'Hotspot';
