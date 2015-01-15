@@ -20,15 +20,19 @@
 # along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
+
 import yum
 import os
+import subprocess
 import sys
 import simplejson
 import yum.misc
 
+
 def usage():
     print "Usage: %s <command> [name]" % sys.argv[0]
-    print "    command: compsdump|info"
+    print "    command: compsdump|info|check-update"
     sys.exit(0)
 
 
@@ -97,11 +101,16 @@ def compsdump(yb):
 
     print( simplejson.dumps(comps) )
 
+def check_update(yb, clean_all = False):
+    if clean_all:
+        subprocess.call(["/usr/bin/yum", "clean", "all"], stdout=open(os.devnull, "w"), stderr=subprocess.STDOUT)
+    updates = map(lambda i: {'name': i[0], 'arch': i[1], 'epoch': i[2], 'version': i[3], 'release': i[4]}, yb.up.getUpdatesList())
+    print( simplejson.dumps(updates) )
 
 def main():
     if len(sys.argv) < 2:
         usage()
-    if sys.argv[1] != "grouplist" and sys.argv[1] != "info" and sys.argv[1] != "compsdump":
+    if not sys.argv[1] in ["grouplist", "info", "compsdump", "check-update"]:
         usage()
     if sys.argv[1] == "info" and len(sys.argv) < 3:
         usage()
@@ -121,6 +130,8 @@ def main():
            compsdump(yb)
         elif action == 'info':
            pkginfo(yb,sys.argv[2])
+        elif action == 'check-update':
+           check_update(yb) 
 
     except Exception, e:
         print simplejson.dumps({'error':"%s"%e})
