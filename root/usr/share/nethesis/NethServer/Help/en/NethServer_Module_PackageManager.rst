@@ -2,45 +2,68 @@
 Software center
 ===============
 
-The main view shows a list of software modules. Checked items represents
-installed modules, while unchecked items are the available ones. You can
-filter the list by category.
+Available
+=========
+
+The :guilabel:`Available` tab allows selecting modules and optional
+packages to install from a list. Pushing the red :guilabel:`Add`
+button asks for confirmation, before starting the installation
+process.
+
+The list can be filtered by category, by pushing the blue buttons.
 
 .. NOTE::
-
-    Both modules and categories are defined by YUM metadata.
-
-To install or remove the listed software modules, change the
-checkbox states then click the :guilabel:`Apply` button. The next
-screen summarizes what is going to be installed and removed. Also, a
-list of optional packages is shown, to be selected for
-installation.
-
-.. NOTE:: 
-    
-   Optional components can be installed also *after* the installation
-   of the relative module: click the :guilabel:`Apply` button again
-   and select them from the summary screen.
+   
+   1. Both modules and categories are defined by YUM metadata.
+   2. Optional packages can be installed also *after* the
+      installation of the relative module from the
+      :guilabel:`Installed` page.
 
    
-Installed software
-==================
+Installed
+=========
 
-It lists RPM packages installed on the system. Packages are sorted
-alphabetically. Displayed fields are:
+It lists the modules installed on the system.  Modules are sorted
+alphabetically.  On each module the following actions can be performed:
+
+Remove
+
+   The :guilabel:`Remove` button near each installed module removes
+   it, after asking confirmation.
+
+Edit
+
+   The :guilabel:`Edit` button near each installed module shows the
+   list of optional packages associated with the module.  Pushing the
+   :guilabel:`Apply changes` button, checked items are installed, and
+   unchecked ones are removed.
+
+
+Packages
+--------
+
+Lists the packages installed on the system, ordered by name. 
 
 Name
-    Name of the RPM package.
+    Name of the package.
 
 Version
     Version of the installed package.
 
 Release
-    Release of the installed package.
+    Release number of the installed package and its distribution tag.
 
 
-Available software updates
-==========================
+Updates
+=======
 
-This page lists the available RPM updates. Click the :guilabel:`Download
-and install` button to install the listed packages updates.
+This page lists the available updates for the installed packages.  The
+list is updated periodically.
+
+More informations about the updates are shown by clicking on
+:guilabel:`Updates CHANGELOG`.
+
+By pushing :guilabel:`Download and install` the listed packages are
+updated.
+
+

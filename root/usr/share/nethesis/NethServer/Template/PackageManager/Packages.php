@@ -1,6 +1,7 @@
 <?php 
 /* @var $view \Nethgui\Renderer\Xhtml */
 $view->rejectFlag($view::INSET_FORM);
+// $view->requireFlag($view::INSET_DIALOG);
 
 echo $view->header()->setAttribute('template', $T('Packages_header'));
 
@@ -12,7 +13,7 @@ echo $view->header()->setAttribute('template', $T('Packages_header'));
 
 echo $view->objectsCollection('packages')
     ->setAttribute('tag', 'tbody')    
-    ->setAttribute('template', 'NethServer\Template\PackageManager\Packages\Element')
+    ->setAttribute('template', 'NethServer\Template\PackageManager\PackagesElement')
     ->setAttribute('key', 'name');
 
 $packagesTarget = $view->getClientEventTarget('packages');

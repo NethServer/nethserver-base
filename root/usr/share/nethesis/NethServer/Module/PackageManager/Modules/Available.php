@@ -1,5 +1,6 @@
 <?php
-namespace NethServer\Module\PackageManager\Groups;
+
+namespace NethServer\Module\PackageManager\Modules;
 
 /*
  * Copyright (C) 2013 Nethesis S.r.l.
@@ -28,15 +29,14 @@ use Nethgui\System\PlatformInterface as Validate;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Select extends \Nethgui\Controller\Collection\AbstractAction implements \Nethgui\Component\DependencyConsumer
+class Available extends \Nethgui\Controller\Collection\AbstractAction implements \Nethgui\Component\DependencyConsumer
 {
+
     /**
      *
      * @var \Nethgui\Model\UserNotifications
      */
     private $notifications;
-
-    private $txOrder;
 
     public function initialize()
     {
@@ -67,84 +67,75 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction implements \N
     {
         parent::process();
         if ($this->getRequest()->isMutation()) {
-            $this->txOrder = $this->prepareTransactionOrder();
             $this->getPlatform()
-                ->getDatabase('SESSION')
-                ->setKey(get_class($this->getParent()), 'array', $this->txOrder);
+                    ->getDatabase('SESSION')
+                    ->setKey(get_class($this->getParent()), 'array', array('groups' => $this->parameters['groups']));
         }
     }
 
-    /**
-     * Compare the request and the currently installed package groups, returning
-     * an array that specifies what to do.
-     * 
-     * @return array
-     */
-    private function prepareTransactionOrder()
+    private function getGroupsViewValue(\Nethgui\View\ViewInterface $view)
     {
-        $installedList = array();
-        $availableList = array();
+        static $groupsState;
+        if (isset($groupsState)) {
+            return $groupsState;
+        }
+        $groupsState = array();
 
-        $selectedList = array();
-        $unselectedList = array();
-
-        $paramGroups = is_array($this->parameters['groups']) ? $this->parameters['groups'] : array();
-
-        foreach ($this->getAdapter() as $id => $element) {
-            if ($element['status'] === 'installed') {
-                $installedList[] = $id;
-            } else {
-                $availableList[] = $id;
+        foreach (iterator_to_array($this->getAdapter()) as $id => $yumGroup) {
+            if ($yumGroup['status'] === 'installed') {
+                continue; // skip installed groups
             }
+            if (isset($this->parameters['groups'][$id])) {
+                $groupsState[$id] = $this->parameters['groups'][$id];
+                
+            } else {
+                $groupsState[$id]['opackages_selected'] = array();
+            }
+
+            $groupsState[$id]['id'] = $yumGroup['id'];
+            $groupsState[$id]['name'] = $yumGroup['name'];
+            $groupsState[$id]['description'] = $yumGroup['description'];
+            $groupsState[$id]['mpackages'] = array_keys($yumGroup['mpackages']);
+            $groupsState[$id]['opackages_datasource'] = array_map(function ($item) {
+                return array($item, $item);
+            }, array_keys(array_filter($yumGroup['opackages'], function($installed) {
+                                return ! $installed;
+                            })));
+
         }
 
-        foreach ($paramGroups as $id => $element) {
-            if ($element['status'] === 'installed') {
-                $selectedList[] = $id;
-            } else {
-                $unselectedList[] = $id;
-            }
-        }
+        usort($groupsState, function($a, $b) {
+            return strcasecmp($a['name'], $b['name']);
+        });
 
-        $addList = array_diff($selectedList, $installedList);
-        $removeList = array_diff($unselectedList, $availableList);
-        $keepList = array_diff(array_keys($paramGroups), $addList, $removeList);
-
-        return array('add' => array_values($addList), 'remove' => array_values($removeList), 'keep' => array_values($keepList));
+        return $groupsState;
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
-        if(isset($this->txOrder)) {
-            $view->getCommandList()->setSelectionChanged(array_map(function ($part) use ($view) {
-                return $view->getUniqueId(sprintf('groups/%s/status', $part));
-            }, array_merge($this->txOrder['add'], $this->txOrder['remove'])));
-        }
-        $groupsState = iterator_to_array($this->getAdapter());
-        usort($groupsState, function($a, $b) {
-                return strcasecmp($a['name'], $b['name']);
-            });
-        $view['groups'] = $groupsState;
-        $view['categories'] = $this->getCategories($view);
 
-        if($this->getRequest()->hasParameter('installSuccess')) {
-            $this->notifications->message($view->translate('package_success'));
+        $view['groups'] = $this->getGroupsViewValue($view);
+        $view['categories'] = $this->getCategoriesViewValue($view);
+
+        if ($this->getRequest()->isValidated()) {
+            $view->getCommandList()->show();
         }
     }
 
-    private function getCategories(\Nethgui\View\ViewInterface $view) {
+    private function getCategoriesViewValue(\Nethgui\View\ViewInterface $view)
+    {
         $groups = array();
         $categories = $this->getParent()->getParent()->yumCategories();
 
-        if(count($categories) === 0) {
+        if (count($categories) === 0) {
             return array();
         }
 
-        foreach($this->getAdapter() as $group) {
+        foreach ($this->getAdapter() as $group) {
             $groups[] = $group['id'];
         }
-        
+
         $everything = array(
             'id' => 'everything',
             'name' => $view->translate('Everything_category_label'),
@@ -152,8 +143,8 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction implements \N
             'display_order' => 0,
             'groups' => array_unique($groups),
             'selected' => TRUE
-            );
-        
+        );
+
         return array_merge(array($everything), $categories);
     }
 
@@ -162,7 +153,7 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction implements \N
         $this->notifications = $n;
         return $this;
     }
-   
+
     public function getDependencySetters()
     {
         return array('UserNotifications' => array($this, 'setUserNotifications'));
@@ -171,7 +162,7 @@ class Select extends \Nethgui\Controller\Collection\AbstractAction implements \N
     public function nextPath()
     {
         if ($this->getRequest()->isMutation()) {
-            return 'Review';
+            return '../Review';
         }
         return parent::nextPath();
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace NethServer\Module\PackageManager;
+namespace NethServer\Module\PackageManager\Modules;
 
 /*
  * Copyright (C) 2015 Nethesis Srl
@@ -27,33 +27,44 @@ namespace NethServer\Module\PackageManager;
 class Update extends \Nethgui\Controller\AbstractController implements \Nethgui\Component\DependencyConsumer
 {
 
-    private $updates = array();
-    private $checkUpdateJob = array();
-
-    public function bind(\Nethgui\Controller\RequestInterface $request)
+    private function checkUpdates()
     {
-        parent::bind($request);
-        $this->checkUpdateJob = $this->getPlatform()->exec('/usr/bin/sudo -n /sbin/e-smith/pkginfo check-update');
-        if ($this->checkUpdateJob->getExitCode() !== 0) {
-            return;
+        static $data;
+
+        if (isset($data)) {
+            return $data;
         }
 
-        $this->updates = json_decode($this->checkUpdateJob->getOutput(), TRUE);
-        if (is_array($this->updates)) {
-            usort($this->updates, function($a, $b) {
+        $data = array();
+        $checkUpdateJob = $this->getPlatform()->exec('/usr/bin/sudo -n /sbin/e-smith/pkginfo check-update');
+        if ($checkUpdateJob->getExitCode() !== 0) {
+            $this->notifications->error("Error\n" . $checkUpdateJob->getOutput());
+            return array();
+        }
+        $data = json_decode($checkUpdateJob->getOutput(), TRUE);
+        return $data;
+    }
+
+    private function getUpdatesViewValue()
+    {
+        $data = $this->checkUpdates();
+
+        if (isset($data['updates'])) {
+            $updates = $data['updates'];
+            usort($updates, function($a, $b) {
                 return strcmp($a['name'], $b['name']);
             });
         } else {
-            $this->updates = array();
+            $updates = array();
         }
+
+        return $updates;
     }
 
-    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
+    private function getChangelogViewValue()
     {
-        parent::validate($report);
-        if ($this->checkUpdateJob->getExitCode() !== 0) {
-            $report->addValidationErrorMessage($this, 'updates', 'update_error', json_decode($this->checkUpdateJob->getOutput(), TRUE));
-        }
+        $data = $this->checkUpdates();
+        return isset($data['changelog']) ? $data['changelog'] : '';
     }
 
     public function process()
@@ -67,13 +78,17 @@ class Update extends \Nethgui\Controller\AbstractController implements \Nethgui\
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
-        if ($this->getRequest()->isValidated()) {
-            $view['updates'] = $this->updates;
-            $view['updates_count'] = count($this->updates);
-            $view->getCommandList()->show();
-            if ($this->getRequest()->hasParameter('updateSuccess')) {
-                $this->notifications->message($view->translate('update_success_message', array('updates_count' => count($this->updates))));
-            }
+
+        $view['updates'] = $this->getUpdatesViewValue();
+        $view['updates_count'] = count($view['updates']);
+        $view['changelog'] = $this->getChangelogViewValue();
+
+        if ($view['updates_count'] > 0) {
+            $this->notifications->warning($view->translate('updates_available_message', array('updates_count' => $view['updates_count'])));
+        }
+
+        if ($this->getRequest()->hasParameter('updateSuccess')) {
+            $this->notifications->message($view->translate('update_success_message', array('updates_count' => $view['updates_count'])));
         }
         if ($this->getRequest()->isMutation()) {
             $this->getPlatform()->setDetachedProcessCondition('success', array(

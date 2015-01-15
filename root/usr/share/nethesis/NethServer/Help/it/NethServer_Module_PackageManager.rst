@@ -2,47 +2,69 @@
 Software center
 ===============
 
-La vista principale mostra una lista di moduli software. Gli elementi
-spuntati rappresentano i moduli installati, mentre quelli non spuntati
-sono quelli disponibili. Si può filtrare la lista per categoria.
+Disponibili
+===========
+
+La scheda :guilabel:`Disponibili` consente di selezionare da una lista
+i moduli e i pacchetti opzionali da installare.  Premendo il pulsante
+rosso :guilabel:`Aggiungi` viene richiesta conferma, prima di avviare
+il processo di installazione.
+
+La lista può essere filtrata per categoria, premendo i pulsanti blu.
 
 .. NOTE::
+   
+   1. Sia i moduli che le categorie sono definiti dai metadati di YUM.
+   2. I pacchetti opzionali possono essere installati anche *dopo*
+      l'installazione del relativo modulo, dalla pagina
+      :guilabel:`Installed`.
 
-    Sia i moduli che le categorie sono definite dai metadati di YUM.
+   
+Installati
+==========
 
-Per installare o rimuovere i moduli software elencati, aggiungere o
-togliere il segno di spunta, quindi premere il pulsante
-:guilabel:`Applica`.  La schermata successiva riepiloga cosa sarà
-installato e rimosso. Inoltre, viene mostrata la lista di componenti
-opzionali, da selezionare per l'installazione.
+Elenca i moduli installati sul sistema.  I moduli sono ordinati
+alfabeticamente.  Su ognuno di essi è possibile effettuare le seguenti
+azioni:
 
-.. NOTE:: 
+Rimuovi
 
-    I componenti opzionali possono essere installati anche *dopo*
-    l'installazione del componente relativo: cliccare di nuovo sul
-    bottone :guilabel:`Applica` e selezionarli dalla schermata di
-    riepilogo.
+    Il pulsante :guilabel:`Remove` rimuove il modulo relativo,
+    dopo aver richiesto conferma.
+
+Modifica
+
+    Il pulsante :guilabel:`Modifica` mostra l'elenco dei pacchetti
+    opzionali associati al modulo. Premendo :guilabel:`Applica
+    modifiche`, gli elementi selezionati vengono installati, mentre
+    quelli non selezionati sono rimossi.
 
 
-Software installato
-===================
+Pacchetti
+---------
 
-Elenca i pacchetti RPM installati sul sistema. I pacchetti sono
-ordinati alfabeticamente e vengono indicati:
+Elenca i pacchetti installati sul sistema, ordinati per nome.
 
-Nome
-    Nome del pacchetto RPM.
+Name
+    Nome del pacchetto.
 
 Versione
-    Versione del pacchetto installato.
+    Versione del pacchetto.
 
 Release
-    Release del pacchetto installato.
+    Numero di rilascio e codice della distribuzione del pacchetto.
 
-    
-Aggiornamenti disponibili
-=========================
 
-Questa pagina elenca gli aggiornamenti RPM disponibili. Premere il
-pulsante :guilabel:`Scarica e installa` per procedere con
-l'aggiornamento.
+Aggiornamenti
+=============
+
+Questa pagina elenca gli aggiornamenti disponibili per i pacchetti
+installati.  La lista viene aggiornata periodicamente.
+
+Maggiori informazioni sugli aggiornamenti sono mostrati cliccando su
+:guilabel:`CHANGELOG degli aggiornamenti`.
+
+Premendo :guilabel:`Scarica e installa` i pacchetti elencati vengono
+aggiornati.
+
+

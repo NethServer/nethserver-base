@@ -1,56 +1,34 @@
 <?php 
 
-$L['Add ${0}'] = 'Add ${0}'; 
-$L['Add_label'] = 'Add'; 
-$L['Name_label'] = 'Module name';
+$L['Add_label'] = 'Add';
 $L['PackageManager_Description'] = 'Adds and removes software modules from the system';
-$L['PackageManager_Tags'] = 'rpm yum addons extras modules packages components';
+$L['PackageManager_Tags'] = 'rpm yum addons extras modules components packages';
 $L['PackageManager_Title'] = 'Software center';
-$L['Remove ${0}'] = 'Remove ${0}'; 
-$L['Remove_label'] = 'Remove'; 
-$L['SelectedOptionalPackages_label'] = 'Optional components';
-$L['Status_label'] = 'Status'; 
-$L['available'] = 'available'; 
-$L['installed'] = 'installed'; 
-$L['installing'] = 'installing..'; 
-$L['mandatory_packages'] = 'Mandatory components:';
 $L['package_success'] = 'Operation completed successfully';
-$L['removing'] = 'removing..'; 
-
 $L['rpm_name'] = 'Name';
 $L['rpm_version'] = 'Version';
 $L['rpm_release'] = 'Release';
-
-$L['Groups_Title'] = 'Groups';
-$L['Select_header'] = 'Software center';
-$L['Packages_Title'] = 'Installed software';
-$L['Packages_label'] = 'Installed';
-$L['Packages_header'] = 'Installed software';
+$L['Modules_header'] = 'Software center';
+$L['Available_Title'] = 'Available';
+$L['Installed_Title'] = 'Installed';
+$L['No_modules_available_message'] = 'All modules were installed';
+$L['No_installed_modules_message'] = 'No module has been installed';
+$L['Update_Title'] = 'Updates';
+$L['Packages_label'] = 'Packages';
+$L['Packages_header'] = 'Installed packages';
 $L['Review_header'] = 'Confirm system changes';
-$L['ApplySelection_label'] = 'Apply';
-$L['Run_label'] = 'Run installation';
-
-$L['GroupsToAdd_label'] = 'Add (${0}): ${1}';
-$L['GroupsToRemove_label'] = 'Remove (${0}): ${1}';
-$L['RequiredBy_label'] = 'Suggested by';
-$L['Transaction_summary_label'] = 'Modules changes';
-$L['Optional_packages_label'] = 'Choose optional components';
-$L['Empty_optionals_label'] = 'No optional components are available';
-
-$L['Tracker_header'] = 'Installing software';
-$L['Failed_events_label'] = 'One or more events (${0}) reported an error.  See the system logs for more details.';
-$L['Please_wait_label'] = 'Please wait...';
-$L['Installer_Message_Failure'] = 'Message from the install process: ${0}';
-$L['Installer_Generic_Failure'] = 'The install process exited unexpectedly. See system logs for details.';
-
+$L['Run_label'] = 'Apply changes';
+$L['Edit_label'] = 'Edit';
+$L['Remove_label'] = 'Remove';
+$L['EditModule_header'] = 'Select packages of module ${0} to install or remove';
+$L['Install_modules_label'] = 'Modules to add:';
+$L['Remove_modules_label'] = 'Modules to remove:';
+$L['Install_optionals_label'] = 'Optional packages to add:';
+$L['Remove_optionals_label'] = 'Optional packages to remove:';
+$L['updates_available_message'] = 'Software updates are available';
 $L['Everything_category_label'] = 'Everything';
 $L['Everything_category_description'] = 'Show groups from any category';
-$L['Back_label'] = 'Back';
-
 $L['noupdates_message'] = 'Installed software is up-to-date';
-$L['Update_label'] = 'Updates';
 $L['DoUpdate_label'] = 'Download and install';
-$L['Update_header'] = 'Available software updates';
-$L['update_error'] = "An error occurred!\n\${error}";
-$L['updates_label'] = 'Software updates';
 $L['update_success_message'] = 'Software update completed';
+$L['Changelog_label'] = 'Updates CHANGELOG';

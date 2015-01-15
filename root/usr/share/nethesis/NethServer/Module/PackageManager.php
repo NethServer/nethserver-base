@@ -27,13 +27,14 @@ namespace NethServer\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class PackageManager extends \Nethgui\Controller\CompositeController
+class PackageManager extends \Nethgui\Controller\CompositeController implements \Nethgui\Component\DependencyConsumer
 {
+
     /**
      *
      * @var string
      */
-    private $language;
+    private $language = 'en';
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $attributes)
     {
@@ -42,9 +43,10 @@ class PackageManager extends \Nethgui\Controller\CompositeController
 
     public function initialize()
     {
-        $this->addChild(new \NethServer\Module\PackageManager\Groups());
+        $this->addChild(new \NethServer\Module\PackageManager\Modules());
+        $this->addChild(new \NethServer\Module\PackageManager\Review());
         $this->addChild(new \NethServer\Module\PackageManager\Packages());
-        $this->addChild(new \NethServer\Module\PackageManager\Update());
+        $this->addChild(new \NethServer\Module\PackageManager\EditModule());
         parent::initialize();
     }
 
@@ -61,20 +63,24 @@ class PackageManager extends \Nethgui\Controller\CompositeController
         return 'C';
     }
 
-    public function prepareView(\Nethgui\View\ViewInterface $view)
-    {
-        $this->language = $view->getTranslator()->getLanguageCode();
-        parent::prepareView($view);
-    }
-
     private function readYumCompsDump()
     {
         static $data;
         if ( ! isset($data)) {
             $lang = $this->getRequest()->getLanguageCode() ? $this->getRequest()->getLanguageCode() : $this->language;
-            $data = json_decode($this->getPlatform()->exec(sprintf("/bin/env LANG=%s /usr/bin/sudo /sbin/e-smith/pkginfo grouplist", $this->mapLang($lang)))->getOutput(), TRUE);
+            $process = $this->getPlatform()->exec(sprintf("/bin/env LANG=%s /usr/bin/sudo /sbin/e-smith/pkginfo grouplist", $this->mapLang($lang)));
+            if ($process->getExitCode() !== 0) {
+                $this->notifications->error("Error\n" . $process->getOutput());
+            }
+            $data = json_decode($process->getOutput(), TRUE);
         }
         return $data;
+    }
+
+    public function yumGroups()
+    {
+        $data = $this->readYumCompsDump();
+        return isset($data['groups']) ? $data['groups'] : array();
     }
 
     public function yumCategories()
@@ -96,43 +102,67 @@ class PackageManager extends \Nethgui\Controller\CompositeController
          *
          * See http://fedoraproject.org/wiki/How_to_use_and_edit_comps.xml_for_package_groups
          */
-        $data = $this->readYumCompsDump();
-        $loader = new \ArrayObject();
+        $yumGroups = $this->yumGroups();
+        $yumCategories = $this->yumCategories();
 
-        $categories = $this->yumCategories();
-
-        $getCategories = function ($groupId) use ($categories) {
+        $categories = function ($groupId) use ($yumCategories) {
             $matches = array();
-            foreach($categories as $c) {
-                if(in_array($groupId, $c['groups'])) {
+            foreach ($yumCategories as $c) {
+                if (in_array($groupId, $c['groups'])) {
                     $matches[] = $c['id'];
                 }
             }
             return $matches;
         };
 
-        // Flatten the data structure:
-        foreach (array('installed', 'available') as $dState) {
-            if ( ! isset($data[$dState])) {
-                continue;
-            }
-
-            foreach ($data[$dState] as $dGroup) {
-                $loader[$dGroup['id']] = array(
-                    'id' => $dGroup['id'],
-                    'name' => $dGroup['name'],
-                    'description' => $dGroup['description'],
-                    'status' => $dState,
-                    'mpackages' => $dGroup['mandatory_packages'],
-                    'opackages' => $dGroup['optional_packages'],
-                    'cpackages' => $dGroup['conditional_packages'],
-                    'dpackages' => $dGroup['default_packages'],
-                    'categories' => implode(' ', $getCategories($dGroup['id']))
-                );
-            }
+        $loader = new \ArrayObject();
+        foreach ($yumGroups as $dGroup) {
+            $loader[$dGroup['id']] = array(
+                'id' => $dGroup['id'],
+                'name' => $dGroup['name'],
+                'description' => $dGroup['description'],
+                'status' => $dGroup['installed'] ? 'installed' : 'available',
+                'mpackages' => $dGroup['mandatory_packages'],
+                'opackages' => $dGroup['optional_packages'],
+                'cpackages' => $dGroup['conditional_packages'],
+                'dpackages' => $dGroup['default_packages'],
+                'categories' => implode(' ', $categories($dGroup['id']))
+            );
         }
 
         return $loader;
     }
 
+    public function setTranslator(\Nethgui\View\TranslatorInterface $t)
+    {
+        $this->language = $t->getLanguageCode();
+        return $this;
+    }
+
+    public function setUserNotifications(\Nethgui\Model\UserNotifications $n)
+    {
+        $this->notifications = $n;
+        return $this;
+    }
+
+    public function getDependencySetters()
+    {
+        return array(
+            'Translator' => array($this, 'setTranslator'),
+            'UserNotifications' => array($this, 'setUserNotifications')
+        );
+    }
+
+    public function prepareView(\Nethgui\View\ViewInterface $view)
+    {
+        if ($this->getRequest()->isMutation()) {
+            $this->getPlatform()->setDetachedProcessCondition('success', array(
+                'location' => array(
+                    'url' => $view->getModuleUrl('Modules?installSuccess'),
+                    'freeze' => TRUE,
+            )));
+            $this->getPlatform()->setDetachedProcessCondition('failure', array());
+        }
+        parent::prepareView($view);
+    }
 }

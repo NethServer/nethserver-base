@@ -72,23 +72,26 @@ def compsdump(yb):
     comps = {}
     comps["installed"] = []
     comps["available"] = []
+    comps["groups"] = []
     comps["categories"] = []
+
+    installed_packages = map(lambda p: p.name, yb.doRpmDBSetup())
+    package_state = lambda p: (p, p in installed_packages)
+    
     for g in yb.comps.get_groups():
         if not g.user_visible:
             continue
         tmp = {
             'id' : g.groupid,
             'name' : g.ui_name,
+            'installed': g.installed,
             'description' : g.ui_description,
-            'mandatory_packages': g.mandatory_packages.keys(),
-            'optional_packages': g.optional_packages.keys(),
-            'default_packages' : g.default_packages.keys(),
-            'conditional_packages': g.conditional_packages.keys()
+            'mandatory_packages': dict(map(package_state, g.mandatory_packages.keys())),
+            'optional_packages': dict(map(package_state, g.optional_packages.keys())),
+            'default_packages' : dict(map(package_state, g.default_packages.keys())),
+            'conditional_packages': dict(map(package_state, g.conditional_packages.keys()))
         }
-        if g.installed:
-            comps["installed"].append(tmp)
-        else:
-            comps["available"].append(tmp)
+        comps["groups"].append(tmp)        
 
     for c in yb.comps.get_categories():
         comps["categories"].append({
@@ -105,7 +108,10 @@ def check_update(yb, clean_all = False):
     if clean_all:
         subprocess.call(["/usr/bin/yum", "clean", "all"], stdout=open(os.devnull, "w"), stderr=subprocess.STDOUT)
     updates = map(lambda i: {'name': i[0], 'arch': i[1], 'epoch': i[2], 'version': i[3], 'release': i[4]}, yb.up.getUpdatesList())
-    print( simplejson.dumps(updates) )
+
+    changelog = subprocess.Popen(['/usr/bin/yum', 'changelog', '1', 'updates'], stdout=subprocess.PIPE, shell=False, env={'LANG': 'en_US.UTF-8'}).communicate()[0];
+
+    simplejson.dump({'updates': updates, 'changelog': changelog.decode('utf-8')}, sys.stdout)
 
 def main():
     if len(sys.argv) < 2:
