@@ -122,7 +122,7 @@ class PamValidator implements \Nethgui\System\ValidatorInterface, \Nethgui\Utili
             if ($exitCode === 0) {
                 $groups = array_filter(array_map('trim', explode(' ', implode(' ', $output))));
             } else {
-                $log->warning(sprintf('%s: failed to execute %s command. Code %d. Output: %s', __CLASS__, $command, $exitCode, implode("\n", $output)));
+                $this->getLog()->warning(sprintf('%s: failed to execute %s command. Code %d. Output: %s', __CLASS__, $command, $exitCode, implode("\n", $output)));
                 $groups = array();
             }
 
