@@ -9,8 +9,11 @@ $stepsTemplateEncoded = json_encode($stepsTemplate);
 $view->rejectFlag($view::INSET_FORM);
 $view->includeCss("
 .primaryContent { margin: 0; }
-#${wizId} > div.steps li.current { font-weight: bold }
-#${wizId} > div.steps li { padding: .5em; background-color: #eee; margin-bottom: .5em; font-weight: normal; border: none; list-style: decimal inside }
+#${wizId}  form, label { font-size: 120% }
+#${wizId} > h2 { font-size: 130% }
+#${wizId} > div.steps li { margin-right: 20px; }
+#${wizId} > div.steps li.current { font-weight: bold; color: white; margin-right: 0px; font-size: 120%; background: #2E2E2E; }
+#${wizId} > div.steps li { padding: .5em; background-color: #2E2E2E; margin-bottom: .5em; font-weight: normal; border: none; list-style: decimal inside }
 #headerMenu {display: none}
 @media screen and (min-width: 40em) {
 
