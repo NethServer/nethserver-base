@@ -27,46 +27,6 @@ namespace NethServer\Module\PackageManager\Modules;
 class Update extends \Nethgui\Controller\AbstractController implements \Nethgui\Component\DependencyConsumer
 {
 
-    private function checkUpdates()
-    {
-        static $data;
-
-        if (isset($data)) {
-            return $data;
-        }
-
-        $data = array();
-        $checkUpdateJob = $this->getPlatform()->exec('/usr/bin/sudo -n /sbin/e-smith/pkginfo check-update');
-        if ($checkUpdateJob->getExitCode() !== 0) {
-            $this->notifications->error("Error\n" . $checkUpdateJob->getOutput());
-            return array();
-        }
-        $data = json_decode($checkUpdateJob->getOutput(), TRUE);
-        return $data;
-    }
-
-    private function getUpdatesViewValue()
-    {
-        $data = $this->checkUpdates();
-
-        if (isset($data['updates'])) {
-            $updates = $data['updates'];
-            usort($updates, function($a, $b) {
-                return strcmp($a['name'], $b['name']);
-            });
-        } else {
-            $updates = array();
-        }
-
-        return $updates;
-    }
-
-    private function getChangelogViewValue()
-    {
-        $data = $this->checkUpdates();
-        return isset($data['changelog']) ? $data['changelog'] : '';
-    }
-
     public function process()
     {
         parent::process();
@@ -79,9 +39,9 @@ class Update extends \Nethgui\Controller\AbstractController implements \Nethgui\
     {
         parent::prepareView($view);
 
-        $view['updates'] = $this->getUpdatesViewValue();
+        $view['updates'] = $this->getParent()->getYumUpdates();
         $view['updates_count'] = count($view['updates']);
-        $view['changelog'] = $this->getChangelogViewValue();
+        $view['changelog'] = $this->getParent()->getYumChangelog();
 
         if ($view['updates_count'] > 0) {
             $this->notifications->warning($view->translate('updates_available_message', array('updates_count' => $view['updates_count'])));

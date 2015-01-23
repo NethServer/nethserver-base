@@ -127,7 +127,7 @@ class Installed extends \Nethgui\Controller\Collection\AbstractAction implements
 
     private function getCategories(\Nethgui\View\ViewInterface $view)
     {        
-        return $this->getParent()->getParent()->yumCategories();
+        return $this->getParent()->getYumCategories();
     }
 
     public function setUserNotifications(\Nethgui\Model\UserNotifications $n)

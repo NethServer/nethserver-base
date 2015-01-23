@@ -108,7 +108,7 @@ class EditModule extends \Nethgui\Controller\AbstractController
     public function nextPath()
     {
         if ($this->getRequest()->isMutation()) {
-            return 'Modules';
+            return './Modules';
         }
         return parent::nextPath();
     }

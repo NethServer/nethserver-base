@@ -38,19 +38,78 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
+        if( ! $this->getRequest()->isValidated()) {
+            $this->getAdapter()->setLoader(NULL);
+        } else {
+            $view->getCommandList()->show();
+        }
+                
         parent::prepareView($view);
 
         if ($this->getRequest()->hasParameter('installSuccess')) {
             $this->notifications->message($view->translate('package_success'));
         }
     }
-    
+
+    public function getYumCategories()
+    {
+        if( ! $this->getRequest()->isValidated()) {
+            return array();
+        }
+        
+        return $this->getParent()->yumCategories();
+    }
+
+    private function yumCheckUpdates()
+    {
+        static $data;
+
+        if( ! $this->getRequest()->isValidated()) {
+            return array();
+        }
+
+        if (isset($data)) {
+            return $data;
+        }
+
+        $data = array();
+        $checkUpdateJob = $this->getPlatform()->exec('/usr/bin/sudo -n /sbin/e-smith/pkginfo check-update');
+        if ($checkUpdateJob->getExitCode() !== 0) {
+            $this->notifications->error("Error\n" . $checkUpdateJob->getOutput());
+            return array();
+        }
+        $data = json_decode($checkUpdateJob->getOutput(), TRUE);
+        return $data;
+    }
+
+    public function getYumUpdates()
+    {
+        $data = $this->yumCheckUpdates();
+
+        if (isset($data['updates'])) {
+            $updates = $data['updates'];
+            usort($updates, function($a, $b) {
+                return strcmp($a['name'], $b['name']);
+            });
+        } else {
+            $updates = array();
+        }
+
+        return $updates;
+    }
+
+    public function getYumChangelog()
+    {
+        $data = $this->yumCheckUpdates();
+        return isset($data['changelog']) ? $data['changelog'] : '';
+    }
+
     public function renderIndex(\Nethgui\Renderer\Xhtml $view)
     {
         $view->includeFile('Nethgui/Js/jquery.nethgui.tabs.js');
         $view->includeFile('Nethgui/Js/jquery.nethgui.controller.js');
 
-        $panel = $view->panel()->setAttribute('class', 'ModulesWrapped');
+        $panel = $view->panel()->setAttribute('class', 'ModulesWrapped')->setAttribute('id', 'PackageManager');
         $header = $view->header()->setAttribute('template', $view->translate('Modules_header'));
 
         $tabs = $view->tabs()->setAttribute('receiver', '');
@@ -72,9 +131,13 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
             $tabs->insert($action);
         }
 
+        $element  = json_encode($view->getUniqueId());
+        $url = json_encode($view->getModuleUrl());
+        $view->includeJavascript(sprintf('(function($){$(function(){$.Nethgui.Server.ajaxMessage({url:%s, freezeElement:$("#" + %s)})})})(jQuery);', $url, $element));
+
         return $panel->insert($header)->insert($tabs);
     }
-    
+
     public function setUserNotifications(\Nethgui\Model\UserNotifications $n)
     {
         $this->notifications = $n;
@@ -85,4 +148,5 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
     {
         return array('UserNotifications' => array($this, 'setUserNotifications'));
     }
+
 }

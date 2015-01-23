@@ -126,7 +126,7 @@ class Available extends \Nethgui\Controller\Collection\AbstractAction implements
     private function getCategoriesViewValue(\Nethgui\View\ViewInterface $view)
     {
         $groups = array();
-        $categories = $this->getParent()->getParent()->yumCategories();
+        $categories = $this->getParent()->getYumCategories();
 
         if (count($categories) === 0) {
             return array();
