@@ -10,7 +10,9 @@ i moduli e i pacchetti opzionali da installare.  Premendo il pulsante
 rosso :guilabel:`Aggiungi` viene richiesta conferma, prima di avviare
 il processo di installazione.
 
-La lista può essere filtrata per categoria, premendo i pulsanti blu.
+La lista può essere filtrata per categoria, premendo i pulsanti che le
+stanno al di sopra.  La categoria speciale :guilabel:`Tutto` mostra la
+lista completa.
 
 .. NOTE::
    

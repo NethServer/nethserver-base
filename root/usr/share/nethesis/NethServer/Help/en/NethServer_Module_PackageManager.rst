@@ -6,11 +6,13 @@ Available
 =========
 
 The :guilabel:`Available` tab allows selecting modules and optional
-packages to install from a list. Pushing the red :guilabel:`Add`
+packages to install from a list. Pushing the :guilabel:`Add`
 button asks for confirmation, before starting the installation
 process.
 
-The list can be filtered by category, by pushing the blue buttons.
+The list can be filtered by category, by pushing the buttons above
+it. The special :guilabel:`Everything` category shows the complete
+list.
 
 .. NOTE::
    
