@@ -79,3 +79,4 @@ $L['orange_label'] = 'DMZ (orange)';
 $L['red_label'] = 'Internet (red)';
 $L['blue_label'] = 'Ospiti (blue)';
 $L['alias_label'] = 'Alias';
+$L['hotspot_label'] = 'Hotspot';
