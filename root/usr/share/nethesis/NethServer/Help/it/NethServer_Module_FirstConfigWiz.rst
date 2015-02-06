@@ -8,11 +8,9 @@ automaticamente.
 
 In fondo ad ogni pagina sono mostrati i seguenti bottoni:
 
-:guilabel:`Salva`
-    Salva le modifiche e mostra la pagina successiva
-
-:guilabel:`Salta`
-    Ignora le modifiche e mostra la pagina succesiva
-
 :guilabel:`Indietro`
     Torna alla pagina precedente
+
+:guilabel:`Avanti`
+    Salva le modifiche e mostra la pagina successiva
+
