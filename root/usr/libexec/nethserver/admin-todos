@@ -1,0 +1,61 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2015 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use JSON;
+use Encode qw(encode decode);
+use strict;
+use Carp;
+
+my $errors = 0;
+my $count = 0;
+open(STDERR, '| /bin/logger -t admin-todos');
+
+print '[';
+
+foreach(glob '/etc/nethserver/todos.d/*') {
+    my $output = qx($_);
+    $output =~ s/(^\s+|\s+$)//;
+    if($? != 0) {
+	print STDERR "[ERROR] admin-todos: $_ exit code $?\n";
+	$errors ++;
+	next;
+    }
+    if( ! $output) {
+	next;
+    }
+    my $data = eval{ JSON::decode_json(decode('UTF-8', $output)); };
+    if( ! defined $data) {
+	$errors ++;
+	next;
+    }
+    if($count) {
+	print ',';
+    }
+    print JSON::encode_json($data);
+    $count ++;
+}
+
+print ']';
+
+close(STDERR);
+
+exit($errors == 0 ? 0 : 1);
