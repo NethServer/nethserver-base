@@ -33,6 +33,7 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
         $this->setIndexAction(new \NethServer\Module\PackageManager\Modules\Available());
         $this->addChild(new \NethServer\Module\PackageManager\Modules\Installed());
         $this->addChild(new \NethServer\Module\PackageManager\Modules\Update());
+        $this->addChild(new \NethServer\Module\AdminTodo());
         parent::initialize();
     }
 
@@ -43,12 +44,12 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
         } else {
             $view->getCommandList()->show();
         }
-                
-        parent::prepareView($view);
 
         if ($this->getRequest()->hasParameter('installSuccess')) {
+            $this->getAction('AdminTodo')->emitNotifications = TRUE;
             $this->notifications->message($view->translate('package_success'));
-        }
+        }                
+        parent::prepareView($view);        
     }
 
     public function getYumCategories()

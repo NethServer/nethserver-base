@@ -44,7 +44,8 @@ foreach($view->getModule()->getChildren() as $child) {
     echo $view->inset($child->getIdentifier());
 }
 
-$moduleUrl = json_encode($view->getModuleUrl("/Dashboard/Services"));
+$module1Url = json_encode($view->getModuleUrl("/AdminTodo?notifications"));
+$module2Url = json_encode($view->getModuleUrl("/Dashboard/Services"));
 
 $view->includeJavascript("
 (function ( $ ) {
@@ -52,8 +53,13 @@ $view->includeJavascript("
   function loadPage() {
         $.Nethgui.Server.ajaxMessage({
             isMutation: false,
-            url: $moduleUrl
+            url: $module1Url
         });
+        $.Nethgui.Server.ajaxMessage({
+            isMutation: false,
+            url: $module2Url
+        });
+
   } 
 
   $(document).ready(function() {

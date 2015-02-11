@@ -24,7 +24,7 @@ namespace NethServer\Module\Dashboard;
  * Dashboard with plugin behaviour
  * First tab is always present and has plugin behaviour. All other tabs can be plugins.
  */
-class SystemStatus extends \Nethgui\Controller\ListComposite
+class SystemStatus extends \Nethgui\Controller\ListComposite implements \Nethgui\Component\DependencyConsumer
 {
   
     public $sortId = 00;
@@ -46,4 +46,22 @@ class SystemStatus extends \Nethgui\Controller\ListComposite
             return 1;
         }
     }
+
+    public function prepareView(\Nethgui\View\ViewInterface $view)
+    {
+        parent::prepareView($view);
+        $this->notifications->defineTemplate('adminTodo', \NethServer\Module\AdminTodo::TEMPLATE, 'bg-yellow');
+    }
+
+    public function setUserNotifications(\Nethgui\Model\UserNotifications $n)
+    {
+        $this->notifications = $n;
+        return $this;
+    }
+
+    public function getDependencySetters()
+    {
+        return array('UserNotifications' => array($this, 'setUserNotifications'));
+    }
+
 }
