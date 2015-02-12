@@ -1,7 +1,7 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: @@VERSION@@
-Release: @@RELEASE@@
+Version: 2.5.5
+Release: 50%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
 BuildArch: noarch
