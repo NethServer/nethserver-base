@@ -37,6 +37,12 @@ class AdminTodo extends \Nethgui\Controller\AbstractController implements \Nethg
 
     public $emitNotifications = FALSE;
 
+    /**
+     *
+     * @var \Nethgui\Controller\RequestInterface
+     */
+    private $origRequest;
+
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
         parent::bind($request);
@@ -46,12 +52,12 @@ class AdminTodo extends \Nethgui\Controller\AbstractController implements \Nethg
     private function readTodos()
     {
         // FIXME: language mapping must be provided by Nethgui framework!
-        $langCode = $this->getRequest()->getLanguageCode();
+        $langCode = $this->origRequest->getLanguageCode();
         $langMap = array(
-            'it' => 'it_IT.utf-8',
-            'en' => 'en_US.utf-8'
+            'it' => 'it_IT.UTF-8',
+            'en' => 'en_US.UTF-8'
         );
-        $lang = isset($langMap[$langCode]) ? $langMap[$langCode] : 'en_US.utf-8';        
+        $lang = isset($langMap[$langCode]) ? $langMap[$langCode] : 'en_US.UTF-8';
         $data = json_decode($this->getPlatform()->exec(sprintf("/bin/env LANG=%s /usr/bin/sudo -n /usr/libexec/nethserver/admin-todos", $lang))->getOutput(), TRUE);
         return $data === NULL ? array() : $data;
     }
@@ -80,9 +86,18 @@ class AdminTodo extends \Nethgui\Controller\AbstractController implements \Nethg
         return $this;
     }
 
+    public function setOriginalRequest(\Nethgui\Controller\RequestInterface $request)
+    {
+        $this->origRequest = $request;
+        return $this;
+    }
+
     public function getDependencySetters()
     {
-        return array('UserNotifications' => array($this, 'setUserNotifications'));
+        return array(
+            'UserNotifications' => array($this, 'setUserNotifications'),
+            'OriginalRequest' => array($this, 'setOriginalRequest'),
+            );
     }
 
 

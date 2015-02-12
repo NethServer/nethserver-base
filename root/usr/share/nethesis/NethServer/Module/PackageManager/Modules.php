@@ -118,6 +118,10 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
         foreach ($this->getChildren() as $module) {
             $moduleIdentifier = $module->getIdentifier();
 
+            if($moduleIdentifier === 'AdminTodo') {
+                continue;
+            }
+
             $flags = \Nethgui\Renderer\WidgetFactoryInterface::INSET_WRAP;
 
             if ($this->needsAutoFormWrap($module)) {
