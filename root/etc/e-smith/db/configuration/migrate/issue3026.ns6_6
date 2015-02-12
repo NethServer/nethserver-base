@@ -3,7 +3,7 @@
   # issue3026 -- remove on 6.7 release
   #
   use esmith::ConfigDB;
-  my $cdb = esmith::ConfigDB->open_ro();
+  my $cdb = esmith::ConfigDB->open();
 
   $cdb->get_value_and_delete('AdminIsNotRoot');
 
