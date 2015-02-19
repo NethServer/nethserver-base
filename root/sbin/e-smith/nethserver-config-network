@@ -1,0 +1,174 @@
+#!/usr/bin/perl -w
+#
+# Copyright (C) 2014 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see .
+#
+use Getopt::Std;
+use esmith::NetworksDB;
+use JSON;
+use Encode qw(encode decode);
+use esmith::event;
+use strict;
+
+my %opts = ();
+getopt('t:', \%opts);
+
+$SIG{ALRM} = sub { die("Timeout\n"); };
+
+my $ndb = esmith::NetworksDB->open();
+
+my @lost_interfaces = read_lost_interfaces();
+
+# the role here is a string prefix because in logical interfaces it is
+# "recursively inherited":
+my @lost_greens = grep { $_->{'role'} =~ m/^green/  } @lost_interfaces;
+if ( ! @lost_greens) {
+    exit 0; # nothing to do
+}
+
+my @free_interfaces = read_free_interfaces();
+
+if (scalar(@free_interfaces) == 1) {
+    
+    my $free = shift @free_interfaces;
+    my $green = shift @lost_greens;
+   
+    $ndb->set_prop($green->{'name'}, 'hwaddr', $free->{'hwaddr'});
+    my $record = $ndb->get($free->{'name'});
+    if($record && ! $record->prop('role')) {
+	$record->delete();
+    }
+    
+} elsif(scalar(@free_interfaces) > 1) {
+    foreach my $green (@lost_greens) {
+	print_choices($green, \@free_interfaces);
+        my $choicenb = read_choice(scalar(@free_interfaces));
+	if($choicenb < 0 || $choicenb >= scalar @free_interfaces) {
+	    exit 0;
+	}
+	$ndb->set_prop($green->{'name'}, 'hwaddr', $free_interfaces[$choicenb]->{'hwaddr'});
+	my $record = $ndb->get($free_interfaces[$choicenb]->{'name'});
+	if($record && ! $record->prop('role')) {
+	    $record->delete();
+	}
+    }
+
+} else {
+    warn "[WARNING] no free interfaces available!\n";
+    exit 2;
+}
+
+$ndb->close();
+
+#
+# Apply configuration
+#
+print "\nReconfiguring network...\n";
+exit 1 if(event_signal('interface-update') == 0);
+exit 0;
+
+# -------------------------------------------------------------------
+# Functions
+# -------------------------------------------------------------------
+
+#
+# Lost interfaces are present in Networks DB and have a role or are
+# parts of logical interfaces, but their MAC address does not match
+# with present interfaces.
+#
+sub read_lost_interfaces
+{
+    local $/;
+    open(LH, '/usr/libexec/nethserver/eth-unmapped |');
+    my $data = decode('UTF-8', <LH>);
+    close(LH);
+    return @{JSON::decode_json($data)};
+}
+
+
+#
+# An interface is considered "free" when it is not in DB or it has not
+# a role assigned.
+#
+sub read_free_interfaces
+{
+    my @fields = qw(name hwaddr type model driver speed link);
+    my @free = ();
+    open(LH, '/usr/libexec/nethserver/nic-info |');    
+    while(my $line = decode('UTF-8', <LH>)) {
+	chomp $line;
+	my %H = ();
+	@H{@fields} = split(/,/, $line);
+	my $rec = $ndb->get($H{'name'});
+
+	# NIC is in networks DB, has a role and a matching MAC:
+	# consider it "configured" and skip it:
+	if(defined $rec 
+	   && $rec->prop('role') 
+	   && ($rec->prop('hwaddr') =~ m/^$H{'name'}$/i) ) {
+	    next;
+	}
+
+	# in any other case, consider the interface "free":
+	push @free, \%H;
+    }
+    close(LH);
+    return @free;
+}
+
+
+sub print_choices 
+{
+    my $green = shift;
+    my $choices = shift;
+    
+    my $arr = shift;
+    my $k = 1;
+    print "\033[2J\n------------------\n";
+    print "   ! WARNING !\n";
+    print "------------------\n\n";
+    print "Assign new network device to $green->{'name'} $green->{'role'}\n";
+
+    print "\n 0) SKIP -- manual configuration required\n\n";
+    foreach (@{$choices}) {
+        printf("%2d) [%-17s] %s %s\n", $k, $_->{'hwaddr'}, $_->{'name'}, ($_->{'link'} ? 'status UP' : 'status down'));
+	printf("    %-74s\n\n", substr($_->{'model'}, 0, 74));
+        $k++;
+    }
+}
+
+sub read_choice
+{
+    my $max = shift;
+
+    if($opts{'t'}) {
+	eval {
+	    alarm $opts{'t'};
+	};
+    }
+    my $i = 'xxx';
+    while($i !~ m/^\d+$/) {
+	printf("\nPlease, type your choice number (0-%d), then press ENTER: ", $max);
+	$i = <STDIN>;
+	alarm 0;	
+	chomp($i);
+    }
+    return int($i) - 1;
+}
+
+

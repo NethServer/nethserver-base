@@ -28,6 +28,7 @@
 use strict;
 use File::Basename;
 use esmith::NetworksDB;
+use Encode qw(encode decode);
 
 my $DB = '/sbin/e-smith/db';
 my %config;
@@ -48,6 +49,25 @@ sub source_bash {
     }
     close FILE;
 }
+
+#
+# Create ethernet entries in networks DB 
+# (replaces update-networks-db script)
+#
+sub initialize_networks_db
+{
+    my @fields = qw(name hwaddr type model driver speed link);
+    my $idb = esmith::NetworksDB->open();
+    open(LH, '/usr/libexec/nethserver/nic-info |');
+    while(my $line = decode('UTF-8', <LH>)) {
+	chomp $line;
+	my %H = ();
+	@H{@fields} = split(/,/, $line);
+	$idb->new_record($H{'name'}, {'type' => 'ethernet', 'hwaddr' => $H{'hwaddr'}, 'role' => ''});
+    }
+    close(LH);
+}
+
 
 # Read DNS configuration
 open FILE, '/etc/resolv.conf' or die $!;
@@ -78,7 +98,7 @@ system("$DB configuration set SystemName $host");
 system("$DB configuration set DomainName $domain");
 
 # Grab all ethernet interfaces
-system("/usr/libexec/nethserver/update-networks-db");
+initialize_networks_db();
 
 # Green interface will be the one used for default gateway
 $config{'green_ipaddr'} = "";
