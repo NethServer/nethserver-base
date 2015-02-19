@@ -13,6 +13,10 @@ echo $view->fieldsetSwitch('bootproto', 'none', $view::FIELDSETSWITCH_EXPANDABLE
 echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_CANCEL | $view::BUTTON_HELP);
 
 $view->includeCSS("
+  tr.free td:first-child  {
+      font-weight: normal;
+      color: #333;
+  }
   tr td:first-child  {
       font-weight: bold;
       color: #333;

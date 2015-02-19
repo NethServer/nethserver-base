@@ -1,0 +1,112 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2015 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use esmith::NetworksDB;
+use JSON;
+use strict;
+
+my $ndb = esmith::NetworksDB->open_ro() || die("Could not open NetworksDB");
+
+sub file_contents
+{
+    my $filename = shift;
+    my $content;
+    open(my $fh, '<', $filename) or warn "[WARNING] cannot open file $filename\n";
+    {
+	local $/;
+	$content = <$fh>;	
+    }
+    close($fh);
+    return $content;
+}
+
+sub interface_is_present
+{
+    my $props = shift;
+    my $devlink = "/sys/class/net/" . $props->{'key'};
+    
+    if( -e $devlink && grep(m|^\s*$props->{'hwaddr'}\s*$|i, file_contents("$devlink/address"))) {
+	return 1;
+    }
+    
+    return 0;
+}
+
+sub resolve_attributes_recursive
+{
+    my $record = shift;
+    my $watchdog = shift;
+
+    if( ! (defined $record) || ($watchdog > 10)) {
+	return ();
+    }
+    
+    my %h = ( 
+	'name' => $record->key, 
+	'role' => $record->prop('role') || '' ,
+	'bootproto' => $record->prop('bootproto') || 'none',
+	'ipaddr' => $record->prop('ipaddr') || '',
+	'hwaddr' => $record->prop('hwaddr') || '',       
+	);
+
+    
+    my %p = ();
+    
+    if($record->prop('role') eq 'bridged') {
+	%p = resolve_attributes_recursive($ndb->get($record->prop('bridge')), $watchdog + 1);	
+    } elsif($record->prop('role') eq 'slave') {
+	%p = resolve_attributes_recursive($ndb->get($record->prop('master')), $watchdog + 1);
+    }
+
+    if(%p) {
+	foreach (keys %p) {
+	    if($_ eq 'name' || $_ eq 'hwaddr') {
+		next;
+	    }
+	    if($_ eq 'role') {
+		$h{'role'} = sprintf("%s(%s)", $p{'role'}, $p{'name'}) ;
+	    } else {
+		$h{$_} = $p{$_};
+	    }
+	}
+    }
+
+    return %h;
+}
+
+my @unmapped = ();
+
+foreach ($ndb->ethernets()) {
+    # Ignore interfaces without role
+    if( ! $_->prop('role')) {
+	next;
+    }
+    
+    if(interface_is_present({$_->props, 'key' => $_->key})) {
+	next;
+    }
+    
+    push @unmapped, {resolve_attributes_recursive($_)};
+}
+
+print JSON::encode_json(\@unmapped) . "\n";
+

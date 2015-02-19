@@ -87,8 +87,8 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
         }
 
         $v['dev'] = isset($this->parameters['device']) ? $this->parameters['device'] : '';
-        $v['mac'] = \strtoupper(isset($nicInfo[1]) ? $nicInfo[1] : '');
-        $v['bus'] = \strtoupper(isset($nicInfo[2]) ? $nicInfo[2] : "");
+        $v['mac'] = \strtolower(isset($nicInfo[1]) ? $nicInfo[1] : '');
+        $v['bus'] = \strtolower(isset($nicInfo[2]) ? $nicInfo[2] : "");
         $v['model'] = isset($nicInfo[3]) ? $nicInfo[3] : "";
         $v['driver'] = isset($nicInfo[4]) ? $nicInfo[4] : "";
         $v['speed'] = isset($nicInfo[5]) && $nicInfo[5] ? $nicInfo[5] : "0";

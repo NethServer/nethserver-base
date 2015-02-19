@@ -72,11 +72,29 @@ class CreateLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
         parent::validate($report);
     }
 
+    private function getNicInfo()
+    {
+        static $info;
+        if (isset($info)) {
+            return $info;
+        }
+
+        $data = $this->getPlatform()->exec('/usr/libexec/nethserver/nic-info')->getOutputArray();
+        $info = array();
+        foreach($data as $line) {
+            $values = str_getcsv($line);
+            $info[$values[0]] = $values[1];
+        }
+        return $info;
+    }
+
     private function getBondParts()
     {
         $parts = array();
+        $nicInfo = $this->getNicInfo();
         foreach ($this->getAdapter() as $key => $props) {
-            if ($props['type'] == 'ethernet') {
+            $isPresent = isset($nicInfo[$key]) && strtolower($nicInfo[$key]) === strtolower($props['hwaddr']);
+            if ($props['type'] == 'ethernet' && $isPresent) {
                 $parts[] = $key;
             }
         }
@@ -86,7 +104,12 @@ class CreateLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
     private function getBridgeParts()
     {
         $parts = array();
+        $nicInfo = $this->getNicInfo();
         foreach ($this->getAdapter() as $key => $props) {
+            $isPresent = isset($nicInfo[$key]) && strtolower($nicInfo[$key]) === strtolower($props['hwaddr']);
+            if($props['type'] === 'ethernet' && ! $isPresent) {
+                continue;
+            }
             if ($props['type'] != 'bridge' && $props['type'] != 'alias') {
                 $parts[] = $key;
             }

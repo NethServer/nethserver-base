@@ -1,0 +1,50 @@
+#!/usr/bin/python
+
+#
+# Copyright (C) 2015 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+import gettext
+import json
+import os
+import sys
+
+out = ''
+
+try:
+    out = os.popen('/usr/libexec/nethserver/eth-unmapped').read()
+except:	
+    pass
+
+if(not out):
+    exit(1)
+
+unmapped_interfaces = json.loads(out, 'UTF-8')
+
+if(len(unmapped_interfaces) > 0):
+    gettext.install('nethserver-base')
+    msg = {
+        "action": {
+            "label": gettext.ngettext('Assign network device', 'Assign network devices', len(unmapped_interfaces)).format(len(unmapped_interfaces)),
+            "url": '/NetworkAdapter?renameInterface'
+        },
+        "text": gettext.ngettext('There is one unbounded network interface', 'There are {0} unbounded network interfaces'  , len(unmapped_interfaces)).format(len(unmapped_interfaces))
+    }
+    json.dump(msg, sys.stdout)
+	    

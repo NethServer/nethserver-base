@@ -2,69 +2,39 @@
 Network
 =======
 
-Change settings for network interfaces. Network interfaces in the system are automatically detected.
+The table shows the list of physical (eth, wlan, ...) and logical
+(bridge, bond, vlan, alias) interfaces present on the system.
 
-State
-=====
+:guilabel:`Role` column
 
-Link
-    Indicates whether the adapter is connected to any network device (eg. Ethernet
-    cable connected to the switch).
+   indicates the destination use of the interface, for example:	  
+   
+   * Green: local LAN
+   * Blue: guest network
+   * Orange: DMZ network
+   * Red: Internet, public IP
 
-Model
-    Model of used network card.
+:guilabel:`New interface` button
 
-Speed
-    Indicates the speed that network card has negotiated (expressed in Mb/s).
+   Starts the procedure that creates logical interfaces. Follow
+   on screen instructions, then confirm.
 
-Driver
-    The driver the system uses to control the card.
+:guilabel:`Assign interfaces` button
+	  
+   Opens a page that allows assigning a new network interface card
+   (NIC) to an existing device record.  The page lists all physical
+   network cards and for each card a drop down menu control, where to
+   pick a device record, if available.
 
-Bus
-    Network card physical bus (eg, PCI, USB).
+:guilabel:`Edit` action
 
+   Change device settings.
+   
+:guilabel:`Create IP alias` action
 
-Edit
-====
+   Create a new IP alias for the device.
 
-Change settings of the network interface
+:guilabel:`Resign role` action
 
-Card
-    Name of the network interface. This field can not be
-    changed.
-
-MAC Address
-    Physical address of the network card. This field can not be
-    changed.
-
-Role
-    The role indicates the destination use of the interface, for example:
-
-    * Green: local LAN
-    * Blue: guest network
-    * Orange: DMZ network
-    * Red: Internet, public IP
-
-
-Mode
-    Indicates which method will be used to assign the IP address to
-    the network adapter. Possible values are *Static* and *DHCP*.
-
-Static
-    The configuration is statically allocated.
-
-    * IP Address: IP address of the network card
-    * Netmask: netmask of the network card
-    * Gateway: server default gateway
-
-DHCP
-    The configuration is dynamically allocated (available only for
-    RED interfaces)
-
-Logical interfaces
-    Logical interfaces are special network configurations. Supported logical interfaces are:
-
-    * Alias: associate more than one IP address to an existing network interface. The alias has the same role of its associated physical interface
-    * Bond: arrange two or more network interfaces, provides load balancing and fault tolerance
-    * Bridge: connect two different networks, it's often used for bridged VPN and virtual machine
-    * VLAN (Virtual Local Area Network): create two or more physically separated networks using a single interface
+   Resign the device from its role.
+   

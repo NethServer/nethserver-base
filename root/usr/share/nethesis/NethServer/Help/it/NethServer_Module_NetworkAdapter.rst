@@ -2,70 +2,40 @@
 Rete
 ====
 
-Cambia impostazioni delle interfacce di rete. Le interfacce di rete presenti nel sistema sono rilevate automaticamente.
+La tablella mostra la lista delle interfacce fisiche (eth, wlan, ...)
+e logiche (bridge, bond, vlan, alias) presenti nel sistema.
 
-Stato
-=====
+Colonna :guilabel:`Ruolo`
 
-Link
-    Indica se la scheda è collegata a qualche apparato di rete (ad es. cavo
-    ethernet collegato allo switch aziendale).
+   Indica la destinazione d'usoo dell'interfaccia. Per esempio
 
-Modello
-    Modello della scheda di rete utilizzata.
+   * Green: LAN
+   * Blue: rete ospiti
+   * Orange: DMZ
+   * Red: Internet, pubblica
 
-Velocità
-    Indica la velocità che la scheda di rete ha negoziato (espressa in Mb/s).
+Pulsante :guilabel:`Nuova interfaccia`
 
-Driver
-    Il Driver che il sistema utilizza per pilotare la scheda.
+   Avvia la procedura che crea le interfacce logiche. Seguire le
+   istruzioni delle schermate e alla fine confermare.
 
-Bus
-    Su quale bus è collegata la scheda di rete (es: pci, usb).
+Pulsante :guilabel:`Assegna interfacce`
 
+   Apre una pagina che consente di assegnare una nuova interfaccia di
+   rete ad un device precedentemente registrato. La pagina elenca
+   tutte le schede di rete fisiche e per ogni scheda un menù a tendina
+   dove poter scegliere il device, se disponibile.
 
+Azione :guilabel:`Modifica`
 
-Modifica
-========
+   Cambia le impostazioni del device.
 
-Modifica le impostazioni dell'interfaccia di rete
+Azione :guilabel:`Crea un alias IP`
 
-Scheda
-    Nome dell'interfaccia di rete. Questo campo non può essere
-    modificato.
+   Crea un nuovo alias IP per il device.
 
-Indirizzo MAC
-    Indirizzo fisico della scheda di rete. Questo campo non può essere
-    modificato.
+Azione :guilabel:`Libera ruolo`
 
-Ruolo
-    Il ruolo indica la destinazione d'uso dell'interfaccia, ad esempio:
+   Toglie al device il ruolo assegnato.
 
-    * Green: LAN locale
-    * Blue: rete ospiti
-    * Orange: rete DMZ
-    * Red: Internet, IP pubblico
-    
-Modalità
-    Indica quale metodo verrà usato per attribuire l'indirizzo IP alla
-    scheda di rete, valori i possibili sono *Statico* e *DHCP*.
-
-Statico
-    La configurazione è attribuita staticamente.
-
-    * Indirizzo IP: indirizzo IP della scheda di rete
-    * Netmask: netmask della scheda di rete
-    * Gateway: default gateway del server
-
-DHCP
-    La configurazione è attribuita dinamicamente (disponibile solo per interfacce
-    RED)
-
-Interfacce logiche
-    Le interfacce logiche sono speciali configurazioni di rete. I tipi supportati sono:
-
-    * Alias: associa uno o più IP ad una scheda esistenza. L'aloas ha lo stesso ruolo della scheda fisica associata
-    * Bond: combina due o più interfacce, arantisce bilanciamento del traffico e tolleranza ai guasti
-    * Bridge: collega due reti distinte, è spesso utilizzata per le VPN in bridge e le macchine virtuali
-    * VLAN (Virtual Local Area Network): crea due o più reti fisicamente separate usando una singola interfaccia
 
