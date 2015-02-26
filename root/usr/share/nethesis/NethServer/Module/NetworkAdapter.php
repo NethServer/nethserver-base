@@ -68,12 +68,14 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
             // Creation of logical interface wizard
             ->addChild(new \NethServer\Module\NetworkAdapter\SetIpAddress())
             ->addTableAction(new \NethServer\Module\NetworkAdapter\CreateLogicalInterface())
+            ->addTableAction(new \NethServer\Module\NetworkAdapter\RenameInterface())
             ->addChild(new \NethServer\Module\NetworkAdapter\ConfirmInterfaceCreation())
 
             // Row actions
             ->addRowAction(new \NethServer\Module\NetworkAdapter\Edit())
             ->addRowAction(new \NethServer\Module\NetworkAdapter\DeleteLogicalInterface())
             ->addRowAction(new \NethServer\Module\NetworkAdapter\ReleasePhysicalInterface())
+            ->addRowAction(new \NethServer\Module\NetworkAdapter\CleanPhysicalInterface())
             ->addRowAction(new \NethServer\Module\NetworkAdapter\CreateIpAlias())
             ->addTableAction(new \Nethgui\Controller\Table\Help())
         ;
@@ -89,8 +91,14 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
 
     public function prepareViewForColumnKey(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
-        if ( ! isset($values['role']) || ! $values['role']) {
+        $nicInfo = $this->getNicInfo();
+        $isPresent = isset($nicInfo[$key]) && strtolower($nicInfo[$key]) === strtolower($values['hwaddr']);
+        $isLogicalDevice = in_array($values['type'], array('alias', 'bridge', 'bond', 'vlan'));
+
+        if ( ! $isPresent && ! $isLogicalDevice) {
             $rowMetadata['rowCssClass'] = trim($rowMetadata['rowCssClass'] . ' user-locked');
+        } elseif ( ! isset($values['role']) || ! $values['role']) {
+            $rowMetadata['rowCssClass'] = trim($rowMetadata['rowCssClass'] . ' free');
         }
         return strval($key);
     }
@@ -139,13 +147,15 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
     public function prepareViewForColumnActions(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
         $cellView = $action->prepareViewForColumnActions($view, $key, $values, $rowMetadata);
+        $nicInfo = $this->getNicInfo();
 
         $role = isset($values['role']) ? $values['role'] : '';
 
+        $isPresent = isset($nicInfo[$key]) && strtolower($nicInfo[$key]) === strtolower($values['hwaddr']);
         $isLogicalDevice = in_array($values['type'], array('alias', 'bridge', 'bond', 'vlan'));
         $isPhysicalInterface = in_array($values['type'], array('ethernet'));
         $isEditable = $values['type'] !== 'alias' && ! in_array($role, array('slave', 'bridged'));
-        $canHaveIpAlias = $values['type'] !== 'alias' && ! in_array($role, array('slave', 'bridged'));
+        $canHaveIpAlias = $isPresent && $values['type'] !== 'alias' && ! in_array($role, array('slave', 'bridged'));
 
         if ( ! $isLogicalDevice) {
             unset($cellView['DeleteLogicalInterface']);
@@ -163,7 +173,29 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
             unset($cellView['CreateIpAlias']);
         }
 
+        if ($isPresent || $isLogicalDevice) {
+            unset($cellView['CleanPhysicalInterface']);
+        } else {
+            unset($cellView['Edit']);
+        }
+
         return $cellView;
+    }
+
+    private function getNicInfo()
+    {
+        static $info;
+        if (isset($info)) {
+            return $info;
+        }
+
+        $data = $this->getPlatform()->exec('/usr/libexec/nethserver/nic-info')->getOutputArray();
+        $info = array();
+        foreach($data as $line) {
+            $values = str_getcsv($line);
+            $info[$values[0]] = $values[1];
+        }
+        return $info;
     }
 
     public function getDeviceParts($device)
@@ -219,5 +251,12 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
         }
         return in_array($A[$device]['role'], array('slave', 'bridged'));
     }
-    
+
+    public function prepareView(\Nethgui\View\ViewInterface $view)
+    {
+        parent::prepareView($view);
+        if($this->getRequest()->hasParameter('renameSuccess')) {
+            $view->getCommandList('read')->show();
+        }
+    }
 }

@@ -1,58 +1,115 @@
-#!/bin/sh
+#!/bin/bash
 
-card=$1
-if [ "x$card" == "x" ]; then
-    exit 1
+#
+# Copyright (C) 2015 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+if [ "x${1}" == "x" ]; then
+    cards=($(ls -A -1 /sys/class/net))
+else
+    cards=($1)
 fi
 
-#Check if this is an Ethernet device (type=1)
-if [ `cat /sys/class/net/$card/type` == "1" ]; then
-	hwaddr=`cat /sys/class/net/$card/address`
+for card in ${cards[@]}; do
 
-	#Check that is no VLAN if
-	if [[ ! "$card" =~ "[.]" ]]; then
+    hwaddr=
+    type=
+    model=
+    driver=
+    speed=
+    link=
 
-                # Check if this not a bridge or a tun/tap
-                if [ ! -e /sys/class/net/$card/brforward ] && [ ! -e /sys/class/net/$card/tun_flags ]; then
+    # Error on non-existing devices
+    if ! [ -e "/sys/class/net/${card}" ]; then
+	echo "[ERROR] nic-info: interface ${card} does not exist" 1>&2
+	exit 1
+    fi
 
-			#Check if mac is valid (not 00:00... or FF:FF...)
-			if [ ! "$hwaddr" == "00:00:00:00:00:00" ];then
-				if [ ! "$hwaddr" == "ff:ff:ff:ff:ff:ff" ];then
-					driver=`basename $(ls -l /sys/class/net/$card/device/driver | awk '{print$NF}' )`
-					type=`basename $(ls -l /sys/class/net/$card/device/subsystem | awk '{print$NF}' )`
+    # Skip non-link elements:
+    if ! [ -L "/sys/class/net/${card}" ]; then
+	continue;
+    fi	
+    
+    # Skip non-Ethernet physical devices (type=1)
+    if [ "$(cat /sys/class/net/${card}/type)" != "1" ]; then
+	continue
+    fi
 
-					#Default if not avaiable in /sys/class/net
-					if [ "a$type" == "a" ]; then
-						type="???"
-					fi
-					if [ "a$driver" == "a" ]; then
-						driver="Unknown Network Interface ($card)"
-					fi
-					#description=`echo $type: $driver`
-					model=$type
+    #
+    # FIXME: Skip virtual devices
+    #        "device" links may not work in future kernel versions
+    #
+    if ! [ -e /sys/class/net/${card}/device ]; then
+	continue
+    fi
 
-					#Get more details for pci and usb devices
-					if [ "$type" == "pci" ]; then
-						model=`lspci -s $(basename $(ls -l /sys/class/net/$card/device | awk '{print$NF}' )) | cut -d':' -f3 | cut -c 2-`
-						#description=`echo $type: $name`
-					fi
-					if [ "$type" == "usb" ]; then
-						bus=`grep DEVICE= /sys/class/net/$card/device/uevent | cut -d"/" -f5`
-						dev=`grep DEVICE= /sys/class/net/$card/device/uevent | cut -d"/" -f6`
-						#work around the base8 convert
-						let bus=`echo 1$bus`-1000
-						let dev=`echo 1$dev`-1000
-						model=`lsusb -s $bus:$dev | cut -d':' -f3 | cut -c 6-`
-						#description=`echo $type: $name`
-					fi
-					speed=`cat /sys/class/net/$card/speed 2>/dev/null`
-					link=`cat /sys/class/net/$card/carrier 2>/dev/null`
+    # Skip bridge and tun/tap
+    if [ -e /sys/class/net/${card}/brforward ] || [ -e /sys/class/net/${card}/tun_flags ]; then
+        continue
+    fi
 
-				fi
-			fi
-		fi
-	fi
-fi
-		echo $card,$hwaddr,$type,$model,$driver,$speed,$link
+    hwaddr=`cat /sys/class/net/${card}/address`
+    
+    # Skip if mac is not valid (00:00... or FF:FF...)
+    if [ "${hwaddr}" == "00:00:00:00:00:00" ] || [ "${hwaddr}" == "ff:ff:ff:ff:ff:ff" ]; then
+	continue
+    fi
+    
+    driver=`basename $(ls -l /sys/class/net/$card/device/driver | awk '{print$NF}' )`
+    type=`basename $(ls -l /sys/class/net/$card/device/subsystem | awk '{print$NF}' )`
 
-exit 0
+    # Default if not avaiable in /sys/class/net
+    if [ "a$type" == "a" ]; then
+	type="???"
+    fi
+    
+    if [ "a$driver" == "a" ]; then
+	driver="Unknown Network Interface ($card)"
+    fi
+
+    model=$type
+
+    # Get more details for pci and usb devices
+    if [ "$type" == "pci" ]; then
+	model=`lspci -s $(basename $(ls -l /sys/class/net/$card/device | awk '{print$NF}' )) | cut -d':' -f3 | cut -c 2-`
+    fi
+    
+    if [ "$type" == "usb" ]; then
+	bus=`grep DEVICE= /sys/class/net/$card/device/uevent | cut -d"/" -f5`
+	dev=`grep DEVICE= /sys/class/net/$card/device/uevent | cut -d"/" -f6`
+	# work around the base8 convert
+	let bus=`echo 1$bus`-1000
+	let dev=`echo 1$dev`-1000
+	model=`lsusb -s $bus:$dev | cut -d':' -f3 | cut -c 6-`
+    fi
+
+    link=$(cat /sys/class/net/$card/carrier 2>/dev/null)
+    if [ $? != 0 ]; then
+	ifconfig $card up 2>/dev/null
+	link=$(cat /sys/class/net/$card/carrier 2>/dev/null)
+	speed=$(cat /sys/class/net/$card/speed 2>/dev/null)
+	ifconfig $card down 2>/dev/null
+    else
+	speed=$(cat /sys/class/net/$card/speed 2>/dev/null)
+    fi
+
+    echo $card,${hwaddr//,/ },${type//,/ },${model//,/ },${driver//,/ },$speed,$link
+
+done
+

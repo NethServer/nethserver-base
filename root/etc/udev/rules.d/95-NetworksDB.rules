@@ -1,5 +1,4 @@
 #
 # Update NetworksDB 
 #
-SUBSYSTEM=="net", ACTION=="*", KERNEL=="*", RUN="/usr/libexec/nethserver/update-networks-db" 
-
+SUBSYSTEM=="net", ACTION=="*", KERNEL=="*", RUN{fail_event_on_error}+="/usr/libexec/nethserver/udev-update-network %p %k"

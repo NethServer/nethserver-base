@@ -48,6 +48,9 @@ and template system.
 
 %build
 %{makedocs}
+for D in locale/*/LC_MESSAGES; do
+  [ -d "$D" ] && msgfmt -v $D/%{name}.po -o $D/%{name}.mo
+done  
 perl createlinks
 
 # davidep: relocate perl modules under default perl vendorlib directory:
@@ -58,14 +61,20 @@ mv -v esmith root%{perl_vendorlib}
 rm -rf $RPM_BUILD_ROOT
 (cd root   ; find . -depth -not -name '*.orig' -print  | cpio -dump $RPM_BUILD_ROOT)
 %{genfilelist} $RPM_BUILD_ROOT > %{name}-%{version}-%{release}-filelist
-echo "%doc COPYING"          >> %{name}-%{version}-%{release}-filelist
+
+for F in locale/*/LC_MESSAGES/%{name}.mo; do
+   install -D $F $RPM_BUILD_ROOT/%{_datadir}/$F
+done
+%{find_lang} %{name}
+
 
 mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 %clean 
 rm -rf $RPM_BUILD_ROOT
 
-%files -f %{name}-%{version}-%{release}-filelist
+%files -f %{name}-%{version}-%{release}-filelist -f %{name}.lang
+%doc COPYING
 %defattr(-,root,root)
 %dir %attr(755,root,root) /etc/e-smith/events/organization-save
 %ghost %attr(600,root,root) /etc/pki/tls/private/NSRV.key

@@ -1,9 +1,7 @@
-#
-# update-networks-db on startup
-#
+#!/bin/bash
 
 #
-# Copyright (C) 2013 Nethesis S.r.l.
+# Copyright (C) 2015 Nethesis S.r.l.
 # http://www.nethesis.it - support@nethesis.it
 # 
 # This script is part of NethServer.
@@ -19,12 +17,14 @@
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+# along with NethServer.  If not, see COPYING
 #
 
-start on started udev-post
-task
+rm -f /etc/udev/rules.d/70-persistent-net.rules
+/sbin/udevadm trigger --subsystem-match=net --verbose
 
-description "Run update-networks-db after udev-post startup script"
-exec /usr/libexec/nethserver/update-networks-db
+# prevent race conditions with update-networks-db
+echo "[INFO] start waiting for udev..." $(date +%T.%N) 1>&2
+/sbin/udevadm settle --timeout=30
+echo "[INFO] done waiting for udev!" $(date +%T.%N) 1>&2
 

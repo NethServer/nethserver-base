@@ -83,12 +83,12 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
             // Array of informations about NIC.
             // Fields: name, hwaddr, bus, model, driver, speed, link
             // Eg: green,08:00:27:77:fd:be,pci,Intel Corporation 82540EM Gigabit Ethernet Controller (rev 02),e1000,1000,1
-            $nicInfo = str_getcsv($this->getPlatform()->exec('/usr/libexec/nethserver/nic-info ${1}', array($this->parameters['device']))->getOutput());
+            $nicInfo = str_getcsv($this->getPlatform()->exec('/usr/bin/sudo -n /usr/libexec/nethserver/nic-info ${1}', array($this->parameters['device']))->getOutput());
         }
 
         $v['dev'] = isset($this->parameters['device']) ? $this->parameters['device'] : '';
-        $v['mac'] = \strtoupper(isset($nicInfo[1]) ? $nicInfo[1] : '');
-        $v['bus'] = \strtoupper(isset($nicInfo[2]) ? $nicInfo[2] : "");
+        $v['mac'] = \strtolower(isset($nicInfo[1]) ? $nicInfo[1] : '');
+        $v['bus'] = \strtolower(isset($nicInfo[2]) ? $nicInfo[2] : "");
         $v['model'] = isset($nicInfo[3]) ? $nicInfo[3] : "";
         $v['driver'] = isset($nicInfo[4]) ? $nicInfo[4] : "";
         $v['speed'] = isset($nicInfo[5]) && $nicInfo[5] ? $nicInfo[5] : "0";
