@@ -13,7 +13,7 @@ echo $view->fieldsetSwitch('bootproto', 'none', $view::FIELDSETSWITCH_EXPANDABLE
 echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_CANCEL | $view::BUTTON_HELP);
 
 $view->includeCSS("
-  tr.free td:first-child  {
+  tr.free td:first-child {
       font-weight: normal;
       color: #333;
   }
@@ -21,19 +21,19 @@ $view->includeCSS("
       font-weight: bold;
       color: #333;
   }
-  tr.red td:first-child  {
+  tr.red td:first-child, .row.configured .red  {
        color: red;
   }
-  tr.blue td:first-child  {
+  tr.blue td:first-child, .row.configured .blue  {
        color: blue;
   }
-  tr.orange td:first-child  {
+  tr.orange td:first-child, .row.configured .orange  {
        color: orange;
   }
-  tr.green td:first-child  {
+  tr.green td:first-child, .row.configured .green  {
        color: green;
   }
-  tr.grey td:first-child  {
+  tr.grey td:first-child, .row.configured .grey  {
        color: grey;
   }
 ");

@@ -41,10 +41,10 @@ if(len(unmapped_interfaces) > 0):
     gettext.textdomain('nethserver-base')
     msg = {
         "action": {
-            "label": gettext.ngettext('Assign network device', 'Assign network devices', len(unmapped_interfaces)).format(len(unmapped_interfaces)),
+            "label": gettext.ngettext('Assign role to network interface', 'Assign roles to network interfaces', len(unmapped_interfaces)).format(len(unmapped_interfaces)),
             "url": '/NetworkAdapter?renameInterface'
         },
-        "text": gettext.ngettext('There is one unbounded network interface', 'There are {0} unbounded network interfaces'  , len(unmapped_interfaces)).format(len(unmapped_interfaces))
+        "text": gettext.ngettext('A role must be assigned to a new network card', 'There are {0} roles to be assigned to network cards'  , len(unmapped_interfaces)).format(len(unmapped_interfaces))
     }
     json.dump(msg, sys.stdout)
 	    

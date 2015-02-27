@@ -19,13 +19,6 @@ Pulsante :guilabel:`Nuova interfaccia`
    Avvia la procedura che crea le interfacce logiche. Seguire le
    istruzioni delle schermate e alla fine confermare.
 
-Pulsante :guilabel:`Assegna interfacce`
-
-   Apre una pagina che consente di assegnare una nuova interfaccia di
-   rete ad un device precedentemente registrato. La pagina elenca
-   tutte le schede di rete fisiche e per ogni scheda un menù a tendina
-   dove poter scegliere il device, se disponibile.
-
 Azione :guilabel:`Modifica`
 
    Cambia le impostazioni del device.

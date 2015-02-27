@@ -5,9 +5,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: nethserver-samba 2.5.4-69-g0920481\n"
+"Project-Id-Version: nethserver-base 2.5.4-74-g6941993\n"
 "Report-Msgid-Bugs-To: nethserver@googlegroups.com\n"
-"POT-Creation-Date: 2015-02-25 18:10+0100\n"
+"POT-Creation-Date: 2015-02-27 15:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,14 +18,14 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 #: root/etc/nethserver/todos.d/10eth-unmapped:44
-msgid "Assign network device"
-msgid_plural "Assign network devices"
+msgid "Assign role to network interface"
+msgid_plural "Assign roles to network interfaces"
 msgstr[0] ""
 msgstr[1] ""
 
 #: root/etc/nethserver/todos.d/10eth-unmapped:47
 #, python-brace-format
-msgid "There is one unbounded network interface"
-msgid_plural "There are {0} unbounded network interfaces"
+msgid "A role must be assigned to a new network card"
+msgid_plural "There are {0} roles to be assigned to network cards"
 msgstr[0] ""
 msgstr[1] ""

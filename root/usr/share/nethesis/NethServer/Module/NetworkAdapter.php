@@ -68,7 +68,7 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
             // Creation of logical interface wizard
             ->addChild(new \NethServer\Module\NetworkAdapter\SetIpAddress())
             ->addTableAction(new \NethServer\Module\NetworkAdapter\CreateLogicalInterface())
-            ->addTableAction(new \NethServer\Module\NetworkAdapter\RenameInterface())
+            ->addChild(new \NethServer\Module\NetworkAdapter\RenameInterface())
             ->addChild(new \NethServer\Module\NetworkAdapter\ConfirmInterfaceCreation())
 
             // Row actions

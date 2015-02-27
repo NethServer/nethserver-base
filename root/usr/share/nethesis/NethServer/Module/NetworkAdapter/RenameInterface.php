@@ -134,12 +134,17 @@ class RenameInterface extends \Nethgui\Controller\AbstractController implements 
         $interfaceDatasource = array_merge($basicDatasource, array_map($formatInterface, $this->getUnassignedInterfaces()));
         $ndb = $this->getPlatform()->getDatabase('networks')->getAll('ethernet');
 
+        if(count($interfaceDatasource) === 1) {
+            return array();
+        }
+
         $fields = explode(' ', 'name hwaddr type model driver speed link');
         $parsef = function($line) use ($fields, $interfaceDatasource, $basicDatasource, $ndb, $T) {
-
             $values = str_getcsv($line);
-            $h = array_combine($fields, $values);
-            $h['link'] = $h['link'] ? $T('linkon') : $T('linkoff');
+            $h = array_combine($fields, $values);            
+            $h['linkText'] = $h['link'] ? $T('Link is up') : $T('Link is down');
+            $h['link'] = $h['link'] ? 'linkup' : 'linkdown';
+            $h['currentRole'] = isset($ndb[$h['name']], $ndb[$h['name']]['role']) ? $ndb[$h['name']]['role'] : 'black';
             $isPresent = isset($ndb[$h['name']]) && isset($ndb[$h['name']]['role']) && ($ndb[$h['name']]['role'] != '') &&  strtolower($ndb[$h['name']]['hwaddr']) === strtolower($h['hwaddr']);
             $h['interfaceDatasource'] = \Nethgui\Widget\XhtmlWidget::hashToDatasource($isPresent ? $basicDatasource : $interfaceDatasource);
             $h['configuration'] = $isPresent ? 'configured' : 'unconfigured';
