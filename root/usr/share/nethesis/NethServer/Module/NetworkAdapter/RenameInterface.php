@@ -140,7 +140,7 @@ class RenameInterface extends \Nethgui\Controller\AbstractController implements 
             $values = str_getcsv($line);
             $h = array_combine($fields, $values);
             $h['link'] = $h['link'] ? $T('linkon') : $T('linkoff');
-            $isPresent = isset($ndb[$h['name']]) && strtolower($ndb[$h['name']]['hwaddr']) === strtolower($h['hwaddr']);
+            $isPresent = isset($ndb[$h['name']]) && isset($ndb[$h['name']]['role']) && ($ndb[$h['name']]['role'] != '') &&  strtolower($ndb[$h['name']]['hwaddr']) === strtolower($h['hwaddr']);
             $h['interfaceDatasource'] = \Nethgui\Widget\XhtmlWidget::hashToDatasource($isPresent ? $basicDatasource : $interfaceDatasource);
             $h['configuration'] = $isPresent ? 'configured' : 'unconfigured';
             return $h;
