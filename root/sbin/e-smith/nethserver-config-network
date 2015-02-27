@@ -120,7 +120,7 @@ sub read_free_interfaces
 	# consider it "configured" and skip it:
 	if(defined $rec 
 	   && $rec->prop('role') 
-	   && ($rec->prop('hwaddr') =~ m/^$H{'name'}$/i) ) {
+	   && ($rec->prop('hwaddr') =~ m/^$H{'hwaddr'}$/i) ) {
 	    next;
 	}
 
