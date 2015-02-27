@@ -23,4 +23,7 @@ $L['PamValidator_HasDefaultPassword'] = 'Please try ${password}';
 $L['PamValidator_InvalidCredentials'] = 'Invalid credentials';
 $L['PamValidator_AdminNotAvailable'] = 'User "admin" is not available. Login as "root".';
 $L['Back_label'] = 'Back';
+$L['Profile'] = 'Profile';
+$L['Change password'] = 'Change password';
+$L['Logout'] = 'Logout';
 
