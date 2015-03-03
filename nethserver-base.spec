@@ -1,7 +1,7 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.5.5
-Release: 50%{?dist}
+Version: 2.6.0
+Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
 BuildArch: noarch
@@ -82,6 +82,20 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Mar 03 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.6.0-1
+- Move Logout button at top right - Enhancement #3046 [NethServer]
+- Restore from backup, disaster recovery and network interfaces - Feature #3041 [NethServer]
+- Differentiate root and admin users - Feature #3026 [NethServer]
+- Add includedir directive to /etc/sudoers - Enhancement #3012 [NethServer]
+- Display Dashbord at top of menu - Enhancement #3011 [NethServer]
+- Shorewall: allow template-custom for ESTABLISHED and RELATED connection inside rules file - Enhancement #2999 [NethServer]
+- Show default password on server-manager login - Enhancement #2998 [NethServer]
+- Raid critical status on dashboard does not show failed partitions - Bug #2995 [NethServer]
+- Refactor Organization contacts page - Feature #2969 [NethServer]
+- Package Manager: new UPDATE button and optional packages selection - Feature #2963 [NethServer]
+- squidGuard: support multiple profiles - Enhancement #2958 [NethServer]
+- Base: first configuration wizard - Feature #2957 [NethServer]
+
 * Wed Jan 14 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.5.5-1.ns6
 - Raid critical status on dashboard does not show failed partitions - Bug #2995 [NethServer]
 - Correctly handle history back button - Enhancement #2958 [NethServer]
