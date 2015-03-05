@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.6.0
+Version: 2.6.1
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -82,6 +82,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Mar 05 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.6.1-1
+- Network page unexpected roles - Bug #3076 [NethServer]
+- Dashboard Interfaces widget and VLAN - Bug #3075 [NethServer]
+
 * Tue Mar 03 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.6.0-1
 - Move Logout button at top right - Enhancement #3046 [NethServer]
 - Restore from backup, disaster recovery and network interfaces - Feature #3041 [NethServer]
