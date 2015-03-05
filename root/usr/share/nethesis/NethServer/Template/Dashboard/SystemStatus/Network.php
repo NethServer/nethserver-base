@@ -20,11 +20,13 @@ echo $view->header()->setAttribute('template',$interfaces_title);
 echo "<div id='interfaces-tabs'>";
 echo "<ul>";
 foreach ($view['interfaces'] as $interface) {
-     echo "<li><a href='#interface-info-{$interface['name']}' class='{$interface['role']}'>{$interface['name']}</a></li>";
+     $name = str_replace('.','_',$interface['name']);
+     echo "<li><a href='#interface-info-$name' class='{$interface['role']}'>{$interface['name']}</a></li>";
 }
 echo "</ul>";
 foreach ($view['interfaces'] as $interface) {
-     echo "<div id='interface-info-{$interface['name']}'>";
+     $name = str_replace('.','_',$interface['name']);
+     echo "<div id='interface-info-$name'>";
      echo "<dt>".$T('hwaddr_label')."</dt><dd>{$interface['hwaddr']}</dd>";
      echo "<dt>".$T('link_label')."</dt><dd>";
      if ($interface['link']) {
@@ -42,7 +44,7 @@ foreach ($view['interfaces'] as $interface) {
          }
          echo "</dd>";
          echo "<dt>".$T('bootproto_label')."</dt><dd>{$interface['bootproto']}</dd>";
-     } 
+     }
      echo "</div>";
 }
 echo "</div>";
