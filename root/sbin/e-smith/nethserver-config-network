@@ -32,6 +32,8 @@ $SIG{ALRM} = sub { die("Timeout\n"); };
 
 my $ndb = esmith::NetworksDB->open();
 
+update_network_db();
+
 my @lost_interfaces = read_lost_interfaces();
 
 # the role here is a string prefix because in logical interfaces it is
@@ -85,6 +87,26 @@ exit 0;
 # -------------------------------------------------------------------
 # Functions
 # -------------------------------------------------------------------
+
+#
+# Search for interfaces not registered inside the networks db
+#
+sub update_network_db
+{
+    my @fields = qw(name hwaddr type model driver speed link);
+    my @free = ();
+    open(LH, '/usr/libexec/nethserver/nic-info |');
+    while(my $line = decode('UTF-8', <LH>)) {
+        chomp $line;
+        my %H = ();
+        @H{@fields} = split(/,/, $line);
+        my $rec = $ndb->get($H{'name'});
+
+        if (!defined $rec) {
+            $ndb->new_record($H{'name'}, {'type' => 'ethernet', 'hwaddr' => $H{'hwaddr'}, 'role' => ''});
+        }
+   }
+}
 
 #
 # Lost interfaces are present in Networks DB and have a role or are
