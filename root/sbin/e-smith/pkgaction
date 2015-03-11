@@ -31,6 +31,7 @@ import nethserver.ptrack
 import yum.callbacks
 import yum.Errors
 import yum.i18n # exception2msg
+import re
 
 def warning(*objs):
     print(*objs, file=sys.stderr)
@@ -48,30 +49,74 @@ class TransactionCallback( yum.callbacks.ProcessTransNoOutputCallback ):
             self.trackDownloads(data)
             
     def trackDownloads(self, pkgs):            
-        # Set and initialize data for download progress bar callback
-        total_bytes = sum(map(lambda po: po.size, filter(lambda po: po if not hasattr(po, 'pkgtype') or po.pkgtype != 'local' else None, pkgs)))
-        if(total_bytes) > 0:
-            task_id = self.tracker_client.declare_task("Download", self.parent_task_id, 25.0)
-            self.repos.setProgressBar(DownloadCallback(total_bytes, self.tracker_client, task_id))
+        # If there is at least one download, declare Download task:
+        for po in pkgs:
+            if not hasattr(po, 'pkgtype') or po.pkgtype != 'local':
+                task_id = self.tracker_client.declare_task("Download", self.parent_task_id, 25.0)
+                self.repos.setProgressBar(DownloadCallback(self.tracker_client, task_id))
+                break
+
 
 class DownloadCallback(  yum.callbacks.DownloadBaseCallback ):
-    def __init__(self, totsz, tracker_client, task_id):
+    def __init__(self, tracker_client, task_id):
         yum.callbacks.DownloadBaseCallback.__init__(self)
         if(not isinstance(tracker_client, nethserver.ptrack.TrackerClient)):
             raise Exception("Invalid nethserver.ptrack.TrackerClient instance")
-        if(totsz <= 0):
-            raise Exception("totsz must be positive integer")
 
         self.tracker_client = tracker_client
         self.task_id = task_id
-        self.totsz = totsz
+        self.rpm_task_id = self.tracker_client.declare_task("Download RPMs", self.task_id, 2.0)
+        self.drpm_task_id = None
+        self.rebuild_task_id = None
         self.packages = {}
 
+
+    def runWithDeltaTask(self):
+        if(self.drpm_task_id):
+            return
+
+        self.drpm_task_id = self.tracker_client.declare_task("Download DRPMs", self.task_id, 2.0)
+        self.rebuild_task_id = self.tracker_client.declare_task("Delta rebuilding", self.task_id, 1.0)
+        
     def updateProgress(self,name,frac,fread,ftime):
-        self.packages[self.basename] = 0.0 if frac is None or self.size is None else (frac * self.size)
-        progress = float(sum(self.packages.values()) / self.totsz)
-        message = '%s' % (self.basename)
-        self.tracker_client.set_task_progress(self.task_id, progress, message)
+        if not type(name) is str:
+            return
+
+        task_id = self.rpm_task_id
+        progress = None
+        message = ""
+
+        if name.endswith('.rpm'):
+            task_id = self.rpm_task_id
+            mo = re.match('\((\d+)/(\d+)\)', name)
+            try:
+                nfrac = (1.0 / float(mo.group(2))) * frac
+                progress = (float(mo.group(1)) / float(mo.group(2))) + nfrac
+            except Exception as e:
+                pass
+            message = '%s' % (name)
+        elif name.endswith('.drpm'):
+            self.runWithDeltaTask()
+            task_id = self.drpm_task_id
+            mo = re.match('\((\d+)/(\d+)\)', name)
+            try:
+                progress = float(mo.group(1)) / float(mo.group(2))
+            except Exception as e:
+                pass
+            message = '%s' % (name)
+        elif name.endswith('/prestodelta'):
+            self.runWithDeltaTask()
+            task_id = self.drpm_task_id
+            progress = 0.01
+            message = 'Fetching prestodelta'
+        elif name == '<delta rebuild>':
+            self.runWithDeltaTask()
+            task_id = self.rebuild_task_id
+            progress = frac
+            message = "%s %s" % (fread, ftime)
+
+        if(not progress is None):
+            self.tracker_client.set_task_progress(task_id, progress, message)
 
 class TrackerClientCallBack(yum.rpmtrans.RPMBaseCallback):
     def __init__(self, tracker_client, parent_task_id):
@@ -170,7 +215,7 @@ def main():
             tracker_client.set_task_done(task_sys_id, '', exitcode)
             tracker_client.set_task_done(task_chn_id, '', exitcode)
 
-    except Exception, e:
+    except Exception as e:
         try:
             message = "[%s] %s" % (e.__class__.__name__, yum.i18n.exception2msg(e))
         except:
