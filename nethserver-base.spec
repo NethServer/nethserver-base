@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.6.1
+Version: 2.6.2
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -82,6 +82,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Mar 11 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.6.2-1
+- Unexpected ethernet interface rename - Bug #3082 [NethServer]
+
 * Thu Mar 05 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.6.1-1
 - Network page unexpected roles - Bug #3076 [NethServer]
 - Dashboard Interfaces widget and VLAN - Bug #3075 [NethServer]
