@@ -57,9 +57,21 @@ foreach my $network (@routes) {
     foreach my $i (@interfaces) {
         my %props = $i->props;
         my $role = $props{'role'} || next;
-        my $ipaddr = $props{'ipaddr'} || next;
-        my $netmask = $props{'netmask'} || next;
-        my ($net,$msk) = Net::IPv4Addr::ipv4_network($ipaddr, $netmask);
+        my $ipaddr = $props{'ipaddr'} || '';
+        my $netmask = $props{'netmask'} || '';
+        my $dev = $i->key;
+        my $net = '';
+        my $msk = '';
+        if ($ipaddr eq '' && $netmask eq '') {
+            $ipaddr = `/sbin/ip -4 address show $dev | sed -n '/inet/ { s/.*inet \\([0-9\\.]\\+\\)\\/\\([0-9\\.]\\+\\).*/\\1/; p }' 2>/dev/null`;
+            chomp $ipaddr;
+            $netmask = `/sbin/ip -4 address show $dev | sed -n '/inet/ { s/.*inet \\([0-9\\.]\\+\\)\\/\\([0-9\\.]\\+\\).*/\\2/; p }' 2>/dev/null`;
+            chomp $netmask;
+            next if ($ipaddr eq '' || $netmask eq '');
+            ($net,$msk) = Net::IPv4Addr::ipv4_network("$ipaddr/$netmask");
+        } else {
+            ($net,$msk) = Net::IPv4Addr::ipv4_network($ipaddr, $netmask);
+        }
         next if not Net::IPv4Addr::ipv4_in_network($net, $msk, $router);
 
         $write_static = 0;
