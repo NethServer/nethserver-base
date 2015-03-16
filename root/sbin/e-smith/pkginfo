@@ -70,8 +70,6 @@ def pkginfo(yb, pkg):
 
 def compsdump(yb):
     comps = {}
-    comps["installed"] = []
-    comps["available"] = []
     comps["groups"] = []
     comps["categories"] = []
 
