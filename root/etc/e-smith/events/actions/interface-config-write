@@ -57,6 +57,8 @@ foreach my $network (@routes) {
     foreach my $i (@interfaces) {
         my %props = $i->props;
         my $role = $props{'role'} || next;
+        my $type = $props{'type'} || next;
+        next if ($type eq 'alias');
         my $ipaddr = $props{'ipaddr'} || '';
         my $netmask = $props{'netmask'} || '';
         my $dev = $i->key;
