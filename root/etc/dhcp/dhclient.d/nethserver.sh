@@ -34,7 +34,6 @@ nethserver_config() {
     else
         ipaddr=`cut -f1 -d' ' $CACHE_FILE`
         netmask=`cut -f2 -d' ' $CACHE_FILE`
-        logger -t DEBUG "*$ipaddr* -> *${new_ip_address}* $netmask -> ${new_subnet_mask}"
         if [ "$ipaddr" != ${new_ip_address} ] || [ "$netmask" != "${new_subnet_mask}" ]; then
             write_cache
             /sbin/e-smith/signal-event static-routes-save 
