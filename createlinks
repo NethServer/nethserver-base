@@ -95,6 +95,7 @@ event_actions('interface-update', qw(
               reset-udev-rules           35
               network-start              70
               interface-config-hostname  75
+              static-routes-save         80
               firewall-adjust            90
 ));
 

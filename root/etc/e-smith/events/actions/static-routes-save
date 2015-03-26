@@ -1,0 +1,3 @@
+#!/bin/bash
+
+/sbin/e-smith/signal-event static-routes-save
