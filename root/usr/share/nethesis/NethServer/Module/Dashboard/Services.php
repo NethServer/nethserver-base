@@ -51,7 +51,9 @@ class Services extends \Nethgui\Controller\TableController
         );
 
         $this
-            ->setTableAdapter($this->getPlatform()->getTableAdapter('configuration', 'service'))
+            ->setTableAdapter($this->getPlatform()->getTableAdapter('configuration', 'service', function($key, $record) {
+                return file_exists("/etc/e-smith/db/configuration/defaults/$key/status");
+            }))
             ->setColumns($columns)
         ;
 
