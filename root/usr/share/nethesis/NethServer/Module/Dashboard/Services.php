@@ -60,6 +60,16 @@ class Services extends \Nethgui\Controller\TableController
         parent::initialize();
     }
 
+    public function prepareViewForColumnKey(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        $d = $view->translate($key."_Description");
+        if ($d && $d != $key."_Description") {
+                $key .= " ($d)";
+            return $key;
+        }
+        return $key;
+    }
+
     /**
      *
      * @param \Nethgui\Controller\Table\Read $action

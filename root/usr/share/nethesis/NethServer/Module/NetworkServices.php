@@ -30,9 +30,12 @@ use Nethgui\System\PlatformInterface as Validate;
 class NetworkServices extends \Nethgui\Controller\TableController
 {
 
-    protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
+    protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $attributes)
     {
-        return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($base, 'Security', 30);
+        return new \NethServer\Tool\CustomModuleAttributesProvider($attributes, array(
+            'languageCatalog' => array('NethServer_Module_NetworkServices', 'NethServer_Module_Dashboard_Services'),
+            'category' => 'Security')
+        );
     }
 
     public function initialize()
@@ -60,6 +63,16 @@ class NetworkServices extends \Nethgui\Controller\TableController
         ;
 
         parent::initialize();
+    }
+
+    public function prepareViewForColumnKey(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        $d = $view->translate($key."_Description");
+        if ($d && $d != $key."_Description") {
+                $key .= " ($d)";
+            return $key;
+        }
+        return $key;
     }
 
     public function prepareViewForColumnAccess(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
