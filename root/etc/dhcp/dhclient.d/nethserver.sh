@@ -37,6 +37,7 @@ nethserver_config() {
         if [ "$ipaddr" != ${new_ip_address} ] || [ "$netmask" != "${new_subnet_mask}" ]; then
             write_cache
             /sbin/e-smith/signal-event static-routes-save 
+            /sbin/e-smith/signal-event firewall-adjust
         fi
     fi
 }
