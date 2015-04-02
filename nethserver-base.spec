@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.6.4
+Version: 2.6.5
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -82,6 +82,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Apr 02 2015 Davide Principi <davide.principi@nethesis.it> - 2.6.5-1
+- Web proxy: exclude local sites when mode is transparent - Enhancement #3099 [NethServer]
+- Dashboard: remove/hide uneeded services from the list - Enhancement #2795 [NethServer]
+- Base: service description - Enhancement #2765 [NethServer]
+
 * Thu Mar 26 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.6.4-1
 - Firewall-base: multi-wan dhcp failover not supported - Enhancement #2827 [NethServer]
 
