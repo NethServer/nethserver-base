@@ -50,25 +50,11 @@ class PackageManager extends \Nethgui\Controller\CompositeController implements 
         parent::initialize();
     }
 
-    private function mapLang($lang)
-    {
-        $langMap = array(
-            'en' => 'en_GB',
-            'it' => 'it_IT',
-            '' => 'en_GB',
-        );
-        if (isset($langMap[$lang])) {
-            return $langMap[$lang];
-        }
-        return 'C';
-    }
-
     private function readYumCompsDump()
     {
         static $data;
         if ( ! isset($data)) {
-            $lang = $this->getRequest()->getLanguageCode() ? $this->getRequest()->getLanguageCode() : $this->language;
-            $process = $this->getPlatform()->exec(sprintf("/bin/env LANG=%s /usr/bin/sudo /sbin/e-smith/pkginfo grouplist", $this->mapLang($lang)));
+            $process = $this->getPlatform()->exec("/usr/bin/sudo /sbin/e-smith/pkginfo grouplist");
             if ($process->getExitCode() !== 0) {
                 $this->notifications->error("Error\n" . $process->getOutput());
             }
