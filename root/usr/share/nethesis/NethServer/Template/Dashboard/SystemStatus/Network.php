@@ -38,7 +38,7 @@ foreach ($view['interfaces'] as $interface) {
      if ($interface['role']) {
          echo "<dt>".$T('ipaddr_label')." / ".$T('netmask_label')."</dt><dd>";
          if($interface['ipaddr']) {
-             echo "{$interface['ipaddr']} / {$interface['netmask']}";
+             echo "{$interface['ipaddr']}";
          } else {
              echo "-";
          }

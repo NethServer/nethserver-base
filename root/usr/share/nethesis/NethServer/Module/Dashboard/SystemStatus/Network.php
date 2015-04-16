@@ -38,36 +38,41 @@ class Network extends \Nethgui\Controller\AbstractController
     private function readInterfaces()
     {
         $interfaces = $this->getPlatform()->getDatabase('networks')->getAll();
+        $tmp = $this->getPlatform()->exec('/usr/bin/sudo -n /usr/libexec/nethserver/nic-info')->getOutputArray();
+        $valid_interfaces = array();
+        foreach ($tmp as $line) {
+            $data = explode(',',$line);
+            $interfaces[$data[0]]['speed'] = $data[5];
+            $interfaces[$data[0]]['link'] = $data[6];
+            $ipaddr = $this->getPlatform()->exec("/sbin/ip -o -4 address show ".$data[0]." primary | head -1 | awk '{print \$4}'")->getOutput();
+            $interfaces[$data[0]]['ipaddr'] = $ipaddr;
+            $valid_interfaces[] = $data[0];
+        }
         foreach ($interfaces as $interface => $props) {
-             # remove non existing interfaces
-             if (!file_exists("/sys/class/net/$interface")) {
+             if (!in_array($interface, $valid_interfaces)) {
                  unset($interfaces[$interface]);
                  continue;
              }
              $tmp = array(
                  'name' => $interface,
-                 'ipaddr'=> isset($props['ipaddr'])?$props['ipaddr']:'-', 
-                 'netmask'=> isset($props['netmask'])?$props['netmask']:"-", 
-                 'gateway'=> isset($props['gateway'])?$props['gateway']:"-", 
-                 'hwaddr'=> isset($props['hwaddr'])?$props['hwaddr']:"-", 
-                 'bootproto'=> isset($props['bootproto'])?$props['bootproto']:"-", 
-                 'role'=> isset($props['role'])?$props['role']:"-" 
+                 'ipaddr'=> isset($props['ipaddr'])?$props['ipaddr']:'-',
+                 'gateway'=> isset($props['gateway'])?$props['gateway']:"-",
+                 'hwaddr'=> isset($props['hwaddr'])?$props['hwaddr']:"-",
+                 'bootproto'=> isset($props['bootproto'])?$props['bootproto']:"-",
+                 'role'=> isset($props['role'])?$props['role']:"-",
+                 'link'=> isset($props['link'])?$props['link']:"-",
+                 'speed'=> isset($props['speed'])?$props['speed']." Mb/s":"-"
              );
-             $tmp['speed'] = file_get_contents("/sys/class/net/".$interface."/speed")." Mb/s";
-             $tmp['link'] = file_get_contents("/sys/class/net/".$interface."/carrier");
              $interfaces[$interface] = $tmp;
         }
         return $interfaces;
+
     }
 
     private function readDNS()
     {
         $dns = $this->getPlatform()->getDatabase('configuration')->getKey('dns');
-        if ($dns['role'] == 'none') { //dnsmasq not installed
-            return $dns['NameServers'];
-        } else {
-            return "127.0.0.1";
-        }
+        return $dns['NameServers'];
     }
 
     private function readHostname()
