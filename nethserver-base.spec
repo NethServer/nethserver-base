@@ -36,7 +36,6 @@ Requires: nethserver-yum > 1.3.3-2
 Requires: nethserver-lib > 2.1.1-1
 
 BuildRequires: nethserver-devtools
-BuildRequires: gettext
 
 %description 
 The %{name} package provides the fundamental infrastructure for the
@@ -48,9 +47,6 @@ and template system.
 
 %build
 %{makedocs}
-for D in locale/*/LC_MESSAGES; do
-  [ -d "$D" ] && msgfmt -v $D/%{name}.po -o $D/%{name}.mo
-done  
 perl createlinks
 
 # davidep: relocate perl modules under default perl vendorlib directory:
@@ -62,18 +58,9 @@ rm -rf $RPM_BUILD_ROOT
 (cd root   ; find . -depth -not -name '*.orig' -print  | cpio -dump $RPM_BUILD_ROOT)
 %{genfilelist} $RPM_BUILD_ROOT > %{name}-%{version}-%{release}-filelist
 
-for F in locale/*/LC_MESSAGES/%{name}.mo; do
-   install -D $F $RPM_BUILD_ROOT/%{_datadir}/$F
-done
-%{find_lang} %{name}
-
-
 mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
-%clean 
-rm -rf $RPM_BUILD_ROOT
-
-%files -f %{name}-%{version}-%{release}-filelist -f %{name}.lang
+%files -f %{name}-%{version}-%{release}-filelist
 %doc COPYING
 %defattr(-,root,root)
 %dir %attr(755,root,root) /etc/e-smith/events/organization-save
