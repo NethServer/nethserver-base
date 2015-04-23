@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.6.5
+Version: 2.7.0
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -69,6 +69,11 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 
 %changelog
+* Thu Apr 23 2015 Davide Principi <davide.principi@nethesis.it> - 2.7.0-1
+- Language packs support - Feature #3115 [NethServer]
+- Dashboard: display IP of red interfaces configured with DHCP - Enhancement #3096 [NethServer]
+- Task running forever - Bug #3078 [NethServer]
+
 * Thu Apr 02 2015 Davide Principi <davide.principi@nethesis.it> - 2.6.5-1
 - Web proxy: exclude local sites when mode is transparent - Enhancement #3099 [NethServer]
 - Dashboard: remove/hide uneeded services from the list - Enhancement #2795 [NethServer]
