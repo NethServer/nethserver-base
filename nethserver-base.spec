@@ -5,39 +5,21 @@ Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
 BuildArch: noarch
-URL: %{url_prefix}/%{name} 
+URL: %{url_prefix}/%{name}
 
-Requires: initscripts
-Requires: perl(Locale::gettext)
-Requires: perl(Crypt::Cracklib)
-Requires: perl(Date::Manip)
-Requires: perl(Data::UUID)
-Requires: perl(Net::IPv4Addr)
-Requires: perl(NetAddr::IP)
-Requires: perl-TimeDate
-Requires: perl-DateTime-Format-Mail
-Requires: perl-Mail-RFC822-Address
 Requires: smartmontools
-Requires: dbus
-Requires: hal
-Requires: acpid
 Requires: bridge-utils
-Requires: vconfig
 Requires: mdadm
 Requires: sudo
-Requires: perl-suidperl
 Requires: nc
-Requires: iproute
-Requires: postfix
-Requires: udev >= 147
-Requires: yum-plugin-changelog
 
-Requires: nethserver-yum > 1.3.3-2
-Requires: nethserver-lib > 2.1.1-1
+Requires: yum-plugin-changelog
+Requires: nethserver-yum
+Requires: nethserver-lib
 
 BuildRequires: nethserver-devtools
 
-%description 
+%description
 The %{name} package provides the fundamental infrastructure for the
 configuration management of NethServer, derived from SME Server event
 and template system.
@@ -237,7 +219,7 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 - Backup: implement and document full restore #2043
 
 * Wed May 29 2013 Davide Principi <davide.principi@nethesis.it> - 1.2.3-1.ns6
-- NethServer\Tool\PasswordStash: added setAutoUnlink() method #1746 
+- NethServer\Tool\PasswordStash: added setAutoUnlink() method #1746
 
 * Tue May  7 2013 Davide Principi <davide.principi@nethesis.it> - 1.2.2-1.ns6
 - system-adjust action: import symbols from nethserver yum plugin  #1870
@@ -268,6 +250,6 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 - Added Certificate Management #1503
 - SME bash completion #1619
 - admin's mailbox #1635
-- Fix #1628 
+- Fix #1628
 
 
