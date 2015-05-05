@@ -142,11 +142,13 @@ sub _write_config_file() {
     }
 
     foreach my $prop (sort { $a cmp $b } keys %props) {
-        next unless ($prop ne 'role'); # skip role
+        if($prop eq 'role' || $prop =~ m/^Fw/) {
+            next; # skip role and any prop starting with "Fw"
+        }
         my $val = $props{$prop};
         $val = ucfirst($val) unless ($prop ne 'type');  #first letter of type must be capitalized
         $out .= sprintf "%s=%s\n", uc($prop), $val;
-    }    
+    }
     open (my $fh, '>', $file);
     print $fh $out; 
     close ($fh);
