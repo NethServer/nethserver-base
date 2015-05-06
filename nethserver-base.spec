@@ -16,6 +16,7 @@ Requires: nc
 Requires: yum-plugin-changelog
 Requires: nethserver-yum
 Requires: nethserver-lib
+Requires: system-config-firewall-base
 
 BuildRequires: nethserver-devtools
 
