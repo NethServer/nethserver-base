@@ -1,0 +1,16 @@
+{
+  #
+  # issue 3149 -- cleanup old services and keys
+  #
+
+  use esmith::ConfigDB;
+  my $cdb = esmith::ConfigDB->open();
+
+  $cdb->get_value_and_delete('messagebus');
+  
+  $cdb->get_value_and_delete('SystemMode');
+  $cdb->get_value_and_delete('PasswordSet');
+  $cdb->get_value_and_delete('UnsavedChanges');
+
+  '';   
+}
