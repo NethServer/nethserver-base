@@ -32,21 +32,21 @@ and template system.
 %{makedocs}
 perl createlinks
 
-# davidep: relocate perl modules under default perl vendorlib directory:
 mkdir -p root%{perl_vendorlib}
 mv -v esmith root%{perl_vendorlib}
+mkdir -p root/%{_nseventsdir}/organization-save
+mkdir -p root/%{_nseventsdir}/%{name}-update
 
 %install
-rm -rf $RPM_BUILD_ROOT
-(cd root   ; find . -depth -not -name '*.orig' -print  | cpio -dump $RPM_BUILD_ROOT)
-%{genfilelist} $RPM_BUILD_ROOT > %{name}-%{version}-%{release}-filelist
-
-mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
+rm -rf %{buildroot}
+(cd root   ; find . -depth -not -name '*.orig' -print  | cpio -dump %{buildroot})
+%{genfilelist} %{buildroot} > %{name}-%{version}-%{release}-filelist
 
 %files -f %{name}-%{version}-%{release}-filelist
-%doc COPYING
 %defattr(-,root,root)
-%dir %attr(755,root,root) /etc/e-smith/events/organization-save
+%doc COPYING
+%dir %{_nseventsdir}/organization-save
+%dir %{_nseventsdir}/%{name}-update
 %ghost %attr(600,root,root) /etc/pki/tls/private/NSRV.key
 %ghost %attr(644,root,root) /etc/pki/tls/certs/NSRV.crt
 
