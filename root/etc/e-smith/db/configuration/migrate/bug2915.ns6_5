@@ -1,8 +1,0 @@
-{
-    #
-    # bug2915 -- remove role prop
-    #            
-
-    $DB->get_prop_and_delete('dns', 'role');
-    '';
-}

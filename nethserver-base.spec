@@ -12,6 +12,7 @@ Requires: bridge-utils
 Requires: mdadm
 Requires: sudo
 Requires: nc
+Requires: net-tools
 
 Requires: yum-plugin-changelog
 Requires: nethserver-yum
@@ -37,6 +38,11 @@ mv -v esmith root%{perl_vendorlib}
 mkdir -p root/%{_nseventsdir}/organization-save
 mkdir -p root/%{_nseventsdir}/%{name}-update
 
+for _nsdb in configuration networks routes; do
+   mkdir -p root/%{_nsdbconfdir}/${_nsdb}/{migrate,force,defaults}
+done 
+
+
 %install
 rm -rf %{buildroot}
 (cd root   ; find . -depth -not -name '*.orig' -print  | cpio -dump %{buildroot})
@@ -45,11 +51,12 @@ rm -rf %{buildroot}
 %files -f %{name}-%{version}-%{release}-filelist
 %defattr(-,root,root)
 %doc COPYING
-%dir %{_nseventsdir}/organization-save
-%dir %{_nseventsdir}/%{name}-update
 %ghost %attr(600,root,root) /etc/pki/tls/private/NSRV.key
 %ghost %attr(644,root,root) /etc/pki/tls/certs/NSRV.crt
-
+%dir %{_nseventsdir}/%{name}-update
+%dir %{_nsdbconfdir}/configuration
+%dir %{_nsdbconfdir}/networks
+%dir %{_nsdbconfdir}/routes
 
 %changelog
 * Thu Apr 23 2015 Davide Principi <davide.principi@nethesis.it> - 2.7.0-1
