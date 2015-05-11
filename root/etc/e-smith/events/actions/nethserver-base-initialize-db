@@ -1,21 +1,21 @@
 #!/usr/bin/perl -w
 
 #
-# Copyright (C) 2014 Nethesis S.r.l.
+# Copyright (C) 2015 Nethesis S.r.l.
 # http://www.nethesis.it - support@nethesis.it
-# 
+#
 # This script is part of NethServer.
-# 
+#
 # NethServer is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License,
 # or any later version.
-# 
+#
 # NethServer is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -28,203 +28,138 @@
 use strict;
 use File::Basename;
 use esmith::NetworksDB;
+use esmith::ConfigDB;
 use Encode qw(encode decode);
+use Net::IPv4Addr;
 
-my $DB = '/sbin/e-smith/db';
-my %config;
 
-sub source_bash {
-    my $file = shift;
-    my $config = shift;
-    open FILE, $file or die $!;
-    while (<FILE>) {
-        chomp;
-	if($_ =~ /^(#.*|\s*)$/) {
-	    # skip comments and whitespace lines
-	    next;
-	}
-        $_ =~ s/"//g;
-        my ($i, $j) = split(/=/);
-        $config->{lc($i)} = $j;
-    }
-    close FILE;
-}
+my $cdb = esmith::ConfigDB->open() || die("Could not open ConifgDB");
+my $idb = esmith::NetworksDB->open() || die("Could not open NetworksDB");
 
 #
-# Create ethernet entries in networks DB 
+# Create ethernet entries in networks DB
 # (replaces update-networks-db script)
 #
 sub initialize_networks_db
 {
     my @fields = qw(name hwaddr type model driver speed link);
-    my $idb = esmith::NetworksDB->open();
+    my @records = ();
+    my $cableid = undef;
     open(LH, '/usr/libexec/nethserver/nic-info |');
     while(my $line = decode('UTF-8', <LH>)) {
 	chomp $line;
 	my %H = ();
 	@H{@fields} = split(/,/, $line);
-	$idb->new_record($H{'name'}, {'type' => 'ethernet', 'hwaddr' => $H{'hwaddr'}, 'role' => ''});
+	push @records, [
+            $H{'name'},
+            {
+                'type' => 'ethernet',
+                'hwaddr' => $H{'hwaddr'},
+                'role' => '',
+                'bootproto' => 'none',
+                fetch_ifcfg_props($H{'name'})
+            }
+        ];
+
+        # Find the first interface with cable-connected:
+        if( ! defined $cableid && $H{'link'}) {
+            $cableid = $#records;
+        }
     }
     close(LH);
+
+    # No cable connected? Fallback to first interface:
+    if( ! defined $cableid) {
+        $cableid = 0;
+    }
+
+    if( @records && ! grep { ($_->[1]->{'role'} || '') eq 'green' } @records ) {
+        warn("[WARNING] green role not found. Using default IP configuration on $records[$cableid]->[0].\n");
+        $records[$cableid]->[1]->{'ipaddr'} = '192.168.1.1';
+        $records[$cableid]->[1]->{'netmask'} = '255.255.255.0';
+        $records[$cableid]->[1]->{'gateway'} = '';
+        $records[$cableid]->[1]->{'role'} = 'green';
+    }
+
+    foreach (@records) {
+        $idb->new_record(@{$_});
+    }
 }
 
+sub fetch_ifcfg_props
+{
+    my $ifname = shift;
+    my %props = ();
 
-# Read DNS configuration
-open FILE, '/etc/resolv.conf' or die $!;
-my @dns;
-while (<FILE>) {
-    chomp;
-    if ( $_ =~ /^nameserver/ ) {
-        my ($i, $j) = split(/ /);
-        push(@dns,$j);
-     }
+    # Note: command returns empty output if interface is DOWN:
+    open(ADDR, '-|', "ip -o -4 address show dev $ifname");
+    while(<ADDR>) {
+        chomp;
+        my($id, $dev, $family, $cidr, $rest) = split(/\s+/, $_, 5);
+
+        my($addr, $bitmask) = split(m|/|, $cidr, 2);
+
+        if($addr) {
+            $props{'ipaddr'} = $addr;
+            $props{'netmask'} = Net::IPv4Addr::ipv4_cidr2msk($bitmask);
+            last;
+        }
+    }
+    close(ADDR);
+
+    open(ROUTE, '-|', 'ip -o route | grep ^default');
+    while(<ROUTE>) {
+        chomp;
+        my($p1, $via, $gateway, $p2, $dev) = split(/\s+/, $_);
+
+        if($dev eq $ifname) {
+            $props{'gateway'} = $gateway;
+        }
+    }
+    close(ROUTE);
+
+    if($props{'ipaddr'} && $props{'netmask'}) {
+        $props{'role'} = 'green';
+    }
+
+    return %props;
 }
-close FILE;
-$config{'dns'} = join(',',@dns);
 
-# Read gateway and hostname
-source_bash('/etc/sysconfig/network', \%config);
+sub fetch_dns
+{
+    my @dns = ();
 
-# Fallback for hostname if not configured in /etc/sysconfig/network
-$config{'hostname'} = `hostnamectl --static` || `hostnamectl --transient` || `/bin/hostname`;
-chomp($config{'hostname'});
+    # Read DNS configuration
+    open RESOLV, '/etc/resolv.conf';
+    while (<RESOLV>) {
+        chomp;
+        if ( $_ =~ /^nameserver/ ) {
+            my ($i, $j) = split(/ /);
+            push(@dns,$j);
+        }
+    }
+    close RESOLV;
+    return @dns;
+}
 
-my $host = substr($config{'hostname'}, 0, index($config{'hostname'}, '.'));
-my $domain = substr($config{'hostname'}, index($config{'hostname'}, '.')+1);
+my $dns=join(',', fetch_dns());
+if($dns) {
+    $cdb->set_prop('dns', 'NameServers', $dns);
+}
 
 # Read timezone configuration
-$config{'zone'} = `timedatectl status | sed -n -r '/^ *Timezone: / { s/^ *Timezone: ([^ ]+).*\$/\\1/; p }'`;
-chomp($config{'zone'});
+my $timezone = `timedatectl status | sed -n -r '/^ *Timezone: / { s/^ *Timezone: ([^ ]+).*\$/\\1/; p }'`;
+chomp($timezone);
+$cdb->set_value('TimeZone', $timezone);
 
-system("$DB configuration set TimeZone $config{'zone'}");
-system("$DB configuration setprop dns NameServers $config{'dns'}");
-system("$DB configuration set SystemName $host");
-system("$DB configuration set DomainName $domain");
+# Read hostname
+my($system_name, $domain_name) = split(m/\./, (`hostnamectl --static` || `hostnamectl --transient` || `/bin/hostname`), 2);
+
+chomp($domain_name);
+
+$cdb->set_value('SystemName', $system_name);
+$cdb->set_value('DomainName', $domain_name);
 
 # Grab all ethernet interfaces
 initialize_networks_db();
-
-# Green interface will be the one used for default gateway
-$config{'green_ipaddr'} = "";
-$config{'green'} = "";
-$|++;
-open( N, "/sbin/ip route |") or die "$!\n";
-my @out = (<N>);
-foreach my $line (@out){
-    if ( $line =~ /^default/) {
-        my @words = split(/\s+/,$line);
-        $config{'green'} = $words[4]; # green device
-
-        # Fallback if gateway not configured in /etc/sysconfig/network
-        $config{'gateway'} = $words[2] unless defined($config{'gateway'});
-    }
-}
-
-# Fallback to first enabled interface
-if ($config{'green'} eq "") {
-    my $idb = esmith::NetworksDB->open_ro;
-    foreach ($idb->interfaces) {
-       open(FILE, '/sys/class/net/'.$_->key.'/operstate') or next;
-       local $/;
-       my $state = <FILE>;
-       $state =~ s/\s+$//g;
-       close(FILE);
-       if ($state eq 'up') {
-           $config{'green'} = $_->key;
-           last;
-       }
-    } 
-}
-
-# Fallback to first available interface
-if ($config{'green'} eq "") {
-    my $idb = esmith::NetworksDB->open_ro;
-    my @interfaces = $idb->interfaces;
-    my $green = $interfaces[0];
-    $config{'green'} = $green->key;
-}
-# Last fallback, just configure eth0
-if ($config{'green'} eq "") {
-   $config{'green'}  = 'eth0'; 
-}
-
-# Fallback for gateway to a static ip
-if (!defined($config{'gateway'}) || $config{'gateway'} eq "") {
-   $config{'gateway'}  = '192.168.1.1';
-}
-
-
-# Load ethernet interfaces
-# Below snippet of code from /etc/sysconfig/network-scripts/network-functions 
-my $if_files=`ls /etc/sysconfig/network-scripts/ifcfg* | LANG=C sed -e "\$__sed_discard_ignored_files" -e '/\(ifcfg-lo\$\|:\|ifcfg-.*-range\)/d' -e '/ifcfg-[A-Za-z0-9#\._-]\+\$/ { s/^ifcfg-//g;s/[0-9]/ &/}' | LANG=C sort -k 1,1 -k 2n | LANG=C sed 's/ //'`;
-
-foreach my $f (split(/\s+/, $if_files)) {
-    my %interface;
-    my $basename = basename($f);
-    next unless ($basename ne 'ifcfg-lo');
-    my $i =  substr($basename, 6);
-    open FILE, $f or die $!;
-    while (<FILE>) {
-        chomp;
-        next unless ( $_ =~ '/DEVICE|BOOTPROTO|HWADDR|IPADDR|NETMASK|ONBOOT|TYPE/');
-        $_ =~ s/"//g;
-        my ($i, $j) = split(/=/);
-        $interface{lc($i)} = $j;
-    }
-    close FILE;
-    my $type = $interface{'type'} || 'ethernet';
-    my $device = $interface{'device'} || $i;
-    my $addresses = '';
-
-    # Avoid null string concatenation warnings:
-    if ( ! defined($interface{'ipaddr'})) {
-	$interface{'ipaddr'} = '';
-    }
-    if ( ! defined($interface{'netmask'})) {
-	$interface{'netmask'} = '';
-    }
-
-    # Sanitize bootproto parameter
-    if ( ! defined($interface{'bootproto'})
-	 || $interface{'bootproto'} eq ''
-	 || $interface{'bootproto'} eq 'static') {
-	$interface{'bootproto'} = 'none';
-    }
-
-    if ($interface{'bootproto'} eq 'none') {
-        $addresses = "netmask '$interface{'netmask'}' ipaddr '$interface{'ipaddr'}' gateway '$config{'gateway'}'";
-    }
-    if ( $device eq $config{'green'} ) { # Enable green device
-        system("$DB networks set $i $type bootproto '$interface{'bootproto'}' onboot yes hwaddr '$interface{'hwaddr'}' device $device $addresses") unless not (defined($interface{'hwaddr'}));
-        $config{'green_ipaddr'} = $interface{'ipaddr'};
-    }
-}
-
-# Fallback to ifconfig
-if ($config{'green_ipaddr'} eq "") {
-    $|++;
-    open( N, "/sbin/ifconfig $config{'green'} |") or die "$!\n";
-    my @out = (<N>);
-    my $mask;
-    foreach my $line (@out){
-        if ( $line =~ /inet addr/) {
-            $mask = $line;
-            $line =~ s/.*inet addr:((?:\d+\.){3}\d+).*/$1/g;
-            $mask =~ s/.*Mask:((?:\d+\.){3}\d+).*/$1/g;
-            $mask =~ s/\s+//g;
-            $line =~ s/\s+//g;
-            $config{'green_ipaddr'} = $line;
-            system("$DB networks setprop $config{'green'} bootproto none ipaddr $line netmask $mask gateway $config{'gateway'} onboot yes device $config{'green'}");
-        }
-    }
-}
-
-# Fallback to static ip address
-if ($config{'green_ipaddr'} eq "") {
-    system("$DB networks setprop $config{'green'} bootproto none ipaddr 192.168.1.1 netmask 255.255.255.0 gateway '' onboot yes device $config{'green'}");
-}
-
-
-# Set green interface
-system("$DB networks setprop $config{'green'} role green");
 
