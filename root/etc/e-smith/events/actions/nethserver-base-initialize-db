@@ -82,16 +82,20 @@ while (<FILE>) {
 close FILE;
 $config{'dns'} = join(',',@dns);
 
-# Read timezone configuration
-source_bash('/etc/sysconfig/clock', \%config);
 # Read gateway and hostname
 source_bash('/etc/sysconfig/network', \%config);
 
 # Fallback for hostname if not configured in /etc/sysconfig/network
-$config{'hostname'} = `/bin/hostname` unless defined($config{'hostname'});
+$config{'hostname'} = `hostnamectl --static` || `hostnamectl --transient` || `/bin/hostname`;
+chomp($config{'hostname'});
 
 my $host = substr($config{'hostname'}, 0, index($config{'hostname'}, '.'));
 my $domain = substr($config{'hostname'}, index($config{'hostname'}, '.')+1);
+
+# Read timezone configuration
+$config{'zone'} = `timedatectl status | sed -n -r '/^ *Timezone: / { s/^ *Timezone: ([^ ]+).*\$/\\1/; p }'`;
+chomp($config{'zone'});
+
 system("$DB configuration set TimeZone $config{'zone'}");
 system("$DB configuration setprop dns NameServers $config{'dns'}");
 system("$DB configuration set SystemName $host");
