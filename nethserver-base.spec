@@ -20,6 +20,9 @@ Requires: nethserver-lib
 Requires: system-config-firewall-base
 
 BuildRequires: nethserver-devtools
+Requires(post): systemd
+Requires(postun): systemd
+BuildRequires: systemd
 
 %description
 The %{name} package provides the fundamental infrastructure for the
@@ -57,6 +60,12 @@ rm -rf %{buildroot}
 %dir %{_nsdbconfdir}/configuration
 %dir %{_nsdbconfdir}/networks
 %dir %{_nsdbconfdir}/routes
+
+%post
+%systemd_post nethserver-system-init.service NetworkManager.service firewalld.service
+
+%postun
+%systemd_postun
 
 %changelog
 * Thu Apr 23 2015 Davide Principi <davide.principi@nethesis.it> - 2.7.0-1

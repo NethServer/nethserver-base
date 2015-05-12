@@ -146,6 +146,7 @@ event_actions('system-init', qw(
     init-repo                         60
     system-adjust                     90
     nethserver-base-interface-update  95
+    nethserver-system-init-clear      98
 ));
 
 #

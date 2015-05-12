@@ -1,0 +1,14 @@
+[Unit]
+Description=Initialize NethServer configuration
+Documentation=https://github.com/nethesis/nethserver-base
+After=multi-user.target
+ConditionPathExists=/var/spool/first-boot
+Conflicts=NetworkManager.service firewalld.service
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/e-smith/signal-event system-init
+
+[Install]
+WantedBy=multi-user.target
+

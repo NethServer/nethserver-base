@@ -1,0 +1,6 @@
+# This is a one-shot service:
+enable nethserver-system-init.service
+
+# Disable unwanted services:
+disable NetworkManager.service
+disable firewalld.service
