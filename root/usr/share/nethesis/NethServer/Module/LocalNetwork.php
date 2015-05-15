@@ -49,7 +49,7 @@ class LocalNetwork extends \Nethgui\Controller\TableController
         );
 
         $this
-            ->setTableAdapter($this->getPlatform()->getTableAdapter('networks', 'network'))
+            ->setTableAdapter(new LocalNetwork\NetworkAdapter($this->getPlatform()))
             ->setColumns($columns)
             ->addTableAction(new \Nethgui\Controller\Table\Modify('create', $parameterSchema, 'NethServer\Template\LocalNetwork\CreateUpdate'))            
             ->addTableAction(new \Nethgui\Controller\Table\Help('Help'))
@@ -70,5 +70,21 @@ class LocalNetwork extends \Nethgui\Controller\TableController
         $this->getPlatform()->signalEvent(sprintf('network-%s &', $eventName));
     }
 
+    public function prepareViewForColumnKey(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata) {
+        if (isset($values['editable']) && !$values['editable']) {
+            $rowMetadata['rowCssClass'] = trim($rowMetadata['rowCssClass'] . ' user-locked');
+        }
+        return strval($key);
+    }
+
+    public function prepareViewForColumnActions(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        $cellView = $action->prepareViewForColumnActions($view, $key, $values, $rowMetadata);
+        if (isset($values['editable']) && $values['editable'] == 0) {
+            unset($cellView['delete']);
+            unset($cellView['update']);
+        }
+        return $cellView;
+   }
 }
 
