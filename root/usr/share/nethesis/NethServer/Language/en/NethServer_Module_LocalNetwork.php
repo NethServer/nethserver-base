@@ -12,3 +12,4 @@ $L['Router_label'] = 'Router address';
 $L['SystemLocalNetwork_label'] = 'System network'; 
 $L['Update network `${0}`'] = 'Update network `${0}`'; 
 $L['network_label'] = 'Network address'; 
+$L['invalid_network'] = 'Invalid network address'; 

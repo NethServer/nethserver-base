@@ -51,9 +51,9 @@ class LocalNetwork extends \Nethgui\Controller\TableController
         $this
             ->setTableAdapter(new LocalNetwork\NetworkAdapter($this->getPlatform()))
             ->setColumns($columns)
-            ->addTableAction(new \Nethgui\Controller\Table\Modify('create', $parameterSchema, 'NethServer\Template\LocalNetwork\CreateUpdate'))            
+            ->addTableAction(new \NethServer\Module\LocalNetwork\Modify('create', $parameterSchema, 'NethServer\Template\LocalNetwork\CreateUpdate'))            
             ->addTableAction(new \Nethgui\Controller\Table\Help('Help'))
-            ->addRowAction(new \Nethgui\Controller\Table\Modify('update', $parameterSchema, 'NethServer\Template\LocalNetwork\CreateUpdate'))
+            ->addRowAction(new \NethServer\Module\LocalNetwork\Modify('update', $parameterSchema, 'NethServer\Template\LocalNetwork\CreateUpdate'))
             ->addRowAction(new \Nethgui\Controller\Table\Modify('delete', $parameterSchema, 'Nethgui\Template\Table\Delete'))
         ;
 
