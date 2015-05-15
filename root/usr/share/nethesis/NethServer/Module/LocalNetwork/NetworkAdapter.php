@@ -91,6 +91,28 @@ class NetworkAdapter extends \Nethgui\Adapter\LazyLoaderAdapter
             }
         }
 
+        $openvpn = $this->platform->getDatabase('configuration')->getKey('openvpn');
+        if (isset($openvpn['Network'])) {
+           $networks[$openvpn['Network']] = array(
+                    'network' => $openvpn['Network'],
+                    'Mask' => $openvpn['Netmask'],
+                    'Description' => "OpenVPN",
+                    'editable' => 0
+                );
+
+        }
+
+        $ipsec = $this->platform->getDatabase('configuration')->getKey('ipsec');
+        if (isset($ipsec['L2tpNetwork'])) {
+           $networks[$ipsec['L2tpNetwork']] = array(
+                    'network' => $ipsec['L2tpNetwork'],
+                    'Mask' => $ipsec['L2tpNetmask'],
+                    'Description' => "L2TP",
+                    'editable' => 0
+                );
+
+        }
+
         return new \ArrayObject($networks);
     }
 
