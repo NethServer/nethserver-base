@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.7.0
+Version: 2.7.1
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -69,6 +69,13 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 
 %changelog
+* Wed May 20 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.7.1-1
+- Alias ifcfg-ethX:Y files invalid syntax - Bug #3091 [NethServer]
+- Trusted network validator - Bug #3025 [NethServer]
+- Trusted "Network address" should be a valid Network prefix  - Bug #3010 [NethServer]
+- Localize "password expire" notifications - Enhancement #2887 [NethServer]
+- Base: display green network inside "Trusted network" page - Enhancement #2711 [NethServer]
+
 * Thu Apr 23 2015 Davide Principi <davide.principi@nethesis.it> - 2.7.0-1
 - Language packs support - Feature #3115 [NethServer]
 - Dashboard: display IP of red interfaces configured with DHCP - Enhancement #3096 [NethServer]
