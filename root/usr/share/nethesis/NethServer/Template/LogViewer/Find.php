@@ -91,10 +91,9 @@ $jsCode = <<<JSCODE
 
         $.each(results, function(i, r) {
              $('<li/>').appendTo(container)
-                 .append($('<a />', {href: r.p}).text(r.f).on('click', openLog).data('result', {f: r.f, p: r.p, m: 0, q: {q: ''}}))
-                 .append( r.m > 0 ? ' (' : '')
+                 .append( r.m > 0 ? r.f : $('<a />', {href: r.p}).text(r.f).on('click', openLog).data('result', {f: r.f, p: r.p, m: 0, q: {q: ''}}))
+                 .append(' ')
                  .append( r.m > 0 ? $('<a />', {href: r.p + '?q=' + encodeURIComponent(r.q.q)}).text(T(r.m === 1 ? 'Result_Filtered_label' : 'Results_Filtered_label', r.m)).on('click', openLog).data('result', r) : '')
-                 .append( r.m > 0 ? ')' : '')
         });
 
         container.appendTo(widget);
