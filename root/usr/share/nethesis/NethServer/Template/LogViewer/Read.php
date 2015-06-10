@@ -4,11 +4,10 @@
 $view->rejectFlag($view::INSET_FORM);
 
 
-
 echo $view->header('logFile')->setAttribute('template', $T('Read_Title'));
 $form = $view->form()->setAttribute('method', 'get');
 $form->insert($view->buttonList()
-        ->insert($view->button('Close', $view::BUTTON_CANCEL))
+        ->insert($view->button('Close', $view::BUTTON_CUSTOM))
         ->insert($view->button('Empty', $view::STATE_DISABLED)->setAttribute('receiver', 'Empty'))
         ->insert($view->button('Follow', $view::STATE_DISABLED)->setAttribute('receiver', 'Follow'))
 );
@@ -18,7 +17,8 @@ $consoleTarget = $view->getClientEventTarget('console');
 
 $followId = $view->getUniqueId('Follow');
 $emptyId = $view->getUniqueId('Empty');
-$actionId = $view->getUniqueId();
+$findActionId = $view->getUniqueId('../Find');
+$closeTarget = $view->getClientEventTarget('Close');
 $formTarget = $view->getClientEventTarget('FormAction');
 $actionId = $view->getUniqueId();
 
@@ -144,6 +144,14 @@ $jsCode = <<<JSCODE
     $('#${emptyId}').on('click', function () {
         consoleWidget.empty();
         return false;
+    });
+
+    $('.${closeTarget}').on('click', function () {
+        $.Nethgui.Server.ajaxMessage({
+            isMutation: false,
+            url: $('#${findActionId} form').attr('action'),
+            freezeElement: $('#${actionId}')
+        });
     });
 
 } ( jQuery ));

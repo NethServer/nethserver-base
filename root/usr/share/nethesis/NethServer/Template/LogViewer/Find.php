@@ -11,6 +11,7 @@ $form->insert($view->textInput('q', $view::LABEL_NONE))
     ->insert($view->literal(' '))
     ->insert($view->buttonList()
              ->insert($view->button('Find'))
+             ->insert($view->button('Clear', $view::BUTTON_CUSTOM))
              ->insert($view->button('Help', $view::BUTTON_HELP))
         )
 ;
@@ -21,6 +22,8 @@ $resultsTarget = $view->getClientEventTarget('results');
 $consoleTarget = $view->getClientEventTarget('../Read/console');
 $headerTarget = $view->getClientEventTarget('../Read/logFile');
 $formTarget = $view->getClientEventTarget('../Read/FormAction');
+$actionId = $view->getUniqueId();
+$clearTarget = $view->getClientEventTarget('Clear');
 
 echo sprintf('<div class="LogViewerResults %s">', $resultsTarget);
 if($view['results']) {
@@ -102,6 +105,14 @@ $jsCode = <<<JSCODE
      $(document).ready(function() {
         resultsWidget.find('a').each(function () { $(this).on('click', openLog) });
      });
+
+    $('.${clearTarget}').on('click', function () {
+        $.Nethgui.Server.ajaxMessage({
+            isMutation: false,
+            url: $('#${actionId} form').attr('action'),
+            freezeElement: resultsWidget
+        });
+    });
 
 } ( jQuery ));
 JSCODE;

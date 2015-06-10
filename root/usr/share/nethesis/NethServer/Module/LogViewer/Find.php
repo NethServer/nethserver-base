@@ -111,6 +111,10 @@ class Find extends \Nethgui\Controller\AbstractController
         
         $view['results'] = $results;
 
+        if($this->getRequest()->isValidated()) {
+            $view->getCommandList()->show();
+        }
+
     }
 
 }
