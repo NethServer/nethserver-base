@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.7.1
+Version: 2.7.2
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -69,6 +69,10 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 
 %changelog
+* Mon Jun 22 2015 Davide Principi <davide.principi@nethesis.it> - 2.7.2-1
+- Wrong Server Manager menu category order  - Bug #3197 [NethServer]
+- Log viewer close goes back to last module instead of back to log viewer - Bug #3138 [NethServer]
+
 * Wed May 20 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.7.1-1
 - Alias ifcfg-ethX:Y files invalid syntax - Bug #3091 [NethServer]
 - Trusted network validator - Bug #3025 [NethServer]
