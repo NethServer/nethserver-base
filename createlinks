@@ -22,26 +22,9 @@
 use esmith::Build::CreateLinks  qw(:all);
 use File::Path;
 
-
-#--------------------------------------------------
-# actions for network-create event
-#--------------------------------------------------
-event_actions('network-create', qw(
-    firewall-adjust      70
-));
-
-#--------------------------------------------------
-# actions for network-modify event
-#--------------------------------------------------
-event_actions('network-modify', qw(
-    firewall-adjust      70
-));
-
-#--------------------------------------------------
-# actions for network-delete event
-#--------------------------------------------------
-event_actions('network-delete', qw(
-    firewall-adjust      70
+event_actions('trusted-networks-modify', qw(
+    legacy-call-network-create 10
+    firewall-adjust 94
 ));
 
 #--------------------------------------------------
