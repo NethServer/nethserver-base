@@ -78,6 +78,17 @@ This is an example provider "Provider1" definition.
     ... # do something with $results (array ref)
  }
 
+The $results variable is a reference to an array. Each array item must
+be an hash reference. And the hash must have two keys
+
+=over
+
+=item 1. cidr, a string, representing the trusted network in CIDR form
+
+=item 2. provider, a string that identifies the entry provider
+
+=back
+
 User code example, that retrieves the list of trusted networks in CIDR
 format:
 
@@ -97,6 +108,8 @@ format:
 =item * list_mask() returns the trusted networks list with netmask
 format (i.e 192.168.1.0/255.255.255.0)
 
+=item * list_full() returns the complete $results list
+
 =back
 
 =cut
@@ -110,7 +123,8 @@ sub register_callback
 
 sub list_cidr
 {
-    return _run_callbacks();
+    my %unique = map { $_->{'cidr'} => 1 } _run_callbacks();
+    return sort keys %unique;
 }
 
 sub list_mask
@@ -121,14 +135,25 @@ sub list_mask
     } list_cidr();
 }
 
+sub list_full
+{
+    return map {
+        my($net, $bits) = split /\//, $_->{'cidr'};        
+        {
+            'cidr' => $_->{'cidr'},
+            'provider' => $_->{'provider'},
+            'mask' => "$net/" . esmith::util::computeNetmaskFromBits($bits)
+        };
+    }  _run_callbacks();
+}
+
 sub _run_callbacks
 {
     my @results = ();
     foreach (sort { $a->[1] <=> $b->[1] } @callbacks) {
         &{$_->[0]}(\@results);
     }
-    my %unique = map { $_ => 1 } @results;
-    return sort keys %unique;
+    return @results;
 }
 
 

@@ -43,14 +43,14 @@ sub local_networks
     foreach ($networks_db->get_all_by_prop('role' => 'green')) {
         my $greenNetwork = esmith::util::computeLocalNetworkShortSpec($_->prop('ipaddr'), $_->prop('netmask'));
         if($greenNetwork) {
-            push(@$results, $greenNetwork);
+            push(@$results, {'cidr' => $greenNetwork, 'provider' => 'green'});
         }
     }
 
     foreach($networks_db->get_all_by_prop('type' => 'network')) {
         my $network = esmith::util::computeLocalNetworkShortSpec($_->key, $_->prop('Mask'));
         if($network) {
-            push(@$results, $network);
+            push(@$results, {'cidr' => $network, 'provider' => 'networksdb'});
         }
     }
 }
