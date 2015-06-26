@@ -62,12 +62,7 @@ class LocalNetwork extends \Nethgui\Controller\TableController
 
     public function onParametersSaved(\Nethgui\Module\ModuleInterface $currentAction, $changes, $parameters)
     {
-        $eventName = strtolower($currentAction->getIdentifier());
-        // Update is replaced by "modify":
-        if($eventName === 'update') {
-            $eventName = 'modify';
-        }
-        $this->getPlatform()->signalEvent(sprintf('network-%s &', $eventName));
+        $this->getPlatform()->signalEvent('trusted-networks-modify &');
     }
 
     public function prepareViewForColumnKey(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata) {
