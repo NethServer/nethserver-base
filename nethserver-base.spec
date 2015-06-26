@@ -51,7 +51,7 @@ perl createlinks
 
 # davidep: relocate perl modules under default perl vendorlib directory:
 mkdir -p root%{perl_vendorlib}
-mv -v esmith root%{perl_vendorlib}
+mv -v lib/perl/esmith root%{perl_vendorlib}
 
 %install
 rm -rf $RPM_BUILD_ROOT

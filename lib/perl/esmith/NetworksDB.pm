@@ -23,6 +23,7 @@ package esmith::NetworksDB;
 use strict;
 use warnings;
 
+use NethServer::TrustedNetworks;
 use esmith::DB::db;
 use esmith::util;
 our @ISA = qw( esmith::DB::db );
@@ -131,45 +132,8 @@ list :-)
 
 sub local_access_spec
 {
-    my $self   = shift;
-    my $access = shift || "private";
-
-    my @localAccess = ("127.0.0.1");    
-
-    if($self && $self->green()) {
-        foreach ($self->green) {
-	    my $greenNetwork = esmith::util::computeLocalNetworkSpec(
-	        $_->prop('ipaddr'),
-	        $_->prop('netmask')
-	    );
-	    if($greenNetwork) {
-	        push @localAccess, $greenNetwork;
-	    }
-        }
-    }
-
-    if ( $access eq "localhost" )
-    {
-        # Nothing more to do
-    }
-    elsif ( $access eq "private" )
-    {
-        foreach my $network ( $self->networks )
-        {
-	    my $element = $network->key;
-            my $mask = $network->prop('Mask');
-	    $element .= "/$mask" unless ($mask eq "255.255.255.255");
-            push @localAccess, $element;
-        }
-    }
-    elsif ( $access eq "public" )
-    {
-        @localAccess = ("ALL");
-    }
-    else
-    {
-        warn "local_access_spec: unknown access value $access\n";
-    }
+    my $self = shift;
+    my @localAccess = "127.0.0.1", NethServer::TrustedNetworks::list_mask();
     return wantarray ? @localAccess : "@localAccess";
 }
 

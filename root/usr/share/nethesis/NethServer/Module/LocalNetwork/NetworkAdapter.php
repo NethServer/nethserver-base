@@ -68,49 +68,26 @@ class NetworkAdapter extends \Nethgui\Adapter\LazyLoaderAdapter
         return $this->innerAdapter->offsetUnset($offset);
     }
 
-    private function addrToNet($ip, $mask) {
-        $ip = ip2long($ip);
-        $mask = ip2long($mask);
-        return long2ip($ip & $mask);
-    }
-
     public function readTable()
     {
         $networks = iterator_to_array($this->innerAdapter);
 
-        $interfaces = $this->platform->getDatabase('networks')->getAll();
-        foreach ($interfaces as $k => $props) {
-            if (isset($props['role']) && $props['role'] == 'green' && isset($props['ipaddr']) ) {
-                $net = $this->addrToNet($props['ipaddr'], $props['netmask']);
+        $elements = json_decode($this->platform->exec('/usr/libexec/nethserver/trusted-networks')->getOutput(), TRUE); 
+
+        if(! is_array($elements)) {
+            return new \ArrayObject($networks);
+        }
+
+        foreach($elements as $e) {
+            list($net, $mask) = explode('/', $e['mask']);
+
+            if( ! isset($networks[$net])) {
                 $networks[$net] = array(
-                    'network' => $net,
-                    'Mask' => $props['netmask'],
-                    'Description' => "Green: $k",
+                    'Mask' => $mask,
+                    'Description' => $e['provider'],
                     'editable' => 0
                 );
             }
-        }
-
-        $openvpn = $this->platform->getDatabase('configuration')->getKey('openvpn');
-        if (isset($openvpn['Network'])) {
-           $networks[$openvpn['Network']] = array(
-                    'network' => $openvpn['Network'],
-                    'Mask' => $openvpn['Netmask'],
-                    'Description' => "OpenVPN",
-                    'editable' => 0
-                );
-
-        }
-
-        $ipsec = $this->platform->getDatabase('configuration')->getKey('ipsec');
-        if (isset($ipsec['L2tpNetwork'])) {
-           $networks[$ipsec['L2tpNetwork']] = array(
-                    'network' => $ipsec['L2tpNetwork'],
-                    'Mask' => $ipsec['L2tpNetmask'],
-                    'Description' => "L2TP",
-                    'editable' => 0
-                );
-
         }
 
         return new \ArrayObject($networks);
