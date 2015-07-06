@@ -1,3 +1,3 @@
 #!/bin/bash
 
-exec signal-event network-create $*
+exec /sbin/e-smith/signal-event network-create $*
