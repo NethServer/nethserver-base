@@ -133,7 +133,7 @@ list :-)
 sub local_access_spec
 {
     my $self = shift;
-    my @localAccess = "127.0.0.1", NethServer::TrustedNetworks::list_mask();
+    my @localAccess = ("127.0.0.1", NethServer::TrustedNetworks::list_mask());
     return wantarray ? @localAccess : "@localAccess";
 }
 

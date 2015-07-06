@@ -28,7 +28,7 @@ use esmith::util;
 
 my @callbacks = ();
 
-INIT {
+sub _init {
     my $dir = dirname($INC{'NethServer/TrustedNetworks.pm'});
     foreach (glob qq($dir/TrustedNetworks/*.pm)) {
         require "$_";
@@ -150,6 +150,9 @@ sub list_full
 sub _run_callbacks
 {
     my @results = ();
+    if( ! @callbacks) {
+        _init();
+    }
     foreach (sort { $a->[1] <=> $b->[1] } @callbacks) {
         &{$_->[0]}(\@results);
     }
