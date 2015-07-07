@@ -45,6 +45,17 @@ class Modify extends \Nethgui\Controller\Table\Modify
         parent::initialize();
     }
 
+    private function isUsed($net1, $mask1, $net2, $mask2)
+    {
+        $lnet1 = \ip2long($net1);
+        $lmask1 = \ip2long($mask1);
+        $lnet2 = \ip2long($net2);
+        $lmask2 = \ip2long($mask2);
+
+        // compare the super-network addresses.
+        return (($lnet1 ^ $lnet2) & ($lmask1 & $lmask2)) === 0;
+    }
+
     public function validate(\Nethgui\Controller\ValidationReportInterface $report)
     {
         parent::validate($report);
@@ -59,11 +70,10 @@ class Modify extends \Nethgui\Controller\Table\Modify
             return;
         }
 
-        // check the network is not already used
-        $curr = $this->parameters['network'] . '/' . $this->parameters['Mask'];
+        // check the network is not subnet of existing networks and vice-versa
         foreach ($this->getParent()->getAdapter() as $net => $props) {
-            if ($curr === ($net . '/' . $props['Mask'])) {
-                $report->addValidationErrorMessage($this, 'network', 'used_network', array($this->parameters['network']));
+            if ($this->isUsed($this->parameters['network'], $this->parameters['Mask'], $net, $props['Mask'])) {
+                $report->addValidationErrorMessage($this, 'network', 'used_network', array($this->parameters['network'], $net));
                 return;
             }
         }
