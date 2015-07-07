@@ -80,6 +80,7 @@ event_actions('interface-update', qw(
               interface-config-hostname  75
               static-routes-save         80
               firewall-adjust            90
+              trusted-networks-modify    95
 ));
 
 event_templates('interface-update', qw(

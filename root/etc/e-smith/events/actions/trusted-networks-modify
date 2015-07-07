@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec /sbin/e-smith/signal-event trusted-networks-modify
