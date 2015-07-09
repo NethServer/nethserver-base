@@ -46,6 +46,18 @@ sub local_networks
             push(@$results, {'cidr' => $greenNetwork, 'provider' => 'green'});
         }
     }
+    
+    foreach ($networks_db->get_all_by_prop('role' => 'alias')) {
+        my @tmp = split(/:/,$_->key);
+        my $eth = $networks_db->get($tmp[0]) || next;
+        # skip non-green interfaces
+        next if ( ($eth->prop('role' || '')) ne 'green');
+
+        my $greenNetwork = esmith::util::computeLocalNetworkShortSpec($_->prop('ipaddr'), $_->prop('netmask'));
+        if($greenNetwork) {
+            push(@$results, {'cidr' => $greenNetwork, 'provider' => 'alias'});
+        }
+    }
 
     foreach($networks_db->get_all_by_prop('type' => 'network')) {
         my $network = esmith::util::computeLocalNetworkShortSpec($_->key, $_->prop('Mask'));
