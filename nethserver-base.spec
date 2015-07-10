@@ -1,7 +1,7 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: @@VERSION@@
-Release: @@RELEASE@@
+Version: 2.5.5
+Release: 2%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
 BuildArch: noarch
@@ -66,6 +66,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Fri Jul 10 2015 Davide Principi <davide.principi@nethesis.it> - 2.5.5-2
+- Fix bug #3216 [NethServer]
+
 * Wed Jan 14 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.5.5-1.ns6
 - Raid critical status on dashboard does not show failed partitions - Bug #2995 [NethServer]
 - Correctly handle history back button - Enhancement #2958 [NethServer]
