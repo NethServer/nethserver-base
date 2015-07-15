@@ -153,7 +153,7 @@ Returns a list of all interface records in the database.
 
 sub interfaces {
     my ($self) = @_;
-    return grep { $_->prop('type') =~ /^(ethernet|bridge|bond|alias|ipsec|vlan)$/ } $self->get_all();
+    return grep { $_->prop('type') =~ /^(ethernet|bridge|bond|alias|ipsec|vlan|xdsl)$/ } $self->get_all();
 }
 
 =item I<zones>
@@ -250,7 +250,7 @@ exists.
 
 sub get_by_role {
     my ($self, $role) = @_;
-    my @t = $self->get_all_by_prop('role' => $role);
+    my @t = grep { ($_->prop('role') || '') eq $role } $self->interfaces();
     if ( wantarray ) {
 	return @t;
     } 

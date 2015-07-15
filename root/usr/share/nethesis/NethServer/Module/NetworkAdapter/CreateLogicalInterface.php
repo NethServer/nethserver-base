@@ -69,6 +69,15 @@ class CreateLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
         if ($this->parameters['type'] == 'bridge') {
             $this->getValidator('bridge')->notEmpty();
         }
+
+        if ($this->getRequest()->isMutation() && $this->parameters['type'] == 'xdsl') {
+            $hasXdsl = $this->getPlatform()->getDatabase('networks')->getType('ppp0') === 'xdsl';
+            if ($hasXdsl) {
+                $report->addValidationErrorMessage($this, 'xdsl', 'valid_pppoe_already_configured');
+            } elseif ($this->parameters['role'] !== 'red') {
+                $report->addValidationErrorMessage($this, 'role', 'valid_pppoe_red_role_only');
+            }
+        }
         parent::validate($report);
     }
 
@@ -161,7 +170,11 @@ class CreateLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
             $view['bridgeDatasource'] = array_map($dsMap, $this->getBridgeParts());
 
             if ($this->getRequest()->isMutation()) {
-                $view->getCommandList()->sendQuery($view->getModuleUrl('../SetIpAddress'));
+                if($this->parameters['type'] === 'xdsl') {
+                    $view->getCommandList()->sendQuery($view->getModuleUrl('../SetPppoeParameters'));
+                } else {
+                    $view->getCommandList()->sendQuery($view->getModuleUrl('../SetIpAddress'));
+                }
             } else {
                 $view->getCommandList()->show();
             }

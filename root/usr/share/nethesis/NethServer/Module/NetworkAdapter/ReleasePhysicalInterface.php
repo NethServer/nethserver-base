@@ -67,6 +67,9 @@ class ReleasePhysicalInterface extends \Nethgui\Controller\Table\AbstractAction
         if ($this->getRequest()->isMutation()) {
             $ndb = $this->getPlatform()->getDatabase('networks');
             $ndb->delProp($this->parameters['device'], array('role', 'master', 'bridge', 'bootproto', 'ipaddr', 'netmask', 'gateway', 'vlan'));
+            if($this->parameters['role'] === 'pppoe') {
+                $ndb->setType('ppp0', 'xdsl-disabled');
+            }
             $this->getAdapter()->flush();
             $this->getPlatform()->signalEvent('interface-update &');
         }
@@ -74,7 +77,7 @@ class ReleasePhysicalInterface extends \Nethgui\Controller\Table\AbstractAction
 
     private function getMessageText(\Nethgui\View\ViewInterface $view)
     {
-        if (in_array($this->parameters['role'], array('bridged', 'slave'))) {
+        if (in_array($this->parameters['role'], array('bridged', 'slave', 'pppoe'))) {
             $msgTemplate = sprintf("ReleasePhysicalInterface_%s_message", $this->parameters['role']);
         } else {
             $msgTemplate = "ReleasePhysicalInterface_roled_message";
