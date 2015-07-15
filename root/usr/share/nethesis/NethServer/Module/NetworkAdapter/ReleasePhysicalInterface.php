@@ -66,7 +66,8 @@ class ReleasePhysicalInterface extends \Nethgui\Controller\Table\AbstractAction
         parent::process();
         if ($this->getRequest()->isMutation()) {
             $ndb = $this->getPlatform()->getDatabase('networks');
-            $ndb->delProp($this->parameters['device'], array('role', 'master', 'bridge', 'bootproto', 'ipaddr', 'netmask', 'gateway', 'vlan'));
+            $ndb->delProp($this->parameters['device'], array('master', 'bridge', 'bootproto', 'ipaddr', 'netmask', 'gateway', 'vlan'));
+            $ndb->setProp($this->parameters['device'], array('role' => ''));
             if($this->parameters['role'] === 'pppoe') {
                 $ndb->setType('ppp0', 'xdsl-disabled');
             }
