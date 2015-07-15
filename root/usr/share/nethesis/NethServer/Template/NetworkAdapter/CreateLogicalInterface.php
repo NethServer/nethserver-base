@@ -19,6 +19,7 @@ echo $view
         ->insert($view->textInput('vlanTag'))
         ->insert($view->selector('vlan', $view::SELECTOR_DROPDOWN)->setAttribute('choices', 'bondDatasource'))
     )
+    ->insert($view->radioButton('type', 'xdsl'))
 ;
 
 echo $view->buttonList($view::BUTTON_HELP)
