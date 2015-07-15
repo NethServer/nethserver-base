@@ -250,7 +250,7 @@ exists.
 
 sub get_by_role {
     my ($self, $role) = @_;
-    my @t = $self->get_all_by_prop('role' => $role);
+    my @t = grep { ($_->prop('role') || '') eq $role } $self->interfaces();
     if ( wantarray ) {
 	return @t;
     } 
