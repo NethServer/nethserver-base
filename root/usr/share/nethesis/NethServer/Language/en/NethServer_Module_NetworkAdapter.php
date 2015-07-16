@@ -101,3 +101,7 @@ $L['ReleasePhysicalInterface_pppoe_message'] = "Release PPPoE red role from \${d
 $L['DeleteLogicalInterface_xdsl_message'] = "Remove the logical PPPoE device ppp0?";
 $L['valid_pppoe_already_configured'] = 'The PPPoE device ppp0 is already configured';
 $L['valid_pppoe_red_role_only'] = 'The PPPoE device ppp0 must be assigned the red role';
+$L['PppoeAuthType_label'] = 'Authentication type';
+$L['AuthType_auto'] = 'Automatic';
+$L['AuthType_pap'] = 'PAP';
+$L['AuthType_chap'] = 'CHAP';

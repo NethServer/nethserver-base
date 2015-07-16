@@ -39,6 +39,7 @@ class SetPppoeParameters extends \Nethgui\Controller\Table\AbstractAction
         $this->declareParameter('PppoeProvider', Validate::NOTEMPTY, array('networks', 'ppp0', 'provider'));
         $this->declareParameter('PppoePassword', Validate::NOTEMPTY, array('networks', 'ppp0', 'Password'));
         $this->declareParameter('PppoeInterface', $this->createValidator()->memberOf($this->getValidInterfaces()), $adapter);
+        $this->declareParameter('PppoeAuthType', $this->createValidator()->memberOf('auto', 'pap', 'chap'), array('networks', 'ppp0', 'AuthType'));
     }
 
     public function writeInterface($eth)
