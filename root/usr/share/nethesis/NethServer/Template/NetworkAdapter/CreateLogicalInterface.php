@@ -6,7 +6,7 @@ echo $view->header()->setAttribute('template', $T('CreateLogicalInterface_header
 
 echo $view->selector('role', $view::SELECTOR_DROPDOWN);
 
-echo $view
+$types = $view
     //->panel()
     ->fieldset()->setAttribute('template', $T('InterfaceType_label'))
     ->insert($view->fieldsetSwitch('type', 'bond', $view::FIELDSETSWITCH_EXPANDABLE)
@@ -19,8 +19,13 @@ echo $view
         ->insert($view->textInput('vlanTag'))
         ->insert($view->selector('vlan', $view::SELECTOR_DROPDOWN)->setAttribute('choices', 'bondDatasource'))
     )
-    ->insert($view->radioButton('type', 'xdsl'))
 ;
+
+if(in_array('red', $view->getModule()->getParent()->getInterfaceRoles())) {
+    $types->insert($view->radioButton('type', 'xdsl'));
+}
+
+echo $types;
 
 echo $view->buttonList($view::BUTTON_HELP)
     ->insert($view->button('Next', $view::BUTTON_SUBMIT))
