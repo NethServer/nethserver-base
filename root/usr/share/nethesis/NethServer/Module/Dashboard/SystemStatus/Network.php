@@ -53,7 +53,7 @@ class Network extends \Nethgui\Controller\AbstractController
             $interfaces[$data[0]]['ipaddr'] = $ipaddr;
         }
         foreach ($interfaces as $interface => $props) {
-             if ($props['type'] == 'network' || $props['type'] == 'xdsl-disabled' || $props['type'] == 'provider') {
+             if ($props['type'] == 'network' || $props['type'] == 'xdsl-disabled' || $props['type'] == 'provider' || $props['type'] == 'zone') {
                  unset($interfaces[$interface]);
                  continue;
              }
