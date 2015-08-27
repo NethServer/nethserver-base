@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.8.0
+Version: 2.8.1
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -69,6 +69,9 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 
 %changelog
+* Thu Aug 27 2015 Davide Principi <davide.principi@nethesis.it> - 2.8.1-1
+- server-manager PPPoE support - Enhancement #3227 [NethServer]
+
 * Fri Jul 17 2015 Davide Principi <davide.principi@nethesis.it> - 2.8.0-1
 - PPPoE support - Feature #3218 [NethServer]
 
