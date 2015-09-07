@@ -178,17 +178,6 @@ event_actions($event, 'firewall-adjust' => 20);
 $event = "runlevel-adjust";
 event_actions($event, 'runlevel-adjust' => 20);
 
-#--------------------------------------------------
-# actions for lokkit-save event
-#--------------------------------------------------
-
-$event = "lokkit-save";
-templates2events('/etc/sysconfig/system-config-firewall', $event);
-templates2events('/etc/sysconfig/ipv4_services_custom', $event);
-templates2events('/etc/sysconfig/iptables-config', $event);
-event_actions($event, 'lokkit-apply' => 20);
-
-
 #
 # hostname-modify event (#1878)
 #
