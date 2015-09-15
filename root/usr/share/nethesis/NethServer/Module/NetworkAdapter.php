@@ -44,18 +44,8 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
 
     public function getInterfaceRoles()
     {
-        static $interfaces;
-
-        if (isset($interfaces)) {
-            return $interfaces;
-        }
-        $isRouter = $this->getPlatform()->exec('/bin/rpm -q --whatprovides --queryformat "%{NAME}" nethserver-firewall')->getExitCode() === 0;
-        if ($isRouter) {
-            $interfaces = array('green', 'red', 'blue', 'orange');
-        } else {
-            $interfaces = array('green');
-        }
-        return $interfaces;
+        $interfaces = $this->getPlatform()->getDatabase('configuration')->getProp('firewall', 'InterfaceRoleList');
+        return explode(',',$interfaces);
     }
 
     public function initialize()
