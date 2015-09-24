@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.8.1
+Version: 2.9.0
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -69,6 +69,9 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 
 %changelog
+* Thu Sep 24 2015 Davide Principi <davide.principi@nethesis.it> - 2.9.0-1
+- Drop lokkit support, always use shorewall - Enhancement #3258 [NethServer]
+
 * Thu Aug 27 2015 Davide Principi <davide.principi@nethesis.it> - 2.8.1-1
 - server-manager PPPoE support - Enhancement #3227 [NethServer]
 
