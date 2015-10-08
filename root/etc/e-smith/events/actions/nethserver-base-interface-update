@@ -21,7 +21,3 @@
 #
 
 exec /sbin/e-smith/signal-event interface-update
-
-if [ -d "/etc/e-smith/events/nethserver-squid-update" ]; then
-    exec /sbin/e-smith/signal-event nethserver-squid-update $*
-fi
