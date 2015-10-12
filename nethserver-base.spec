@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.9.1
+Version: 2.9.2
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -69,6 +69,9 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 
 %changelog
+* Mon Oct 12 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.2-1
+- error in parsing ifcfg-eth0 when installing ns6.7rc1 on a centos 6.7 minimal - Bug #3282 [NethServer]
+
 * Tue Sep 29 2015 Davide Principi <davide.principi@nethesis.it> - 2.9.1-1
 - Translation: fix Welcome_body string. Enhancement #3265 [NethServer]
 
