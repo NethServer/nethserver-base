@@ -162,7 +162,7 @@ foreach my $f (split(/\s+/, $if_files)) {
     open FILE, $f or die $!;
     while (<FILE>) {
         chomp;
-        next unless ( $_ =~ '/DEVICE|BOOTPROTO|HWADDR|IPADDR|NETMASK|ONBOOT|TYPE/');
+        next unless ( $_ =~ '/DEVICE|BOOTPROTO|HWADDR|IPADDR|NETMASK|PREFIX|ONBOOT|TYPE/');
         $_ =~ s/"//g;
         my ($i, $j) = split(/=/);
         $interface{lc($i)} = $j;
@@ -187,6 +187,16 @@ foreach my $f (split(/\s+/, $if_files)) {
 	$interface{'bootproto'} = 'none';
     }
 
+    #### Bug #3282 - parse/convert PREFIX in NETMASK
+    if ( defined($interface{'prefix'})) {
+         my $network = $interface{'ipaddr'};
+         my $netbit = $interface{'prefix'};
+         my $_bit         = ( 2 ** (32 - $netbit) ) - 1;
+         my ($full_mask)  = unpack( "N", pack( "C4", 255,255,255,255 ) );
+         my $netma      = join( '.', unpack( "C4", pack( "N", ( $full_mask ^ $_bit ) ) ) );
+        $interface{'netmask'} = $netma;
+    }
+                                             
     if ($interface{'bootproto'} eq 'none') {
         $addresses = "netmask '$interface{'netmask'}' ipaddr '$interface{'ipaddr'}' gateway '$config{'gateway'}'";
     }
