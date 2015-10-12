@@ -130,7 +130,7 @@ class Network extends \Nethgui\Controller\AbstractController
         $ifaces = array();
         $view['gateway'] = "-";
         foreach ($this->interfaces as $i=>$props) {
-            if ( $this->interfaces[$i]['role'] == 'green') {
+            if ( $this->interfaces[$i]['role'] == 'red') {
                 $view['gateway'] = $this->interfaces[$i]['gateway'];
             }
         }
