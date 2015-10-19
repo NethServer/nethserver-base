@@ -231,4 +231,12 @@ event_actions($event, qw(
     network-route-up            35
 ));
 
+#--------------------------------------------------
+# Refs #3272 uniq key networks db validator
+#--------------------------------------------------
+validator_actions('network-create', qw(
+                  uniq-networksdb-key 20
+                  ));
+
+
 exit 0;
