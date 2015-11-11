@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.9.2
+Version: 2.9.3
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -69,6 +69,10 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 
 %changelog
+* Wed Nov 11 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.3-1
+- MultiWAN: remove static routes for checkip - Enhancement #3289 [NethServer]
+- DB key name clash in networks db - Bug #3272 [NethServer]
+
 * Mon Oct 12 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.2-1
 - error in parsing ifcfg-eth0 when installing ns6.7rc1 on a centos 6.7 minimal - Bug #3282 [NethServer]
 
