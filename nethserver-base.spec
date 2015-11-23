@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.9.3
+Version: 2.9.4
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -69,6 +69,9 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 
 %changelog
+* Mon Nov 23 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.4-1
+- Dashboard: avoid blocking on todos ajax calls - Enhancement #3322 [NethServer]
+
 * Wed Nov 11 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.3-1
 - MultiWAN: remove static routes for checkip - Enhancement #3289 [NethServer]
 - DB key name clash in networks db - Bug #3272 [NethServer]
