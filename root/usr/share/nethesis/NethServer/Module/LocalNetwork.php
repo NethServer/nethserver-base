@@ -53,7 +53,6 @@ class LocalNetwork extends \Nethgui\Controller\TableController
             ->setColumns($columns)
             ->addTableAction(new \NethServer\Module\LocalNetwork\Modify('create', $parameterSchema, 'NethServer\Template\LocalNetwork\CreateUpdate'))            
             ->addTableAction(new \Nethgui\Controller\Table\Help('Help'))
-            ->addRowAction(new \NethServer\Module\LocalNetwork\Modify('update', $parameterSchema, 'NethServer\Template\LocalNetwork\CreateUpdate'))
             ->addRowAction(new \Nethgui\Controller\Table\Modify('delete', $parameterSchema, 'Nethgui\Template\Table\Delete'))
         ;
 
