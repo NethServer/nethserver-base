@@ -64,7 +64,13 @@ for card in ${cards[@]}; do
         continue
     fi
 
-    hwaddr=`cat /sys/class/net/${card}/address`
+    if [ -d /sys/class/net/${card}/master ]; then
+        link=`/bin/readlink  /sys/class/net/${card}/master`
+        bond=`basename $link`
+        hwaddr=`/usr/libexec/nethserver/bond-slave-mac ${bond} ${card}`
+    else
+        hwaddr=`cat /sys/class/net/${card}/address`
+    fi
     
     # Skip if mac is not valid (00:00... or FF:FF...)
     if [ "${hwaddr}" == "00:00:00:00:00:00" ] || [ "${hwaddr}" == "ff:ff:ff:ff:ff:ff" ]; then

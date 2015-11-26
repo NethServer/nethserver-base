@@ -1,0 +1,33 @@
+#!/usr/bin/perl
+# Given a bond and an interface which a slave of the bond, 
+# return the mac address of the interface
+
+use strict;
+use warnings;
+
+sub help()
+{
+    print "Usage: bond-slave-mac [bond] [ethernet]\n";
+    exit 1;
+}
+
+my $bond = $ARGV[0] || die(help);
+my $eth = $ARGV[1] || die(help);
+
+my $filename = "/proc/net/bonding/$bond";
+open(my $fh, '<', $filename)
+  or die "No such file: '$filename' $!";
+
+my $found = 0;
+while (my $row = <$fh>) {
+  chomp $row;
+  if ($row =~ /Slave Interface:\s+(.*)/) {
+      if ($1 eq $eth) {
+          $found = 1;
+      }
+  }
+  if ($found && $row =~ /Permanent HW addr:\s+(.*)/) {
+      print "$1\n";
+      exit 0;
+  } 
+}
