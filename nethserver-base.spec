@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.9.4
+Version: 2.9.5
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -69,6 +69,10 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 
 %changelog
+* Mon Nov 30 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.5-1
+- The description of trusted network can not be modified - Bug #3321 [NethServer]
+- bond confuses network configuration - Bug #3306 [NethServer]
+
 * Mon Nov 23 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.4-1
 - Dashboard: avoid blocking on todos ajax calls - Enhancement #3322 [NethServer]
 
