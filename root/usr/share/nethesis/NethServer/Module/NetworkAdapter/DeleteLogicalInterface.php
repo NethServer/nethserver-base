@@ -46,7 +46,7 @@ class DeleteLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
         if ( ! isset($adapter[$keyValue])) {
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1399456905);
         }
-        if ( ! in_array($adapter[$keyValue]['type'], array('bridge', 'bond', 'alias', 'vlan'))) {
+        if ( ! in_array($adapter[$keyValue]['type'], array('bridge', 'bond', 'alias', 'vlan', 'xdsl'))) {
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1399456906);
         }
         parent::bind($request);
@@ -123,9 +123,24 @@ class DeleteLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
                     $this->releasePart($partKey);
                 }
             }
-            $this->getPlatform()->getDatabase('networks')->deleteKey($this->parameters['device']);
+            if($this->parameters['type'] === 'xdsl') {
+                $this->releasePppoeDevices();
+            } else {
+                $this->getPlatform()->getDatabase('networks')->deleteKey($this->parameters['device']);
+            }
             $this->getAdapter()->flush();
             $this->getPlatform()->signalEvent('interface-update &');
+        }
+    }
+
+    private function releasePppoeDevices()
+    {
+        $ndb = $this->getPlatform()->getDatabase('networks');
+        $ndb->setType('ppp0', 'xdsl-disabled');
+        foreach ($ndb->getAll('ethernet') as $key => $props) {
+            if (isset($props['role']) && $props['role'] === 'pppoe') {
+                $ndb->setProp($key, array('role' => ''));
+            }
         }
     }
 

@@ -11,6 +11,7 @@ $form->insert($view->textInput('q', $view::LABEL_NONE))
     ->insert($view->literal(' '))
     ->insert($view->buttonList()
              ->insert($view->button('Find'))
+             ->insert($view->button('Clear', $view::BUTTON_CUSTOM))
              ->insert($view->button('Help', $view::BUTTON_HELP))
         )
 ;
@@ -21,6 +22,8 @@ $resultsTarget = $view->getClientEventTarget('results');
 $consoleTarget = $view->getClientEventTarget('../Read/console');
 $headerTarget = $view->getClientEventTarget('../Read/logFile');
 $formTarget = $view->getClientEventTarget('../Read/FormAction');
+$actionId = $view->getUniqueId();
+$clearTarget = $view->getClientEventTarget('Clear');
 
 echo sprintf('<div class="LogViewerResults %s">', $resultsTarget);
 if($view['results']) {
@@ -91,10 +94,9 @@ $jsCode = <<<JSCODE
 
         $.each(results, function(i, r) {
              $('<li/>').appendTo(container)
-                 .append($('<a />', {href: r.p}).text(r.f).on('click', openLog).data('result', {f: r.f, p: r.p, m: 0, q: {q: ''}}))
-                 .append( r.m > 0 ? ' (' : '')
+                 .append( r.m > 0 ? r.f : $('<a />', {href: r.p}).text(r.f).on('click', openLog).data('result', {f: r.f, p: r.p, m: 0, q: {q: ''}}))
+                 .append(' ')
                  .append( r.m > 0 ? $('<a />', {href: r.p + '?q=' + encodeURIComponent(r.q.q)}).text(T(r.m === 1 ? 'Result_Filtered_label' : 'Results_Filtered_label', r.m)).on('click', openLog).data('result', r) : '')
-                 .append( r.m > 0 ? ')' : '')
         });
 
         container.appendTo(widget);
@@ -103,6 +105,14 @@ $jsCode = <<<JSCODE
      $(document).ready(function() {
         resultsWidget.find('a').each(function () { $(this).on('click', openLog) });
      });
+
+    $('.${clearTarget}').on('click', function () {
+        $.Nethgui.Server.ajaxMessage({
+            isMutation: false,
+            url: $('#${actionId} form').attr('action'),
+            freezeElement: resultsWidget
+        });
+    });
 
 } ( jQuery ));
 JSCODE;

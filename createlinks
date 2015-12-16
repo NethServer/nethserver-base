@@ -22,26 +22,9 @@
 use esmith::Build::CreateLinks  qw(:all);
 use File::Path;
 
-
-#--------------------------------------------------
-# actions for network-create event
-#--------------------------------------------------
-event_actions('network-create', qw(
-    firewall-adjust      70
-));
-
-#--------------------------------------------------
-# actions for network-modify event
-#--------------------------------------------------
-event_actions('network-modify', qw(
-    firewall-adjust      70
-));
-
-#--------------------------------------------------
-# actions for network-delete event
-#--------------------------------------------------
-event_actions('network-delete', qw(
-    firewall-adjust      70
+event_actions('trusted-networks-modify', qw(
+    legacy-call-network-create 10
+    firewall-adjust 94
 ));
 
 #--------------------------------------------------
@@ -97,6 +80,7 @@ event_actions('interface-update', qw(
               interface-config-hostname  75
               static-routes-save         80
               firewall-adjust            90
+              trusted-networks-modify    95
 ));
 
 event_templates('interface-update', qw(
@@ -195,17 +179,6 @@ event_actions($event, 'firewall-adjust' => 20);
 $event = "runlevel-adjust";
 event_actions($event, 'runlevel-adjust' => 20);
 
-#--------------------------------------------------
-# actions for lokkit-save event
-#--------------------------------------------------
-
-$event = "lokkit-save";
-templates2events('/etc/sysconfig/system-config-firewall', $event);
-templates2events('/etc/sysconfig/ipv4_services_custom', $event);
-templates2events('/etc/sysconfig/iptables-config', $event);
-event_actions($event, 'lokkit-apply' => 20);
-
-
 #
 # hostname-modify event (#1878)
 #
@@ -258,5 +231,13 @@ event_actions($event, qw(
     interface-config-write      25
     network-route-up            35
 ));
+
+#--------------------------------------------------
+# Refs #3272 uniq key networks db validator
+#--------------------------------------------------
+validator_actions('network-create', qw(
+                  uniq-networksdb-key 20
+                  ));
+
 
 exit 0;

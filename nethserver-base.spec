@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.7.0
+Version: 2.9.5
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -37,7 +37,7 @@ and template system.
 perl createlinks
 
 mkdir -p root%{perl_vendorlib}
-mv -v esmith root%{perl_vendorlib}
+mv -v lib/perl/{NethServer,esmith} root%{perl_vendorlib}
 mkdir -p root/%{_nseventsdir}/organization-save
 mkdir -p root/%{_nseventsdir}/%{name}-update
 
@@ -68,6 +68,49 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Mon Nov 30 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.5-1
+- The description of trusted network can not be modified - Bug #3321 [NethServer]
+- bond confuses network configuration - Bug #3306 [NethServer]
+
+* Mon Nov 23 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.4-1
+- Dashboard: avoid blocking on todos ajax calls - Enhancement #3322 [NethServer]
+
+* Wed Nov 11 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.3-1
+- MultiWAN: remove static routes for checkip - Enhancement #3289 [NethServer]
+- DB key name clash in networks db - Bug #3272 [NethServer]
+
+* Mon Oct 12 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.2-1
+- error in parsing ifcfg-eth0 when installing ns6.7rc1 on a centos 6.7 minimal - Bug #3282 [NethServer]
+
+* Tue Sep 29 2015 Davide Principi <davide.principi@nethesis.it> - 2.9.1-1
+- Translation: fix Welcome_body string. Enhancement #3265 [NethServer]
+
+* Thu Sep 24 2015 Davide Principi <davide.principi@nethesis.it> - 2.9.0-1
+- Drop lokkit support, always use shorewall - Enhancement #3258 [NethServer]
+
+* Thu Aug 27 2015 Davide Principi <davide.principi@nethesis.it> - 2.8.1-1
+- server-manager PPPoE support - Enhancement #3227 [NethServer]
+
+* Fri Jul 17 2015 Davide Principi <davide.principi@nethesis.it> - 2.8.0-1
+- PPPoE support - Feature #3218 [NethServer]
+
+* Wed Jul 15 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.7.4-1
+- Event trusted-networks-modify - Enhancement #3195 [NethServer]
+
+* Wed Jul 08 2015 Davide Principi <davide.principi@nethesis.it> - 2.7.3-1
+- Fix bug #3216 [NethServer]
+
+* Mon Jun 22 2015 Davide Principi <davide.principi@nethesis.it> - 2.7.2-1
+- Wrong Server Manager menu category order  - Bug #3197 [NethServer]
+- Log viewer close goes back to last module instead of back to log viewer - Bug #3138 [NethServer]
+
+* Wed May 20 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.7.1-1
+- Alias ifcfg-ethX:Y files invalid syntax - Bug #3091 [NethServer]
+- Trusted network validator - Bug #3025 [NethServer]
+- Trusted "Network address" should be a valid Network prefix  - Bug #3010 [NethServer]
+- Localize "password expire" notifications - Enhancement #2887 [NethServer]
+- Base: display green network inside "Trusted network" page - Enhancement #2711 [NethServer]
+
 * Thu Apr 23 2015 Davide Principi <davide.principi@nethesis.it> - 2.7.0-1
 - Language packs support - Feature #3115 [NethServer]
 - Dashboard: display IP of red interfaces configured with DHCP - Enhancement #3096 [NethServer]

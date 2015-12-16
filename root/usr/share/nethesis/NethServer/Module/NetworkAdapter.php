@@ -30,7 +30,7 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
      *
      * @var array
      */
-    private $types = array('ethernet', 'bridge', 'bond', 'vlan', 'alias');
+    private $types = array('ethernet', 'bridge', 'bond', 'vlan', 'alias', 'xdsl');
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
@@ -44,18 +44,8 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
 
     public function getInterfaceRoles()
     {
-        static $interfaces;
-
-        if (isset($interfaces)) {
-            return $interfaces;
-        }
-        $isRouter = $this->getPlatform()->exec('/bin/rpm -q --whatprovides --queryformat "%{NAME}" nethserver-firewall')->getExitCode() === 0;
-        if ($isRouter) {
-            $interfaces = array('green', 'red', 'blue', 'orange');
-        } else {
-            $interfaces = array('green');
-        }
-        return $interfaces;
+        $interfaces = $this->getPlatform()->getDatabase('configuration')->getProp('firewall', 'InterfaceRoleList');
+        return explode(',',$interfaces);
     }
 
     public function initialize()
@@ -79,6 +69,7 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
 
             // Row actions
             ->addRowAction(new \NethServer\Module\NetworkAdapter\Edit())
+            ->addRowAction(new \NethServer\Module\NetworkAdapter\SetPppoeParameters())
             ->addRowAction(new \NethServer\Module\NetworkAdapter\DeleteLogicalInterface())
             ->addRowAction(new \NethServer\Module\NetworkAdapter\ReleasePhysicalInterface())
             ->addRowAction(new \NethServer\Module\NetworkAdapter\CleanPhysicalInterface())
@@ -99,7 +90,7 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
     {
         $nicInfo = $this->getNicInfo();
         $isPresent = isset($nicInfo[$key]) && strtolower($nicInfo[$key]) === strtolower($values['hwaddr']);
-        $isLogicalDevice = in_array($values['type'], array('alias', 'bridge', 'bond', 'vlan'));
+        $isLogicalDevice = in_array($values['type'], array('alias', 'bridge', 'bond', 'vlan', 'xdsl'));
 
         if ( ! $isPresent && ! $isLogicalDevice) {
             $rowMetadata['rowCssClass'] = trim($rowMetadata['rowCssClass'] . ' user-locked');
@@ -158,10 +149,11 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
         $role = isset($values['role']) ? $values['role'] : '';
 
         $isPresent = isset($nicInfo[$key]) && strtolower($nicInfo[$key]) === strtolower($values['hwaddr']);
-        $isLogicalDevice = in_array($values['type'], array('alias', 'bridge', 'bond', 'vlan'));
+        $isLogicalDevice = in_array($values['type'], array('alias', 'bridge', 'bond', 'vlan', 'xdsl'));
         $isPhysicalInterface = in_array($values['type'], array('ethernet'));
-        $isEditable = $values['type'] !== 'alias' && ! in_array($role, array('slave', 'bridged'));
-        $canHaveIpAlias = $isPresent && $values['type'] !== 'alias' && ! in_array($role, array('slave', 'bridged'));
+        $isEditable = ! in_array($values['type'], array('alias', 'xdsl')) && ! in_array($role, array('slave', 'bridged', 'pppoe'));
+        $canHaveIpAlias = $isPresent && $values['type'] !== 'alias' && ! in_array($role, array('slave', 'bridged', 'pppoe'));
+        $isXdsl = $values['type'] === 'xdsl';
 
         if ( ! $isLogicalDevice) {
             unset($cellView['DeleteLogicalInterface']);
@@ -183,6 +175,12 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
             unset($cellView['CleanPhysicalInterface']);
         } else {
             unset($cellView['Edit']);
+        }
+
+        if ($isXdsl ) {
+            unset($cellView['CleanPhysicalInterface']);
+        } else {
+            unset($cellView['SetPppoeParameters']);
         }
 
         return $cellView;

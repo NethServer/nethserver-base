@@ -1,38 +1,27 @@
 #!/usr/bin/perl
 
 #
-# Copyright (C) 2012 Nethesis S.r.l.
-# http://www.nethesis.it - support@nethesis.it
-# 
+# Copyright (C) 2015 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
 # This script is part of NethServer.
-# 
+#
 # NethServer is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License,
 # or any later version.
-# 
+#
 # NethServer is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
-# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+# along with NethServer.  If not, see COPYING.
 #
 
 use strict;
-use esmith::ConfigDB;
-use esmith::event;
+use NethServer::TrustedNetworks;
+use JSON;
 
-my $event = shift || die("Missing event argument!");
-my $fevent = "";
-
-my $package = `rpm -q --whatprovides --queryformat "%{NAME}" nethserver-firewall`;
-if ( -e "/etc/e-smith/events/".$package."-save") {
-    $fevent = $package."-save";
-
-    if( ! esmith::event::event_signal($fevent, $event)) {
-        exit(1);
-    }
-} 
-
+print JSON::encode_json([NethServer::TrustedNetworks::list_full()]);

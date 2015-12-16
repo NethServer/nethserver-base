@@ -25,6 +25,8 @@ use Encode qw(encode decode);
 use strict;
 use Carp;
 
+my $TIMEOUT = 2;
+
 my $errors = 0;
 my $count = 0;
 open(STDERR, '| /bin/logger -t admin-todos');
@@ -32,7 +34,7 @@ open(STDERR, '| /bin/logger -t admin-todos');
 print '[';
 
 foreach(glob '/etc/nethserver/todos.d/*') {
-    my $output = qx($_);
+    my $output = `/usr/bin/timeout -s SIGKILL $TIMEOUT $_`;
     $output =~ s/(^\s+|\s+$)//;
     if($? != 0) {
 	print STDERR "[ERROR] admin-todos: $_ exit code $?\n";

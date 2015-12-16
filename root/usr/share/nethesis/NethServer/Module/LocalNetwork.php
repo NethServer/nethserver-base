@@ -49,11 +49,10 @@ class LocalNetwork extends \Nethgui\Controller\TableController
         );
 
         $this
-            ->setTableAdapter($this->getPlatform()->getTableAdapter('networks', 'network'))
+            ->setTableAdapter(new LocalNetwork\NetworkAdapter($this->getPlatform()))
             ->setColumns($columns)
-            ->addTableAction(new \Nethgui\Controller\Table\Modify('create', $parameterSchema, 'NethServer\Template\LocalNetwork\CreateUpdate'))            
+            ->addTableAction(new \NethServer\Module\LocalNetwork\Modify('create', $parameterSchema, 'NethServer\Template\LocalNetwork\CreateUpdate'))            
             ->addTableAction(new \Nethgui\Controller\Table\Help('Help'))
-            ->addRowAction(new \Nethgui\Controller\Table\Modify('update', $parameterSchema, 'NethServer\Template\LocalNetwork\CreateUpdate'))
             ->addRowAction(new \Nethgui\Controller\Table\Modify('delete', $parameterSchema, 'Nethgui\Template\Table\Delete'))
         ;
 
@@ -62,13 +61,24 @@ class LocalNetwork extends \Nethgui\Controller\TableController
 
     public function onParametersSaved(\Nethgui\Module\ModuleInterface $currentAction, $changes, $parameters)
     {
-        $eventName = strtolower($currentAction->getIdentifier());
-        // Update is replaced by "modify":
-        if($eventName === 'update') {
-            $eventName = 'modify';
-        }
-        $this->getPlatform()->signalEvent(sprintf('network-%s &', $eventName));
+        $this->getPlatform()->signalEvent('trusted-networks-modify &');
     }
 
+    public function prepareViewForColumnKey(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata) {
+        if (isset($values['editable']) && !$values['editable']) {
+            $rowMetadata['rowCssClass'] = trim($rowMetadata['rowCssClass'] . ' user-locked');
+        }
+        return strval($key);
+    }
+
+    public function prepareViewForColumnActions(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        $cellView = $action->prepareViewForColumnActions($view, $key, $values, $rowMetadata);
+        if (isset($values['editable']) && $values['editable'] == 0) {
+            unset($cellView['delete']);
+            unset($cellView['update']);
+        }
+        return $cellView;
+   }
 }
 

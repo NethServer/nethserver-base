@@ -27,23 +27,27 @@ echo "</ul>";
 foreach ($view['interfaces'] as $interface) {
      $name = str_replace('.','_',$interface['name']);
      echo "<div id='interface-info-$name'>";
-     echo "<dt>".$T('hwaddr_label')."</dt><dd>{$interface['hwaddr']}</dd>";
-     echo "<dt>".$T('link_label')."</dt><dd>";
-     if ($interface['link']) {
-         echo "<span class='green'>OK</span> ({$interface['speed']})";
-     } else {
-         echo "-";
-     }
-     echo "</dd>";
      if ($interface['role']) {
-         echo "<dt>".$T('ipaddr_label')." / ".$T('netmask_label')."</dt><dd>";
-         if($interface['ipaddr']) {
-             echo "{$interface['ipaddr']}";
-         } else {
-             echo "-";
+         echo "<dt>".$T('role_label')."</dt><dd>{$interface['role']}</dd>";
+     }
+     if ($interface['hwaddr']) {
+         echo "<dt>".$T('hwaddr_label')."</dt><dd>{$interface['hwaddr']}</dd>";
+     }
+     if ($interface['link']) {
+         echo "<dt>".$T('link_label')."</dt><dd>";
+         echo "<span class='green'>OK</span>";
+         if ($interface['speed']) {
+             echo "<span class='speed'>({$interface['speed']})</span>";
          }
          echo "</dd>";
-         echo "<dt>".$T('bootproto_label')."</dt><dd>{$interface['bootproto']}</dd>";
+     }
+     if($interface['ipaddr']) {
+         echo "<dt>".$T('ipaddr_label')." / ".$T('netmask_label')."</dt><dd>";
+         echo "{$interface['ipaddr']}";
+         echo "</dd>";
+     }
+     if ($interface['bootproto']) {
+         echo "<dt>".$T('bootproto_label')."</dt><dd>".$T($interface['bootproto']."_label")."</dd>";
      }
      echo "</div>";
 }
@@ -77,8 +81,8 @@ $view->includeCss("
     }
     
 
-    span.green {
-        margin-right: 10px;,
+    span.speed {
+        margin-left: 10px;,
     }
     .interface-info {
         padding: 5px;

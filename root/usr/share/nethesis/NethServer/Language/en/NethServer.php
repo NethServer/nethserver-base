@@ -1,11 +1,12 @@
 <?php 
 
 $L['Administration'] = 'Administration'; 
-$L['Category_Order'] = 'Status, Management, Administration, Security, Configuration, Gateway'; 
 $L['Configuration'] = 'Configuration'; 
 $L['Management'] = 'Management'; 
 $L['Other modules'] = 'Other modules'; 
 $L['Security'] = 'Security';
+$L['Status'] = 'Status';
+$L['Gateway'] = 'Gateway';
 $L['UserProfile_Title'] = 'User\'s profile';
 $L['ChangePassword_Header'] = 'Change password for user `${0}`';
 $L['ChangePassword_label'] = 'Change password';
@@ -26,4 +27,4 @@ $L['Back_label'] = 'Back';
 $L['Profile'] = 'Profile';
 $L['Change password'] = 'Change password';
 $L['Logout'] = 'Logout';
-
+$L['valid_platform,network-create,uniq-networksdb-key,3'] = 'The name `${1}` has been already used inside the networks database';

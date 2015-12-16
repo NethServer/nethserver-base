@@ -44,6 +44,13 @@ sub interface_is_present
     my $props = shift;
     my $devlink = "/sys/class/net/" . $props->{'key'};
     
+    if ($props->{'role'} eq 'slave') {
+        $devlink = "/proc/net/bonding/" . $props->{'master'};
+        if (-e $devlink && grep(m|Permanent HW addr:\s*$props->{'hwaddr'}|i, file_contents($devlink))) {
+	     return 1;
+        }
+    }
+
     if( -e $devlink && grep(m|^\s*$props->{'hwaddr'}\s*$|i, file_contents("$devlink/address"))) {
 	return 1;
     }

@@ -1,7 +1,7 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 #
-# Copyright (C) 2012 Nethesis S.r.l.
+# Copyright (C) 2015 Nethesis S.r.l.
 # http://www.nethesis.it - support@nethesis.it
 # 
 # This script is part of NethServer.
@@ -20,19 +20,32 @@
 # along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-use strict;
-use esmith::ConfigDB;
-use esmith::event;
+package esmith;
 
-my $event = shift || die("Missing event argument!");
-my $fevent = "";
+use esmith::NetworksDB;
 
-my $package = `rpm -q --whatprovides --queryformat "%{NAME}" nethserver-firewall`;
-if ( -e "/etc/e-smith/events/".$package."-save") {
-    $fevent = $package."-save";
 
-    if( ! esmith::event::event_signal($fevent, $event)) {
-        exit(1);
-    }
-} 
+=head2 validate_networkName_conflict
 
+Returns 'OK' if the key name doesn't yet exist.  Returns a localised error
+otherwise.
+
+=cut
+
+my $keyName = shift || die('Missing key name argument');
+my $keydb = esmith::NetworksDB->open_ro() || die('Could not open NetworksDB');
+
+my $key = $keydb->get($keyName);
+my $type;
+
+if (defined $key)
+{
+    $type = $key->prop('type');
+}
+else
+{
+    exit 0;
+}
+
+print "A $type key with the same name already exists\n";
+exit 3;

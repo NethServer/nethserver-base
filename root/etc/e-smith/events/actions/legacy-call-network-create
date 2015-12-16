@@ -1,0 +1,5 @@
+#!/bin/bash
+
+if [ -d "/etc/e-smith/events/network-create" ]; then
+    exec /sbin/e-smith/signal-event network-create $*
+fi
