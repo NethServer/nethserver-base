@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # Enable only NethServer repositories
-/sbin/e-smith/eorepo base updates extras nethserver-{base,updates} epel-updates
+/sbin/e-smith/eorepo base updates extras nethserver-{base,updates} epel
