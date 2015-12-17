@@ -17,7 +17,6 @@ Requires: net-tools
 Requires: yum-plugin-changelog
 Requires: nethserver-yum
 Requires: nethserver-lib
-Requires: system-config-firewall-base
 
 BuildRequires: nethserver-devtools
 Requires(post): systemd
