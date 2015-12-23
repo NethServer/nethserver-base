@@ -1,4 +1,14 @@
 #!/bin/bash
 
-# Enable only NethServer repositories
+# Enable only some repositories
 /sbin/e-smith/eorepo base updates extras nethserver-{base,updates} epel
+
+# Disable groups for EPEL and CentOS repositories
+for F in /etc/yum.repos.d/{CentOS-Base.repo,epel.repo}; do
+    if ! grep -F 'enablegroups=0' $F &>/dev/null; then
+        echo "[NOTICE] Disabling groups in $F"
+        sed  -i '/^name=/  a \
+enablegroups=0
+' $F
+    fi
+done
