@@ -75,14 +75,15 @@ def compsdump(yb):
 
     installed_packages = map(lambda p: p.name, yb.doRpmDBSetup())
     package_state = lambda p: (p, p in installed_packages)
-    
+    installed_groups, available_groups = yb.doGroupLists()
+
     for g in yb.comps.get_groups():
         if not g.user_visible:
             continue
         tmp = {
             'id' : g.groupid,
             'name' : g.ui_name,
-            'installed': g.installed,
+            'installed': g in installed_groups,
             'description' : g.ui_description,
             'mandatory_packages': dict(map(package_state, g.mandatory_packages.keys())),
             'optional_packages': dict(map(package_state, g.optional_packages.keys())),
