@@ -1,8 +1,0 @@
-{
-    $OUT = '';
-    unless ($settings{SYSFONTACM})
-    {
-	$settings{SYSFONTACM} = '"iso15"';
-	$order{scalar keys %settings} = "SYSFONTACM";
-    }
-}
