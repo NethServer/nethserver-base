@@ -1,1 +1,3 @@
 PERMS=0440
+OUTPUT_FILENAME="/etc/sudoers.d/10_nethserver"
+
