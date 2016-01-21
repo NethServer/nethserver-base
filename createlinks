@@ -35,7 +35,6 @@ event_actions('nethserver-base-update', qw(
     nethserver-base-selinux-setup     10
     remount-filesystems               10
     nethserver-base-conf              40
-    nethserver-base-pam-setup         50
     nethserver-base-mail-aliases      50
 ));
 
@@ -44,12 +43,9 @@ event_templates('nethserver-base-update', qw(
     /etc/fstab
     /etc/resolv.conf
     /etc/selinux/config
-    /etc/pam.d/system-auth-nh
-    /etc/pam.d/password-auth-nh
     /etc/sudoers
     /etc/shells
     /etc/rc.d/rc.local
-    /etc/krb5.conf
     /etc/logviewer.conf
     /etc/logrotate.conf
 ));
@@ -59,10 +55,6 @@ event_templates('nethserver-base-update', qw(
 # Template headers
 #
 		
-safe_symlink(
-    "/etc/e-smith/templates-default/template-begin-pam", 
-    "root/etc/e-smith/templates/etc/pam.d/system-auth-nh/template-begin");		
-
 safe_symlink(
     "/etc/e-smith/templates-default/template-begin-shell", 
     "root/etc/e-smith/templates/etc/rc.d/rc.local/template-begin");		
