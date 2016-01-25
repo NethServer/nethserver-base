@@ -62,7 +62,7 @@ rm -rf %{buildroot}
 %dir %{_nsdbconfdir}/routes
 
 %post
-%systemd_post nethserver-system-init.service NetworkManager.service firewalld.service
+%systemd_post nethserver-system-init.service NetworkManager.service firewalld.service nethserver-config-network.service
 
 %postun
 %systemd_postun
