@@ -55,6 +55,7 @@ rm -rf %{buildroot}
 %doc COPYING
 %ghost %attr(600,root,root) /etc/pki/tls/private/NSRV.key
 %ghost %attr(644,root,root) /etc/pki/tls/certs/NSRV.crt
+%ghost %attr(440,root,root) /etc/sudoers.d/10_nethserver
 %dir %{_nseventsdir}/%{name}-update
 %dir %{_nsdbconfdir}/configuration
 %dir %{_nsdbconfdir}/networks

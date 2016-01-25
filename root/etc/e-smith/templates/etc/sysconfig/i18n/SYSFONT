@@ -1,9 +1,0 @@
-{
-    $OUT = "";
-    my $sysfont = $settings{SYSFONT};
-    return unless defined $sysfont;
-    if ($sysfont eq '"latarcyrheb-sun16"')
-    {
-	$settings{SYSFONT} = '"lat0-sun16"';
-    }
-}

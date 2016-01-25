@@ -5,4 +5,5 @@ Cmnd_Alias NETHSERVER_ADM = { join(', ', @adm_commands, @cmnd_alias_httpd_admin)
 
 %adm ALL=NOPASSWD: NETHSERVER_ADM
 
-
+# server-manager does not require a tty
+Defaults:srvmgr !requiretty

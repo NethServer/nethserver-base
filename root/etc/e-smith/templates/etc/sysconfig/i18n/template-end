@@ -1,8 +1,0 @@
-{
-    foreach my $lineno (sort keys %order)
-    {
-	my $key = $order{$lineno};
-	my $value = $settings{$key};
-	$OUT .= "$key=$value\n";
-    }
-}

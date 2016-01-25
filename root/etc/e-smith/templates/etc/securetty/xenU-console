@@ -1,6 +1,0 @@
-{
-    $OUT = '';
-
-    return unless -d "/proc/xen" && ! -f "/proc/xen/xsd_kva";
-    $OUT .= "xvc0";
-}
