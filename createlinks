@@ -45,20 +45,9 @@ event_templates('nethserver-base-update', qw(
     /etc/selinux/config
     /etc/sudoers
     /etc/shells
-    /etc/rc.d/rc.local
     /etc/logviewer.conf
     /etc/logrotate.conf
 ));
-
-
-#
-# Template headers
-#
-		
-safe_symlink(
-    "/etc/e-smith/templates-default/template-begin-shell", 
-    "root/etc/e-smith/templates/etc/rc.d/rc.local/template-begin");		
-
 
 #--------------------------------------------------
 # actions for interface-modify event #1532

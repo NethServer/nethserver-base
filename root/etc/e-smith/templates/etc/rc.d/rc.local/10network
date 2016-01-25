@@ -1,5 +1,0 @@
-#
-# 10network -- Reset network interface if needed
-#
-which plymouth &>/dev/null && plymouth quit
-/sbin/e-smith/nethserver-config-network -t 120
