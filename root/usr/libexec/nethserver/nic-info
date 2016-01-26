@@ -107,10 +107,10 @@ for card in ${cards[@]}; do
 
     link=$(cat /sys/class/net/$card/carrier 2>/dev/null)
     if [ $? != 0 ]; then
-	ifconfig $card up 2>/dev/null
+	ip link set $card up 2>/dev/null
 	link=$(cat /sys/class/net/$card/carrier 2>/dev/null)
 	speed=$(cat /sys/class/net/$card/speed 2>/dev/null)
-	ifconfig $card down 2>/dev/null
+	ip link set $card down 2>/dev/null
     else
 	speed=$(cat /sys/class/net/$card/speed 2>/dev/null)
     fi

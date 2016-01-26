@@ -26,17 +26,15 @@ use strict;
 qx(/sbin/service network stop);
 
 our $output_dir = $output_dir || $ENV{ESMITH_NETWORK_OUT_DIR} || "/etc/sysconfig/network-scripts";
-my $idb = esmith::NetworksDB->open_ro();
-my @interfaces = $idb->ethernets;
 
 my %current = {};
 # Query the currently active interfaces:
-foreach (split(/\n/, `/sbin/ifconfig -a | grep "HWaddr"`)) {
-   my ($name, $field2, $field3, $field4, $mac) = split(/\s+/, $_);
-   $current{uc($mac)} = $name;
+foreach (split(/\n/, `ip -o link`)) {
+   my ($id, $name, $details) = split(/:/, $_);
+   next if ($name =~ "lo");
 
    # Ensure all ethernets are down:
-   my $output = `/sbin/ifconfig $name down 2>&1`;
+   my $output = `ip link set $name down 2>&1`;
    if ( $? != 0 ) {
        warn "Could not bring down " . $name . ": " . $output . "\n";
    }
