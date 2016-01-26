@@ -4,7 +4,7 @@ Documentation=https://github.com/NethServer/nethserver-base
 
 [Service]
 Type=idle
-ExecStart=/sbin/e-smith/nethserver-config-network -t 110
+ExecStart=/sbin/e-smith/nethserver-config-network
 StandardInput=tty-force
 StandardOutput=tty
 TTYReset=yes

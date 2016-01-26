@@ -18,17 +18,11 @@
 # You should have received a copy of the GNU General Public License
 # along with NethServer.  If not, see .
 #
-use Getopt::Std;
 use esmith::NetworksDB;
 use JSON;
 use Encode qw(encode decode);
 use esmith::event;
 use strict;
-
-my %opts = ();
-getopt('t:', \%opts);
-
-$SIG{ALRM} = sub { die("Timeout\n"); };
 
 my $ndb = esmith::NetworksDB->open();
 
@@ -61,21 +55,14 @@ if (scalar(@free_interfaces) == 1) {
     }
     
 } elsif(scalar(@free_interfaces) > 1) {
-    foreach my $green (@lost_greens) {
-	print_choices($green, \@free_interfaces);
-        my $choicenb = read_choice(scalar(@free_interfaces));
-	if($choicenb < 0 || $choicenb >= scalar @free_interfaces) {
-	    exit 0;
-	}
-	my $record = $ndb->get($free_interfaces[$choicenb]->{'name'});
-	if($record && ! $record->prop('role')) {
-	    $record->delete();
-	}
-    }
+
+    # More than 1 new interface found
+    # Let the user deal with the config!
 
 } else {
-    warn "[WARNING] no free interfaces available!\n";
-    exit 2;
+
+    # nothing to do
+    exit 0;
 }
 
 $ndb->close();
@@ -154,44 +141,5 @@ sub read_free_interfaces
     return @free;
 }
 
-
-sub print_choices 
-{
-    my $green = shift;
-    my $choices = shift;
-    
-    my $arr = shift;
-    my $k = 1;
-    print "\033[2J\n------------------\n";
-    print "   ! WARNING !\n";
-    print "------------------\n\n";
-    print "Assign new network device to $green->{'name'} $green->{'role'}\n";
-
-    print "\n 0) SKIP -- manual configuration required\n\n";
-    foreach (@{$choices}) {
-        printf("%2d) %s %s\n", $k, $_->{'name'}, ($_->{'link'} ? 'status UP' : 'status down'));
-	printf("    %-74s\n\n", substr($_->{'model'}, 0, 74));
-        $k++;
-    }
-}
-
-sub read_choice
-{
-    my $max = shift;
-
-    if($opts{'t'}) {
-	eval {
-	    alarm $opts{'t'};
-	};
-    }
-    my $i = 'xxx';
-    while($i !~ m/^\d+$/) {
-	printf("\nPlease, type your choice number (0-%d), then press ENTER: ", $max);
-	$i = <STDIN>;
-	alarm 0;	
-	chomp($i);
-    }
-    return int($i) - 1;
-}
 
 
