@@ -42,7 +42,7 @@ my $idb = esmith::NetworksDB->open() || die("Could not open NetworksDB");
 #
 sub initialize_networks_db
 {
-    my @fields = qw(name hwaddr type model driver speed link);
+    my @fields = qw(name type model driver speed link);
     my @records = ();
     my $cableid = undef;
     open(LH, '/usr/libexec/nethserver/nic-info |');
@@ -54,7 +54,6 @@ sub initialize_networks_db
             $H{'name'},
             {
                 'type' => 'ethernet',
-                'hwaddr' => $H{'hwaddr'},
                 'role' => '',
                 'bootproto' => 'none',
                 fetch_ifcfg_props($H{'name'})
