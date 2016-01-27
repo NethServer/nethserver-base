@@ -29,7 +29,7 @@ my $ndb = esmith::NetworksDB->open_ro() || die("Could not open NetworksDB");
 sub interface_is_present
 {
     my $props = shift;
-    return ( -f "/sys/class/net/" . $props->{'key'} );
+    return ( -d "/sys/class/net/" . $props->{'key'} );
 }
 
 sub resolve_attributes_recursive
