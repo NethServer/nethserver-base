@@ -59,7 +59,7 @@ if (scalar(@free_interfaces) == 1) {
     # More than 1 new interface found:
     # create an emergency bridge
     #
-    my $br_name = 'br99';
+    my $br_name = 'brdef';
     my %br = (
         'type' => 'bridge',
         'bootproto' => 'static',
