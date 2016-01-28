@@ -28,7 +28,7 @@ my $r = decode_json($ARGV[0]);
 my %h = %{$r};
 
 # Initialize missing parameters as empty strings:
-foreach (qw(device hwaddr role bootproto ipaddr netmask gateway)) {
+foreach (qw(device role bootproto ipaddr netmask gateway)) {
     if( ! defined $h{$_} ) {
 	$h{$_} = '';
     }

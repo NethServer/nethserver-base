@@ -32,6 +32,8 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
      */
     private $types = array('ethernet', 'bridge', 'bond', 'vlan', 'alias', 'xdsl');
 
+    private $nicInfo;
+
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
         return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($base, 'Configuration', 14);
@@ -81,15 +83,21 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
         parent::initialize();
     }
 
-    public function prepareViewForColumnDescription(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    public function prepareViewForColumnHwaddr(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
-        return strval(isset($values['hwaddr']) ? $values['hwaddr'] : 'n/a');
+        
+        if(!$this->nicInfo) {
+            $this->nicInfo = $this->getNicInfo();
+        }
+        return strval(isset($this->nicInfo[$key]) ? $this->nicInfo[$key] : 'n/a');
     }
 
     public function prepareViewForColumnKey(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
-        $nicInfo = $this->getNicInfo();
-        $isPresent = isset($nicInfo[$key]) && strtolower($nicInfo[$key]) === strtolower($values['hwaddr']);
+        if(!$this->nicInfo) {
+            $this->nicInfo = $this->getNicInfo();
+        }
+        $isPresent = isset($this->nicInfo[$key]);
         $isLogicalDevice = in_array($values['type'], array('alias', 'bridge', 'bond', 'vlan', 'xdsl'));
 
         if ( ! $isPresent && ! $isLogicalDevice) {
@@ -144,11 +152,13 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
     public function prepareViewForColumnActions(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
         $cellView = $action->prepareViewForColumnActions($view, $key, $values, $rowMetadata);
-        $nicInfo = $this->getNicInfo();
+        if(!$this->nicInfo) {
+            $this->nicInfo = $this->getNicInfo();
+        }
 
         $role = isset($values['role']) ? $values['role'] : '';
 
-        $isPresent = isset($nicInfo[$key]) && strtolower($nicInfo[$key]) === strtolower($values['hwaddr']);
+        $isPresent = isset($this->nicInfo[$key]);
         $isLogicalDevice = in_array($values['type'], array('alias', 'bridge', 'bond', 'vlan', 'xdsl'));
         $isPhysicalInterface = in_array($values['type'], array('ethernet'));
         $isEditable = ! in_array($values['type'], array('alias', 'xdsl')) && ! in_array($role, array('slave', 'bridged', 'pppoe'));

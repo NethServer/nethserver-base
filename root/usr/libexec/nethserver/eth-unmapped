@@ -26,36 +26,10 @@ use strict;
 
 my $ndb = esmith::NetworksDB->open_ro() || die("Could not open NetworksDB");
 
-sub file_contents
-{
-    my $filename = shift;
-    my $content;
-    open(my $fh, '<', $filename) or warn "[WARNING] cannot open file $filename\n";
-    {
-	local $/;
-	$content = <$fh>;	
-    }
-    close($fh);
-    return $content;
-}
-
 sub interface_is_present
 {
     my $props = shift;
-    my $devlink = "/sys/class/net/" . $props->{'key'};
-    
-    if ($props->{'role'} eq 'slave') {
-        $devlink = "/proc/net/bonding/" . $props->{'master'};
-        if (-e $devlink && grep(m|Permanent HW addr:\s*$props->{'hwaddr'}|i, file_contents($devlink))) {
-	     return 1;
-        }
-    }
-
-    if( -e $devlink && grep(m|^\s*$props->{'hwaddr'}\s*$|i, file_contents("$devlink/address"))) {
-	return 1;
-    }
-    
-    return 0;
+    return ( -d "/sys/class/net/" . $props->{'key'} );
 }
 
 sub resolve_attributes_recursive
@@ -72,7 +46,8 @@ sub resolve_attributes_recursive
 	'role' => $record->prop('role') || '' ,
 	'bootproto' => $record->prop('bootproto') || 'none',
 	'ipaddr' => $record->prop('ipaddr') || '',
-	'hwaddr' => $record->prop('hwaddr') || '',       
+	'netmask' => $record->prop('netmask') || '',
+	'gateway' => $record->prop('gateway') || '',
 	);
 
     

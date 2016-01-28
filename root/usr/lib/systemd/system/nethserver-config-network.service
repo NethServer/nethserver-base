@@ -1,0 +1,13 @@
+[Unit]
+Description=Reconfigure newtork interfaces
+Documentation=https://github.com/NethServer/nethserver-base
+
+[Service]
+Type=oneshot
+Before=getty.target
+ExecStart=/sbin/e-smith/nethserver-config-network
+StandardOutput=tty
+TTYReset=yes
+
+[Install]
+WantedBy=multi-user.target

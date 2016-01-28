@@ -18,17 +18,11 @@
 # You should have received a copy of the GNU General Public License
 # along with NethServer.  If not, see .
 #
-use Getopt::Std;
 use esmith::NetworksDB;
 use JSON;
 use Encode qw(encode decode);
 use esmith::event;
 use strict;
-
-my %opts = ();
-getopt('t:', \%opts);
-
-$SIG{ALRM} = sub { die("Timeout\n"); };
 
 my $ndb = esmith::NetworksDB->open();
 
@@ -50,29 +44,63 @@ if (scalar(@free_interfaces) == 1) {
     my $free = shift @free_interfaces;
     my $green = shift @lost_greens;
    
-    $ndb->set_prop($green->{'name'}, 'hwaddr', $free->{'hwaddr'});
-    my $record = $ndb->get($free->{'name'});
-    if($record && ! $record->prop('role')) {
-	$record->delete();
+    if ($green->{'name'} ne $free->{'name'}) {
+         $ndb->set_prop($free->{'name'}, 'role', 'green');
+         my $new = $ndb->get($free->{'name'});
+         my $old = $ndb->get($green->{'name'});
+         $new->merge_props($old->props);
+         if($old) {
+	     $old->delete();
+         }
     }
     
 } elsif(scalar(@free_interfaces) > 1) {
+    #
+    # More than 1 new interface found:
+    # create an emergency bridge
+    #
+    my $br_name = 'brdef';
+    my %br = (
+        'type' => 'bridge',
+        'bootproto' => 'static',
+        'device' => $br_name,
+        'onboot' => 'yes',
+        'gateway' => '',
+        'role' => 'green'
+    );
+    my $k = '';
     foreach my $green (@lost_greens) {
-	print_choices($green, \@free_interfaces);
-        my $choicenb = read_choice(scalar(@free_interfaces));
-	if($choicenb < 0 || $choicenb >= scalar @free_interfaces) {
-	    exit 0;
-	}
-	$ndb->set_prop($green->{'name'}, 'hwaddr', $free_interfaces[$choicenb]->{'hwaddr'});
-	my $record = $ndb->get($free_interfaces[$choicenb]->{'name'});
-	if($record && ! $record->prop('role')) {
-	    $record->delete();
-	}
+        $br{'ipaddr'.$k} = $green->{'ipaddr'};
+        $br{'netmask'.$k} = $green->{'netmask'};
+        if ($br{'gateway'} eq '') {
+            $br{'gateway'} = $green->{'gateway'};
+        }
+        $ndb->set_prop($green->{'name'},'role','');
+        $k++;
+    }
+    my $br_record = $ndb->get($br_name) || undef;
+    if (defined $br_record) {
+        $br_record->merge_props(%br);
+    } else {
+        $ndb->new_record($br_name,\%br);
+    }
+    my %eth = (
+        'role' => 'bridged',
+        'bridge' => $br_name
+    );
+    foreach (@free_interfaces) {
+        my $r = $ndb->get($_->{'name'}) || undef;
+        if (defined $r) {
+            $r->merge_props(%eth);
+        } else {
+            $ndb->new_record($_->{'name'}, \%eth);
+        }
     }
 
 } else {
-    warn "[WARNING] no free interfaces available!\n";
-    exit 2;
+
+    # nothing to do
+    exit 0;
 }
 
 $ndb->close();
@@ -93,7 +121,7 @@ exit 0;
 #
 sub update_network_db
 {
-    my @fields = qw(name hwaddr type model driver speed link);
+    my @fields = qw(name type model driver speed link);
     my @free = ();
     open(LH, '/usr/libexec/nethserver/nic-info |');
     while(my $line = decode('UTF-8', <LH>)) {
@@ -103,7 +131,7 @@ sub update_network_db
         my $rec = $ndb->get($H{'name'});
 
         if (!defined $rec) {
-            $ndb->new_record($H{'name'}, {'type' => 'ethernet', 'hwaddr' => $H{'hwaddr'}, 'role' => ''});
+            $ndb->new_record($H{'name'}, {'type' => 'ethernet', 'role' => ''});
         }
    }
 }
@@ -129,7 +157,7 @@ sub read_lost_interfaces
 #
 sub read_free_interfaces
 {
-    my @fields = qw(name hwaddr type model driver speed link);
+    my @fields = qw(name type model driver speed link);
     my @free = ();
     open(LH, '/usr/libexec/nethserver/nic-info |');    
     while(my $line = decode('UTF-8', <LH>)) {
@@ -138,11 +166,9 @@ sub read_free_interfaces
 	@H{@fields} = split(/,/, $line);
 	my $rec = $ndb->get($H{'name'});
 
-	# NIC is in networks DB, has a role and a matching MAC:
+	# NIC is in networks DB and has a role:
 	# consider it "configured" and skip it:
-	if(defined $rec 
-	   && $rec->prop('role') 
-	   && ($rec->prop('hwaddr') =~ m/^$H{'hwaddr'}$/i) ) {
+	if(defined $rec  && $rec->prop('role'))  {
 	    next;
 	}
 
@@ -153,44 +179,5 @@ sub read_free_interfaces
     return @free;
 }
 
-
-sub print_choices 
-{
-    my $green = shift;
-    my $choices = shift;
-    
-    my $arr = shift;
-    my $k = 1;
-    print "\033[2J\n------------------\n";
-    print "   ! WARNING !\n";
-    print "------------------\n\n";
-    print "Assign new network device to $green->{'name'} $green->{'role'}\n";
-
-    print "\n 0) SKIP -- manual configuration required\n\n";
-    foreach (@{$choices}) {
-        printf("%2d) [%-17s] %s %s\n", $k, $_->{'hwaddr'}, $_->{'name'}, ($_->{'link'} ? 'status UP' : 'status down'));
-	printf("    %-74s\n\n", substr($_->{'model'}, 0, 74));
-        $k++;
-    }
-}
-
-sub read_choice
-{
-    my $max = shift;
-
-    if($opts{'t'}) {
-	eval {
-	    alarm $opts{'t'};
-	};
-    }
-    my $i = 'xxx';
-    while($i !~ m/^\d+$/) {
-	printf("\nPlease, type your choice number (0-%d), then press ENTER: ", $max);
-	$i = <STDIN>;
-	alarm 0;	
-	chomp($i);
-    }
-    return int($i) - 1;
-}
 
 

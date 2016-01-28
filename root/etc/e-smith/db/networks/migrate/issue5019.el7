@@ -1,0 +1,16 @@
+{
+  #
+  # issue 5019 - remove hwaddr https://github.com/NethServer/dev/issues/5019
+  #
+
+  use esmith::NetworksDB;
+  my $ndb = esmith::NetworksDB->open();
+
+  foreach ($ndb->get_all()) {
+       if (defined($_->prop('hwaddr'))) {
+           $_->delete_prop('hwaddr');
+       }
+  }
+
+  '';   
+}
