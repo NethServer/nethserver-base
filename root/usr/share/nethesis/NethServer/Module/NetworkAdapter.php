@@ -89,7 +89,7 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
     public function prepareViewForColumnKey(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
         $nicInfo = $this->getNicInfo();
-        $isPresent = isset($nicInfo[$key]) && strtolower($nicInfo[$key]) === strtolower($values['hwaddr']);
+        $isPresent = isset($nicInfo[$key]);
         $isLogicalDevice = in_array($values['type'], array('alias', 'bridge', 'bond', 'vlan', 'xdsl'));
 
         if ( ! $isPresent && ! $isLogicalDevice) {
@@ -148,7 +148,7 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
 
         $role = isset($values['role']) ? $values['role'] : '';
 
-        $isPresent = isset($nicInfo[$key]) && strtolower($nicInfo[$key]) === strtolower($values['hwaddr']);
+        $isPresent = isset($nicInfo[$key]);
         $isLogicalDevice = in_array($values['type'], array('alias', 'bridge', 'bond', 'vlan', 'xdsl'));
         $isPhysicalInterface = in_array($values['type'], array('ethernet'));
         $isEditable = ! in_array($values['type'], array('alias', 'xdsl')) && ! in_array($role, array('slave', 'bridged', 'pppoe'));
