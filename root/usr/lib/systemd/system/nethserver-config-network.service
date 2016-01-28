@@ -3,12 +3,11 @@ Description=Reconfigure newtork interfaces
 Documentation=https://github.com/NethServer/nethserver-base
 
 [Service]
-Type=idle
+Type=oneshot
+Before=getty.target
 ExecStart=/sbin/e-smith/nethserver-config-network
-StandardInput=tty-force
 StandardOutput=tty
 TTYReset=yes
-TimeoutSec=120
 
 [Install]
 WantedBy=multi-user.target
