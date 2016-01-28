@@ -46,6 +46,8 @@ sub resolve_attributes_recursive
 	'role' => $record->prop('role') || '' ,
 	'bootproto' => $record->prop('bootproto') || 'none',
 	'ipaddr' => $record->prop('ipaddr') || '',
+	'netmask' => $record->prop('netmask') || '',
+	'gateway' => $record->prop('gateway') || '',
 	);
 
     
