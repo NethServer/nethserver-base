@@ -55,9 +55,47 @@ if (scalar(@free_interfaces) == 1) {
     }
     
 } elsif(scalar(@free_interfaces) > 1) {
-
-    # More than 1 new interface found
-    # Let the user deal with the config!
+    #
+    # More than 1 new interface found:
+    # create an emergency bridge
+    #
+    my $br_name = 'br99';
+    my %br = (
+        'type' => 'bridge',
+        'bootproto' => 'static',
+        'device' => $br_name,
+        'onboot' => 'yes',
+        'gateway' => '',
+        'role' => 'green'
+    );
+    my $k = '';
+    foreach my $green (@lost_greens) {
+        $br{'ipaddr'.$k} = $green->{'ipaddr'};
+        $br{'netmask'.$k} = $green->{'netmask'};
+        if ($br{'gateway'} eq '') {
+            $br{'gateway'} = $green->{'gateway'};
+        }
+        $ndb->set_prop($green->{'name'},'role','');
+        $k++;
+    }
+    my $br_record = $ndb->get($br_name) || undef;
+    if (defined $br_record) {
+        $br_record->merge_props(%br);
+    } else {
+        $ndb->new_record($br_name,\%br);
+    }
+    my %eth = (
+        'role' => 'bridged',
+        'bridge' => $br_name
+    );
+    foreach (@free_interfaces) {
+        my $r = $ndb->get($_->{'name'}) || undef;
+        if (defined $r) {
+            $r->merge_props(%eth);
+        } else {
+            $ndb->new_record($_->{'name'}, \%eth);
+        }
+    }
 
 } else {
 
