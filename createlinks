@@ -50,10 +50,11 @@ event_templates('nethserver-base-update', qw(
 ));
 
 #--------------------------------------------------
-# actions for interface-modify event #1532
+# actions for interface-update event #1532
 #--------------------------------------------------
 event_actions('interface-update', qw(
               network-stop               04
+              interface-rename           20
               interface-config-reset     25
               interface-config-write     30
               network-start              70

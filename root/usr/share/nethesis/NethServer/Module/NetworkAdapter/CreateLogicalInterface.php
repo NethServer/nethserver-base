@@ -102,7 +102,7 @@ class CreateLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
         $parts = array();
         $nicInfo = $this->getNicInfo();
         foreach ($this->getAdapter() as $key => $props) {
-            $isPresent = isset($nicInfo[$key]) && strtolower($nicInfo[$key]) === strtolower($props['hwaddr']);
+            $isPresent = isset($nicInfo[$key]);
             if ($props['type'] == 'ethernet' && $isPresent) {
                 $parts[] = $key;
             }
@@ -115,7 +115,7 @@ class CreateLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
         $parts = array();
         $nicInfo = $this->getNicInfo();
         foreach ($this->getAdapter() as $key => $props) {
-            $isPresent = isset($nicInfo[$key]) && strtolower($nicInfo[$key]) === strtolower($props['hwaddr']);
+            $isPresent = isset($nicInfo[$key]);
             if($props['type'] === 'ethernet' && ! $isPresent) {
                 continue;
             }

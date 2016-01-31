@@ -1,0 +1,57 @@
+#!/usr/bin/perl
+use esmith::NetworksDB;
+use esmith::ConfigDB;
+
+shift; # skip event name
+
+my $argnum = @ARGV;
+
+if ($argnum <= 1) {
+    # Nothing to do
+    exit 0;
+}
+
+if ( ($argnum) % 2 ) {
+    die("Odd numbers of parmeters");
+}
+
+my $i = 0;
+while ($i < $argnum) {
+    my $old = $ARGV[$i] || '';
+    my $new = $ARGV[$i+1] || '';
+    $i=$i+2;
+
+    if ($old eq '' && $new eq '') {
+        die("Empty parameters");
+    }
+
+    rename_network_interface($old, $new);
+}
+
+
+sub update_refs {
+    my $old = shift;
+    my $new = shift;
+
+    foreach (glob('/var/lib/nethserver/db/*')) {
+        if ($_ ne '/var/lib/nethserver/db/networks') {
+            system("sed -i 's/$old/$new/g' $_");
+        }
+    }
+}
+
+sub rename_network_interface {
+    my $old = shift;
+    my $new = shift;
+
+    my $ndb = esmith::NetworksDB->open();
+    my $old_r = $ndb->get($old) || undef;
+    my $new_r = $ndb->get($new) || undef;
+    if ( ! defined($old_r) || ! defined($new_r) ) {
+        return;
+    }
+    print "Rename $old -> $new\n";
+    $new_r->merge_props($old_r->props);
+    $old_r->delete();
+    update_refs($old, $new);
+}

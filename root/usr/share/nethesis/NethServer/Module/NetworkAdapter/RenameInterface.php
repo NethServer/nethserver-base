@@ -41,13 +41,7 @@ class RenameInterface extends \Nethgui\Controller\AbstractController implements 
             return;
         }
 
-        $getSecondField = function($line) {
-            $a = str_getcsv($line);
-            return $a[1];
-        };
-
         $validInterfaces = array_keys($this->getUnassignedInterfaces());
-        $validMacs = array_map($getSecondField, $this->getNicInfo());
 
         $duplicatesCheck = array();
 
@@ -57,9 +51,6 @@ class RenameInterface extends \Nethgui\Controller\AbstractController implements 
             }
             if (isset($setting['interface']) && $setting['interface'] && ! in_array($setting['interface'], $validInterfaces)) {
                 $report->addValidationErrorMessage($this, 'cards', 'Inconsistent interface name');
-            }
-            if ( ! in_array($setting['hwaddr'], $validMacs)) {
-                $report->addValidationErrorMessage($this, 'cards', 'Inconsistent mac address');
             }
             if ($setting['interface']) {
                 $duplicatesCheck[] = $setting['interface'];
@@ -77,15 +68,16 @@ class RenameInterface extends \Nethgui\Controller\AbstractController implements 
         $modified = FALSE;
         foreach ($this->parameters['cards'] as $name => $setting) {
             if (isset($setting['interface']) && $setting['interface'] !== '') {
-                $ndb->setProp($setting['interface'], array('hwaddr' => $setting['hwaddr']));
                 if ($name !== $setting['interface']) {
-                    $ndb->deleteKey($name);
+                    $rename[] = $setting['interface'];
+                    $rename[] = $name;
+                    
+                    $modified = TRUE;
                 }
-                $modified = TRUE;
             }
         }
         if ($modified) {
-            $this->getPlatform()->signalEvent('interface-update &');
+            $this->getPlatform()->signalEvent('interface-update &', $rename);
         }
     }
 
@@ -145,14 +137,13 @@ class RenameInterface extends \Nethgui\Controller\AbstractController implements 
             $h['linkText'] = $h['link'] ? $T('Link is up') : $T('Link is down');
             $h['link'] = $h['link'] ? 'linkup' : 'linkdown';
             $h['currentRole'] = isset($ndb[$h['name']], $ndb[$h['name']]['role']) ? $ndb[$h['name']]['role'] : 'black';
-            $isPresent = isset($ndb[$h['name']]) && isset($ndb[$h['name']]['role']) && ($ndb[$h['name']]['role'] != '') &&  strtolower($ndb[$h['name']]['hwaddr']) === strtolower($h['hwaddr']);
+            $isPresent = isset($ndb[$h['name']]) && isset($ndb[$h['name']]['role']) && ($ndb[$h['name']]['role'] != '');
             $h['interfaceDatasource'] = \Nethgui\Widget\XhtmlWidget::hashToDatasource($isPresent ? $basicDatasource : $interfaceDatasource);
             $h['configuration'] = $isPresent ? 'configured' : 'unconfigured';
             return $h;
         };
 
         $cards = array_map($parsef, $this->getNicInfo());
-
         if ($this->getRequest()->isMutation()) {
             return $this->requestAssignment($cards);
         } else {
