@@ -56,7 +56,6 @@ event_actions('interface-update', qw(
               network-stop               04
               interface-config-reset     25
               interface-config-write     30
-              reset-udev-rules           35
               network-start              70
               interface-config-hostname  75
               static-routes-save         80
