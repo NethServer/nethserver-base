@@ -147,7 +147,7 @@ if($dns) {
 }
 
 # Read timezone configuration
-my $timezone = `timedatectl status | sed -n -r '/^ *Timezone: / { s/^ *Timezone: ([^ ]+).*\$/\\1/; p }'`;
+my $timezone = `timedatectl status | sed -n -r '/^ *Time zone: / { s/^ *Time zone: ([^ ]+).*\$/\\1/; p }'`;
 chomp($timezone);
 $cdb->set_value('TimeZone', $timezone);
 
