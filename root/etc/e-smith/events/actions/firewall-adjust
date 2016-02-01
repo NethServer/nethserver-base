@@ -25,11 +25,10 @@ use esmith::ConfigDB;
 use esmith::event;
 
 my $event = shift || die("Missing event argument!");
-my $fevent = "";
+my $fevent = "nethserver-firewall-base-save";
 
-my $package = `rpm -q --whatprovides --queryformat "%{NAME}" nethserver-firewall`;
-if ( -e "/etc/e-smith/events/".$package."-save") {
-    $fevent = $package."-save";
+if ( -e "/etc/e-smith/events/".$fevent) {
+    $fevent = "nethserver-firewall-base-save";
 
     if( ! esmith::event::event_signal($fevent, $event)) {
         exit(1);
