@@ -76,6 +76,14 @@ if (scalar(@free_interfaces) == 1) {
             $br{'gateway'} = $green->{'gateway'};
         }
         $ndb->set_prop($green->{'name'},'role','');
+        my $old_green = $ndb->get($green->{'name'});
+        $old_green->delete();
+        if($green->{'role'} =~ /^[a-z]+\((br.)\)/) {
+            my $oldbr = $ndb->get($1);
+            if (defined($oldbr)) {
+                $oldbr->delete();
+            }
+        }
         $k++;
     }
     my $br_record = $ndb->get($br_name) || undef;
