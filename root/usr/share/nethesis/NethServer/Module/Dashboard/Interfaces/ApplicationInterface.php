@@ -29,7 +29,6 @@ interface ApplicationInterface
 {
     /**
     * Return an associative array in the format $key => $value.
-    * Each pair will be printed in the application tab.
     * If a key starts with the 'url' string, the value will be formatted as a link
     **/
     public function getInfo();

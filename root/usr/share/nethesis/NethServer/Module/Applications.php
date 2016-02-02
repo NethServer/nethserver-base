@@ -1,5 +1,5 @@
 <?php
-namespace NethServer\Module\Dashboard;
+namespace NethServer\Module;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -26,12 +26,18 @@ namespace NethServer\Module\Dashboard;
 class Applications extends \Nethgui\Controller\ListComposite
 {
   
-    public $sortId = 30;
+    protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
+    {
+        return new \NethServer\Tool\CustomModuleAttributesProvider($base, array(
+            'languageCatalog' => array('NethServer_Module_Dashboard_Applications'),
+            'category' => 'Status')
+        );
+    }
 
     public function initialize()
     {
         parent::initialize();
-        $this->loadChildrenDirectory();
+        $this->loadChildrenDirectory($this, 'Dashboard/Applications');
         $this->sortChildren(array($this,"sortApplication"));
     }
 
