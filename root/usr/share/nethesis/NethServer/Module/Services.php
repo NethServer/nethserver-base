@@ -1,5 +1,5 @@
 <?php
-namespace NethServer\Module\Dashboard;
+namespace NethServer\Module;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -34,12 +34,16 @@ use Nethgui\System\PlatformInterface as Validate;
 class Services extends \Nethgui\Controller\TableController
 {
 
-    public $sortId = 10;
+    private static $serviceStatusCache;
 
-    protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
+    protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $attributes)
     {
-        return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($base, 'Security', 20);
+        return new \NethServer\Tool\CustomModuleAttributesProvider($attributes, array(
+            'languageCatalog' => array('NethServer_Module_NetworkServices', 'NethServer_Module_Dashboard_Services'),
+            'category' => 'Status')
+        );
     }
+
 
     public function initialize()
     {
@@ -48,16 +52,28 @@ class Services extends \Nethgui\Controller\TableController
             'status',
             'running',
             'ports',
+            'Actions'
         );
 
         $this
             ->setTableAdapter($this->getPlatform()->getTableAdapter('configuration', 'service', function($key, $record) {
                 return file_exists("/etc/e-smith/db/configuration/defaults/$key/status");
             }))
+            ->addRowAction(new Services\Systemctl('restart'))
+            ->addRowAction(new Services\Systemctl('stop'))
+            ->addRowAction(new Services\Systemctl('start'))
             ->setColumns($columns)
         ;
 
         parent::initialize();
+    }
+
+    private function getServiceStatusCache()
+    {
+        if( ! isset($this->serviceStatusCache)) {
+            $this->serviceStatusCache = json_decode($this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/read-service-status')->getOutput(), TRUE);
+        }
+        return $this->serviceStatusCache;
     }
 
     public function prepareViewForColumnKey(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
@@ -80,27 +96,20 @@ class Services extends \Nethgui\Controller\TableController
      */
     public function prepareViewForColumnRunning(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
-        static $serviceStatusCache;
         $ret = "...";
-        $request = $this->getRequest();
-
-        if (isset($request) && $this->getRequest()->getExtension() === 'json') {
-            if( ! isset($serviceStatusCache)) {
-                $serviceStatusCache = json_decode($this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/read-service-status')->getOutput(), TRUE);
+        $serviceStatusCache = $this->getServiceStatusCache();
+        if($serviceStatusCache === FALSE) {
+            return "N/A";
+        } elseif (isset($serviceStatusCache[$key]['running']) && $serviceStatusCache[$key]['running']) {
+            $ret = $view->translate("running_label");
+            $rowMetadata['rowCssClass'] .= ' running ';
+        } else {
+            $ret = $view->translate("stopped_label");
+            if ($values['status'] == 'enabled') {
+                $rowMetadata['rowCssClass'] .= ' stopped ';
             }
-            if($serviceStatusCache === FALSE) {
-                return "N/A";
-            } elseif (isset($serviceStatusCache[$key]['running']) && $serviceStatusCache[$key]['running']) {
-               $ret = $view->translate("running_label");
-               $rowMetadata['rowCssClass'] .= ' running ';
-            } else {
-               $ret = $view->translate("stopped_label");
-               if ($values['status'] == 'enabled') {
-                   $rowMetadata['rowCssClass'] .= ' stopped ';
-               }
-            }
-
         }
+
         return $ret; 
     }
 
@@ -134,31 +143,19 @@ class Services extends \Nethgui\Controller\TableController
     }
 
 
-
-   /**
-    * XXX: experimental -> CSS injection 
-   **/
-   public function prepareView(\Nethgui\View\ViewInterface $view)
-   {
-       $cssCode = "
-           tr.running td:nth-child(3) { color: green }
-           tr.stopped td:nth-child(3) { color: red }
-       ";
-       $view->getCommandList('/Resource/css')->appendCode($cssCode, 'css');
-       $moduleUrl = json_encode($view->getModuleUrl("/Dashboard/Services"));
-
-       $jsCode = "
-(function ( $ ) {
-    $(document).ready(function() {
-        $.Nethgui.Server.ajaxMessage({
-            isMutation: false,
-            url: $moduleUrl
-        });
-    });
-} ( jQuery ));
-       ";
-       $view->getCommandList('/Resource/js')->appendCode($jsCode, 'js');
-       parent::prepareView($view);
+    public function prepareViewForColumnActions(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        $serviceStatusCache = $this->getServiceStatusCache();
+        $cellView = $action->prepareViewForColumnActions($view, $key, $values, $rowMetadata);
+        if (isset($serviceStatusCache[$key]) && isset($serviceStatusCache[$key]['running'])) {
+            if ( $serviceStatusCache[$key]['running'] ) {
+                unset($cellView['start']);
+            } else {
+                unset($cellView['stop']);
+                unset($cellView['restart']);
+            }
+        }
+        return $cellView;
    }
 
 }

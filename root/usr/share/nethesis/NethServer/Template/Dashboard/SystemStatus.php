@@ -45,7 +45,6 @@ foreach($view->getModule()->getChildren() as $child) {
 }
 
 $module1Url = json_encode($view->getModuleUrl("/AdminTodo?notifications"));
-$module2Url = json_encode($view->getModuleUrl("/Dashboard/Services"));
 
 $view->includeJavascript("
 (function ( $ ) {
@@ -55,11 +54,6 @@ $view->includeJavascript("
             isMutation: false,
             url: $module1Url
         });
-        $.Nethgui.Server.ajaxMessage({
-            isMutation: false,
-            url: $module2Url
-        });
-
   } 
 
   $(document).ready(function() {
@@ -67,14 +61,4 @@ $view->includeJavascript("
   });
 
 })( jQuery);
-");
-
-$view->includeCss("
-    tr.running td:nth-child(3n+3) {
-        color: green;
-    }
-    tr.stopped td:nth-child(3n+3) {
-        color: red;
-        font-weight: bold;
-    }
 ");
