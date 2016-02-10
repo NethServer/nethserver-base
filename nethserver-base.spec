@@ -13,6 +13,8 @@ Requires: mdadm
 Requires: sudo
 Requires: nc
 Requires: net-tools
+# perl-TimeDate is needed for certificate renew
+Requires: perl-TimeDate
 
 Requires: yum-plugin-changelog
 Requires: nethserver-yum
