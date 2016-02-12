@@ -1,7 +1,7 @@
 [Unit]
 Description=Initialize NethServer configuration
 Documentation=https://github.com/nethesis/nethserver-base
-After=multi-user.target
+After=network.service
 ConditionPathExists=/var/spool/first-boot
 Conflicts=NetworkManager.service firewalld.service
 
