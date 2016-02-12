@@ -1,6 +1,8 @@
 [Unit]
 Description=Reconfigure newtork interfaces
 Documentation=https://github.com/NethServer/nethserver-base
+ConditionPathExists=!/var/spool/first-boot
+After=nethserver-system-init.service
 
 [Service]
 Type=oneshot
