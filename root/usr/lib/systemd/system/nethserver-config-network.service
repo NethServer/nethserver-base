@@ -3,10 +3,10 @@ Description=Reconfigure newtork interfaces
 Documentation=https://github.com/NethServer/nethserver-base
 ConditionPathExists=!/var/spool/first-boot
 After=nethserver-system-init.service
+Before=getty.target
 
 [Service]
 Type=oneshot
-Before=getty.target
 ExecStart=/sbin/e-smith/nethserver-config-network
 StandardOutput=tty
 TTYReset=yes
