@@ -2,8 +2,8 @@
 Description=Initialize NethServer configuration
 Documentation=https://github.com/nethesis/nethserver-base
 After=network.service
+Before=getty.target
 ConditionPathExists=/var/spool/first-boot
-Conflicts=NetworkManager.service firewalld.service
 
 [Service]
 Type=oneshot
