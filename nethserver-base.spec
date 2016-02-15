@@ -19,6 +19,7 @@ Requires: perl-TimeDate
 Requires: yum-plugin-changelog
 Requires: nethserver-yum
 Requires: nethserver-lib
+Requires: letsencrypt
 
 BuildRequires: nethserver-devtools
 Requires(post): systemd
