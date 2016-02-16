@@ -53,9 +53,8 @@ sub ibay_enabled {
         my $httpAliasType = $ibay->prop('HttpAliasType') || "";
         my $httpStatus = $ibay->prop('HttpStatus') || "disabled";
         my $httpVirtualHost = $ibay->prop('HttpVirtualHost') || '';
-        my $httpLetsEncrypt = $ibay->prop('HttpLetsEncrypt') || 'disabled';
         if ($httpAliasType eq 'root' && $httpStatus eq 'enabled' && $httpVirtualHost eq $domain) {
-            return ($httpLetsEncrypt eq 'enabled');
+            return 1;
         }
     }
 
@@ -99,7 +98,6 @@ if ($lets_status eq 'enabled') {
 # Certificate for shared folder configured as root http folder
 foreach my $host ($ddb->get_all_by_prop('type' => 'self')) {
     next if (!ibay_enabled($host->key));
-    my $mail = '';
 
     if (renew($host->key)) {
         update_ibay($host->key);
