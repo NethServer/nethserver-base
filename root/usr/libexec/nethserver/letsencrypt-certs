@@ -10,39 +10,30 @@ my $adb = esmith::ConfigDB->open('accounts');
 my $cdb = esmith::ConfigDB->open();
 my $ddb = esmith::HostsDB->open_ro();
 
-my $crtdir = "/etc/letsencrypt/live/";
-my $lebin = "/usr/bin/letsencrypt";
-my $debug = 1;
+my $crtdir = "/etc/letsencrypt.sh/certs/";
+my $lebin = "/usr/sbin/letsencrypt.sh";
+my $debug = 0;
 our $modified = 0;
 
 sub renew {
     my $domain = shift;
-    my $webroot = shift;
-    my $mail = shift;
 
-    my $opts = "--webroot --text --keep-until-expiring --agree-tos --non-interactive";
-    if ($mail eq '') {
-        $opts .= " --register-unsafely-without-email ";
-    } else {
-        $opts .= " --email $mail ";
-    }
+    my $opts = "--cron  --config /etc/letsencrypt.sh/config.sh ";
 
     # file paths
     my $crt = $crtdir.$domain."/cert.pem";
-    my $chain = $crtdir.$domain."/chain.pem";
-    my $crtdir.$domain."/privkey.pem";
     
     # read the date of certificate link before renewal
     my $tmp = stat($crt);
     my $before = defined($tmp) ? $tmp->mtime : 0;
     
+    my $cmd = "$lebin $opts -d $domain";
 
-    my $cmd = "$lebin certonly $opts  -w $webroot -d $domain";
-
-    if ($debug) { 
-        $cmd .= " --staging -v";
+    if (!$debug) { 
+        $cmd .= " >/dev/null";
+    } else {
         print $cmd."\n";
-    };
+    }
     system($cmd);
 
     # read the date of certificate link after renewal
@@ -95,14 +86,11 @@ sub update_ibay {
 my $lets_status = $cdb->get_prop('pki','LetsEncrypt') || 'disabled';
 if ($lets_status eq 'enabled') {
     my $fqdn = $cdb->get_value('SystemName').".".$cdb->get_value('DomainName');
-    my $webroot = "/var/www/html";
-    my $mail = "";
 
-    if (renew($fqdn, $webroot, $mail)) {
+    if (renew($fqdn)) {
         $cdb->set_prop('pki','ChainFile', $crtdir.$fqdn."/chain.pem");
         $cdb->set_prop('pki','CrtFile', $crtdir.$fqdn."/cert.pem");
         $cdb->set_prop('pki','KeyFile', $crtdir.$fqdn."/privkey.pem");
-    #    update_ibay('__ANY__');
     }
 
 }
@@ -110,11 +98,10 @@ if ($lets_status eq 'enabled') {
 
 # Certificate for shared folder configured as root http folder
 foreach my $host ($ddb->get_all_by_prop('type' => 'self')) {
-    my $webroot = "/var/www/html";
     next if (!ibay_enabled($host->key));
     my $mail = '';
 
-    if (renew($host->key,$webroot,$mail)) {
+    if (renew($host->key)) {
         update_ibay($host->key);
     }
  
@@ -125,10 +112,8 @@ foreach my $cert ($db->get_all_by_prop('type' => 'certificate')) {
     my $domain = $cert->key;
     my $status = $cert->prop('status') || 'disabled';
     next if ($status eq 'disabled');
-    my $webroot = $cert->prop('WebRoot') || next;;
-    my $mail = $cert->prop('Mail') || '';
 
-    renew($domain,$webroot,$mail);
+    renew($domain);
 }
 
 
