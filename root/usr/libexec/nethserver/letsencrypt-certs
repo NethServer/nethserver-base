@@ -1,0 +1,79 @@
+#!/usr/bin/perl
+
+use esmith::ConfigDB;
+use esmith::HostsDB;
+use File::stat;
+use esmith::event;
+
+my $db = esmith::ConfigDB->open_ro('certificates');
+my $cdb = esmith::ConfigDB->open();
+my $ddb = esmith::HostsDB->open_ro();
+
+my $crtdir = "/etc/letsencrypt.sh/certs/";
+my $lebin = "/usr/sbin/letsencrypt.sh";
+my $debug = 0;
+our $modified = 0;
+
+sub renew {
+    my $domain = shift;
+
+    my $opts = "--cron  --config /etc/letsencrypt.sh/config.sh ";
+
+    # file paths
+    my $crt = $crtdir.$domain."/cert.pem";
+    
+    # read the date of certificate link before renewal
+    my $tmp = stat($crt);
+    my $before = defined($tmp) ? $tmp->mtime : 0;
+    
+    my $cmd = "$lebin $opts -d $domain";
+
+    if (!$debug) { 
+        $cmd .= " >/dev/null";
+    } else {
+        print $cmd."\n";
+    }
+    system($cmd);
+
+    # read the date of certificate link after renewal
+    $tmp = stat($crt);
+    my $after = defined($tmp) ? $tmp->mtime : 0;
+
+    if ($before != $after) {
+        $modified++;
+        return 1;
+    }
+    return 0;
+}
+
+# Certificate for FQDN
+my $lets_status = $cdb->get_prop('pki','LetsEncrypt') || 'disabled';
+if ($lets_status eq 'enabled') {
+    my $fqdn = $cdb->get_value('SystemName').".".$cdb->get_value('DomainName');
+
+    if (renew($fqdn)) {
+        $cdb->set_prop('pki','ChainFile', $crtdir.$fqdn."/chain.pem");
+        $cdb->set_prop('pki','CrtFile', $crtdir.$fqdn."/cert.pem");
+        $cdb->set_prop('pki','KeyFile', $crtdir.$fqdn."/privkey.pem");
+    }
+
+}
+
+
+# Custom certificates
+foreach my $cert ($db->get_all_by_prop('type' => 'certificate')) {
+    my $domain = $cert->key;
+    my $status = $cert->prop('status') || 'disabled';
+    next if ($status eq 'disabled');
+
+    renew($domain);
+}
+
+
+if ($modified > 0) {
+   if(esmith::event::event_signal('certificate-update') == 0) {
+       exit 1; 
+   }
+}
+
+exit 0;
