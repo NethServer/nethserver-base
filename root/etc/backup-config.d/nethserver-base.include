@@ -4,3 +4,4 @@
 /etc/e-smith/templates-user-custom
 /etc/pki/tls/certs/NSRV.crt
 /etc/pki/tls/private/NSRV.key
+/etc/letsencrypt
