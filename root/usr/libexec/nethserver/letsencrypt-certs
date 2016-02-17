@@ -161,7 +161,12 @@ foreach my $cert ($db->get_all_by_prop('type' => 'certificate')) {
     my $status = $cert->prop('status') || 'disabled';
     next if ($status eq 'disabled');
 
-    renew($domain);
+    if(renew($domain) && $verbose) {
+        print "Renewed files for custom domain $domain:\n";
+        print "  ChainFile:\t$crtdir$domain/chain.pem\n";
+        print "  CrtFile:\t$crtdir$domain/cert.pem\n";
+        print "  KeyFile:\t$crtdir$domain/privkey.pem\n";
+    }
 }
 
 
