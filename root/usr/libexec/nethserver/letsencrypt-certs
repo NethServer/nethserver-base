@@ -4,6 +4,7 @@ use esmith::ConfigDB;
 use esmith::HostsDB;
 use File::stat;
 use esmith::event;
+use Getopt::Std;
 
 my $db = esmith::ConfigDB->open_ro('certificates');
 my $adb = esmith::ConfigDB->open('accounts');
@@ -12,13 +13,16 @@ my $ddb = esmith::HostsDB->open_ro();
 
 my $crtdir = "/etc/letsencrypt.sh/certs/";
 my $lebin = "/usr/sbin/letsencrypt.sh";
-my $debug = 0;
+my $config = "/etc/letsencrypt.sh/config.sh";
+my $verbose = 0;
+my $testing = 0;
+my $force = 0;
 our $modified = 0;
 
 sub renew {
     my $domain = shift;
 
-    my $opts = "--cron  --config /etc/letsencrypt.sh/config.sh ";
+    my $opts = "--cron  --config $config ";
 
     # file paths
     my $crt = $crtdir.$domain."/cert.pem";
@@ -29,7 +33,11 @@ sub renew {
     
     my $cmd = "$lebin $opts -d $domain";
 
-    if (!$debug) { 
+    if ($force) {
+        $cmd .= " -x ";
+    }
+
+    if (!$verbose) {
         $cmd .= " >/dev/null";
     } else {
         print $cmd."\n";
@@ -81,6 +89,42 @@ sub update_ibay {
     }
 }
 
+sub help {
+    print "Usage: $0 [-h] [-f] [-v] [-t]\n";
+    print "\nOptions:\n";
+    print "  -h : show this help\n";
+    print "  -f : force certificate renew\n";
+    print "  -v : verbose\n";
+    print "  -t : testing, enable staging CA\n";
+}
+
+my %options=();
+getopts("hvtf", \%options);
+
+if (defined $options{h}) {
+    help();
+    exit 0;
+}
+
+if (defined $options{v}) {
+    $verbose = 1;
+}
+
+if (defined $options{f}) {
+    $force = 1;
+}
+
+if (defined $options{t}) {
+    use File::Temp;
+    use File::Copy;
+    $testing = 1;
+    my $tmp = File::Temp->new( UNLINK => 1);
+    system("sed 's|^CA=\".*\"|CA=https://acme-staging.api.letsencrypt.org/directory|' $config > $tmp");
+    $config = $tmp;
+}
+
+
+
 # Certificate for FQDN
 my $lets_status = $cdb->get_prop('pki','LetsEncrypt') || 'disabled';
 if ($lets_status eq 'enabled') {
@@ -116,6 +160,9 @@ foreach my $cert ($db->get_all_by_prop('type' => 'certificate')) {
 
 
 if ($modified > 0) {
+   if ($verbose) {
+      print "Executing certificate-update event...\n";
+   }
    if(esmith::event::event_signal('certificate-update') == 0) {
        exit 1; 
    }
