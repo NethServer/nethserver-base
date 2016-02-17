@@ -119,23 +119,29 @@ if (defined $options{t}) {
     use File::Copy;
     $testing = 1;
     my $tmp = File::Temp->new( UNLINK => 1);
-    system("sed 's|^CA=\".*\"|CA=https://acme-staging.api.letsencrypt.org/directory|' $config > $tmp");
+    system("sed 's|^#CA=\".*\"|CA=https://acme-staging.api.letsencrypt.org/directory|' $config > $tmp");
     $config = $tmp;
 }
 
 
 
-# Certificate for FQDN
 my $lets_status = $cdb->get_prop('pki','LetsEncrypt') || 'disabled';
-if ($lets_status eq 'enabled') {
-    my $fqdn = $cdb->get_value('SystemName').".".$cdb->get_value('DomainName');
-
-    if (renew($fqdn)) {
-        $cdb->set_prop('pki','ChainFile', $crtdir.$fqdn."/chain.pem");
-        $cdb->set_prop('pki','CrtFile', $crtdir.$fqdn."/cert.pem");
-        $cdb->set_prop('pki','KeyFile', $crtdir.$fqdn."/privkey.pem");
+if ($lets_status ne 'enabled') {
+    if ($verbose) {
+       print "LetsEncrypt is disabled, exiting.\n";
+       print "\nTo enable LetsEncrypt, execute:\n";
+       print "  config setprop pki LetsEncrypt enabled\n";
     }
+    exit 0;
+}
 
+# Certificate for FQDN
+my $fqdn = $cdb->get_value('SystemName').".".$cdb->get_value('DomainName');
+
+if (renew($fqdn)) {
+    $cdb->set_prop('pki','ChainFile', $crtdir.$fqdn."/chain.pem");
+    $cdb->set_prop('pki','CrtFile', $crtdir.$fqdn."/cert.pem");
+    $cdb->set_prop('pki','KeyFile', $crtdir.$fqdn."/privkey.pem");
 }
 
 
