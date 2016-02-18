@@ -20,7 +20,7 @@ my $force = 0;
 our $modified = 0;
 
 sub renew {
-    my $domain = shift;
+    my $domains = shift;
 
     my $opts = "--cron  --config $config ";
 
@@ -31,7 +31,11 @@ sub renew {
     my $tmp = stat($crt);
     my $before = defined($tmp) ? $tmp->mtime : 0;
     
-    my $cmd = "$lebin $opts -d $domain";
+    my $cmd = "$lebin $opts";
+
+    foreach (@$domains) {
+        $cmd .= " -d $_ ";
+    }
 
     if ($force) {
         $cmd .= " -x ";
@@ -136,9 +140,15 @@ if ($lets_status ne 'enabled') {
 }
 
 # Certificate for FQDN
+my @domains = ();
 my $fqdn = $cdb->get_value('SystemName').".".$cdb->get_value('DomainName');
+push(@domains, $fqdn);
 
-if (renew($fqdn)) {
+foreach ($ddb->get_all_by_prop('type' => 'self')) {
+    push(@domains, $_->key);
+}
+
+if (renew(\@domains)) {
     $cdb->set_prop('pki','ChainFile', $crtdir.$fqdn."/chain.pem");
     $cdb->set_prop('pki','CrtFile', $crtdir.$fqdn."/cert.pem");
     $cdb->set_prop('pki','KeyFile', $crtdir.$fqdn."/privkey.pem");
@@ -147,21 +157,26 @@ if (renew($fqdn)) {
 
 # Certificate for shared folder configured as root http folder
 foreach my $host ($ddb->get_all_by_prop('type' => 'self')) {
+    my @domains = ();
     next if (!ibay_enabled($host->key));
+    push(@domains, $host->key);
 
-    if (renew($host->key)) {
+    if (renew(\@domains)) {
         update_ibay($host->key);
     }
  
 }
 
+
 # Custom certificates
 foreach my $cert ($db->get_all_by_prop('type' => 'certificate')) {
+    my @domains = ();
     my $domain = $cert->key;
     my $status = $cert->prop('status') || 'disabled';
     next if ($status eq 'disabled');
+    push(@domains, $domain);
 
-    if(renew($domain) && $verbose) {
+    if(renew(\@domains) && $verbose) {
         print "Renewed files for custom domain $domain:\n";
         print "  ChainFile:\t$crtdir$domain/chain.pem\n";
         print "  CrtFile:\t$crtdir$domain/cert.pem\n";
