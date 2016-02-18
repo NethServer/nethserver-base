@@ -24,7 +24,7 @@ sub renew {
     my $opts = "--cron  --config $config ";
 
     # file paths
-    my $crt = $crtdir.$domain."/cert.pem";
+    my $crt = $crtdir.${$domains}[0]."/cert.pem";
     
     # read the date of certificate link before renewal
     my $tmp = stat($crt);
@@ -110,7 +110,10 @@ my $fqdn = $cdb->get_value('SystemName').".".$cdb->get_value('DomainName');
 push(@domains, $fqdn);
 
 foreach ($ddb->get_all_by_prop('type' => 'self')) {
-    push(@domains, $_->key);
+    my $le = $_->prop('LetsEncrypt') || 'disabled';
+    if ($le eq 'enabled') {
+        push(@domains, $_->key);
+    }
 }
 
 if (renew(\@domains)) {
