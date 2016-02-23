@@ -53,7 +53,6 @@ fi
 #
 if [ "${ACTION}" == "remove" ]; then
     echo "[INFO] update-networks-db: card removed, ${card}" 1>&2
-    /sbin/e-smith/db networks setprop "${card}" role ''
     exit 0;
 fi
 
