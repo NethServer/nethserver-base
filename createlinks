@@ -52,7 +52,6 @@ event_templates('nethserver-base-update', qw(
     /etc/krb5.conf
     /etc/logviewer.conf
     /etc/logrotate.conf
-    /etc/letsencrypt.sh/config.sh
 ));
 
 
@@ -139,7 +138,6 @@ event_actions('system-init', qw(
 event_actions('certificate-update', qw(
     nethserver-generate-certificate 02
 ));
-templates2events('/etc/letsencrypt.sh/config.sh', 'certificate-update');
 
 #
 # profile-modify event

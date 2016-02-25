@@ -33,7 +33,6 @@ Requires: udev >= 147
 Requires: yum-plugin-changelog
 Requires: nethserver-yum > 1.3.3-2
 Requires: nethserver-lib > 2.1.1-1
-Requires: letsencrypt.sh
 
 BuildRequires: nethserver-devtools
 
