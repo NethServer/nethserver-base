@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.9.5
+Version: 2.9.6
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -68,6 +68,10 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 
 %changelog
+* Fri Feb 26 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.6-1
+- Role disappears from ethernet interface - Bug #3357 [NethServer]
+- Let's Encrypt (partial) support  - Feature #3355 [NethServer]
+
 * Mon Nov 30 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.5-1
 - The description of trusted network can not be modified - Bug #3321 [NethServer]
 - bond confuses network configuration - Bug #3306 [NethServer]
