@@ -65,6 +65,7 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 %dir %attr(755,root,root) /etc/e-smith/events/organization-save
 %ghost %attr(600,root,root) /etc/pki/tls/private/NSRV.key
 %ghost %attr(644,root,root) /etc/pki/tls/certs/NSRV.crt
+%ghost %attr(0644,root,root) /etc/logviewer.conf
 
 
 %changelog
