@@ -108,5 +108,9 @@ $view->includeCss("
 #${categoriesId} label.ui-state-hover {background-image: url('${cssUrl}/img/blue-inset-hover.png') }
 #${categoriesId} label.ui-corner-left { border-top-left-radius: 9px; border-bottom-left-radius: 9px }
 #${categoriesId} label.ui-corner-right { border-top-right-radius: 9px; border-bottom-right-radius: 9px }
+
+.yumError .Controller {margin-top: 4px}
 ");
 
+$yumError = '<i class="fa fa-li fa-exclamation-triangle"></i>{{textLabel}}<div class="Controller"><div class="Action"><form action="{{action}}" method="post"><button class="Button submit" type="submit">{{buttonLabel}}</button></form></div></div>';
+$view->getModule()->getParent()->notifications->defineTemplate('yumError', $yumError, 'yumError bg-red pre-fa');

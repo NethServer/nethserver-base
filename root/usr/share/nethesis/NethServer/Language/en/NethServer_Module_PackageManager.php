@@ -32,3 +32,5 @@ $L['noupdates_message'] = 'Installed software is up-to-date';
 $L['DoUpdate_label'] = 'Download and install';
 $L['update_success_message'] = 'Software update completed';
 $L['Changelog_label'] = 'Updates CHANGELOG';
+$L['ClearYumCache_label'] = 'Clear YUM cache';
+$L['An unknown installation error has occurred'] = 'An unknown installation error has occurred';
