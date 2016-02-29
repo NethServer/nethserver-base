@@ -8,7 +8,7 @@ exclude /var/log/btmp*
 exclude /var/log/wtmp*
 exclude /var/log/lastlog
 exclude *.gz
-
+exclude /var/log/samba/cores/*
 
 
 

@@ -63,6 +63,7 @@ rm -rf %{buildroot}
 %dir %{_nsdbconfdir}/configuration
 %dir %{_nsdbconfdir}/networks
 %dir %{_nsdbconfdir}/routes
+%ghost %attr(0644,root,root) /etc/logviewer.conf
 
 %post
 %systemd_post nethserver-system-init.service NetworkManager.service firewalld.service nethserver-config-network.service
