@@ -26,6 +26,11 @@ namespace NethServer\Module\PackageManager;
  */
 class Modules extends \Nethgui\Controller\CollectionController implements \Nethgui\Component\DependencyConsumer
 {
+    /**
+     *
+     * @var \Nethgui\Model\UserNotifications
+     */
+    public $notifications;
 
     public function initialize()
     {
@@ -48,7 +53,21 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
         if ($this->getRequest()->hasParameter('installSuccess')) {
             $this->getAction('AdminTodo')->emitNotifications = TRUE;
             $this->notifications->message($view->translate('package_success'));
-        }                
+        } elseif($this->getRequest()->hasParameter('installFailure')) {
+            $taskStatus = $this->systemTasks->getTaskStatus($this->getRequest()->getParameter('taskId'));
+
+            if(isset($taskStatus['children'][0]['message'])) {
+                $message = $taskStatus['children'][0]['message'];
+            } else {
+                $message = $view->translate('An unknown installation error has occurred');
+            }
+
+            $this->notifications->yumError(array(
+                'textLabel' => $message,
+                'buttonLabel' => $view->translate('ClearYumCache_label'),
+                'action' => $view->getModuleUrl('../ClearYumCache')
+                ));
+        }
         parent::prepareView($view);        
     }
 
@@ -149,9 +168,15 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
         return $this;
     }
 
+    public function setSystemTasks(\Nethgui\Model\SystemTasks $t)
+    {
+        $this->systemTasks = $t;
+        return $this;
+    }
+
     public function getDependencySetters()
     {
-        return array('UserNotifications' => array($this, 'setUserNotifications'));
+        return array('UserNotifications' => array($this, 'setUserNotifications'), 'SystemTasks' => array($this, 'setSystemTasks'));
     }
 
 }

@@ -47,6 +47,7 @@ class PackageManager extends \Nethgui\Controller\CompositeController implements 
         $this->addChild(new \NethServer\Module\PackageManager\Review());
         $this->addChild(new \NethServer\Module\PackageManager\Packages());
         $this->addChild(new \NethServer\Module\PackageManager\EditModule());
+        $this->addChild(new \NethServer\Module\PackageManager\ClearYumCache());
         parent::initialize();
     }
 
@@ -147,7 +148,11 @@ class PackageManager extends \Nethgui\Controller\CompositeController implements 
                     'url' => $view->getModuleUrl('Modules?installSuccess'),
                     'freeze' => TRUE,
             )));
-            $this->getPlatform()->setDetachedProcessCondition('failure', array());
+            $this->getPlatform()->setDetachedProcessCondition('failure', array(
+                'location' => array(
+                    'url' => $view->getModuleUrl('Modules?installFailure&taskId={taskId}'),
+                    'freeze' => TRUE,
+            )));
         }
         parent::prepareView($view);
     }
