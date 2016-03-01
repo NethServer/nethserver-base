@@ -32,6 +32,8 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
      */
     public $notifications;
 
+    private $yumError = NULL;
+
     public function initialize()
     {
         $this->setAdapter(new \Nethgui\Adapter\LazyLoaderAdapter(array($this->getParent(), 'yumGroupsLoader')));
@@ -69,7 +71,17 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
                 'action' => $view->getModuleUrl('../ClearYumCache')
                 ));
         }
-        parent::prepareView($view);        
+
+        parent::prepareView($view);
+
+        if (isset($this->yumError)) {
+            $this->notifications->yumError(array(
+                'message' => $this->yumError,
+                'description' => $view->translate('ClearYumCache_description'),
+                'buttonLabel' => $view->translate('ClearYumCache_label'),
+                'action' => $view->getModuleUrl('../ClearYumCache')
+            ));
+        }
     }
 
     public function getYumCategories()
@@ -96,7 +108,8 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
         $data = array();
         $checkUpdateJob = $this->getPlatform()->exec('/usr/bin/sudo -n /sbin/e-smith/pkginfo check-update');
         if ($checkUpdateJob->getExitCode() !== 0) {
-            $this->notifications->error("Error\n" . $checkUpdateJob->getOutput());
+            $data = json_decode($checkUpdateJob->getOutput(), TRUE);
+            $this->yumError = isset($data['error']) ? $data['error'] : '';
             return array();
         }
         $data = json_decode($checkUpdateJob->getOutput(), TRUE);
