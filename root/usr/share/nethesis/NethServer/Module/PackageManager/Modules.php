@@ -63,7 +63,8 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
             }
 
             $this->notifications->yumError(array(
-                'textLabel' => $message,
+                'message' => $message,
+                'description' => $view->translate('ClearYumCache_description'),
                 'buttonLabel' => $view->translate('ClearYumCache_label'),
                 'action' => $view->getModuleUrl('../ClearYumCache')
                 ));
