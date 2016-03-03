@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.9.6
+Version: 2.9.7
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -69,6 +69,10 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 
 %changelog
+* Thu Mar 03 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.7-1
+- Add a yum clean all button if update fails - Feature #3360 [NethServer]
+- Samba core files are listed by log viewer - Bug #3334 [NethServer]
+
 * Fri Feb 26 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.6-1
 - Role disappears from ethernet interface - Bug #3357 [NethServer]
 - Let's Encrypt (partial) support  - Feature #3355 [NethServer]
