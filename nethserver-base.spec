@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.9.5
+Version: 2.9.7
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -72,6 +72,10 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Thu Mar 03 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.7-1
+- Add a yum clean all button if update fails - Feature #3360 [NethServer]
+- Samba core files are listed by log viewer - Bug #3334 [NethServer]
+
 * Mon Nov 30 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.5-1
 - The description of trusted network can not be modified - Bug #3321 [NethServer]
 - bond confuses network configuration - Bug #3306 [NethServer]
