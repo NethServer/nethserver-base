@@ -30,6 +30,7 @@ namespace NethServer\Module\NetworkAdapter;
 class CreateLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
 {
     private $sessionKey;
+    private $bondModeList = array("1", "0", "2", "3", "4", "5", "6");
 
     public function initialize()
     {
@@ -41,6 +42,7 @@ class CreateLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
         $this->declareParameter('type', $this->createValidator()->memberOf($this->getParent()->getNetworkAdapterTypes()), array('SESSION', $this->sessionKey, 'type'));
         $this->declareParameter('bridge', $this->getMemberOfOrEmptyValidator($this->getBridgeParts()), array('SESSION', $this->sessionKey, 'bridge', ','));
         $this->declareParameter('bond', $this->getMemberOfOrEmptyValidator($this->getBondParts()), array('SESSION', $this->sessionKey, 'bond', ','));
+        $this->declareParameter('bondMode', $this->createValidator()->memberOf($this->bondModeList),  array('SESSION', $this->sessionKey, 'bondMode'));
         $this->declareParameter('vlan', $this->createValidator()->memberOf($this->getBondParts()), array('SESSION', $this->sessionKey, 'vlan'));
         $this->declareParameter('vlanTag', $this->createValidator()->integer()->greatThan(-1)->lessThan(4095), array('SESSION', $this->sessionKey, 'vlanTag'));
     }
@@ -167,6 +169,9 @@ class CreateLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
             };
 
             $view['bondDatasource'] = array_map($dsMap, $this->getBondParts());
+            $view['bondModeDatasource'] = array_map(function ($x) use ($view) {
+                return array($x, $view->translate("BondMode_${x}_label"));
+            }, $this->bondModeList);
             $view['bridgeDatasource'] = array_map($dsMap, $this->getBridgeParts());
 
             if ($this->getRequest()->isMutation()) {

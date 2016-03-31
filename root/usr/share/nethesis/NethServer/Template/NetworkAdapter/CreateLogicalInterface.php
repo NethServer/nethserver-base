@@ -11,6 +11,7 @@ $types = $view
     ->fieldset()->setAttribute('template', $T('InterfaceType_label'))
     ->insert($view->fieldsetSwitch('type', 'bond', $view::FIELDSETSWITCH_EXPANDABLE)
         ->insert($view->selector('bond', $view::SELECTOR_MULTIPLE | $view::LABEL_NONE))
+        ->insert($view->selector('bondMode', $view::SELECTOR_DROPDOWN))
     )
     ->insert($view->fieldsetSwitch('type', 'bridge', $view::FIELDSETSWITCH_EXPANDABLE)
         ->insert($view->selector('bridge', $view::SELECTOR_MULTIPLE | $view::LABEL_NONE))
