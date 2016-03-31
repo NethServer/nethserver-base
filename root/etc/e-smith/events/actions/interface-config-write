@@ -106,38 +106,38 @@ sub _write_config_file() {
     my $role = $props{'role'} || '';    
 
     if($role eq '') {
-	return;
+        return;
     }
 
     if($role eq 'slave') {
-	$defaults{'slave'} = 'yes';
+        $defaults{'slave'} = 'yes';
     }
     if($props{'type'} eq 'vlan') {
-	$defaults{'vlan'} = 'yes';
+        $defaults{'vlan'} = 'yes';
     }
 
     my $serverIsGateway = scalar $idb->red() > 0;
     my $roleWithGatewayAllowed = $serverIsGateway ? 'red' : 'green';
 
     if($role ne $roleWithGatewayAllowed) {
-	delete($props{'gateway'});
+        delete($props{'gateway'});
     }
 
     if($props{'bootproto'} eq 'dhcp') {
-	delete($props{'ipaddr'}); # not needed
-	delete($props{'netmask'});
-	delete($props{'gateway'});
-	$defaults{'persistent_dhclient'} = 'y'; # always renew DHCP lease
-	$defaults{'peerdns'} = 'no'; # do not overwrite /etc/resolv.conf
+        delete($props{'ipaddr'}); # not needed
+        delete($props{'netmask'});
+        delete($props{'gateway'});
+        $defaults{'persistent_dhclient'} = 'y'; # always renew DHCP lease
+        $defaults{'peerdns'} = 'no'; # do not overwrite /etc/resolv.conf
     } elsif($props{'bootproto'} eq 'static') {
-	$props{'bootproto'} = 'none'; # replace "static" word with "none"
+        $props{'bootproto'} = 'none'; # replace "static" word with "none"
     }
 
     # Apply default values:
     foreach(keys %defaults) {
-	if( ! defined $props{$_} ) {
-	    $props{$_} = $defaults{$_};
-	}
+        if( ! defined $props{$_} ) {
+            $props{$_} = $defaults{$_};
+        }
     }
 
     foreach my $prop (sort { $a cmp $b } keys %props) {
