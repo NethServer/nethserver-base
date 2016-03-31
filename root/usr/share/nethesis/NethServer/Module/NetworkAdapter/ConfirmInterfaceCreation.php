@@ -34,7 +34,7 @@ class ConfirmInterfaceCreation extends \Nethgui\Controller\Table\AbstractAction
     {
         parent::initialize();
         $key = get_class($this->getParent());
-        foreach (array('role', 'parts', 'type', 'dhcp', 'bootproto', 'gateway', 'ipaddr', 'netmask', 'bridge', 'vlan', 'vlanTag', 'bond') as $p) {
+        foreach (array('role', 'parts', 'type', 'dhcp', 'bootproto', 'gateway', 'ipaddr', 'netmask', 'bridge', 'vlan', 'vlanTag', 'bond', 'bondMode') as $p) {
             $this->declareParameter($p, FALSE, array('SESSION', $key, $p));
         }
         $this->declareParameter('device', FALSE, array($this, 'getNewDeviceName'));
@@ -70,6 +70,7 @@ class ConfirmInterfaceCreation extends \Nethgui\Controller\Table\AbstractAction
             $data['parts'] = str_replace(',', ', ', $data['bridge']);
         } elseif ($data['type'] == 'bond') {
             $data['parts'] = str_replace(',', ', ', $data['bond']);
+            $data['bondMode'] = $view->translate("BondMode_${data['bondMode']}_label");
         } elseif ($data['type'] == 'vlan') {
             $data['parts'] = $data['vlan'];
         } else {
@@ -126,6 +127,11 @@ class ConfirmInterfaceCreation extends \Nethgui\Controller\Table\AbstractAction
                 $props['netmask'] = '';
                 $props['gateway'] = '';
             }
+
+            if($state['type'] === 'bond') {
+                $props['BondOptMode'] = $state['bondMode'];
+            }
+
             foreach ($this->getParts($state['device']) as $key) {
                 if ($state['type'] === 'bridge') {
                     $ndb->delProp($key, array('master', 'ipaddr', 'netmask', 'gateway', 'vlan'));
