@@ -140,14 +140,26 @@ sub _write_config_file() {
         }
     }
 
+    my @bondopts = ();
+
     foreach my $prop (sort { $a cmp $b } keys %props) {
         if($prop eq 'role' || $prop =~ m/^Fw/) {
             next; # skip role and any prop starting with "Fw"
         }
         my $val = $props{$prop};
+        if($prop =~ m/^BondOpt(.+)$/) {
+            # accumulate BondOpt props for subsequent emission
+            push @bondopts, (lc($1) . '=' . $val);
+            next;
+        }
         $val = ucfirst($val) unless ($prop ne 'type');  #first letter of type must be capitalized
         $out .= sprintf "%s=%s\n", uc($prop), $val;
     }
+
+    if(@bondopts) {
+        $out .= "BONDING_OPTS=\"" . (join(" ", @bondopts)) . "\"\n";
+    }
+
     open (my $fh, '>', $file);
     print $fh $out; 
     close ($fh);
