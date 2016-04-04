@@ -148,8 +148,13 @@ sub _write_config_file() {
         }
         my $val = $props{$prop};
         if($prop =~ m/^BondOpt(.+)$/) {
+            my $key = lc($1);
             # accumulate BondOpt props for subsequent emission
-            push @bondopts, (lc($1) . '=' . $val);
+            push @bondopts, $key, $val;
+            if($key eq 'mode') {
+                # prepend default values for active-backup mode
+                unshift @bondopts, 'miimon', '100'; # 100ms
+            }
             next;
         }
         $val = ucfirst($val) unless ($prop ne 'type');  #first letter of type must be capitalized
@@ -157,7 +162,8 @@ sub _write_config_file() {
     }
 
     if(@bondopts) {
-        $out .= "BONDING_OPTS=\"" . (join(" ", @bondopts)) . "\"\n";
+        my %BO = (@bondopts);
+        $out .= "BONDING_OPTS=\"" . (join(" ", map { $_ . '=' . $BO{$_} } keys %BO)) . "\"\n";
     }
 
     open (my $fh, '>', $file);
