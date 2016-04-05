@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.10.0
+Version: 2.10.1
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -69,6 +69,9 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 
 %changelog
+* Tue Apr 05 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.10.1-1
+- Bond miimon default value - Enhancement #3373 [NethServer]
+
 * Thu Mar 31 2016 Davide Principi <davide.principi@nethesis.it> - 2.10.0-1
 - Default bonding mode to active-backup - Enhancement #3299 [NethServer]
 
