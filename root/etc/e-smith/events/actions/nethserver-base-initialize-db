@@ -55,7 +55,6 @@ sub initialize_networks_db
             {
                 'type' => 'ethernet',
                 'role' => '',
-                'bootproto' => 'none',
                 fetch_ifcfg_props($H{'name'})
             }
         ];
@@ -94,7 +93,13 @@ sub fetch_ifcfg_props
     open(ADDR, '-|', "ip -o -4 address show dev $ifname");
     while(<ADDR>) {
         chomp;
-        my($id, $dev, $family, $cidr, $rest) = split(/\s+/, $_, 5);
+        my($id, $dev, $family, $cidr, $brd_family, $brd_address, $scope_lbl, $scope, $dynamic, $end) = split(/\s+/, $_, 10);
+        if ($dynamic =~ 'dynamic') {
+            $props{'bootproto'} = 'dhcp';
+            $props{'gateway'} = '';
+        } else {
+            $props{'bootproto'} = 'none';
+        }
 
         my($addr, $bitmask) = split(m|/|, $cidr, 2);
 
@@ -111,7 +116,7 @@ sub fetch_ifcfg_props
         chomp;
         my($p1, $via, $gateway, $p2, $dev) = split(/\s+/, $_);
 
-        if($dev eq $ifname) {
+        if($dev eq $ifname && $props{'bootproto'} ne 'dhcp') {
             $props{'gateway'} = $gateway;
         }
     }

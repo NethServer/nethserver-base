@@ -32,12 +32,24 @@ nethserver_config() {
     if [ ! -f $CACHE_FILE ]; then
         write_cache
     else
-        ipaddr=`cut -f1 -d' ' $CACHE_FILE`
-        netmask=`cut -f2 -d' ' $CACHE_FILE`
-        if [ "$ipaddr" != ${new_ip_address} ] || [ "$netmask" != "${new_subnet_mask}" ]; then
-            write_cache
-            /sbin/e-smith/signal-event static-routes-save 
-            /sbin/e-smith/signal-event firewall-adjust
+        role=`/sbin/e-smith/db networks getprop ${interface} role`
+        if [ "$role" == "red" ]; then
+            ipaddr=`cut -f1 -d' ' $CACHE_FILE`
+            netmask=`cut -f2 -d' ' $CACHE_FILE`
+            if [ "$ipaddr" != ${new_ip_address} ] || [ "$netmask" != "${new_subnet_mask}" ]; then
+                write_cache
+                /sbin/e-smith/signal-event static-routes-save
+                /sbin/e-smith/signal-event firewall-adjust
+            fi
+        elif [ "$role" == "green" ]; then
+            ipaddr=`/sbin/e-smith/db networks getprop ${interface} ipaddr`
+            netmask=`/sbin/e-smith/db networks getprop ${interface} netmask`
+            if [ "$ipaddr" != ${new_ip_address} ] || [ "$netmask" != "${new_subnet_mask}" ]; then
+                write_cache
+                /sbin/e-smith/db networks setprop ${interface} ipaddr ${new_ip_address}
+                /sbin/e-smith/db networks setprop ${interface} netmask ${new_subnet_mask}
+                /sbin/e-smith/signal-event interface-update
+            fi
         fi
     fi
 }
