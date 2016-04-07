@@ -38,8 +38,8 @@ class FQDN extends \Nethgui\Controller\AbstractController
     public function initialize()
     {
         parent::initialize();
-        $this->declareParameter('SystemName', Validate::HOSTNAME_SIMPLE, array('configuration', 'SystemName'));
-        $this->declareParameter('DomainName', Validate::HOSTNAME, array('configuration', 'DomainName'));
+        $this->declareParameter('SystemName', Validate::HOSTNAME_SIMPLE, array('NethServer::Database::Hostname', 'SystemName'));
+        $this->declareParameter('DomainName', Validate::HOSTNAME, array('NethServer::Database::Hostname', 'DomainName'));
     }
 
     protected function onParametersSaved($changes)
@@ -50,8 +50,6 @@ class FQDN extends \Nethgui\Controller\AbstractController
     public function prepareView(\Nethgui\View\ViewInterface $view) 
     {
         parent::prepareView($view);
-        $domain = $this->getPlatform()->getDatabase('configuration')->getType('DomainName');
-        $system = $this->getPlatform()->getDatabase('configuration')->getType('SystemName');
         $view['FQDN'] = "$system.$domain";
     }
 
