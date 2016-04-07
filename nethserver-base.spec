@@ -9,7 +9,6 @@ URL: %{url_prefix}/%{name}
 
 Requires: smartmontools
 Requires: bridge-utils
-Requires: mdadm
 Requires: sudo
 Requires: nc
 Requires: net-tools
