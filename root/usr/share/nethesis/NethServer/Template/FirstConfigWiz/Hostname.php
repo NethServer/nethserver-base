@@ -3,8 +3,8 @@
 include 'WizHeader.php';
 
 echo $view->panel()
-     ->insert($view->textInput('SystemName'))
-     ->insert($view->textInput('DomainName'));
+     ->insert($view->textInput('FQDN'))
+;
 
 include 'WizFooter.php';
 

@@ -3,7 +3,6 @@ echo "<div class='dashboard-item'>";
 echo "<dl>";
 echo $view->header()->setAttribute('template',$T('network_title'));
 echo "<dt>".$T('hostname_label')."</dt><dd>"; echo $view->textLabel('hostname'); echo "</dd>";
-echo "<dt>".$T('domain_label')."</dt><dd>"; echo $view->textLabel('domain'); echo "</dd>";
 echo "<dt>".$T('gateway_label')."</dt><dd>"; echo $view->textLabel('gateway'); echo "</dd>";
 if ($view['dns'] != '127.0.0.1') {
     echo "<dt>".$T('dns_label')."</dt><dd>"; echo $view->textLabel('dns'); echo "</dd>";
