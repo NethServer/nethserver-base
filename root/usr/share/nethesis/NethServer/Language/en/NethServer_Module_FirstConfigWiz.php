@@ -10,7 +10,7 @@ $L['RootPassword_Title'] = 'Set root\'s password';
 $L['RootPassword_Description'] = 'Choose a secure password for the root user';
 $L['RootPassword_Action'] = 'Change root user\'s password';
 $L['Hostname_Title'] = 'Set host name';
-$L['Hostname_Action'] = 'Set host name to: ${SystemName}.${DomainName}';
+$L['Hostname_Action'] = 'Set host name to: ${FQDN}';
 
 $L['Hostname_Description'] = 'Change the host fully qualified domain name (FQDN)';
 $L['Review_Title'] = 'Review changes';

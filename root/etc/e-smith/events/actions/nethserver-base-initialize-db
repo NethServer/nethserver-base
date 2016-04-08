@@ -151,20 +151,6 @@ if($dns) {
     $cdb->set_prop('dns', 'NameServers', $dns);
 }
 
-# Read timezone configuration
-my $timezone = `timedatectl status | sed -n -r '/^ *Time zone: / { s/^ *Time zone: ([^ ]+).*\$/\\1/; p }'`;
-chomp($timezone);
-$cdb->set_value('TimeZone', $timezone);
-
-# Read hostname
-my($system_name, $domain_name) = split(m/\./, (`hostnamectl --static` || `hostnamectl --transient` || `/bin/hostname`), 2), '', '';
-
-chomp($system_name);
-chomp($domain_name);
-
-$cdb->set_value('SystemName', $system_name || "localhost");
-$cdb->set_value('DomainName', $domain_name || "localdomain");
-
 # Grab all ethernet interfaces
 initialize_networks_db();
 

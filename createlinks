@@ -59,7 +59,6 @@ event_actions('interface-update', qw(
               interface-config-reset     25
               interface-config-write     30
               network-start              70
-              interface-config-hostname  75
               static-routes-save         80
               firewall-adjust            90
               trusted-networks-modify    95
@@ -170,7 +169,6 @@ event_templates('hostname-modify', qw(
 ));
 
 event_actions('hostname-modify', qw(
-     interface-config-hostname  02
      system-adjust 96
 ));
 

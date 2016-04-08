@@ -17,7 +17,7 @@ Requires: perl-TimeDate
 
 Requires: yum-plugin-changelog
 Requires: nethserver-yum
-Requires: nethserver-lib
+Requires: nethserver-lib, perl(NethServer::Database::Hostname)
 Requires: letsencrypt.sh
 
 BuildRequires: nethserver-devtools

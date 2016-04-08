@@ -32,8 +32,6 @@ class Network extends \Nethgui\Controller\AbstractController
  
     private $interfaces = array();
     private $dns = "";
-    private $hostname = "";
-    private $domain = "";
 
     private function mask2cidr($mask){
         $long = ip2long($mask);
@@ -89,35 +87,15 @@ class Network extends \Nethgui\Controller\AbstractController
         return $dns['NameServers'];
     }
 
-    private function readHostname()
-    {
-        return $this->getPlatform()->getDatabase('configuration')->getType('SystemName');
-    }
-
-    private function readDomain()
-    {
-        return $this->getPlatform()->getDatabase('configuration')->getType('DomainName');
-    }
-
     public function process()
     {
         $this->interfaces = $this->readInterfaces();
         $this->dns = $this->readDNS();
-        $this->hostname = $this->readHostname();
-        $this->domain = $this->readDomain();
     }
  
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
-        if (!$this->hostname) {
-            $this->hostname = $this->readHostname();
-        }
-        $view['hostname'] = $this->hostname;
-
-        if (!$this->domain) {
-            $this->domain = $this->readDomain();
-        }
-        $view['domain'] = $this->domain;
+        $view['hostname'] = \gethostname();
 
         if (!$this->dns) {
             $this->dns = $this->readDNS();
