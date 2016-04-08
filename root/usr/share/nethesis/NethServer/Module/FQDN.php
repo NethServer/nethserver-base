@@ -38,7 +38,7 @@ class FQDN extends \Nethgui\Controller\AbstractController
     public function initialize()
     {
         parent::initialize();
-        $this->declareParameter('FQDN', Validate::HOSTNAME, array('NethServer::Database::Hostname', 'StaticHostname'));
+        $this->declareParameter('FQDN', Validate::HOSTNAME_FQDN, array('NethServer::Database::Hostname', 'StaticHostname'));
     }
 
     protected function onParametersSaved($changes)
