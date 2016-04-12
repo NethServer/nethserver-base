@@ -42,7 +42,7 @@ mv -v lib/perl/{NethServer,esmith} root%{perl_vendorlib}
 mkdir -p root/%{_nseventsdir}/organization-save
 mkdir -p root/%{_nseventsdir}/%{name}-update
 
-for _nsdb in configuration networks routes; do
+for _nsdb in configuration networks routes accounts; do
    mkdir -p root/%{_nsdbconfdir}/${_nsdb}/{migrate,force,defaults}
 done 
 
@@ -62,6 +62,7 @@ rm -rf %{buildroot}
 %dir %{_nsdbconfdir}/configuration
 %dir %{_nsdbconfdir}/networks
 %dir %{_nsdbconfdir}/routes
+%dir %{_nsdbconfdir}/accounts
 %ghost %attr(0644,root,root) /etc/logviewer.conf
 
 %post
