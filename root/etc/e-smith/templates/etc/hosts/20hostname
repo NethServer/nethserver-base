@@ -4,8 +4,11 @@
 { 
     use esmith::InterfacesDB;
     my $ndb = esmith::InterfacesDB->open_ro() || return;
-    my $LocalIP = $ndb->green()->prop('ipaddr') || return;
-    sprintf "%-18s\t%s\n", $LocalIP, join(' ', @hostnames); 
+    foreach ($ndb->green()) {
+        if($_->prop('ipaddr') && ($_->prop('bootproto') || '') ne 'dhcp') {
+            $OUT .= sprintf "%-18s\t%s\n", $_->prop('ipaddr'), join(' ', @hostnames);
+        }
+    }
 }
 
 
