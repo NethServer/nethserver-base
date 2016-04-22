@@ -2,8 +2,8 @@
 # 20hostname(s)
 #
 { 
-    use esmith::InterfacesDB;
-    my $ndb = esmith::InterfacesDB->open_ro() || return;
+    use esmith::NetworksDB;
+    my $ndb = esmith::NetworksDB->open_ro() || return;
     foreach ($ndb->green()) {
         if($_->prop('ipaddr') && ($_->prop('bootproto') || '') ne 'dhcp') {
             $OUT .= sprintf "%-18s\t%s\n", $_->prop('ipaddr'), join(' ', @hostnames);
