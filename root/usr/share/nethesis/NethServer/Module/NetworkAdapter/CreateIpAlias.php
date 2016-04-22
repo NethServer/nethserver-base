@@ -54,12 +54,13 @@ class CreateIpAlias extends \Nethgui\Controller\Table\RowAbstractAction
         if ($A[$device]['type'] === 'alias') {
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1399459957);
         }
-        $aliasNb = 0;
+        $existingAliases = array();
         foreach ($A as $key => $props) {
             if ($props['type'] === 'alias' && substr($key, 0, strlen($device)) === $device) {
-                $aliasNb ++;
+                $existingAliases[] = substr($key, strlen($device) + 1); // remove the prefix up to ":"
             }
         }
+        for($aliasNb = 0; in_array($aliasNb, $existingAliases); $aliasNb++) ;
         return sprintf('%s:%d', $device, $aliasNb);
     }
 
