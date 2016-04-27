@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.10.1
+Version: 2.10.2
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -72,6 +72,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Wed Apr 27 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.10.2-1
+- Network configuration: alias IP overwritten - Bug #3381
+
 * Tue Apr 05 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.10.1-1
 - Bond miimon default value - Enhancement #3373 [NethServer]
 
