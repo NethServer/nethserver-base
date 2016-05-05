@@ -9,3 +9,4 @@ $L['FQDN_warning_certs_custom'] = "Any change to these fields reconfigures all i
 $L['SystemName_label'] = 'Hostname';
 $L['DomainName_label'] = 'Domain';
 $L['FQDN_label'] = 'Fully qualified domain name';
+$L['valid_platform,myhostname,failifjoin,1'] = 'Users and groups provider already configured';
