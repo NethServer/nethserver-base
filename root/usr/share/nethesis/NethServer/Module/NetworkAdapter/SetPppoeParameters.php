@@ -101,6 +101,17 @@ class SetPppoeParameters extends \Nethgui\Controller\Table\AbstractAction
         $this->getAdapter()->flush();
     }
 
+    public function bind(\Nethgui\Controller\RequestInterface $request)
+    {
+        parent::bind($request);
+
+        if ($request->isMutation()) {
+            $this->parameters['PppoeUser'] = trim($request->getParameter('PppoeUser'));
+            $this->parameters['PppoeProvider'] = trim($request->getParameter('PppoeProvider'));
+            $this->parameters['PppoePassword']= trim($request->getParameter('PppoePassword'));
+        }
+    }
+
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         $parent = $this->getParent();
