@@ -101,7 +101,6 @@ class ChangePassword extends \Nethgui\Controller\Table\AbstractAction
 
     public function process()
     {
-        parent::process();
         if ($this->getRequest()->isMutation()) {
             $this->stash->store($this->parameters['newPassword']);
             $this->getPlatform()->signalEvent('password-modify@post-process', array($this->userName, $this->stash->getFilePath()));
