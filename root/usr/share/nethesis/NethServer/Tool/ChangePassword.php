@@ -67,7 +67,7 @@ class ChangePassword extends \Nethgui\Controller\Table\AbstractAction
 
         $userExists = strlen($this->userName) > 0
             && ($this->userName === 'root'
-            || $this->getPlatform()->getDatabase('accounts')->getType($this->userName) === 'user');
+            || $this->getPlatform()->getDatabase('NethServer::Database::Passwd')->getType($this->userName) === 'passwd');
 
         if ( ! $userExists) {
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1322148399);
