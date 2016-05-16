@@ -64,9 +64,7 @@ class PamValidator implements \Nethgui\System\ValidatorInterface, \Nethgui\Utili
 
         if ( ! $authenticated) {
 
-            if ($username === 'admin' && ! $this->isAdminAvailable()) {
-                $this->failure[] = array('PamValidator_AdminNotAvailable', array());
-            } elseif (isset($credentials['hasDefaultPassword']) && $credentials['hasDefaultPassword'] === TRUE) {
+            if (isset($credentials['hasDefaultPassword']) && $credentials['hasDefaultPassword'] === TRUE) {
                 $this->failure[] = array('PamValidator_HasDefaultPassword', array('username' => $username, 'password' => self::DEFAULT_PASSWORD));
             } else {
                 $this->failure[] = array('PamValidator_InvalidCredentials', array('username' => $username));
@@ -74,14 +72,6 @@ class PamValidator implements \Nethgui\System\ValidatorInterface, \Nethgui\Utili
         }
 
         return $authenticated;
-    }
-
-    private function isAdminAvailable()
-    {
-        $retval = 0;
-        $output = '';
-        $this->getPhpWrapper()->exec('/usr/bin/getent passwd admin', $output, $retval);
-        return $retval === 0;
     }
 
     public function getFailureInfo()

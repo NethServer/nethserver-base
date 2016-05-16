@@ -22,7 +22,6 @@ $L['valid_platform,password-strength,password-strength,7'] = 'Missing a lower ca
 $L['valid_platform,password-strength,password-strength,8'] = 'Missing a symbol';
 $L['PamValidator_HasDefaultPassword'] = 'Please try ${password}';
 $L['PamValidator_InvalidCredentials'] = 'Invalid credentials';
-$L['PamValidator_AdminNotAvailable'] = 'User "admin" is not available. Login as "root".';
 $L['Back_label'] = 'Back';
 $L['Profile'] = 'Profile';
 $L['Change password'] = 'Change password';
