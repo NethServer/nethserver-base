@@ -64,21 +64,22 @@ class ChangePassword extends \Nethgui\Controller\Table\AbstractAction
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
         parent::bind($request);
-
-        $userExists = strlen($this->userName) > 0
-            && ($this->userName === 'root'
-            || $this->getPlatform()->getDatabase('NethServer::Database::Passwd')->getType($this->userName) === 'passwd');
-
-        if ( ! $userExists) {
-            throw new \Nethgui\Exception\HttpException('Not found', 404, 1322148399);
-        }
-
-        // The resource the current user is acting on is another user or
-        // the current user oneself.  The policy decision point is delegated
-        // to decide whether the current user has enough rights to change
-        // the other user's password.  Refs #1580
         $currentUser = $this->getRequest()->getUser()->getCredential('username');
-        $resource = $currentUser === $this->userName ? 'Oneself' : 'SomeoneElse';
+
+        if (isset($this->userName)) {
+            $userExists = strlen($this->userName) > 0 && ($this->userName === 'root' || $this->getPlatform()->getDatabase('NethServer::Database::Passwd')->getType($this->userName) === 'passwd');
+            if ( ! $userExists) {
+                throw new \Nethgui\Exception\HttpException('Not found' . $this->userName, 404, 1322148399);
+            }
+            // The resource the current user is acting on is another user or
+            // the current user oneself.  The policy decision point is delegated
+            // to decide whether the current user has enough rights to change
+            // the other user's password.  Refs #1580
+            $resource = $currentUser === $this->userName ? 'Oneself' : 'SomeoneElse';
+        } else {
+            $this->userName = $currentUser;
+            $resource = 'Oneself';
+        }
 
         $response = $this->getPolicyDecisionPoint()->authorize($this->getRequest()->getUser(), $resource, self::ACTION_CHANGE_PASSWORD);
         if ($response->isDenied()) {

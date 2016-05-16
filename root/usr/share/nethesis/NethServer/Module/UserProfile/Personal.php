@@ -28,49 +28,45 @@ use Nethgui\System\PlatformInterface as Validate;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Personal extends \Nethgui\Controller\Table\AbstractAction
+class Personal extends \Nethgui\Controller\AbstractController implements \Nethgui\Component\DependencyConsumer
 {
+
+    private $userName;
 
     public function initialize()
     {
-        $this->declareParameter('FirstName', Validate::ANYTHING, array($this->getAdapter(), 'FirstName'));
-        $this->declareParameter('LastName', Validate::ANYTHING, array($this->getAdapter(), 'LastName'));
-        $this->declareParameter('EmailAddress', $this->createValidator()->orValidator($this->createValidator(Validate::EMAIL), $this->createValidator()->maxLength(0)), array($this->getAdapter(), 'EmailAddress'));
-
-        $this->declareParameter('Company', Validate::ANYTHING, array($this->getAdapter(), 'Company'));
-        $this->declareParameter('Dept', Validate::ANYTHING, array($this->getAdapter(), 'Dept'));
-        $this->declareParameter('City', Validate::ANYTHING, array($this->getAdapter(), 'City'));
-        $this->declareParameter('Street', Validate::ANYTHING, array($this->getAdapter(), 'Street'));
-        $this->declareParameter('Phone', Validate::ANYTHING, array($this->getAdapter(), 'Phone'));
-
+        $this->declareParameter('FullName', FALSE);
+        $this->declareParameter('EmailAddress', Validate::ANYTHING, array('configuration', 'root', 'EmailAddress'));
         parent::initialize();
     }
 
-    protected function onParametersSaved($changedParameters)
+    protected function onParametersSaved()
     {
-        parent::onParametersSaved($changedParameters);
-        $this->getPlatform()->signalEvent('profile-modify@post-process', array($this->getAdapter()->getKeyValue()));
+        if($this->userName === 'root') {
+            $this->getPlatform()->signalEvent('profile-modify@post-process', array('root'));
+        }
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
-        $view['username'] = $this->getAdapter()->getKeyValue();
+        $view['username'] = $this->userName;
+        $view['FullName'] = $this->getPlatform()->getDatabase('NethServer::Database::Passwd')->getProp($this->userName, 'gecos');
         $view['ChangePassword'] = $view->getModuleUrl('../ChangePassword');
+    }
 
-        $defaults = array_merge(array(
-            'Company' => '',
-            'Department' => '',
-            'City' => '',
-            'Street' => '',
-            'PhoneNumber' => '',
-            ), $this->getPlatform()->getDatabase('configuration')->getKey('OrganizationContact')
+    public function setUser(\Nethgui\Authorization\UserInterface $u)
+    {
+        $this->user = $u;
+        $this->userName = $u->getCredential('username');
+        return $this;
+    }
+
+    public function getDependencySetters()
+    {
+        return array(
+            'User' => array($this, 'setUser')
         );
-        $view['Default_Company'] = $defaults['Company'];
-        $view['Default_Dept'] = $defaults['Department'];
-        $view['Default_City'] = $defaults['City'];
-        $view['Default_Street'] = $defaults['Street'];
-        $view['Default_Phone'] = $defaults['PhoneNumber'];
     }
 
 }
