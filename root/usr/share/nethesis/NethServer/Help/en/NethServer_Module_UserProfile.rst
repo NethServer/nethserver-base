@@ -11,7 +11,7 @@ External email address
     used by the system in the process of recovery and renewal
     password.
 
-    This options is available only for *root* user.
+    This option is available only for *root* user.
 
 
 Change password
