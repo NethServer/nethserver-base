@@ -52,6 +52,8 @@ class Personal extends \Nethgui\Controller\AbstractController implements \Nethgu
         parent::prepareView($view);
         $view['username'] = $this->userName;
         $view['FullName'] = $this->getPlatform()->getDatabase('NethServer::Database::Passwd')->getProp($this->userName, 'gecos');
+        $provider = new \NethServer\Tool\UserProvider($this->getPlatform());
+        $view['readOnly'] = $provider->isReadOnly();
         $view['ChangePassword'] = $view->getModuleUrl('../ChangePassword');
     }
 
