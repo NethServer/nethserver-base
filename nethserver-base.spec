@@ -56,6 +56,7 @@ rm -rf %{buildroot}
 %files -f %{name}-%{version}-%{release}-filelist
 %defattr(-,root,root)
 %doc COPYING
+%doc README.rst
 %ghost %attr(600,root,root) /etc/pki/tls/private/NSRV.key
 %ghost %attr(644,root,root) /etc/pki/tls/certs/NSRV.crt
 %ghost %attr(440,root,root) /etc/sudoers.d/10_nethserver
