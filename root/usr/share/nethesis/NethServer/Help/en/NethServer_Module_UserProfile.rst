@@ -2,11 +2,8 @@
 User Profile
 ==============
 
-Name
-    It is the user's name, for example "John".
-
-Surname
-    The user's last name, for example "Smith".
+Full name
+    It is the user's name and last name, for example "John Snow".
 
 External email address
     User email address from an external mail provider.
@@ -14,21 +11,14 @@ External email address
     used by the system in the process of recovery and renewal
     password.
 
-You can specify a custom value for the following fields,
-otherwise values from  module *Data
-organization* will be used (this module is available only to the system administrator).
-
-* Company
-* Office
-* Address
-* City
-* Phone
+    This options is available only for *root* user.
 
 
 Change password
 ===============
 
 Change current password with a new password.
+This button is available only if logged user is local.
 
 Current Password
     Enter the current password.
