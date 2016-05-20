@@ -49,10 +49,6 @@ class Packages extends \Nethgui\Controller\AbstractController
             foreach ($process->getOutputArray() as $line) {
                 list($name, $version, $release, $url) = explode("\t", trim($line, "\n"));
 
-                if ( ! preg_match('/\.ns6/', $release)) {
-                    continue;
-                }
-
                 if ($url === '(none)') {
                     $url = '#';
                 }
