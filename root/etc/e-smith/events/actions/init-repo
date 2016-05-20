@@ -1,7 +1,11 @@
 #!/bin/bash
 
+if [[ -f /etc/yum.repos.d/NethForge.repo ]]; then
+   nethforge=nethforge
+fi
+
 # Enable only some repositories
-/sbin/e-smith/eorepo base updates extras nethserver-{base,updates} epel
+/sbin/e-smith/eorepo base updates extras nethserver-{base,updates} epel ${nethforge}
 
 # Disable groups for EPEL and CentOS repositories
 for F in /etc/yum.repos.d/{CentOS-Base.repo,epel.repo}; do
