@@ -113,3 +113,7 @@ $L['BondMode_3_label'] = 'broadcast';
 $L['BondMode_4_label'] = '802.3ad';
 $L['BondMode_5_label'] = 'balance TLB';
 $L['BondMode_6_label'] = 'balance ALB';
+$L['red_label'] = 'Internet (red)';
+$L['Weight_label'] = 'Weight';
+$L['ProviderName_label'] = 'Name';
+$L['Multiwan_label'] = 'Enable Multi WAN';
