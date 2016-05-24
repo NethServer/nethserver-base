@@ -78,16 +78,30 @@ class NetworkServices extends \Nethgui\Controller\TableController
     public function prepareViewForColumnAccess(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
         $nets = '';
-        if ( (isset($values['AllowHosts']) && $values['AllowHosts'])
-            || (isset($values['DenyHosts']) && $values['DenyHosts']) ) {
-            return '<span class="ns-black">custom</span>';
+        $accept = array();
+        $deny = array();
+        if ($values['access']) {
+            $accept = explode(',',$values['access']);
         }
-        if ($values['access'] == 'private') {
-            $nets = '<span class="ns-green">green</span>';
-        } else if ($values['access'] == 'public') {
-            $nets = '<span class="ns-green">green</span> <span class="ns-red">red</span>';
+        
+        if ( isset($values['AllowHosts']) && $values['AllowHosts'] ) {
+            foreach (explode(',',$values['AllowHosts']) as $h) {
+                 $explode[] = $h;
+            }
+        }
+
+        if ( isset($values['DenyHosts']) && $values['DenyHosts'] ) {
+            $deny = explode(',', $values['DenyHosts']);
+        }
+
+        $nets = $view->translate('ACCEPT').": ";
+        if ($accept) {
+            $nets .= implode(', ',$accept);
         } else {
-            $nets = '<span class="ns-grey">localhost</span>';
+            $nets .= 'localhost';
+        }
+        if ($deny) {
+            $nets .= ' '.$view->translate('DENY').": ".implode(', ',$deny);
         }
 
         return $nets;

@@ -30,17 +30,39 @@ use Nethgui\Controller\Table\Modify as Table;
  */
 class Modify extends \Nethgui\Controller\Table\Modify
 {
-    private $access_values = array('private','public','none');
+    private $zones = array();
+
+    private function listZones()
+    {
+        if ($this->zones) {
+            return $this->zones;
+        }
+        $invalid_roles = array('bridged', 'alias', 'slave', 'xdsl');
+        $networks = $this->getPlatform()->getDatabase('networks')->getAll();
+        $this->zones['red'] = ''; # always enable red
+        foreach ($networks as $key => $values) {
+            if ($values['type']  == 'zone') {
+               $this->zones[$key] = '';
+            }
+            if(isset($values['role']) && ! preg_match("/(".implode('|',$invalid_roles).")/", $values['role'])) {
+               $this->zones[$values['role']] = ''; 
+            }
+        }
+        
+        $this->zones = array_keys($this->zones);
+        return $this->zones;
+    }
 
     public function initialize()
     {
         parent::initialize();
         $this->setViewTemplate('NethServer\Template\NetworkServices\Modify');
 
+
         $parameterSchema = array(
             array('name', Validate::ANYTHING, Table::KEY),
             array('status', Validate::SERVICESTATUS, Table::FIELD),
-            array('access', $this->createValidator()->memberOf($this->access_values), Table::FIELD),
+            array('access', Validate::ANYTHING, Table::FIELD, 'access', ','),
             array('AllowHosts', Validate::ANYTHING, Table::FIELD),
             array('DenyHosts', Validate::ANYTHING, Table::FIELD),
         );
@@ -68,6 +90,20 @@ class Modify extends \Nethgui\Controller\Table\Modify
         }
 
         parent::validate($report);
+    }
+
+    public function prepareView(\Nethgui\View\ViewInterface $view)
+    {
+        parent::prepareView($view);
+
+        $view['accessDatasource'] = array_map(function($fmt) use ($view) {
+            $label = $view->translate($fmt . '_label');
+            if ($label == $fmt . '_label') {
+                $label = $fmt;
+            }
+ 
+            return array($fmt, $label);
+        }, $this->listZones());
     }
 
     protected function onParametersSaved($changedParameters)
