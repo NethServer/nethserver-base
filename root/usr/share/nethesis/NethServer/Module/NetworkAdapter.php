@@ -33,6 +33,7 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
     private $types = array('ethernet', 'bridge', 'bond', 'vlan', 'alias', 'xdsl');
 
     private $nicInfo;
+    private $providers;
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
@@ -48,6 +49,17 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
     {
         $interfaces = $this->getPlatform()->getDatabase('configuration')->getProp('firewall', 'InterfaceRoleList');
         return explode(',',$interfaces);
+    }
+
+    private function getProviderNames()
+    {
+        if (!$this->providers) {
+            $tmp = $this->getPlatform()->getDatabase('networks')->getAll('provider');
+            foreach ($tmp as $name => $props) {
+                $this->providers[$props['interface']] = $name;
+            }
+        }
+        return $this->providers;
     }
 
     public function initialize()
@@ -122,6 +134,9 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
             return $roleLabel . " (" . $values['master'] . ")";
         } elseif ($values['role'] === 'bridged') {
             return $roleLabel . " (" . $values['bridge'] . ")";
+        } elseif ($values['role'] === 'red') {
+           $providers = $this->getProviderNames();
+           return $roleLabel ." - ".$providers[$key];
         }
 
         return $roleLabel;
@@ -130,7 +145,8 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
     public function prepareViewForColumnIpaddr(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
         if(isset($values['bootproto']) && $values['bootproto'] === 'dhcp') {
-            return 'DHCP';
+            $ipaddr = $this->getPlatform()->exec("/sbin/ip -o -4 address show $key primary | head -1 | awk '{print \$4}' | cut -d '/' -f1")->getOutput();
+            return "$ipaddr (DHCP)";
         }
         return strval(isset($values['ipaddr']) ? $values['ipaddr'] : '');
     }
