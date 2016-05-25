@@ -34,6 +34,11 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
 
     public function initialize()
     {
+
+	$WeightAdapter = $this->getPlatform()->getMapAdapter(array($this, 'readWeight'), array($this, 'writeWeight'), array());
+	$ProviderNameAdapter = $this->getPlatform()->getMapAdapter(array($this, 'readProviderName'), array($this, 'writeProviderName'), array());
+        $MultiwanEnabledAdapter = $this->getPlatform()->getMapAdapter(array($this, 'readMultiwanEnabled'), array($this, 'writeMultiwanEnabled'), array());
+
         $this->setSchema(array(
             array('device', Validate::ANYTHING, \Nethgui\Controller\Table\RowAbstractAction::KEY),
             array('role', $this->createValidator()->memberOf($this->getParent()->getInterfaceRoles()), \Nethgui\Controller\Table\RowAbstractAction::FIELD),
@@ -41,8 +46,83 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
             array('ipaddr', Validate::IPv4, \Nethgui\Controller\Table\RowAbstractAction::FIELD),
             array('netmask', Validate::IPv4_NETMASK, \Nethgui\Controller\Table\RowAbstractAction::FIELD),
             array('gateway', Validate::IP_OR_EMPTY, \Nethgui\Controller\Table\RowAbstractAction::FIELD),
+
+            array('ProviderName', $this->createValidator()->maxLength(5)->minLength(1)->regexp('/^(?:(?!main).)*$/')->regexp('/^(?:(?!local).)*$/'), $ProviderNameAdapter),
+            array('Weight', $this->createValidator()->integer()->greatThan(0)->lessThan(256), $WeightAdapter),
+            array('Multiwan', Validate::SERVICESTATUS,$MultiwanEnabledAdapter),
         ));
         parent::initialize();
+    }
+
+    public function readProviderName()
+    {
+	foreach ($this->getPlatform()->getDatabase('networks')->getAll('provider') as $name=>$provider) {
+            if ($provider['interface'] === $this->parameters['device']){
+                return $name;
+            }
+        }
+    }
+
+    public function writeProviderName()
+    {
+        //check that there aren't providers for this interface
+        foreach ($this->getPlatform()->getDatabase('networks')->getAll('provider') as $name=>$provider) {
+            if ($provider['interface'] === $this->parameters['device']){
+                if ($this->parameters['ProviderName']!=$name) {
+                     $this->getPlatform()->getDatabase('networks')->deleteKey($name);
+                } else {
+                    $this->getPlatform()->getDatabase('networks')->setProp($this->parameters['ProviderName'],array('interface'=>$this->parameters['device'], 'status'=>'enabled','weight'=>$this->parameters['Weight']));
+                    return TRUE;
+                }
+            }
+        }
+        $this->getPlatform()->getDatabase('networks')->setKey($this->parameters['ProviderName'],'provider',array());
+        $this->getPlatform()->getDatabase('networks')->setProp($this->parameters['ProviderName'],array('interface'=>$this->parameters['device'], 'status'=>'enabled','weight'=>$this->parameters['Weight'] ));
+        return TRUE;
+    }
+
+    public function readWeight()
+    {
+        foreach ($this->getPlatform()->getDatabase('networks')->getAll('provider') as $name=>$provider) {
+            if ($provider['interface'] === $this->parameters['device']) {
+                return $provider['weight'];
+            }
+        }
+    }
+
+    public function writeWeight()
+    {
+        foreach ($this->getPlatform()->getDatabase('networks')->getAll('provider') as $name=>$provider) {
+            if ($provider['interface'] === $this->parameters['device']) {
+                $this->getPlatform()->getDatabase('networks')->setProp($name,array('weight'=>$this->parameters['Weight']));
+                return TRUE;
+            }
+        }
+    }
+
+    public function readMultiwanEnabled()
+    {
+        foreach ($this->getPlatform()->getDatabase('networks')->getAll('provider') as $name=>$provider) {
+            if ($provider['interface'] === $this->parameters['device']) {
+                return $provider['status'];
+            }
+        }
+        return 'disabled';
+    }
+
+    public function writeMultiwanEnabled()
+    {
+        foreach ($this->getPlatform()->getDatabase('networks')->getAll('provider') as $name=>$provider) {
+            if ($provider['interface'] === $this->parameters['device']) {
+                if ($this->parameters['Multiwan'] === 'enabled' ) {
+                    $this->getPlatform()->getDatabase('networks')->setProp($name,array('status'=>'enabled'));
+                } else {
+                    $this->getPlatform()->getDatabase('networks')->setProp($name,array('status'=>'disabled'));
+                }
+                return TRUE;
+            }
+        }
+        return FALSE;
     }
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
@@ -58,6 +138,7 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
         if (isset($A[$keyValue]['role']) && in_array($A[$keyValue]['role'], array('bridged', 'slave', 'alias'))) {
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1399033550);
         }
+
 
         $this->getAdapter()->setKeyValue($keyValue);
         parent::bind($request);

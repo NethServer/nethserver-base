@@ -10,6 +10,13 @@ echo $view->fieldsetSwitch('bootproto', 'none', $view::FIELDSETSWITCH_EXPANDABLE
     ->insert($view->textInput('netmask'))
     ->insert($view->textInput('gateway'));
 
+echo $view->fieldsetSwitch('Multiwan', 'enabled', $view::FIELDSETSWITCH_CHECKBOX | $view::FIELDSETSWITCH_EXPANDABLE)
+    ->setAttribute('uncheckedValue', 'disabled')
+    ->insert($view->columns()
+        ->insert($view->textInput('ProviderName'))
+        ->insert($view->textInput('Weight'))
+    );
+
 echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_CANCEL | $view::BUTTON_HELP);
 
 $view->includeCSS("
@@ -41,6 +48,7 @@ $view->includeCSS("
 $roleId = $view->getUniqueId('role');
 $bootprotoId = $view->getClientEventTarget('bootproto');
 $gatewayId = $view->getUniqueId('gateway');
+$MultiwanId= $view->getUniqueId('Multiwan');
 $view->includeJavascript("
 (function ( $ ) {
     var updateFormState = function () {
@@ -52,15 +60,17 @@ $view->includeJavascript("
             $('#${gatewayId}').prop('disabled', true).parent().hide();
         }
 
-        // show DHCP/Static radio buttons only for red role
+        // show DHCP/Static radio buttons and Multiwan parameters only for red role
         if ($('#${roleId}').val().indexOf('red') !== -1) {
             $('#${gatewayId}').closest('fieldset').css('margin-left', '');
             $('.${bootprotoId}[value=none]').trigger('click').parent().show();
             $('.${bootprotoId}[value=dhcp]').prop('disabled', false).parent().show();
+            $('.${MultiwanId}').parent().parent().show();
         } else {
             $('#${gatewayId}').closest('fieldset').css('margin-left', 0);
             $('.${bootprotoId}[value=none]').trigger('click').parent().hide();
             $('.${bootprotoId}[value=dhcp]').prop('disabled', true).parent().hide();
+            $('.${MultiwanId}').prop('checked', false).parent().parent().hide();
         }
     };
 
