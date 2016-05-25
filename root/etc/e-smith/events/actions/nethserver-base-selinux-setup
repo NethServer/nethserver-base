@@ -2,6 +2,6 @@
 
 . /etc/sysconfig/selinux
 
-if [ `getenforce` == 'Enforcing' ] && [ "${SELINUX}" == "permissive" ]; then
+if [ `getenforce` == 'Enforcing' ] && [ "${SELINUX}" == "disabled" ]; then
         setenforce 0
 fi
