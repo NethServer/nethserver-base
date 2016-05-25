@@ -30,4 +30,24 @@ The table shows the list of physical (eth, wlan, ...) and logical
 :guilabel:`Release role` action
 
    Release the role assigned to the device.
-   
+
+
+Enable Multi WAN
+================
+
+Create or edit the configuration of providers.
+
+Name
+     A name to identify the connection (ISP). Max 5 characters.
+
+Enable Multi WAN
+     Enable or disable the provider for Mutli WAN.
+
+Weight
+     The "weight" of the connection.
+     Traffic will be routed proportionally to the weight: higher weight means more traffic.
+     A provider with a weight of 100 will receive twice the traffic of one with weight 50.
+     Please, assign weights accordingly to connection bandwidth.
+     When using active-backup mode, the weight determines the use of the line.
+     If the first provider has weight 100 and the second has weight 50,
+     the traffic is always sent to the first provider. The second one will be used only if first provider goes down.
