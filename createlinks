@@ -33,6 +33,7 @@ event_actions('trusted-networks-modify', qw(
 event_actions('nethserver-base-update', qw(
     initialize-default-databases      00
     nethserver-base-selinux-setup     10
+    home-bind                         10
     remount-filesystems               10
     nethserver-base-conf              40
     nethserver-base-mail-aliases      50
