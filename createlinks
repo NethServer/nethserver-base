@@ -221,5 +221,11 @@ validator_actions('network-create', qw(
                   uniq-networksdb-key 20
                   ));
 
+#
+# system-shutdown event
+#
+event_actions('system-shutdown', qw(
+    system-shutdown 20
+));
 
 exit 0;
