@@ -1,7 +1,7 @@
-# 20120223
+# Totally disable SELinux, also avoid useless auditing log
 
 # enforcing, permissive, disabled
-SELINUX=permissive
+SELINUX=disabled
 
 # targeted, mls
 SELINUXTYPE=targeted
