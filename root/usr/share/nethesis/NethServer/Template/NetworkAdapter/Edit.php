@@ -10,12 +10,8 @@ echo $view->fieldsetSwitch('bootproto', 'none', $view::FIELDSETSWITCH_EXPANDABLE
     ->insert($view->textInput('netmask'))
     ->insert($view->textInput('gateway'));
 
-echo $view->fieldsetSwitch('Multiwan', 'enabled', $view::FIELDSETSWITCH_CHECKBOX | $view::FIELDSETSWITCH_EXPANDABLE)
-    ->setAttribute('uncheckedValue', 'disabled')
-    ->insert($view->columns()
-        ->insert($view->textInput('ProviderName'))
-        ->insert($view->textInput('Weight'))
-    );
+echo $view->textInput('ProviderName')->setAttribute('placeholder', $view['defaultProviderName']);
+echo $view->textInput('Weight')->setAttribute('placeholder', $view['defaultWeight']);
 
 echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_CANCEL | $view::BUTTON_HELP);
 
@@ -48,7 +44,8 @@ $view->includeCSS("
 $roleId = $view->getUniqueId('role');
 $bootprotoId = $view->getClientEventTarget('bootproto');
 $gatewayId = $view->getUniqueId('gateway');
-$MultiwanId= $view->getUniqueId('Multiwan');
+$MultiwanNameId = $view->getUniqueId('ProviderName');
+$MultiwanWeightId = $view->getUniqueId('Weight');
 $view->includeJavascript("
 (function ( $ ) {
     var updateFormState = function () {
@@ -65,12 +62,14 @@ $view->includeJavascript("
             $('#${gatewayId}').closest('fieldset').css('margin-left', '');
             $('.${bootprotoId}[value=none]').trigger('click').parent().show();
             $('.${bootprotoId}[value=dhcp]').prop('disabled', false).parent().show();
-            $('.${MultiwanId}').parent().parent().show();
+            $('.${MultiwanNameId}').parent().show();
+            $('.${MultiwanWeightId}').parent().show();
         } else {
             $('#${gatewayId}').closest('fieldset').css('margin-left', 0);
             $('.${bootprotoId}[value=none]').trigger('click').parent().hide();
             $('.${bootprotoId}[value=dhcp]').prop('disabled', true).parent().hide();
-            $('.${MultiwanId}').prop('checked', false).parent().parent().hide();
+            $('.${MultiwanNameId}').parent().hide();
+            $('.${MultiwanWeightId}').parent().hide();
         }
     };
 
