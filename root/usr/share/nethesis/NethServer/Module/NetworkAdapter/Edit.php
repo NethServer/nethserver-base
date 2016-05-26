@@ -37,7 +37,6 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
 
 	$WeightAdapter = $this->getPlatform()->getMapAdapter(array($this, 'readWeight'), array($this, 'writeWeight'), array());
 	$ProviderNameAdapter = $this->getPlatform()->getMapAdapter(array($this, 'readProviderName'), array($this, 'writeProviderName'), array());
-        $MultiwanEnabledAdapter = $this->getPlatform()->getMapAdapter(array($this, 'readMultiwanEnabled'), array($this, 'writeMultiwanEnabled'), array());
 
         $this->setSchema(array(
             array('device', Validate::ANYTHING, \Nethgui\Controller\Table\RowAbstractAction::KEY),
@@ -47,9 +46,8 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
             array('netmask', Validate::IPv4_NETMASK, \Nethgui\Controller\Table\RowAbstractAction::FIELD),
             array('gateway', Validate::IP_OR_EMPTY, \Nethgui\Controller\Table\RowAbstractAction::FIELD),
 
-            array('ProviderName', $this->createValidator()->maxLength(5)->minLength(1)->regexp('/^(?:(?!main).)*$/')->regexp('/^(?:(?!local).)*$/'), $ProviderNameAdapter),
-            array('Weight', $this->createValidator()->integer()->greatThan(0)->lessThan(256), $WeightAdapter),
-            array('Multiwan', Validate::SERVICESTATUS,$MultiwanEnabledAdapter),
+            array('ProviderName', $this->createValidator()->maxLength(5)->minLength(1)->regexp('/^(?:(?!main).)*$/')->regexp('/^(?:(?!local).)*$/')->regexp('/^(?:(?!\s).)*$/'), $ProviderNameAdapter),
+            array('Weight', $this->createValidator()->integer()->greatThan(0)->lessThan(256), $WeightAdapter)
         ));
         parent::initialize();
     }
@@ -65,19 +63,22 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
 
     public function writeProviderName()
     {
-        //check that there aren't providers for this interface
+        if ($this->parameters['role']!='red') {
+            $this->getPlatform()->getDatabase('networks')->deleteKey($name);
+            return TRUE;
+        }
         foreach ($this->getPlatform()->getDatabase('networks')->getAll('provider') as $name=>$provider) {
             if ($provider['interface'] === $this->parameters['device']){
                 if ($this->parameters['ProviderName']!=$name) {
                      $this->getPlatform()->getDatabase('networks')->deleteKey($name);
                 } else {
-                    $this->getPlatform()->getDatabase('networks')->setProp($this->parameters['ProviderName'],array('interface'=>$this->parameters['device'], 'status'=>'enabled','weight'=>$this->parameters['Weight']));
+                    $this->getPlatform()->getDatabase('networks')->setProp($this->parameters['ProviderName'],array('interface'=>$this->parameters['device'],'weight'=>$this->parameters['Weight']));
                     return TRUE;
                 }
             }
         }
         $this->getPlatform()->getDatabase('networks')->setKey($this->parameters['ProviderName'],'provider',array());
-        $this->getPlatform()->getDatabase('networks')->setProp($this->parameters['ProviderName'],array('interface'=>$this->parameters['device'], 'status'=>'enabled','weight'=>$this->parameters['Weight'] ));
+        $this->getPlatform()->getDatabase('networks')->setProp($this->parameters['ProviderName'],array('interface'=>$this->parameters['device'], 'weight'=>$this->parameters['Weight'] ));
         return TRUE;
     }
 
@@ -100,31 +101,6 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
         }
     }
 
-    public function readMultiwanEnabled()
-    {
-        foreach ($this->getPlatform()->getDatabase('networks')->getAll('provider') as $name=>$provider) {
-            if ($provider['interface'] === $this->parameters['device']) {
-                return $provider['status'];
-            }
-        }
-        return 'disabled';
-    }
-
-    public function writeMultiwanEnabled()
-    {
-        foreach ($this->getPlatform()->getDatabase('networks')->getAll('provider') as $name=>$provider) {
-            if ($provider['interface'] === $this->parameters['device']) {
-                if ($this->parameters['Multiwan'] === 'enabled' ) {
-                    $this->getPlatform()->getDatabase('networks')->setProp($name,array('status'=>'enabled'));
-                } else {
-                    $this->getPlatform()->getDatabase('networks')->setProp($name,array('status'=>'disabled'));
-                }
-                return TRUE;
-            }
-        }
-        return FALSE;
-    }
-
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
         $keyValue = \Nethgui\array_head($request->getPath());
@@ -142,6 +118,13 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
 
         $this->getAdapter()->setKeyValue($keyValue);
         parent::bind($request);
+
+        if ($request->getParameter('ProviderName') === '') {
+            $this->parameters['ProviderName'] = $this->getDefaultProviderName();
+        }
+        if ($request->getParameter('Weight') === '') {
+            $this->parameters['Weight'] = '1';
+        }
     }
 
     public function validate(\Nethgui\Controller\ValidationReportInterface $report)
@@ -152,6 +135,10 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
             if ( ! $v->evaluate(json_encode($this->parameters->getArrayCopy()))) {
                 $report->addValidationError($this, 'interface-config', $v);
             }
+            $providers = $this->getPlatform()->getDatabase('networks')->getAll();
+            $request = $this->getRequest();
+            $device = \Nethgui\array_head($request->getPath());
+            if (!empty($providers[$this->parameters['ProviderName']]) && $providers[$this->parameters['ProviderName']]['interface'] != $device) $report->addValidationError($this, 'interface-config',$v);
         }
     }
 
@@ -178,13 +165,24 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
         } else {
             $v['link'] = $nicInfo[6] ? $view->translate('Link_status_up') : $view->translate('Link_status_down');
         }
-
         return $v;
     }
 
     protected function onParametersSaved($changedParameters)
     {
         parent::onParametersSaved($changedParameters);
+        if (in_array('role',$changedParameters)){
+            $parameters = $this->parameters;
+            if ($this->parameters['role']!='red') {
+                //Changed role of interface. Delete multiwan provider from networks db if exists
+                foreach ($this->getPlatform()->getDatabase('networks')->getAll('provider') as $name=>$provider) {
+                    if ($provider['interface'] === $this->parameters['device']) {
+                        $this->getPlatform()->getDatabase('networks')->deleteKey($name);
+                        break;
+                    }
+                }
+            }
+        }
         $this->getPlatform()->signalEvent('interface-update &');
     }
 
@@ -199,5 +197,12 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
             return array($fmt, $view->translate($fmt . '_label'));
         }, $this->getParent()->getInterfaceRoles());
     }
-
+    public function getDefaultProviderName(){
+        $providers = $this->getPlatform()->getDatabase('networks')->getAll();
+        for ($i=1; $i<=count($providers)+1; $i++){
+            if (!isset($providers['red'.$i])) {
+                return 'red'.$i ;
+            }
+        }
+    }
 }
