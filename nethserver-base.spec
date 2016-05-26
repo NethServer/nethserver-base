@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.10.2
+Version: 2.10.3
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -69,6 +69,9 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 
 %changelog
+* Thu May 26 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.10.3-1
+- User and password with blank spaces in PPPoE configuration - Bug #3385 [NethServer]
+
 * Wed Apr 27 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.10.2-1
 - Network configuration: alias IP overwritten - Bug #3381
 
