@@ -1,0 +1,210 @@
+#!/usr/bin/perl
+#
+#
+# Copyright (C) 2015 Nethesis S.r.l.
+# http://www.nethserver.org - info@nethesis.it
+#
+# This script is part of NethServer.
+#
+#  Derived from  x509watch 0.6.0
+#  (c) 2009-2013 by Robert Scheck <x509watch@robert-scheck.de>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License along
+#  with this program; if not, write to the Free Software Foundation, Inc.,
+#  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+
+use strict;
+use Getopt::Long qw(:config no_ignore_case);
+use File::Find;
+use File::Compare;
+use Fcntl;
+use IPC::Open3;
+use POSIX qw(mktime);
+use Config;
+use JSON;
+use esmith::ConfigDB;
+
+our %certs;
+
+# Default configuration values
+my %config = (
+    deflt_d => ["/etc/pki", "/etc/ssl", "/usr/share/ssl"],
+    openssl => "/usr/bin/openssl",
+    x509ext => ["\.(pem|crt)\$"],
+    exclude => ["\/(cert\.pem|((email|objsign|tls)-)?ca-bundle\.(crt|trust\.crt|pem)|ca-certificates\.crt|ca-bundle.legacy\.crt)\$", "\.((bak|old)\$|drbdlinks\/)", "\/(demo|expired|private)\/"],
+    help    => 0
+    );
+
+# Handle given parameters and options
+GetOptions(
+    "help|?!"       => \$config{help},
+    "version|V!"    => \$config{help}
+    );
+
+my $configDb = esmith::ConfigDB->open_ro() || die("Could not open ConfigDB");
+my $pki = {$configDb->get('pki')->props};
+my $org = {$configDb->get('OrganizationContact')->props};
+
+my $fqdn = join('.', $configDb->get_value('SystemName'), $configDb->get_value('DomainName'));
+my %params = (
+    'ST' => substr($pki->{State} || $org->{State} || 'SomeState', 0, 32),
+    'O' => substr($pki->{Organization} || $org->{Company} || 'SomeOrganization', 0, 64),
+    'OU' => substr($pki->{OrganizationalUnit} || $org->{Department} || 'SomeOrganizationalUnit', 0, 64),
+    'CN' => substr($pki->{CommonName} || 'NethServer', 0, 64),
+    );
+
+my $default_cn =  join(', ', map { sprintf("%s=%s", $_, $params{$_}); } keys %params);
+
+
+# If wished, print help and version information
+if($config{help})
+{
+  print "x509watch 0.6.0, (c) 2009-2013 by Robert Scheck\n";
+  print "This program is free software with ABSOLUTELY NO WARRANTY;\n";
+  print "you may redistribute it under the terms of the GNU General\n";
+  print "Public License version 2 or later.\n\n";
+  print "Usage: x509watch [OPTIONS]\n";
+  print "  -?, --help            Display this help and exit\n";
+  print "  -V, --version         Output version information and exit\n\n";
+  print "Locates soon expiring or already expired SSL certificates.\n";
+  exit(0);
+}
+
+
+foreach my $directory (@{$config{deflt_d}})
+{
+# Check whether directory exists
+  if(-d $directory)
+  {
+    push(@{$config{directories}}, $directory);
+  }
+}
+
+# Check whether given alternative OpenSSL exists
+if(!-x $config{openssl})
+{
+  print "Error: OpenSSL \"$config{openssl}\" does not exist or is not executable!\n";
+  exit(1);
+}
+
+# Walk through all given directories
+if(scalar @{$config{directories}} > 0)
+{
+  find({ wanted => \&wanted, follow => 1, follow_skip => 2 }, @{$config{directories}});
+}
+
+# Walk through all given files
+foreach my $file (@{$config{files}})
+{
+  check($file);
+}
+
+sub wanted
+{
+  # Try to find all certificates
+  if(grep($File::Find::name =~ $_, @{$config{x509ext}}))
+  {
+    # Check whether an exclusion applies
+    if(!grep($File::Find::name =~ $_, @{$config{exclude}}) && !grep($File::Find::name eq $_, @{$config{ignore}}))
+    {
+      check($File::Find::name);
+    }
+  }
+}
+
+sub check
+{
+  my $file = shift;
+
+  # Check whether file is readable
+  if(-r $file && -f $file)
+  {
+    # Open certificate file for later handling
+    my ($month, $day, $year, $valid, $cn, $issuer);
+
+    # Open the OpenSSL process for writing and reading
+    my @lines = `$config{openssl} x509 -noout -text -in '$file'`;
+
+    # Check whether result is successful or unsuccessful
+    if(@lines)
+    {
+      # Walk through each line of the output
+      foreach my $line (@lines)
+      {
+        if($line =~ /Not After : (\S+)\s{1,2}(\d+) \d+:\d+:\d+ (\d+)/)
+        {
+          my %months = ("Jan" => 0, "Feb" => 1, "Mar" => 2, "Apr" => 3,
+              "May" => 4, "Jun" => 5, "Jul" => 6, "Aug" => 7,
+              "Sep" => 8, "Oct" => 9, "Nov" => 10, "Dec" => 11);
+
+          ($month, $day, $year) = ($months{$1} + 1, $2, $3);
+          $valid = mktime(0, 0, 0, $day, $month - 1, $year - 1900, 0, 0);
+        }
+        elsif($line =~ /Subject:.*CN=([^\/\n]+)/)
+        {
+          $cn = $1;
+        }
+        elsif($line =~ /Subject:.*OU=([^\/\n,]+)/ && !defined($cn))
+        {
+          $cn = $1;
+        }
+        elsif($line =~ /Issuer:.*CN=([^\/\n]+)/)
+        {
+          $issuer= $1;
+        }
+      }
+    }
+    else
+    {
+      return;
+    }
+
+    # skip if already defined
+    if (defined($certs{$cn})) {
+      next;
+    }
+
+    # 32 bit perl versions: Work around certificates valid > 2037
+    if($valid == undef)
+    {
+      if($year > 2037 && $Config{ptrsize} == 4)
+      {
+        if(((localtime(time))[5] + 1900) > 2037)
+        {
+          $valid = -1;
+        }
+        else
+        {
+          $valid = 2**31-1;
+        }
+      }
+    }
+
+    my $expired = 0;
+    # Check whether certificate is expiring or expired already
+    if(int(time()) > int($valid))
+    {
+      $expired = 1;
+    }
+
+    if ( "CN=".$cn eq $default_cn) {
+      $file = '/etc/pki/tls/certs/NSRV.crt';
+    }
+    $certs{$cn} = { file => $file, expiration_t => $valid, expired => $expired, issuer => $issuer };
+  }
+}
+
+
+print JSON::encode_json(\%certs);
+print "\n";
