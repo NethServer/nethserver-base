@@ -1,4 +1,8 @@
 #!/bin/bash
 
-# Enable only NethServer repositories
-/sbin/e-smith/eorepo centos-{base,updates} nethserver-{base,updates}
+if [[ -f /etc/yum.repos.d/NethForge.repo ]]; then
+   nethforge=nethforge
+fi
+
+# Enable only NethServer (and NethForge) repositories
+/sbin/e-smith/eorepo centos-{base,updates} nethserver-{base,updates} ${nethforge}
