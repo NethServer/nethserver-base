@@ -1,0 +1,20 @@
+#
+# 20_nethserver_base
+#
+%adm ALL=NOPASSWD: /sbin/e-smith/db, \
+    /sbin/e-smith/signal-event, \
+    /sbin/e-smith/validate, \
+    /sbin/e-smith/pam-authenticate-pw, \
+    /sbin/e-smith/logviewer, \
+    /sbin/e-smith/pkgaction, \
+    /sbin/e-smith/pkginfo, \
+    /usr/libexec/nethserver/read-service-status, \
+    /usr/libexec/nethserver/pki-info, \
+    /usr/libexec/nethserver/sigev-batch, \
+    /usr/libexec/nethserver/admin-todos, \
+    /usr/libexec/nethserver/nic-info, \
+    /usr/libexec/nethserver/control-service, \
+    /usr/bin/yum clean all, \
+    /sbin/service [a-zA-Z0-9_-]* status
+
+

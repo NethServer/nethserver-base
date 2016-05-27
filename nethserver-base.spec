@@ -51,7 +51,9 @@ done
 %install
 rm -rf %{buildroot}
 (cd root   ; find . -depth -not -name '*.orig' -print  | cpio -dump %{buildroot})
-%{genfilelist} %{buildroot} > %{name}-%{version}-%{release}-filelist
+%{genfilelist} %{buildroot} | sed '
+\|^%{_sysconfdir}/sudoers.d/| d
+' > %{name}-%{version}-%{release}-filelist
 
 %files -f %{name}-%{version}-%{release}-filelist
 %defattr(-,root,root)
@@ -60,6 +62,7 @@ rm -rf %{buildroot}
 %ghost %attr(600,root,root) /etc/pki/tls/private/NSRV.key
 %ghost %attr(644,root,root) /etc/pki/tls/certs/NSRV.crt
 %ghost %attr(440,root,root) /etc/sudoers.d/10_nethserver
+%config %attr(440,root,root) %{_sysconfdir}/sudoers.d/20_nethserver_base
 %dir %{_nseventsdir}/%{name}-update
 %dir %{_nsdbconfdir}/configuration
 %dir %{_nsdbconfdir}/networks

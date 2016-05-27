@@ -2,27 +2,7 @@
     #
     # 00adm_commands
     #
-    @adm_commands = qw(
-        /sbin/e-smith/db 
-        /sbin/e-smith/signal-event 
-        /sbin/e-smith/validate 
-        /sbin/e-smith/pam-authenticate-pw
-
-        /sbin/e-smith/logviewer
-
-        /sbin/e-smith/pkgaction 
-        /sbin/e-smith/pkginfo
-
-        /usr/libexec/nethserver/read-service-status
-        /usr/libexec/nethserver/pki-info
-        /usr/libexec/nethserver/sigev-batch
-        /usr/libexec/nethserver/admin-todos
-        /usr/libexec/nethserver/nic-info
-        /usr/libexec/nethserver/control-service
-    );
-
-    push @adm_commands, "/usr/bin/yum clean all";
-    push @adm_commands, "/sbin/service [a-zA-Z0-9_-]* status";
+    @adm_commands = ();
 
     '';
 }
