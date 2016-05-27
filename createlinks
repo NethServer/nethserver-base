@@ -48,7 +48,7 @@ event_templates('nethserver-base-update', qw(
     /etc/shells
     /etc/logviewer.conf
     /etc/logrotate.conf
-    /etc/letsencrypt.sh/config.sh
+    /etc/backup-config.d/nethserver-certificates.include
 ));
 
 #--------------------------------------------------
@@ -121,7 +121,7 @@ event_actions('system-init', qw(
 event_actions('certificate-update', qw(
     nethserver-generate-certificate 02
 ));
-templates2events('/etc/letsencrypt.sh/config.sh', 'certificate-update');
+templates2events('/etc/backup-config.d/nethserver-certificates.include', 'certificate-update');
 
 #
 # profile-modify event
@@ -232,5 +232,7 @@ $event = "certificate-upload";
 event_actions($event, qw(
     nethserver-certificate-upload	15
 ));
+
+templates2events('/etc/backup-config.d/nethserver-certificates.include', $event);
 
 exit 0;
