@@ -27,20 +27,10 @@ pki_info=/usr/libexec/nethserver/pki-info
 alert=10
 
 # Have custom certificate?
-cert_custom=$(/sbin/e-smith/config getprop pki CrtFile)
-cert=${cert_custom:-/etc/pki/tls/certs/NSRV.crt}
+cert=/etc/pki/tls/certs/NSRV.crt
 
 # Certificate expire timestamp
 exp=$(${pki_info} -e ${cert})
-
-# Stale, if we are in alert period
-is_stale () {
-    perl -MDate::Parse -e '
-$expired = time() > str2time($ARGV[0]);
-$stale = str2time($ARGV[0]) < (time() + ($ARGV[1] * 24 * 3600));
-exit($stale && ! $expired ? 0 : 1);
-' -- "${exp}" "${alert}"
-}
 
 # Renew, if cert is stale and not custom
 must_renew() {
@@ -48,7 +38,7 @@ must_renew() {
 $oneday = str2time($ARGV[0]) < (time() + (24 * 3600));
 $auto = ! $ARGV[1];
 exit($oneday && $auto ? 0 : 1);
-' -- "${exp}" "${cert_custom}"
+' -- "${exp}" "${cert}"
 }
 
 #
@@ -63,15 +53,4 @@ if must_renew; then
 	${pki_info} -s ${cert} 2>&1
     } | mail -s "$(hostname) certificate has been generated" root@localhost
     echo "[WARNING] $(hostname) certificate has been generated" | logger -t "${program}" -p user.warn
-
-elif is_stale; then
-    {
-	echo "$(hostname) certificate "
-	echo "${cert}"
-	echo "is going to expire on ${exp}"
-	echo ""
-	${pki_info} -s ${cert} 2>&1
-    } | mail -s "$(hostname) certificate is going to expire" root@localhost
-    echo "[WARNING] $(hostname) certificate is going to expire" | logger -t "${program}" -p user.warn
 fi
-
