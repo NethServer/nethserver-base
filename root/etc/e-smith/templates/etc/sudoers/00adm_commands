@@ -8,9 +8,6 @@
         /sbin/e-smith/validate 
         /sbin/e-smith/pam-authenticate-pw
 
-        /sbin/poweroff
-        /sbin/reboot
-
         /sbin/e-smith/logviewer
 
         /sbin/e-smith/pkgaction 
