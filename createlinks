@@ -222,4 +222,15 @@ validator_actions('network-create', qw(
                   ));
 
 
+
+#--------------------------------------------------
+# actions for certificate-upload event
+#--------------------------------------------------
+
+$event = "certificate-upload";
+
+event_actions($event, qw(
+    nethserver-certificate-upload	15
+));
+
 exit 0;
