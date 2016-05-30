@@ -48,7 +48,6 @@ nethserver_config() {
                 write_cache
                 /sbin/e-smith/db networks setprop ${interface} ipaddr ${new_ip_address}
                 /sbin/e-smith/db networks setprop ${interface} netmask ${new_subnet_mask}
-                /sbin/e-smith/signal-event interface-update
             fi
         fi
     fi
