@@ -1,0 +1,75 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2013 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+program=$(basename $0)
+pki_info=/usr/libexec/nethserver/pki-info
+
+# 10 days advance alert
+alert=10
+
+
+certs=$(perl -MJSON -e 'my $certs = decode_json(`/usr/libexec/nethserver/cert-list`); foreach my $cn ( keys %{$certs}) { print ${$certs}{$cn}{'file'}."\n"; }')
+
+for cert in $certs;
+do
+    # Certificate expire timestamp
+    exp=$(${pki_info} -e ${cert})
+
+    perl -MDate::Parse -e '$expired = time() > str2time($ARGV[0]); exit($expired ? 1 : 0);' -- "${exp}"
+    expired=$?
+
+    if [ $expired -gt 0 ]; then
+        #
+        # Send mail to root user
+        #
+        {
+            echo "$(hostname) certificate "
+            echo "${cert}"
+            echo "is EXPIRED"
+            echo ""
+            ${pki_info} -s ${cert} 2>&1
+        } | mail -s "$(hostname) certificate is expired" root@localhost
+        echo "[WARNING] $(hostname) certificate is expired" | logger -t "${program}" -p user.warn
+        continue # do not send both expired and stale notifications
+    fi
+
+    perl -MDate::Parse -e '$stale = str2time($ARGV[0]) < (time() + ($ARGV[1] * 24 * 3600)); exit($stale ? 1 : 0)' -- "${exp}" "${alert}"
+    stale=$?
+
+    if [ $stale -gt 0 ] ; then
+        #
+        # Send mail to root user
+        #
+        {
+            echo "$(hostname) certificate "
+            echo "${cert}"
+            echo "is going to expire on ${exp}"
+            echo ""
+            ${pki_info} -s ${cert} 2>&1
+        } | mail -s "$(hostname) certificate is going to expire" root@localhost
+        echo "[WARNING] $(hostname) certificate is going to expire" | logger -t "${program}" -p user.warn
+    fi
+
+done
+
+

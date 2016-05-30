@@ -1,0 +1,61 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2016 Nethesis S.r.l.
+# http://www.nethserver.org - support@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+EVENT=$1
+NAME=$2
+CRT=$3
+KEY=$4
+CHAIN=$5
+DST=/etc/pki/tls/
+
+if [ -z $NAME ]; then
+    echo "[ERROR]: invalid name for certificate"
+    exit 1
+fi
+
+openssl x509 -in $CRT -text -noout &>/dev/null
+if [ $? -gt 0 ]; then
+    echo "[ERROR]: invalid certificate '$CRT'"
+    exit 1
+fi
+
+openssl rsa -in $KEY -text -noout &>/dev/null
+if [ $? -gt 0 ]; then
+    echo "[ERROR]: invalid private key '$KEY'"
+    exit 1
+fi
+
+mv $CRT $DST/certs/$NAME.crt
+chmod 0644 $DST/certs/$NAME.crt
+mv $KEY $DST/private/$NAME.key
+chmod 0600 $DST/private/$NAME.key
+
+if [ ! -z $CHAIN ]; then
+    openssl x509 -in $CHAIN -text -noout &>/dev/null
+    if [ $? -gt 0 ]; then
+        echo "[ERROR]: invalid chain file '$CHAIN'"
+        exit 1
+    fi
+    mv $CHAIN "$DST/certs/$NAME"-chain.crt
+    chmod 0644 "$DST/certs/$NAME"-chain.crt
+fi
