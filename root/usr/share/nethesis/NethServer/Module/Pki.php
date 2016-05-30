@@ -25,7 +25,7 @@ namespace NethServer\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.6
  */
-class Pki extends \Nethgui\Controller\CompositeController
+class Pki extends \Nethgui\Controller\TableController
 {
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
@@ -35,8 +35,29 @@ class Pki extends \Nethgui\Controller\CompositeController
 
     public function initialize()
     {
-        parent::initialize();
-        $this->addChild(new \NethServer\Module\Pki\Show());
+        
+        $adapter = new \NethServer\Module\Pki\CertAdapter($this->getPlatform());
+        $this->setTableAdapter($adapter);
+        $this->setColumns(array(
+            'Key',
+            'Issuer',
+            'ExpireDate',
+            'Actions'
+        ));
+        parent::initialize();        
+        $this->addRowAction(new \NethServer\Module\Pki\Show());
+        $this->addRowAction(new \NethServer\Module\Pki\SetDefault());
         $this->addChild(new \NethServer\Module\Pki\Generate());
+        $this->addChild(new \NethServer\Module\Pki\GenerateLe());
+        $this->addChild(new \NethServer\Module\Pki\Upload());
+        
+        
+    }
+    public function prepareView(\Nethgui\View\ViewInterface $view)
+    {
+        parent::prepareView($view);
+        if(is_object($view['read'])) {
+            $view['read']->setTemplate('NethServer\Template\Pki\Index');
+        }
     }
 }

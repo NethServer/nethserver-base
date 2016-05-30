@@ -25,13 +25,25 @@ namespace NethServer\Module\Pki;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.6
  */
-class Show extends \Nethgui\Controller\AbstractController
+class Show extends \Nethgui\Controller\Table\RowAbstractAction
 {
+
+    public function initialize()
+    {
+        parent::initialize();
+        $parameterSchema = array(
+            array('name', FALSE, \Nethgui\Controller\Table\Modify::KEY),
+            array('Description', FALSE, \Nethgui\Controller\Table\Modify::FIELD),
+        );
+        $this->setSchema($parameterSchema);
+    }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
-
+        if(isset($this->parameters['name'])) {
+            $view['SetDefault'] = $view->getModuleUrl('../SetDefault/' . $this->parameters['name']);
+        }
         $view['x509text'] = $this->getX509text();
         $view['GenerateLink'] = $view->getModuleUrl('../Generate');
         

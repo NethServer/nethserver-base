@@ -27,7 +27,7 @@ namespace NethServer\Module\Pki;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.6
  */
-class Generate extends \Nethgui\Controller\AbstractController
+class Generate extends \Nethgui\Controller\Table\AbstractAction
 {
 
     public function initialize()
