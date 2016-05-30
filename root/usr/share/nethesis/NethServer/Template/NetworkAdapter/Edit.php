@@ -10,8 +10,9 @@ echo $view->fieldsetSwitch('bootproto', 'none', $view::FIELDSETSWITCH_EXPANDABLE
     ->insert($view->textInput('netmask'))
     ->insert($view->textInput('gateway'));
 
-echo $view->textInput('ProviderName')->setAttribute('placeholder', $view['defaultProviderName']);
-echo $view->textInput('Weight')->setAttribute('placeholder', $view['defaultWeight']);
+echo $view->fieldset()->setAttribute('template', $T('multiwan_label'))
+     ->insert($view->textInput('ProviderName')->setAttribute('placeholder', $view['defaultProviderName']))
+     ->insert($view->textInput('Weight')->setAttribute('placeholder', $view['defaultWeight']));
 
 echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_CANCEL | $view::BUTTON_HELP);
 

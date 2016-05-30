@@ -32,18 +32,15 @@ The table shows the list of physical (eth, wlan, ...) and logical
    Release the role assigned to the device.
 
 
-Enable Multi WAN
-================
+Multi WAN
+=========
 
-Create or edit the configuration of providers.
+Configuration for multiple Internet connections.
 
-Name
+Link name
      A name to identify the connection (ISP). Max 5 characters.
 
-Enable Multi WAN
-     Enable or disable the provider for Mutli WAN.
-
-Weight
+Link weight
      The "weight" of the connection.
      Traffic will be routed proportionally to the weight: higher weight means more traffic.
      A provider with a weight of 100 will receive twice the traffic of one with weight 50.
