@@ -32,9 +32,27 @@ class SetDefault extends \Nethgui\Controller\Table\RowAbstractAction
         parent::initialize();
         $parameterSchema = array(
             array('name', FALSE, \Nethgui\Controller\Table\Modify::KEY),
-            array('Description', FALSE, \Nethgui\Controller\Table\Modify::FIELD),
         );
         $this->setSchema($parameterSchema);
     }
+    public function process()
+    {
+        if ( $this->getRequest()->isMutation()) {
+            $db = $this->getPlatform()->getDatabase('configuration');
+            $name = \Nethgui\array_end($this->getRequest()->getPath());
+            $certificates = json_decode($this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/cert-list')->getOutput(), TRUE);
+            foreach ($certificates as $key => $props) {
+                 if ($key == $name) {
+                      $db->setProp('pki', array('CrtFile' => $props['file'], 'KeyFile' => $props['key'], 'ChainFile' => $props['chain']));
+                      $this->getPlatform()->signalEvent('certificate-update &');
+                 }
+            }
+        }
+    }
 
+    public function prepareView(\Nethgui\View\ViewInterface $view)
+    {
+        parent::prepareView($view);
+        $view['cert'] = \Nethgui\array_end($this->getRequest()->getPath());
+    }
 }
