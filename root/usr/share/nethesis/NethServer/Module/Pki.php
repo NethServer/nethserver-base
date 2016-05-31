@@ -61,4 +61,22 @@ class Pki extends \Nethgui\Controller\TableController
             $view['read']->setTemplate('NethServer\Template\Pki\Index');
         }
     }
+
+    public function prepareViewForColumnDefault(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        if ($values['Default']) {
+            return '<i class="fa fa-check" aria-hidden="true"></i>';
+        }
+   }
+
+
+    public function prepareViewForColumnActions(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        $cellView = $action->prepareViewForColumnActions($view, $key, $values, $rowMetadata);
+        if ($values['Default']) {
+            unset($cellView['SetDefault']);
+        }
+        return $cellView;
+   }
+
 }
