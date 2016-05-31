@@ -152,7 +152,7 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
         $isLogicalDevice = in_array($values['type'], array('alias', 'bridge', 'bond', 'vlan', 'xdsl'));
         $isPhysicalInterface = in_array($values['type'], array('ethernet'));
         $isEditable = ! in_array($values['type'], array('alias', 'xdsl')) && ! in_array($role, array('slave', 'bridged', 'pppoe'));
-        $canHaveIpAlias = $isPresent && $values['type'] !== 'alias' && ! in_array($role, array('slave', 'bridged', 'pppoe'));
+        $canHaveIpAlias = (isset($values['role']) && $values['role']) && $values['type'] !== 'alias' && ! in_array($role, array('slave', 'bridged', 'pppoe'));
         $isXdsl = $values['type'] === 'xdsl';
 
         if ( ! $isLogicalDevice) {
