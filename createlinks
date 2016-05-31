@@ -241,4 +241,16 @@ event_actions($event, qw(
 
 templates2events('/etc/backup-config.d/nethserver-certificates.include', $event);
 
+#--------------------------------------------------
+# validate pem certificate
+#--------------------------------------------------
+validator_actions('pem-certificate',
+                  'pem-certificate' => '10');
+
+#--------------------------------------------------
+# validate rsa key
+#--------------------------------------------------
+validator_actions('rsa-key',
+                  'rsa-key' => '10');
+
 exit 0;

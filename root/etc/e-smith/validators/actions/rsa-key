@@ -1,0 +1,5 @@
+#!/bin/bash
+
+FILE=$1
+
+openssl rsa -in $FILE -text -noout &>/dev/null
