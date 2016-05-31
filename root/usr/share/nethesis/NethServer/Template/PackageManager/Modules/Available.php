@@ -103,9 +103,9 @@ $view->includeCss("
 .${groupsTarget} .FieldsetSwitch.available.changed { border-left-color: green }
 .${groupsTarget} .FieldsetSwitch .details, .${groupsTarget} .FieldsetSwitch .opackages_selected.multiple { margin-top: 0.5em }
 #${categoriesId} { text-align: center }
-#${categoriesId} label { font-weight: bold; letter-spacing: 1px; background: #4D90FE url('${cssUrl}/img/blue-inset-normal.png') repeat-x left bottom; border: 1px solid #3079ED; color: white }
-#${categoriesId} label.ui-state-active { opacity: 0.8 }
-#${categoriesId} label.ui-state-hover {background-image: url('${cssUrl}/img/blue-inset-hover.png') }
+#${categoriesId} label { font-weight: bold; letter-spacing: 1px; background: #00A1DE; border: 1px solid #00729D; color: white }
+#${categoriesId} label.ui-state-active { opacity: 0.7 }
+#${categoriesId} label.ui-state-hover { opacity: 0.7 }
 #${categoriesId} label.ui-corner-left { border-top-left-radius: 9px; border-bottom-left-radius: 9px }
 #${categoriesId} label.ui-corner-right { border-top-right-radius: 9px; border-bottom-right-radius: 9px }
 

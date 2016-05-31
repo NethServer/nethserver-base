@@ -1,40 +1,4 @@
 <?php
-$view->includeCSS("
-  div.app-item {
-    margin: 5px;
-    border: 2px solid #ccc;
-    width: 300px;
-    height: 80px;
-    float: left;
-  }
-  h2.app-title, .app-item .app-title {
-    font-size: 120%;
-    font-weight: bold;
-    padding: 10px;
-    background: #ccc;
-  }
-  .app-item .app-text {
-      height: 15px;
-  }
-  .app-item .ButtonContainer {
-  }
-  .app-item .Buttonlist {
-       float: right;
-       margin-right: 20px;
-   }
-  .app-item .button.link.ui-state-hover:first-child,
-  .app-item .button.link:first-child {
-    color: white;
-    border: 1px solid #3079ED;
-    text-transform: uppercase;
-    background: #4D90FE;
-    padding: 10px;
-    text-decoration: none;
-  }
-  .app-reset {
-    clear: both;
-  }
-");
 
 foreach($view->getModule()->getChildren() as $child) {
     $info = $child->getInfo();
