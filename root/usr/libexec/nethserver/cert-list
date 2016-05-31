@@ -40,10 +40,10 @@ our %certs;
 
 # Default configuration values
 my %config = (
-    deflt_d => ["/etc/pki", "/etc/ssl", "/usr/share/ssl"],
+    deflt_d => ["/etc/pki", "/etc/letsencrypt/live"],
     openssl => "/usr/bin/openssl",
     x509ext => ["\.(pem|crt)\$"],
-    exclude => ["\/(cert\.pem|((email|objsign|tls)-)?ca-bundle\.(crt|trust\.crt|pem)|ca-certificates\.crt|ca-bundle.legacy\.crt|(.*)\-chain\.crt)\$", "\.((bak|old)\$|drbdlinks\/)", "\/(demo|expired|private)\/"],
+    exclude => ["\/(cert\.pem|((email|objsign|tls)-)?ca-bundle\.(crt|trust\.crt|pem)|ca-certificates\.crt|ca-bundle.legacy\.crt|(.*)\-chain\.crt)|chain\.pem|fullchain\.pem|privkey\.pem\$", "\.((bak|old)\$|drbdlinks\/)", "\/(demo|expired|private)\/"],
     help    => 0
     );
 
@@ -138,7 +138,7 @@ sub check
     my ($month, $day, $year, $valid, $cn, $issuer);
 
     # Open the OpenSSL process for writing and reading
-    my @lines = `$config{openssl} x509 -noout -text -in '$file'`;
+    my @lines = `$config{openssl} x509 -noout -text -in '$file' 2>/dev/null`;
 
     # Check whether result is successful or unsuccessful
     if(@lines)
