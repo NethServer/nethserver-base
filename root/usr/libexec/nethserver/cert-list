@@ -28,6 +28,7 @@ use strict;
 use Getopt::Long qw(:config no_ignore_case);
 use File::Find;
 use File::Compare;
+use File::Basename;
 use Fcntl;
 use IPC::Open3;
 use POSIX qw(mktime);
@@ -42,7 +43,7 @@ my %config = (
     deflt_d => ["/etc/pki", "/etc/ssl", "/usr/share/ssl"],
     openssl => "/usr/bin/openssl",
     x509ext => ["\.(pem|crt)\$"],
-    exclude => ["\/(cert\.pem|((email|objsign|tls)-)?ca-bundle\.(crt|trust\.crt|pem)|ca-certificates\.crt|ca-bundle.legacy\.crt)\$", "\.((bak|old)\$|drbdlinks\/)", "\/(demo|expired|private)\/"],
+    exclude => ["\/(cert\.pem|((email|objsign|tls)-)?ca-bundle\.(crt|trust\.crt|pem)|ca-certificates\.crt|ca-bundle.legacy\.crt|(.*)\-chain\.crt)\$", "\.((bak|old)\$|drbdlinks\/)", "\/(demo|expired|private)\/"],
     help    => 0
     );
 
@@ -126,6 +127,8 @@ sub wanted
 sub check
 {
   my $file = shift;
+  my $key = '';
+  my $chain = '';
 
   # Check whether file is readable
   if(-r $file && -f $file)
@@ -200,8 +203,16 @@ sub check
 
     if ( "CN=".$cn eq $default_cn) {
       $file = '/etc/pki/tls/certs/NSRV.crt';
+      $key = '/etc/pki/tls/private/NSRV.key';
     }
-    $certs{$cn} = { file => $file, expiration_t => $valid, expired => $expired, issuer => $issuer };
+    my ($n, $path, $ext) = fileparse($file, qw(crt));
+    if ( -f "/etc/pki/tls/private/$n.key" ) {
+        $key = "/etc/pki/tls/private/$n.key";
+    }
+    if (-f "/etc/pki/tls/certs/$n-chain.crt") {
+        $chain = "/etc/pki/tls/certs/$n-chain.crt";
+    }
+    $certs{$cn} = { file => $file, expiration_t => $valid, expired => $expired, issuer => $issuer, key => $key, chain => $chain };
   }
 }
 
