@@ -56,6 +56,7 @@ GetOptions(
 my $configDb = esmith::ConfigDB->open_ro() || die("Could not open ConfigDB");
 my $pki = {$configDb->get('pki')->props};
 my $org = {$configDb->get('OrganizationContact')->props};
+my $currentDefault = $pki->{'CrtFile'} || '/etc/pki/tls/certs/NSRV.crt';
 
 my $fqdn = join('.', $configDb->get_value('SystemName'), $configDb->get_value('DomainName'));
 my %params = (
@@ -195,6 +196,7 @@ sub check
     }
 
     my $expired = 0;
+    my $default = 0;
     # Check whether certificate is expiring or expired already
     if(int(time()) > int($valid))
     {
@@ -212,7 +214,10 @@ sub check
     if (-f "/etc/pki/tls/certs/$n-chain.crt") {
         $chain = "/etc/pki/tls/certs/$n-chain.crt";
     }
-    $certs{$cn} = { file => $file, expiration_t => $valid, expired => $expired, issuer => $issuer, key => $key, chain => $chain };
+    if ( $file eq $currentDefault) {
+        $default = 1;
+    }
+    $certs{$cn} = { file => $file, expiration_t => $valid, expired => $expired, issuer => $issuer, key => $key, chain => $chain, default => $default };
   }
 }
 

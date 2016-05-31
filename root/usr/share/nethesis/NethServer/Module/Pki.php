@@ -42,6 +42,7 @@ class Pki extends \Nethgui\Controller\TableController
             'Key',
             'Issuer',
             'ExpireDate',
+            'Default',
             'Actions'
         ));
         parent::initialize();        

@@ -49,7 +49,8 @@ class CertAdapter extends \Nethgui\Adapter\LazyLoaderAdapter
             $db[$k] = array(
                 'Name' => $k,
                 'Issuer' => $v['issuer'],
-                'ExpireDate' => strftime('%Y-%m-%d', $v['expiration_t'])
+                'ExpireDate' => strftime('%Y-%m-%d', $v['expiration_t']),
+                'Default' => $v['default']
             );
         }
 
