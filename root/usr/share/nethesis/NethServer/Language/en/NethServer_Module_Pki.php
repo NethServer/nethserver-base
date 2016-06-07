@@ -20,7 +20,7 @@ $L['CertificateDuration_label'] = 'Certificate validity (days)';
 $L['valid_hostname_instance'] = '"${0}" is an invalid host name';
 $L['valid_x509_field'] = 'Must not contain "," and "/"';
 
-$L['Generate_label'] = 'New CA certificate';
+$L['Generate_label'] = 'Edit CA certificate';
 $L['Upload_label'] = 'New certificate upload';
 $L['GenerateLe_label'] = 'New Letsencrypt certificate';
 
