@@ -40,3 +40,6 @@ $L['Confirm_label'] = 'Confirm';
 $L['default_cert_label'] = 'Set selected certificate as default?';
 $L['certificate_label'] = 'Certificate';
 
+$L['LetsEncrypt_label'] = 'Enable Let\'s Encrypt';
+$L['LetsEncryptMail_label'] = 'Notification email';
+$L['LetsEncryptDomains_label'] = 'Domains';
