@@ -26,7 +26,7 @@ use Nethgui\System\PlatformInterface as Validate;
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class GenerateLe extends \Nethgui\Controller\Collection\AbstractAction
+class GenerateLe extends \Nethgui\Controller\Table\AbstractAction
 {
 
     public function initialize()

@@ -24,15 +24,40 @@ namespace NethServer\Module\Pki;
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Upload extends \Nethgui\Controller\Collection\AbstractAction
+class Upload extends \Nethgui\Controller\Table\AbstractAction
 {
 
-    public function prepareView(\Nethgui\View\ViewInterface $view)
+    public function initialize()
     {
-        parent::prepareView($view);
+        parent::initialize();
+        $this->declareParameter('UploadName', \Nethgui\System\PlatformInterface::HOSTNAME_SIMPLE);
+    }
 
-        if ($this->getRequest()->isValidated()) {
-            $view->getCommandList()->show();
+    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
+    {
+        parent::validate($report);
+
+        if( ! $this->getRequest()->isMutation()) {
+            return;
+        }
+
+        $crtValidator = $this->createValidator()->platform('pem-certificate');
+        $keyValidator = $this->createValidator()->platform('rsa-key');
+
+        if( ! $crtValidator->evaluate($_FILES['crt']['tmp_name'])) {
+            $report->addValidationError($this, 'UploadCrt', $crtValidator);
+        }
+
+        if( ! $keyValidator->evaluate($_FILES['key']['tmp_name'])) {
+            $report->addValidationError($this, 'UploadKey', $keyValidator);
+        }
+
+    }
+
+    public function process()
+    {
+        if ($this->getRequest()->isMutation()) {
+            $this->getPlatform()->signalEvent('certificate-upload', array($this->parameters['UploadName'], $_FILES['crt']['tmp_name'], $_FILES['key']['tmp_name'], $_FILES['chain']['tmp_name']));
         }
     }
 

@@ -45,17 +45,17 @@ if [ $? -gt 0 ]; then
     exit 1
 fi
 
-mv $CRT $DST/certs/$NAME.crt
+cp -f $CRT $DST/certs/$NAME.crt
 chmod 0644 $DST/certs/$NAME.crt
-mv $KEY $DST/private/$NAME.key
+cp -f $KEY $DST/private/$NAME.key
 chmod 0600 $DST/private/$NAME.key
 
-if [ ! -z $CHAIN ]; then
+if [[ -n "$CHAIN" && -s "$CHAIN" ]]; then
     openssl x509 -in $CHAIN -text -noout &>/dev/null
     if [ $? -gt 0 ]; then
         echo "[ERROR]: invalid chain file '$CHAIN'"
         exit 1
     fi
-    mv $CHAIN "$DST/certs/$NAME"-chain.crt
+    cp -f $CHAIN "$DST/certs/$NAME"-chain.crt
     chmod 0644 "$DST/certs/$NAME"-chain.crt
 fi

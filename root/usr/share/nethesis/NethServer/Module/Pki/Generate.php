@@ -127,7 +127,6 @@ class Generate extends \Nethgui\Controller\Table\AbstractAction
 
     public function process()
     {
-        parent::process();
         if ($this->getRequest()->isMutation()) {
             $this->getPlatform()->signalEvent('certificate-update &');
         }
@@ -136,12 +135,7 @@ class Generate extends \Nethgui\Controller\Table\AbstractAction
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
-
         $view->copyFrom($this->getCertDefaults());
-
-        if ($this->getRequest()->isValidated()) {
-            $view->getCommandList()->show();
-        }
     }
 
 }

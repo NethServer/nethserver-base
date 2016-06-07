@@ -43,3 +43,11 @@ $L['certificate_label'] = 'Certificate';
 $L['LetsEncrypt_label'] = 'Enable Let\'s Encrypt';
 $L['LetsEncryptMail_label'] = 'Notification email';
 $L['LetsEncryptDomains_label'] = 'Domains';
+
+$L['UploadCrt_label'] = 'Certificate';
+$L['UploadKey_label'] = 'Private key';
+$L['UploadChain_label'] = 'Chain file';
+$L['UploadName_label'] = 'Destination file name prefix';
+
+$L['valid_platform,pem-certificate,pem-certificate,1'] = 'X.509 certificate';
+$L['valid_platform,rsa-key,rsa-key,1'] = 'Private RSA key';
