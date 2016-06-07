@@ -52,6 +52,10 @@ class Upload extends \Nethgui\Controller\Table\AbstractAction
             $report->addValidationError($this, 'UploadKey', $keyValidator);
         }
 
+        if(file_exists(sprintf('/etc/pki/tls/certs/%s.crt', $this->parameters['UploadName']))) {
+            $report->addValidationErrorMessage($this, 'UploadName', 'vaild_UploadName_file_extists');
+        }
+
     }
 
     public function process()

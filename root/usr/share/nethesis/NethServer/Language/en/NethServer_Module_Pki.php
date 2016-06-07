@@ -51,3 +51,5 @@ $L['UploadName_label'] = 'Destination file name prefix';
 
 $L['valid_platform,pem-certificate,pem-certificate,1'] = 'X.509 certificate';
 $L['valid_platform,rsa-key,rsa-key,1'] = 'Private RSA key';
+
+$L['vaild_UploadName_file_extists'] = 'The file already exists';
