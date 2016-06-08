@@ -1,6 +1,6 @@
 <?php
 /* @var $view \Nethgui\Renderer\Xhtml */
-echo $view->header()->setAttribute('template', $T('Pki_Show_header'));
+echo $view->header('name')->setAttribute('template', $T('Show_header'));
 
 echo $view->textLabel('x509text')->setAttribute('class', 'labeled-control x509text ui-corner-all')->setAttribute('tag', 'div');
 
