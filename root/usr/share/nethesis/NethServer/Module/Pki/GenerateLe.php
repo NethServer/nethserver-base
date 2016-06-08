@@ -33,9 +33,9 @@ class GenerateLe extends \Nethgui\Controller\Table\AbstractAction
     {
 
         $domainsAdapter = $this->getPlatform()->getMapAdapter(array($this, 'readDomains'), array($this, 'writeDomains'), array());
-
+        $mailValidator = $this->createValidator()->orValidator($this->createValidator(Validate::EMAIL), $this->createValidator(Validate::EMPTYSTRING));
         parent::initialize();
-        $this->declareParameter('LetsEncryptMail', Validate::EMAIL, array('configuration', 'pki', 'LetsEncryptMail'));
+        $this->declareParameter('LetsEncryptMail', $mailValidator, array('configuration', 'pki', 'LetsEncryptMail'));
         $this->declareParameter('LetsEncryptDomains', Validate::ANYTHING,$domainsAdapter);
     }
 
