@@ -94,6 +94,9 @@ class GenerateLe extends \Nethgui\Controller\AbstractController
 
         if ($this->getRequest()->isValidated()) {
             $view->getCommandList()->show();
+            if($view['LetsEncryptDomains'] === '') {
+                $view['LetsEncryptDomains'] = \gethostname();
+            }
         }
     }
 
