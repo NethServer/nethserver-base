@@ -117,3 +117,4 @@ $L['red_label'] = 'Internet (red)';
 $L['multiwan_label'] = 'Multi WAN';
 $L['Weight_label'] = 'Link weight';
 $L['ProviderName_label'] = 'Link name';
+$L['UpstreamProxy_label'] = 'Configure proxy';
