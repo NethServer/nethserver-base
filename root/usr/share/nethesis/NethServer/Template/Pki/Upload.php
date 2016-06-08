@@ -27,3 +27,19 @@ echo $view->buttonList()
 ;
 
 echo "</form>";
+
+$idView = $view->getUniqueId();
+$idUploadName = $view->getUniqueId('UploadName');
+
+$view->includeJavascript("
+(function ( $ ) {
+    var formTag = $('#{$idView} form');
+    var uploadNameInput = $('#{$idUploadName}');
+    $('#{$idCrt}').on('change', function (e) {
+        if( ! uploadNameInput.val()) {
+            var name = (new FormData(formTag[0])).get('crt').name;
+            uploadNameInput.val(name.replace(/\..*\$/, ''));
+        }
+    });
+} ( jQuery ));
+");
