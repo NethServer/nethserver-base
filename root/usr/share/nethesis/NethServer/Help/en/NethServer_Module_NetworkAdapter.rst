@@ -31,6 +31,11 @@ The table shows the list of physical (eth, wlan, ...) and logical
 
    Release the role assigned to the device.
 
+:guilabel:`Proxy settings` button
+
+   Configure an upstrem proxy.
+   This configuration is used from YUM and Squid (if installed).
+
 
 Multi WAN
 =========
@@ -48,3 +53,21 @@ Link weight
      When using active-backup mode, the weight determines the use of the line.
      If the first provider has weight 100 and the second has weight 50,
      the traffic is always sent to the first provider. The second one will be used only if first provider goes down.
+
+Upstream proxy
+==============
+
+Configuration of upstream HTTP/HTTPS proxy server.
+
+HTTP(S) proxy
+    Host name or IP address of the upstream proxy server.
+
+Port
+    Port of the the upstream proxy server.
+
+User name
+    If the upstream proxy is authenticated, enter a user name
+
+Password
+    If the upstream proxy is authenticated, enter a password
+
