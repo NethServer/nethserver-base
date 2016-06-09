@@ -40,11 +40,11 @@ our %certs;
 
 # Default configuration values
 my %config = (
-    deflt_d => ["/etc/pki", "/etc/letsencrypt/live"],
+    deflt_d => ["/etc/pki/tls/certs", "/etc/letsencrypt/live"],
     openssl => "/usr/bin/openssl",
     x509ext => ["\.(pem|crt)\$"],
     ignore  => [],
-    exclude => ["\/(cert\.pem|((email|objsign|tls)-)?ca-bundle\.(crt|trust\.crt|pem)|ca-certificates\.crt|ca-bundle.legacy\.crt|(.*)\-chain\.crt)|chain\.pem|fullchain\.pem|privkey\.pem\$", "\.((bak|old)\$|drbdlinks\/)", "\/(demo|expired|private)\/"],
+    exclude => ["\/(((email|objsign|tls)-)?ca-bundle\.(crt|trust\.crt|pem)|ca-certificates\.crt|ca-bundle.legacy\.crt|(.*)\-chain\.crt)|chain\.pem|fullchain\.pem|privkey\.pem\$", "\.((bak|old)\$|drbdlinks\/)", "\/(demo|expired|private)\/"],
     help    => 0
     );
 
@@ -194,7 +194,14 @@ sub check
     }
 
     my ($n, $path, $ext) = fileparse($file, qw(.crt));
-    $key = "/etc/pki/tls/private/$n.key";
+    if($path =~ m|^/etc/pki/tls/certs|) {
+        $key = "/etc/pki/tls/private/$n.key";
+    } elsif($path =~ m|^/etc/letsencrypt/live|) {
+        $key = $path . "privkey.pem";
+    } else {
+        $key = undef;
+    }
+
     if ( ! -f $key ) {
         # skip certificate if the private key file is not where we expect
         return;
