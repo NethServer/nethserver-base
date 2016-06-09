@@ -1,0 +1,17 @@
+{
+    my $proxy_host = $proxy{host} || '';
+    my $proxy_port = $proxy{port} || '3128';
+    my $proxy_user = $proxy{user} || '';
+    my $proxy_pass = $proxy{password} || '';
+
+    $OUT = '';
+    if (! $proxy_host eq ''){
+        $OUT .= "http_proxy=\"http://";
+        if (! $proxy_user eq '' && ! $proxy_pass eq ''){
+            $OUT .= $proxy_user.':'.$proxy_pass.'@';
+        }
+        $OUT .= "$proxy_host:$proxy_port\"\n";
+        $OUT .= "export http_proxy\n";
+    }
+}
+
