@@ -2,13 +2,8 @@
     use JSON;
     use File::Basename;
     my $certs = decode_json(`/usr/libexec/nethserver/cert-list`);
-    foreach my $cn ( keys %{$certs}) {
-         my $crt = ${$certs}{$cn}{'file'};
-         my ($name, $dir, $ext) = fileparse($crt, '.crt');
-         my $key = "/etc/pki/tls/private/$name.key";
-         $OUT .= $crt."\n";
-         if ( -f $key) {
-             $OUT .= $key."\n";
-         }
+    foreach my $file ( keys %{$certs}) {
+         $OUT .= "$file\n";
+         $OUT .=  ${$certs}{$file}{'key'}."\n";
     }
 }
