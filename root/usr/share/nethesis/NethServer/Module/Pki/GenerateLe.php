@@ -100,4 +100,8 @@ class GenerateLe extends \Nethgui\Controller\AbstractController
         }
     }
 
+    public function nextPath()
+    {
+        return $this->getRequest()->isMutation() ? 'read' : $this->getIdentifier();
+    }
 }
