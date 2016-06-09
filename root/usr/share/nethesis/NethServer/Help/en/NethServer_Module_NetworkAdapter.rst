@@ -54,7 +54,7 @@ Link weight
      If the first provider has weight 100 and the second has weight 50,
      the traffic is always sent to the first provider. The second one will be used only if first provider goes down.
 
-Upstream proxy
+Proxy settings
 ==============
 
 Configuration of upstream HTTP/HTTPS proxy server.
