@@ -10,14 +10,13 @@ certificate as default.
 
 The :guilabel:`Upload certificate` button allows to upload certificate files.
 
-The :guilabel:`Request Let's Encrypt certificate` button changes the [Let's
-Encrypt](https://letsencrypt.org/ "Let's Encrypt Home page") configuration and
-send out a new certificate request.
+The :guilabel:`Request Let's Encrypt certificate` button changes the `Let's
+Encrypt`_ configuration and send out a new certificate request.
 
 The :guilabel:`Edit self-signed certificate` button allows changing the
 self-signed certificate, by generating a new one.
 
-
+.. _`Let's Encrypt`: https://letsencrypt.org/
 
 Request a new Let's Encrypt certificate
 =======================================
@@ -33,7 +32,7 @@ Notification email
 Domains
     A single Let's Encrypt certificate can be valid for multiple domains and
     alias. For instance, mail.nethserver.org, web.nethserver.org... wildcard
-    certificates (\*.nethserver.org) aren't supported
+    certificates (\*.nethserver.org) aren't supported.
 
 When :guilabel:`REQUEST LET'S ENCRYPT CERTIFICATE` button is clicked, this
 server is tested by Let's Encrypt to ensure that you have the right to get a
