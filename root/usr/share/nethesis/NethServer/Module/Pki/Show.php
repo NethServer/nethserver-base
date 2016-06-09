@@ -38,23 +38,26 @@ class Show extends \Nethgui\Controller\Table\RowAbstractAction
         $this->setSchema($parameterSchema);
     }
 
+    public function bind(\Nethgui\Controller\RequestInterface $request)
+    {
+        $keyValue = '/' . implode('/', $request->getPath());
+        $this->getAdapter()->setKeyValue($keyValue);
+        parent::bind($request);
+    }
+
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
         if(isset($this->parameters['name'])) {
             $view['SetDefault'] = $view->getModuleUrl('../SetDefault/' . $this->parameters['name']);
+            $view['x509text'] = $this->getX509text();
         }
-        $view['x509text'] = $this->getX509text();
         $view['GenerateLink'] = $view->getModuleUrl('../Generate');
         
     }
 
     private function getX509text() {
-        $certFile = $this->getPlatform()->getDatabase('configuration')->getProp('pki', 'CertFile');
-        if( ! $certFile) {
-            $certFile = "/etc/pki/tls/certs/NSRV.crt";
-        }
-        return $this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/pki-info -s ${@}', array($certFile))->getOutput();
+        return $this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/pki-info -s ${@}', array($this->parameters['name']))->getOutput();
     }
 
 }

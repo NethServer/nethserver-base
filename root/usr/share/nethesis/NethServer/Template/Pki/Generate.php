@@ -1,6 +1,6 @@
 <?php
 /* @var $view \Nethgui\Renderer\Xhtml */
-echo $view->header()->setAttribute('template', $T('Pki_Generate_header'));
+echo $view->header()->setAttribute('template', $T('Generate_Header'));
 
 echo $view->fieldset()
     ->insert($view->textInput('C')->setAttribute('placeholder', $view['C_default']))

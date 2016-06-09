@@ -35,11 +35,17 @@ class SetDefault extends \Nethgui\Controller\Table\RowAbstractAction
         );
         $this->setSchema($parameterSchema);
     }
+
+    private function getCertPath()
+    {
+        return '/' . implode('/', $this->getRequest()->getPath());
+    }
+
     public function process()
     {
         if ( $this->getRequest()->isMutation()) {
             $db = $this->getPlatform()->getDatabase('configuration');
-            $name = \Nethgui\array_end($this->getRequest()->getPath());
+            $name = $this->getCertPath();
             $certificates = json_decode($this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/cert-list')->getOutput(), TRUE);
             foreach ($certificates as $key => $props) {
                  if ($key == $name) {
@@ -53,6 +59,8 @@ class SetDefault extends \Nethgui\Controller\Table\RowAbstractAction
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
-        $view['cert'] = \Nethgui\array_end($this->getRequest()->getPath());
+        if($this->getRequest()->isValidated()) {
+            $view['cert'] = $this->getCertPath();
+        }
     }
 }

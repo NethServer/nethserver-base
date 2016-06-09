@@ -15,6 +15,7 @@
     /usr/libexec/nethserver/nic-info, \
     /usr/libexec/nethserver/control-service, \
     /usr/libexec/nethserver/cert-list, \
+    /usr/libexec/nethserver/letsencrypt-certs, \
     /usr/bin/yum clean all, \
     /sbin/service [a-zA-Z0-9_-]* status
 

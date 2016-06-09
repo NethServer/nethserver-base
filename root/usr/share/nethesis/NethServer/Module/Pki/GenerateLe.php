@@ -26,29 +26,25 @@ use Nethgui\System\PlatformInterface as Validate;
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class GenerateLe extends \Nethgui\Controller\Table\AbstractAction
+class GenerateLe extends \Nethgui\Controller\AbstractController
 {
 
     public function initialize()
     {
-
-        $domainsAdapter = $this->getPlatform()->getMapAdapter(array($this, 'readDomains'), array($this, 'writeDomains'), array());
-
+        $mailValidator = $this->createValidator()->orValidator($this->createValidator(Validate::EMAIL), $this->createValidator(Validate::EMPTYSTRING));
         parent::initialize();
-        $this->declareParameter('LetsEncrypt', Validate::SERVICESTATUS, array('configuration', 'pki', 'LetsEncrypt'));
-        $this->declareParameter('LetsEncryptMail', Validate::EMAIL, array('configuration', 'pki', 'LetsEncryptMail'));
-        $this->declareParameter('LetsEncryptDomains', Validate::ANYTHING,$domainsAdapter);
+        $this->declareParameter('LetsEncryptMail', $mailValidator, array('configuration', 'pki', 'LetsEncryptMail'));
+        $this->declareParameter('LetsEncryptDomains', Validate::ANYTHING, array('configuration', 'pki', 'LetsEncryptDomains'));
     }
 
-    public function readDomains()
+    public function readLetsEncryptDomains($v)
     {
-         return preg_replace('/,/',"\n", $this->getPlatform()->getDatabase('configuration')->getProp('pki','LetsEncryptDomains'));
+        return implode("\n", explode(",", $v));
     }
 
-    public function writeDomains()
+    public function writeLetsEncryptDomains($p)
     {
-        $this->getPlatform()->getDatabase('configuration')->setProp('pki',array('LetsEncryptDomains'=>preg_replace('/[\s\t\n]+/',",",$this->parameters['LetsEncryptDomains'])));
-        return TRUE;
+        return array(implode(',', array_filter(preg_split("/[,\s]+/", $p))));
     }
 
     public function validate(\Nethgui\Controller\ValidationReportInterface $report)
@@ -98,6 +94,9 @@ class GenerateLe extends \Nethgui\Controller\Table\AbstractAction
 
         if ($this->getRequest()->isValidated()) {
             $view->getCommandList()->show();
+            if($view['LetsEncryptDomains'] === '') {
+                $view['LetsEncryptDomains'] = \gethostname();
+            }
         }
     }
 
