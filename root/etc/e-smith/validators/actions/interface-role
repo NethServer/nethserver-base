@@ -38,8 +38,8 @@ foreach (qw(device role bootproto ipaddr netmask gateway)) {
 #
 # 1. Only red interfaces can use DHCP
 #
-if($h{'bootproto'} eq 'dhcp' && $h{'role'} ne 'red') {
-    print "only_red_dhcp\n";
+if($h{'bootproto'} eq 'dhcp' && $h{'role'} !~ m/^(red|green)$/ ) {
+    print "only_red_or_green_dhcp\n";
     exit 3;
 }
 
