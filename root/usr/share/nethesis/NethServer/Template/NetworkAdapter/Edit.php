@@ -51,26 +51,24 @@ $view->includeJavascript("
 (function ( $ ) {
     var updateFormState = function () {
 
-        // hide `gateway` field if role is not green or red
+        // hide `gateway`, DHCP/Static fields if role is not green or red
         if ($('#${roleId}').val().indexOf('green') !== -1 || $('#${roleId}').val().indexOf('red') !== -1) {
             $('#${gatewayId}').prop('disabled', false).parent().show();
-        } else {
-            $('#${gatewayId}').prop('disabled', true).parent().hide();
-        }
-
-        // show DHCP/Static radio buttons and Multiwan parameters only for red role
-        if ($('#${roleId}').val().indexOf('red') !== -1) {
             $('#${gatewayId}').closest('fieldset').css('margin-left', '');
             $('.${bootprotoId}[value=none]').trigger('click').parent().show();
             $('.${bootprotoId}[value=dhcp]').prop('disabled', false).parent().show();
-            $('.${MultiwanNameId}').parent().show();
-            $('.${MultiwanWeightId}').parent().show();
         } else {
+            $('#${gatewayId}').prop('disabled', true).parent().hide();
             $('#${gatewayId}').closest('fieldset').css('margin-left', 0);
             $('.${bootprotoId}[value=none]').trigger('click').parent().hide();
             $('.${bootprotoId}[value=dhcp]').prop('disabled', true).parent().hide();
-            $('.${MultiwanNameId}').parent().hide();
-            $('.${MultiwanWeightId}').parent().hide();
+        }
+
+        // show Multiwan parameters only for red role
+        if ($('#${roleId}').val().indexOf('red') !== -1) {
+            $('.${MultiwanNameId}').prop('disabled', false).parents('fieldset').first().show();
+        } else {
+            $('.${MultiwanNameId}').prop('disabled', true).parents('fieldset').first().hide();
         }
     };
 
