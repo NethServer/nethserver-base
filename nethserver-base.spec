@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.10.4
+Version: 2.11.0
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -69,6 +69,9 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 
 %changelog
+* Tue Jun 14 2016 Davide Principi <davide.principi@nethesis.it> - 2.11.0-1
+- Network IP alias on bridge interfaces - Feature #3406 [NethServer]
+
 * Mon Jun 06 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.10.4-1
 - Fully disable SELinux - Enhancement #3400
 - Enable NethForge, if present
