@@ -118,3 +118,4 @@ $L['multiwan_label'] = 'Multi WAN';
 $L['Weight_label'] = 'Link weight';
 $L['ProviderName_label'] = 'Link name';
 $L['UpstreamProxy_label'] = 'Proxy settings';
+$L['DNS_label'] = 'DNS servers';
