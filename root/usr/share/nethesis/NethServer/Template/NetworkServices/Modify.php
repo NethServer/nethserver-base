@@ -6,10 +6,6 @@ echo $view->panel()->insert($view->panel()
     ->insert($view->fieldset()->setAttribute('template', $T('zones_label'))
         ->insert($view->selector('access', $view::SELECTOR_MULTIPLE | $view::LABEL_NONE))
     )
-    ->insert($view->fieldset()->setAttribute('template', $T('exceptions_label'))
-        ->insert($view->textInput('AllowHosts'))
-        ->insert($view->textInput('DenyHosts'))
-    )
 );
 
 

@@ -63,33 +63,9 @@ class Modify extends \Nethgui\Controller\Table\Modify
             array('name', Validate::ANYTHING, Table::KEY),
             array('status', Validate::SERVICESTATUS, Table::FIELD),
             array('access', Validate::ANYTHING, Table::FIELD, 'access', ','),
-            array('AllowHosts', Validate::ANYTHING, Table::FIELD),
-            array('DenyHosts', Validate::ANYTHING, Table::FIELD),
         );
 
         $this->setSchema($parameterSchema);
-    }
-
-    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
-    {
-        $ips = explode(',',$this->parameters['AllowHosts']);
-        $ipvalidator = $this->createValidator(Validate::IPv4_OR_EMPTY);
-        $cidrvalidator = $this->createValidator(Validate::CIDR_BLOCK);
-        foreach($ips as $ip) {
-            if(!$ipvalidator->evaluate($ip) && !$cidrvalidator->evaluate($ip)) {
-                $report->addValidationErrorMessage($this, 'AllowHosts', 'AllowHosts_validator');
-            }
-        }
-
-        $ips = explode(',',$this->parameters['DenyHosts']);
-        $ipvalidator = $this->createValidator(Validate::IPv4_OR_EMPTY);
-        foreach($ips as $ip) {
-            if(!$ipvalidator->evaluate($ip) && !$cidrvalidator->evaluate($ip)) {
-                $report->addValidationErrorMessage($this, 'DenyHosts', 'DenyHosts_validator');
-            }
-        }
-
-        parent::validate($report);
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
