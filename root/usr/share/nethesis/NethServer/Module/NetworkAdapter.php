@@ -80,6 +80,7 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
             ->addTableAction(new \NethServer\Module\NetworkAdapter\CreateLogicalInterface())
             ->addChild(new \NethServer\Module\NetworkAdapter\RenameInterface())
             ->addChild(new \NethServer\Module\NetworkAdapter\ConfirmInterfaceCreation())
+            ->addTableAction(new \NethServer\Module\NetworkAdapter\DNS())
             ->addTableAction(new \NethServer\Module\NetworkAdapter\UpstreamProxy())
 
             // Row actions
