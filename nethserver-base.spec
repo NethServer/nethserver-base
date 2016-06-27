@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.11.0
+Version: 2.11.1
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -69,6 +69,9 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 
 %changelog
+* Mon Jun 27 2016 Davide Principi <davide.principi@nethesis.it> - 2.11.1-1
+- Software Center fails to install packages from NethForge - Bug #3408 [NethServer]
+
 * Tue Jun 14 2016 Davide Principi <davide.principi@nethesis.it> - 2.11.0-1
 - Network IP alias on bridge interfaces - Feature #3406 [NethServer]
 
