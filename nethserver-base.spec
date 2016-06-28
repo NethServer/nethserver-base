@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.10.3
+Version: 2.11.1
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,16 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Mon Jun 27 2016 Davide Principi <davide.principi@nethesis.it> - 2.11.1-1
+- Software Center fails to install packages from NethForge - Bug #3408 [NethServer]
+
+* Tue Jun 14 2016 Davide Principi <davide.principi@nethesis.it> - 2.11.0-1
+- Network IP alias on bridge interfaces - Feature #3406 [NethServer]
+
+* Mon Jun 06 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.10.4-1
+- Fully disable SELinux - Enhancement #3400
+- Enable NethForge, if present
+
 * Thu May 26 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.10.3-1
 - User and password with blank spaces in PPPoE configuration - Bug #3385 [NethServer]
 
