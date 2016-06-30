@@ -72,6 +72,10 @@ class Modify extends \Nethgui\Controller\Table\Modify
     {
         parent::prepareView($view);
 
+        if( ! $this->getRequest()->isValidated()) {
+            return;
+        }
+
         $view['accessDatasource'] = array_map(function($fmt) use ($view) {
             $label = $view->translate($fmt . '_label');
             if ($label == $fmt . '_label') {
@@ -80,6 +84,26 @@ class Modify extends \Nethgui\Controller\Table\Modify
  
             return array($fmt, $label);
         }, $this->listZones());
+
+        $serviceRecord = $this->getPlatform()->getDatabase('configuration')->getKey($this->parameters['name']);
+        $view['Config'] = self::getConfigForView($view, $serviceRecord);
+    }
+
+    public static function getConfigForView(\Nethgui\View\ViewInterface $view, $record) {
+        $tcpPorts = implode(', ', array_filter(array_merge(explode(',', $record['TCPPort']), explode(',', $record['TCPPorts']))));
+        $udpPorts = implode(', ', array_filter(array_merge(explode(',', $record['UDPPort']), explode(',', $record['UDPPorts']))));
+
+        $ports = array($view->translate(sprintf('ServiceStatus_%s_label', $record['status'] === 'enabled' ? 'enabled' : 'disabled')));
+
+        if($tcpPorts) {
+            $ports[] = $view->translate('TCP_ports_label', array($tcpPorts));
+        }
+
+        if($udpPorts) {
+            $ports[] = $view->translate('UDP_ports_label', array($udpPorts));
+        }
+
+        return $ports;
     }
 
     protected function onParametersSaved($changedParameters)
