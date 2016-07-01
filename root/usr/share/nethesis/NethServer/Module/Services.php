@@ -33,9 +33,6 @@ use Nethgui\System\PlatformInterface as Validate;
  */
 class Services extends \Nethgui\Controller\TableController
 {
-
-    private static $serviceStatusCache;
-
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $attributes)
     {
         return new \NethServer\Tool\CustomModuleAttributesProvider($attributes, array(
@@ -70,10 +67,11 @@ class Services extends \Nethgui\Controller\TableController
 
     private function getServiceStatusCache()
     {
-        if( ! isset($this->serviceStatusCache)) {
-            $this->serviceStatusCache = json_decode($this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/read-service-status')->getOutput(), TRUE);
+        static $serviceStatusCache;
+        if( ! isset($serviceStatusCache)) {
+            $serviceStatusCache = json_decode($this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/read-service-status')->getOutput(), TRUE);
         }
-        return $this->serviceStatusCache;
+        return $serviceStatusCache;
     }
 
     public function prepareViewForColumnKey(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
