@@ -31,7 +31,6 @@
                 if(ledConf.label) {
                     led.text(ledConf.label);
                     led.attr('title', ledConf.label);
-                    led.qtip();
                 }
 
                 if( ! ledConf.iconOff ) {
