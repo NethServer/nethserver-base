@@ -44,7 +44,7 @@ class UpstreamProxy extends \Nethgui\Controller\Table\AbstractAction
     protected function onParametersSaved($changedParameters)
     {
         parent::onParametersSaved($changedParameters);
-        $this->getPlatform()->signalEvent('proxy-update');
+        $this->getPlatform()->signalEvent('proxy-modify');
     }
 
 }
