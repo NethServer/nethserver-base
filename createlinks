@@ -49,6 +49,7 @@ event_templates('nethserver-base-update', qw(
     /etc/logviewer.conf
     /etc/logrotate.conf
     /etc/backup-config.d/nethserver-certificates.include
+    /etc/yum.conf
 ));
 
 #--------------------------------------------------
@@ -253,11 +254,13 @@ validator_actions('pem-certificate',
 validator_actions('rsa-key',
                   'rsa-key' => '10');
 
-
 #--------------------------------------------------
-# actions for certificate-upload event
+# actions for proxy-modify event
 #--------------------------------------------------
-templates2events('/etc/profile.d/nethserver_proxy.sh', 'proxy-update');
+event_templates('proxy-modify', qw(
+    /etc/yum.conf
+    /etc/profile.d/nethserver_proxy.sh
+));
 
 
 exit 0;

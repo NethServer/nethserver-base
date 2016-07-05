@@ -1,0 +1,5 @@
+#
+# 30groups use compat group mode
+#
+group_command=compat
+

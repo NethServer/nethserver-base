@@ -1,0 +1,17 @@
+{
+    my $proxy_host = $proxy{host} || '';
+    my $proxy_port = $proxy{port} || '3128';
+    my $proxy_user = $proxy{user} || '';
+    my $proxy_pass = $proxy{password} || '';
+
+    $OUT = '';
+    if (! $proxy_host eq ''){
+        $OUT .= "#\n# 20proxy\n#\n";
+        $OUT .= "proxy=http://$proxy_host:$proxy_port\n";
+        if (! $proxy_user eq '' && ! $proxy_pass eq ''){
+            $OUT .= "proxy_username=$proxy_user\nproxy_password=$proxy_pass\n";
+        }
+    } else {
+        $OUT .= "#\n# 20proxy - disabled\n#\n";
+    }
+}
