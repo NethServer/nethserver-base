@@ -50,15 +50,18 @@ class TransactionCallback( yum.callbacks.ProcessTransNoOutputCallback ):
             
     def trackDownloads(self, pkgs):            
         # If there is at least one download, declare Download task:
+        targets = []
         for po in pkgs:
             if not hasattr(po, 'pkgtype') or po.pkgtype != 'local':
-                task_id = self.tracker_client.declare_task("Download", self.parent_task_id, 25.0)
-                self.repos.setProgressBar(DownloadCallback(self.tracker_client, task_id))
-                break
+                targets.append(po)
+
+        if targets:
+            task_id = self.tracker_client.declare_task("Download", self.parent_task_id, 25.0)
+            self.repos.setProgressBar(DownloadCallback(self.tracker_client, task_id, targets))
 
 
 class DownloadCallback(  yum.callbacks.DownloadBaseCallback ):
-    def __init__(self, tracker_client, task_id):
+    def __init__(self, tracker_client, task_id, pkgs):
         yum.callbacks.DownloadBaseCallback.__init__(self)
         if(not isinstance(tracker_client, nethserver.ptrack.TrackerClient)):
             raise Exception("Invalid nethserver.ptrack.TrackerClient instance")
@@ -68,8 +71,8 @@ class DownloadCallback(  yum.callbacks.DownloadBaseCallback ):
         self.rpm_task_id = self.tracker_client.declare_task("Download RPMs", self.task_id, 2.0)
         self.drpm_task_id = None
         self.rebuild_task_id = None
-        self.packages = {}
-
+        self.pkgs = pkgs
+        self.pkgs_progress = 0.0
 
     def runWithDeltaTask(self):
         if(self.drpm_task_id):
@@ -88,13 +91,14 @@ class DownloadCallback(  yum.callbacks.DownloadBaseCallback ):
 
         if name.endswith('.rpm'):
             task_id = self.rpm_task_id
-            mo = re.match('\((\d+)/(\d+)\)', name)
             try:
-                nfrac = (1.0 / float(mo.group(2))) * frac
-                progress = (float(mo.group(1)) / float(mo.group(2))) + nfrac
+                if frac == 1.0:
+                    self.pkgs_progress += 1.0 / len(self.pkgs)
+                progress = self.pkgs_progress
+
             except Exception as e:
                 pass
-            message = '%s' % (name)
+            message = '%s %s %s' % (name, fread, ftime)
         elif name.endswith('.drpm'):
             self.runWithDeltaTask()
             task_id = self.drpm_task_id
