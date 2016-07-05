@@ -54,7 +54,12 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
 
         if ($this->getRequest()->hasParameter('installSuccess')) {
             $this->getAction('AdminTodo')->emitNotifications = TRUE;
-            $this->notifications->message($view->translate('package_success'));
+            $this->notifications->yumSuccess(array(
+                'message' => $view->translate('YumSuccess_message'),
+                'description' => $view->translate('YumSuccess_description'),
+                'buttonLabel' => $view->translate('YumSuccess_button_label'),
+                'action' => $view->getModuleUrl('..')
+            ));
         } elseif($this->getRequest()->hasParameter('installFailure')) {
             $taskStatus = $this->systemTasks->getTaskStatus($this->getRequest()->getParameter('taskId'));
 
