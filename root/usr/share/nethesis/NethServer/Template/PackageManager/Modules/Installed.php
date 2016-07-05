@@ -25,7 +25,7 @@ echo $view->objectsCollection('groups')
                             ->insert($view->textList('categories')
                                         ->setAttribute('tag', 'div/span/span')
                                         ->setAttribute('separator', ', ')))
-                    ->insert($view->buttonList($view::BUTTONSET)->setAttribute('class', 'Buttonset v1')
+                    ->insert($view->buttonList($view::BUTTONSET)->setAttribute('class', 'Buttonset')
                             ->insert($view->button('Remove', $view::BUTTON_LINK))
                             ->insert($view->button('Edit', $view::BUTTON_LINK)))
 
