@@ -11,9 +11,9 @@ $template = strtr("<dl>
     <dd><ul>{{#removeGroups}}<li>{{.}}</li>{{/removeGroups}}</ul></dd>{{/removeGroups?}}
     {{#addPackages?}}<dt>%install_optionals</dt>
     <dd><ul>{{#addPackages}}<li>{{.}}</li>{{/addPackages}}</ul></dd>{{/addPackages?}}
-    {{#removePackages?}}<dt>%remove_optionals</dt>
+    {{#removePackages?}}<dt>%remove_packages</dt>
     <dd><ul>{{#removePackages}}<li>{{.}}</li>{{/removePackages}}</ul></dd>{{/removePackages?}}
-</dl>", array('%install_modules' => $T('Install_modules_label'), '%remove_modules' => $T('Remove_modules_label'), '%install_optionals' => $T('Install_optionals_label'), '%remove_optionals' => $T('Remove_optionals_label')));
+</dl>", array('%install_modules' => $T('Install_modules_label'), '%remove_modules' => $T('Remove_modules_label'), '%install_optionals' => $T('Install_optionals_label'), '%remove_packages' => $T('Remove_packages_label')));
 
 $view->includeJavascript("
 (function( $ ) {
