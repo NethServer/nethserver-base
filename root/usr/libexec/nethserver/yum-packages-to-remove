@@ -1,0 +1,2 @@
+#!/bin/bash
+/usr/bin/yum -C --assumeno remove $@ | sed '/^[^ ].*\|^\s+$\|^$\|^\s{2,}\|^\s\s/d' | sed 1d | head -n -1 | awk '{print $1}'

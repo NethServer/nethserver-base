@@ -17,6 +17,7 @@
     /usr/libexec/nethserver/cert-list, \
     /usr/libexec/nethserver/letsencrypt-certs, \
     /usr/bin/yum clean all, \
-    /sbin/service [a-zA-Z0-9_-]* status
+    /sbin/service [a-zA-Z0-9_-]* status, \
+    /usr/libexec/nethserver/yum-packages-to-remove
 
 

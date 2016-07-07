@@ -77,23 +77,35 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
         }
     }
 
+    private function getPackagesToRemove($group) {
+        static $packages;
+        if(isset($packages)) {
+            return $packages;
+        }
+        $p = $this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/yum-packages-to-remove ${@}', array('@'.$group));
+        $packages = $p->getOutputArray();
+
+        return $packages;
+    }
+
     private function getTransactionOrder()
     {
         $a = array('addGroups' => array(), 'removeGroups' => array(), 'addPackages' => array(), 'removePackages' => array());
 
         if ($this->parameters['removeGroup']) {
             $a['removeGroups'][] = $this->parameters['removeGroup'];
-            $order = array();
+            $a['removePackages'] = $this->getPackagesToRemove($this->parameters['removeGroup']);
         } else {
             $order = $this->getPlatform()->getDatabase('SESSION')->getProp('NethServer\Module\PackageManager\Modules', 'groups');
-            if ( ! is_array($order)) {
-                $order = array();
-            }
         }
 
         if ($this->getRequest()->isMutation()) {
             // Destroy the session storage:
             $this->getPlatform()->getDatabase('SESSION')->deleteKey('NethServer\Module\PackageManager\Modules');
+        }
+
+        if ( ! is_array($order)) {
+            $order = array();
         }
 
         foreach ($order as $grp => $sel) {
