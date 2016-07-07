@@ -117,7 +117,7 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
         if ( ! $isPresent && ! $isLogicalDevice) {
             $rowMetadata['rowCssClass'] = trim($rowMetadata['rowCssClass'] . ' user-locked');
         } elseif ( ! isset($values['role']) || ! $values['role']) {
-            $rowMetadata['rowCssClass'] = trim($rowMetadata['rowCssClass'] . ' free');
+            $rowMetadata['rowCssClass'] = trim($rowMetadata['rowCssClass'] . ' free-eth');
         }
         return strval($key);
     }
@@ -209,6 +209,11 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
             unset($cellView['CleanPhysicalInterface']);
         } else {
             unset($cellView['SetPppoeParameters']);
+        }
+
+        if (!$role) {
+            $cellView['Configure'] = array('Configure', $cellView['Edit'][1]);
+            unset($cellView['Edit']);
         }
 
         return $cellView;

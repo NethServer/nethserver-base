@@ -103,7 +103,7 @@ $view->includeCss("
 .${groupsTarget} .FieldsetSwitch.available.changed { border-left-color: green }
 .${groupsTarget} .FieldsetSwitch .details, .${groupsTarget} .FieldsetSwitch .opackages_selected.multiple { margin-top: 0.5em }
 #${categoriesId} { text-align: center }
-#${categoriesId} label { font-weight: bold; letter-spacing: 1px; background: #00A1DE; border: 1px solid #00729D; color: white }
+#${categoriesId} label { font-weight: bold; letter-spacing: 1px; background: #00719a; border: 1px solid #00425b; color: white }
 #${categoriesId} label.ui-state-active { opacity: 0.7 }
 #${categoriesId} label.ui-state-hover { opacity: 0.7 }
 #${categoriesId} label.ui-corner-left { border-top-left-radius: 9px; border-bottom-left-radius: 9px }
