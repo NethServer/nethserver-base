@@ -1,139 +1,139 @@
 [main]
 host = https://www.transifex.com
 
-[nethserver.nethserver-basepot]
+[nethserver-v6.nethserver-basepot]
 source_file = locale/nethserver-base.pot
 source_lang = en
 type = PO
 
 
-[nethserver.Pki]
+[nethserver-v6.Pki]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Pki.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.Dashboard_SystemStatus_RaidStatus]
+[nethserver-v6.Dashboard_SystemStatus_RaidStatus]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Dashboard_SystemStatus_RaidStatus.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.LocalNetwork]
+[nethserver-v6.LocalNetwork]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_LocalNetwork.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.LogViewer]
+[nethserver-v6.LogViewer]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_LogViewer.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.NethServer]
+[nethserver-v6.NethServer]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.UserProfile]
+[nethserver-v6.UserProfile]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_UserProfile.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.Dashboard]
+[nethserver-v6.Dashboard]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Dashboard.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.Dashboard_SystemStatus_Resources]
+[nethserver-v6.Dashboard_SystemStatus_Resources]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Dashboard_SystemStatus_Resources.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.Organization]
+[nethserver-v6.Organization]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Organization.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.StaticRoutes]
+[nethserver-v6.StaticRoutes]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_StaticRoutes.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.Dashboard_SystemStatus]
+[nethserver-v6.Dashboard_SystemStatus]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Dashboard_SystemStatus.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.PackageManager]
+[nethserver-v6.PackageManager]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_PackageManager.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.NetworkAdapter]
+[nethserver-v6.NetworkAdapter]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_NetworkAdapter.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.Dashboard_Services]
+[nethserver-v6.Dashboard_Services]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Dashboard_Services.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.Shutdown]
+[nethserver-v6.Shutdown]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Shutdown.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.FirstConfigWiz]
+[nethserver-v6.FirstConfigWiz]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_FirstConfigWiz.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.Dashboard_SystemStatus_Network]
+[nethserver-v6.Dashboard_SystemStatus_Network]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Dashboard_SystemStatus_Network.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.Dashboard_Applications]
+[nethserver-v6.Dashboard_Applications]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Dashboard_Applications.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.Dashboard_SystemStatus_SystemRelease]
+[nethserver-v6.Dashboard_SystemStatus_SystemRelease]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Dashboard_SystemStatus_SystemRelease.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.NetworkServices]
+[nethserver-v6.NetworkServices]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_NetworkServices.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.FQDN]
+[nethserver-v6.FQDN]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_FQDN.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.Welcome]
+[nethserver-v6.Welcome]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Welcome.php
 source_lang = en
 type = PHP_ALT_ARRAY
