@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.11.1
+Version: 3.0.0
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Thu Jul 07 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.0-1
+- First NS7 release
+
 * Mon Jun 27 2016 Davide Principi <davide.principi@nethesis.it> - 2.11.1-1
 - Software Center fails to install packages from NethForge - Bug #3408 [NethServer]
 
