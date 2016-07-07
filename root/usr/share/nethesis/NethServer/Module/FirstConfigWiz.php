@@ -91,13 +91,16 @@ class FirstConfigWiz extends \Nethgui\Controller\CompositeController implements 
 
         $this->wizDecorator = $view->spawnView($this, 'Decorator');
 
-        if (isset($this->currentAction)) {
-            $nextAction = $this->getSuccessor($this->currentAction);
+        if($this->getRequest()->isValidated()) {
+            if (isset($this->currentAction)) {
+                $nextAction = $this->getSuccessor($this->currentAction);
+            } else {
+                $nextAction = $this->getAction('Cover');
+            }
+            $this->wizDecorator['steps'] = $this->getSteps($view, $nextAction ? $nextAction->getIdentifier() : '');
         } else {
-            $nextAction = $this->getAction('Cover');
+            $this->wizDecorator['steps'] = $this->getSteps($view, isset($this->currentAction) ? $this->currentAction->getIdentifier() : '');
         }
-
-        $this->wizDecorator['steps'] = $this->getSteps($view, $nextAction ? $nextAction->getIdentifier() : '');
 
         $this->wizDecorator->setTemplate('NethServer\Template\FirstConfigWiz');
         if ($this->getRequest()->isValidated()) {
