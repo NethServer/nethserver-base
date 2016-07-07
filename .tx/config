@@ -139,3 +139,9 @@ source_lang = en
 type = PHP_ALT_ARRAY
 
 
+[nethserver.NetworkAdapter_UpstreamProxy]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_NetworkAdapter_UpstreamProxy.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+
