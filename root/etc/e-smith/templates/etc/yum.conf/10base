@@ -8,5 +8,5 @@ obsoletes=1
 gpgcheck=1
 plugins=1
 installonly_limit=5
-bugtracker_url=http://dev.nethserver.org/projects/nethserver
+bugtracker_url=https://github.com/NethServer/dev
 distroverpkg=centos-release
