@@ -35,6 +35,15 @@ class Services extends \Nethgui\Controller\TableController
 {
 
     public $sortId = 10;
+    private static $serviceStatusCache;
+
+    private function getServiceStatus()
+    {
+        if( ! isset($this->serviceStatusCache)) {
+            $this->serviceStatusCache = json_decode($this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/read-service-status')->getOutput(), TRUE);
+        }
+        return $this->serviceStatusCache;
+    }
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
@@ -70,6 +79,23 @@ class Services extends \Nethgui\Controller\TableController
         return $key;
     }
 
+    public function prepareViewForColumnStatus(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        $ret = "...";
+        $request = $this->getRequest();
+
+        if (isset($request) && $this->getRequest()->getExtension() === 'json') {
+            $serviceStatusCache = $this->getServiceStatus();
+            if(!$serviceStatusCache || !isset($serviceStatusCache[$key]['enabled'])) {
+                return "N/A";
+            } elseif (isset($serviceStatusCache[$key]['enabled'])) {
+                $ret = $serviceStatusCache[$key]['enabled'] ? $view->translate("enabled_label") : $view->translate("disabled_label");
+            } 
+        }
+        return $ret;
+    }
+
+
     /**
      *
      * @param \Nethgui\Controller\Table\Read $action
@@ -80,22 +106,19 @@ class Services extends \Nethgui\Controller\TableController
      */
     public function prepareViewForColumnRunning(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
-        static $serviceStatusCache;
         $ret = "...";
         $request = $this->getRequest();
 
         if (isset($request) && $this->getRequest()->getExtension() === 'json') {
-            if( ! isset($serviceStatusCache)) {
-                $serviceStatusCache = json_decode($this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/read-service-status')->getOutput(), TRUE);
-            }
-            if($serviceStatusCache === FALSE) {
+            $serviceStatusCache = $this->getServiceStatus();
+            if(!$serviceStatusCache || !isset($serviceStatusCache[$key]['running'])) {
                 return "N/A";
             } elseif (isset($serviceStatusCache[$key]['running']) && $serviceStatusCache[$key]['running']) {
                $ret = $view->translate("running_label");
                $rowMetadata['rowCssClass'] .= ' running ';
             } else {
                $ret = $view->translate("stopped_label");
-               if ($values['status'] == 'enabled') {
+               if ($serviceStatusCache[$key]['enabled']) {
                    $rowMetadata['rowCssClass'] .= ' stopped ';
                }
             }

@@ -10,6 +10,8 @@ $L['status_label'] = 'Status';
 $L['stopped_label'] = 'Stopped';
 $L['TCPPorts_label'] = 'TCP';
 $L['UDPPorts_label'] = 'UDP';
+$L['enabled_label'] = 'Enabled';
+$L['disabled_label'] = 'Disabled';
 
 $L['amavisd_Description'] = 'Mail virus and antispam scanner';
 $L['asterisk_Description'] = 'VoIP PBX';

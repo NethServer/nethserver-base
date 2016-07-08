@@ -32,11 +32,23 @@ my @services = map { $_->key } $confDb->get_all_by_prop('type' => 'service');
 my %serviceStatus = ();
 
 foreach (@services) {
+    next if ( ! -e "/etc/e-smith/db/configuration/defaults/$_/status" );
+
     my $s = NethServer::Service->new($_, $confDb);
     $serviceStatus{$_} = {
 	'enabled' => $s->is_enabled() ? 1 : 0,
 	'running' => $s->is_running() ? 1 : 0
     };
+}
+
+# Handle special cases    
+if (defined $serviceStatus{'lsm'}) {
+    my $ndb = esmith::ConfigDB->open_ro(); 
+    if ($ndb->get_all_by_prop("type" => "provider") > 1 ) {
+        $serviceStatus{'lsm'}{'enabled'} = 1;
+    } else {
+        $serviceStatus{'lsm'}{'enabled'} = 0;
+    }
 }
 
 print JSON::to_json(\%serviceStatus);
