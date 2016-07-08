@@ -32,6 +32,8 @@ my @services = map { $_->key } $confDb->get_all_by_prop('type' => 'service');
 my %serviceStatus = ();
 
 foreach (@services) {
+    next if ( ! -e "/etc/e-smith/db/configuration/defaults/$_/status" );
+
     my $s = NethServer::Service->new($_, $confDb);
     $serviceStatus{$_} = {
 	'enabled' => $s->is_enabled() ? 1 : 0,

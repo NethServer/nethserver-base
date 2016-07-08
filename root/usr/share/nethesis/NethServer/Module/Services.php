@@ -33,6 +33,8 @@ use Nethgui\System\PlatformInterface as Validate;
  */
 class Services extends \Nethgui\Controller\TableController
 {
+    private static $serviceStatusCache;
+
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $attributes)
     {
         return new \NethServer\Tool\CustomModuleAttributesProvider($attributes, array(
@@ -67,11 +69,25 @@ class Services extends \Nethgui\Controller\TableController
 
     private function getServiceStatusCache()
     {
-        static $serviceStatusCache;
-        if( ! isset($serviceStatusCache)) {
-            $serviceStatusCache = json_decode($this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/read-service-status')->getOutput(), TRUE);
+        if( ! isset($this->serviceStatusCache)) {
+            $this->serviceStatusCache = json_decode($this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/read-service-status')->getOutput(), TRUE);
         }
-        return $serviceStatusCache;
+        return $this->serviceStatusCache;
+    }
+
+    public function prepareViewForColumnStatus(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        $ret = "...";
+        $request = $this->getRequest();
+
+        $serviceStatusCache = $this->getServiceStatusCache();
+        if(!$serviceStatusCache || !isset($serviceStatusCache[$key]['enabled'])) {
+            return "N/A";
+        } elseif (isset($serviceStatusCache[$key]['enabled'])) {
+            $ret = $serviceStatusCache[$key]['enabled'] ? $view->translate("enabled_label") : $view->translate("disabled_label");
+        }
+ 
+        return $ret;
     }
 
     public function prepareViewForColumnKey(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
@@ -96,14 +112,14 @@ class Services extends \Nethgui\Controller\TableController
     {
         $ret = "...";
         $serviceStatusCache = $this->getServiceStatusCache();
-        if($serviceStatusCache === FALSE) {
+        if(!$serviceStatusCache || !isset($serviceStatusCache[$key]['running'])) {
             return "N/A";
         } elseif (isset($serviceStatusCache[$key]['running']) && $serviceStatusCache[$key]['running']) {
             $ret = $view->translate("running_label");
             $rowMetadata['rowCssClass'] .= ' running ';
         } else {
             $ret = $view->translate("stopped_label");
-            if ($values['status'] == 'enabled') {
+            if ($serviceStatusCache[$key]['enabled']) {
                 $rowMetadata['rowCssClass'] .= ' stopped ';
             }
         }
