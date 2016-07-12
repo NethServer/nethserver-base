@@ -37,7 +37,7 @@ class UpstreamProxy extends \Nethgui\Controller\Table\AbstractAction
         $vp = $this->createValidator()->orValidator($this->createValidator(Validate::PORTNUMBER), $this->createValidator(\Nethgui\System\PlatformInterface::EMPTYSTRING));
         $this->declareParameter('host', $vh, array('configuration', 'proxy', 'host'));
         $this->declareParameter('port', $vp, array('configuration', 'proxy', 'port'));
-        $this->declareParameter('user', Validate::ANYTHING, array('configuration', 'proxy', 'user'));
+        $this->declareParameter('username', Validate::ANYTHING, array('configuration', 'proxy', 'user'));
         $this->declareParameter('password', Validate::ANYTHING, array('configuration', 'proxy', 'password'));
     }
 
