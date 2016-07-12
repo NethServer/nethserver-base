@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.0
+Version: 3.0.1
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Tue Jul 12 2016 Davide Principi <davide.principi@nethesis.it> - 3.0.1-1
+- Prop "user" in proxy settings isn't saved -- NethServer/dev#5043
+
 * Thu Jul 07 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.0-1
 - First NS7 release
 
