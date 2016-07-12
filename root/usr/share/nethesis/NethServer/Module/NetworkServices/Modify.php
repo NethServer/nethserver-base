@@ -44,7 +44,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
             if ($values['type']  == 'zone') {
                $this->zones[$key] = '';
             }
-            if(isset($values['role']) && ! preg_match("/(".implode('|',$invalid_roles).")/", $values['role'])) {
+            if(isset($values['role'])  && $values['role'] && ! preg_match("/(".implode('|',$invalid_roles).")/", $values['role'])) {
                $this->zones[$values['role']] = ''; 
             }
         }
