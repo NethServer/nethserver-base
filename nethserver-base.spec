@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.11.1
+Version: 2.11.2
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -69,6 +69,9 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 
 %changelog
+* Wed Jul 13 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.11.2-1
+- Dashboard: lsm status marked red if no provider is configured - Enhancement #3415 [NethServer]
+
 * Mon Jun 27 2016 Davide Principi <davide.principi@nethesis.it> - 2.11.1-1
 - Software Center fails to install packages from NethForge - Bug #3408 [NethServer]
 
