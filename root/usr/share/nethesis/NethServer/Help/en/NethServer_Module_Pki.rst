@@ -26,7 +26,7 @@ valid certificate. This certificate is automatically updated every 30 days.
 
 Notification email
     This email is used by Let's Encrypt for notifications about certificate.
-    |product| checks itself for certificates validity and warns the ``root``
+    The server checks itself for certificates validity and warns the ``root``
     user by email if a certificate has expired.
 
 Domains
