@@ -54,6 +54,19 @@ Link weight
      If the first provider has weight 100 and the second has weight 50,
      the traffic is always sent to the first provider. The second one will be used only if first provider goes down.
 
+DNS servers
+===========
+
+Configure addresses of the DNS servers that
+the server will contact to resolve names.
+
+Primary DNS
+    The address of the primary server to contact for resolving names (mandatory).
+
+Secondary DNS
+    The address of the secondary server to be contacted in case the primary is not responding (optional).
+
+
 Proxy settings
 ==============
 
