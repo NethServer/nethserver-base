@@ -105,13 +105,6 @@ class Network extends \Nethgui\Controller\AbstractController
         if (!$this->interfaces) {
             $this->interfaces = $this->readInterfaces();
         }
-        $ifaces = array();
-        $view['gateway'] = "-";
-        foreach ($this->interfaces as $i=>$props) {
-            if ( $this->interfaces[$i]['role'] == 'green') {
-                $view['gateway'] = $this->interfaces[$i]['gateway'];
-            }
-        }
         $view['interfaces'] = $this->interfaces;
     }
 }
