@@ -128,6 +128,7 @@ class Generate extends \Nethgui\Controller\Table\AbstractAction
     public function process()
     {
         if ($this->getRequest()->isMutation()) {
+            $this->parameters->save();
             $this->getPlatform()->signalEvent('certificate-update &');
         }
     }
