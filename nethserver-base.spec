@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.2
+Version: 3.0.3
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,12 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Thu Jul 21 2016 Davide Principi <davide.principi@nethesis.it> - 3.0.3-1
+- Dashboard: display Gateway field inside Interfaces tab - NethServer/dev#5056
+- Web UI: missing labels - Bug NethServer/dev#5061
+- Self-signed certificate doesn't save changes - Bug NethServer/dev#5059
+- Move "DNS servers" inline documentation to Network page. - Bug NethServer/dev#5060
+
 * Tue Jul 12 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.2-1
 - Fixes blank checkbox on "Network services" page #5045
 
