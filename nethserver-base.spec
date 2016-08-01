@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.3
+Version: 3.0.4
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Mon Aug 01 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.4-1
+- Accounts: web interface tweaks - NethServer/dev#5073
+
 * Thu Jul 21 2016 Davide Principi <davide.principi@nethesis.it> - 3.0.3-1
 - Dashboard: display Gateway field inside Interfaces tab - NethServer/dev#5056
 - Web UI: missing labels - Bug NethServer/dev#5061
