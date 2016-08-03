@@ -46,12 +46,49 @@ foreach my $i (@interfaces) {
     }
 }
 
+sub write_route {
+    my $dev = shift;
+    my $cidr = shift;
+    my $router = shift;
+
+    my $file = sprintf "%s/route-%s", $output_dir, $dev;
+    open (my $fh, '>>', $file);
+    print $fh "$cidr via $router dev ".$dev." \n";
+    close ($fh);
+}
+
+sub write_default_route {
+    my $dev = shift;
+    my $router = shift;
+
+    my $file = sprintf "%s/route-%s", $output_dir, $dev;
+    open (my $fh, '>>', $file);
+    print $fh "default via $router dev ".$dev." \n";
+    close ($fh);
+}
+
+
 my $out = '';
 my @routes = $rdb->get_all_by_prop( type => 'static');
 foreach my $network (@routes) {
     # Skip anything we don't know how to or don't need to route
     my $router = $network->prop('Router') || next;
     my $write_static = 1;
+    my $device = $network->prop('Device') || '';
+    my $mask = $network->prop('Mask') || '';
+    my $cidr = $network->key;
+    if ($mask ne '') { # convert old format
+         $cidr = Net::IPv4Addr::ipv4_network($network->key, $mask);
+    }
+    # print "dev: $device router: $router net: ".$network->key." mask: ".$network->prop('Mask')." \n";
+    if ($device) {
+         if ( $network->key == "0.0.0.0/0" ) {
+             write_default_route($device, $router);
+         } else {
+             write_route($device, $cidr, $router);
+         }
+         next;
+    }
   
     foreach my $i (@interfaces) {
         my %props = $i->props;
@@ -75,12 +112,7 @@ foreach my $network (@routes) {
         next if not Net::IPv4Addr::ipv4_in_network($net, $msk, $router);
 
         $write_static = 0;
-        my $file = sprintf "%s/route-%s", $output_dir, $i->key;
-        my ($dnet,$dmsk) = Net::IPv4Addr::ipv4_network($network->key, $network->prop('Mask'));
-        my $file = sprintf "%s/route-%s", $output_dir, $i->key;
-        open (my $fh, '>>', $file);
-        print $fh "$dnet/$dmsk via $router dev ".$i->key." \n";
-        close ($fh);
+        write_route($i->key, $cidr, $router);
     }
 
     if ($write_static) {
