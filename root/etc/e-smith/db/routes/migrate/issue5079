@@ -1,0 +1,49 @@
+{
+    use esmith::ConfigDB;
+    use esmith::NetworksDB;
+    use Net::IPv4Addr;
+    my $db = esmith::ConfigDB->open('routes');
+
+    my $idb = esmith::NetworksDB->open_ro();
+    my @interfaces = $idb->interfaces;
+
+    foreach my $static ($db->get_all_by_prop('type' => 'static')) {
+        my $mask = $static->prop('Mask') || next; # already converted
+        my $net = $static->key;
+        my $desc = $static->prop('Description') || '';
+        my $router = $static->prop('Router') || '';
+        my $device = '';
+        my $cidr = Net::IPv4Addr::ipv4_network($net, $mask);
+
+        foreach my $i (@interfaces) {
+            my %props = $i->props;
+            my $role = $props{'role'} || next;
+            my $type = $props{'type'} || next;
+            next if ($type eq 'alias');
+            my $ipaddr = $props{'ipaddr'} || '';
+            my $netmask = $props{'netmask'} || '';
+            my $dev = $i->key;
+            my $inet = '';
+            my $imsk = '';
+            if ($ipaddr eq '' && $netmask eq '') {
+                my $tmp = `/sbin/ip -o -4 address show $dev primary | head -1 | awk '{print \$4}'`;
+                chomp $tmp;
+                ($ipaddr, $netmask) = split(/\//, $tmp);
+                next if ($ipaddr eq '' || $netmask eq '');
+                ($inet,$imsk) = Net::IPv4Addr::ipv4_network("$ipaddr/$netmask");
+            } else {
+                ($inet,$imsk) = Net::IPv4Addr::ipv4_network($ipaddr, $netmask);
+            }
+            if (Net::IPv4Addr::ipv4_in_network($inet, $imsk, $router)) {
+                $device = $dev;
+            }
+
+         }
+
+
+        $static->delete();
+        my $name = "route$rand";
+        $db->new_record($cidr, {type => 'static', 'Router' => $router, 'Description' => $desc, 'Device' => $device, 'Metric' => ''});
+        $rand++;
+    }
+}
