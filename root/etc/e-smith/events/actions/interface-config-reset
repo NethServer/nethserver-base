@@ -47,4 +47,7 @@ rm -f $ESMITH_NETWORK_OUT_DIR/ifcfg-*\:? 2>/dev/null
 # remove all routes
 rm -f $ESMITH_NETWORK_OUT_DIR/route-* 2>/dev/null
 
+# cleanup old unused file
+rm -f /etc/sysconfig/static-routes
+
 exit 0
