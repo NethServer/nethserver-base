@@ -11,3 +11,7 @@ $L['Mask_label'] = 'Network mask';
 $L['Router_label'] = 'Router address'; 
 $L['Update static ${0}`'] = 'Update static route `${0}`'; 
 $L['network_label'] = 'Network address'; 
+$L['Device_label']='Device';
+$L['any_label']='Any';
+$L['Advanced_label']='Advanced';
+$L['Metric_label']='Metric';
