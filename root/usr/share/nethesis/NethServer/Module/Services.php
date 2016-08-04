@@ -33,7 +33,7 @@ use Nethgui\System\PlatformInterface as Validate;
  */
 class Services extends \Nethgui\Controller\TableController
 {
-    private static $serviceStatusCache;
+    private $serviceStatusCache;
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $attributes)
     {
