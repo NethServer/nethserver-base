@@ -38,38 +38,22 @@ class StaticRoutes extends \Nethgui\Controller\TableController
         $columns = array(
             'Key',
             'Router',
+            'Device',
+            'Metric',
             'Description',
             'Actions'
-        );
-
-        $parameterSchema = array(
-            array('network', Validate::IPv4, \Nethgui\Controller\Table\Modify::KEY),
-            array('Mask', Validate::IPv4, \Nethgui\Controller\Table\Modify::FIELD),
-            array('Router', Validate::IPv4, \Nethgui\Controller\Table\Modify::FIELD),
-            array('Description', Validate::ANYTHING, \Nethgui\Controller\Table\Modify::FIELD),
         );
 
         $this
             ->setTableAdapter($this->getPlatform()->getTableAdapter('routes', 'static'))
             ->setColumns($columns)
-            ->addTableAction(new \Nethgui\Controller\Table\Modify('create', $parameterSchema, 'NethServer\Template\StaticRoutes\CreateUpdate'))            
+            ->addTableAction(new \NethServer\Module\StaticRoutes\Modify('create'))            
             ->addTableAction(new \Nethgui\Controller\Table\Help('Help'))
-            ->addRowAction(new \Nethgui\Controller\Table\Modify('update', $parameterSchema, 'NethServer\Template\StaticRoutes\CreateUpdate'))
-            ->addRowAction(new \Nethgui\Controller\Table\Modify('delete', $parameterSchema, 'Nethgui\Template\Table\Delete'))
+            ->addRowAction(new \NethServer\Module\StaticRoutes\Modify('update'))
+            ->addRowAction(new \NethServer\Module\StaticRoutes\Modify('delete'))
         ;
 
         parent::initialize();
     }
 
-    public function prepareViewForColumnKey(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
-    {
-        return "$key / ".$values['Mask'];
-    }
-
-    public function onParametersSaved(\Nethgui\Module\ModuleInterface $currentAction, $changes, $parameters)
-    {
-        $this->getPlatform()->signalEvent('static-routes-save@post-process');
-    }
-
 }
-
