@@ -29,7 +29,7 @@
                 my $tmp = `/sbin/ip -o -4 address show $dev primary | head -1 | awk '{print \$4}'`;
                 chomp $tmp;
                 ($ipaddr, $netmask) = split(/\//, $tmp);
-                next if ($ipaddr eq '' || $netmask eq '');
+                next if ( ! $ipaddr || ! $netmask);
                 ($inet,$imsk) = Net::IPv4Addr::ipv4_network("$ipaddr/$netmask");
             } else {
                 ($inet,$imsk) = Net::IPv4Addr::ipv4_network($ipaddr, $netmask);
