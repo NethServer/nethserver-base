@@ -42,8 +42,8 @@
 
 
         $static->delete();
-        my $name = "route$rand";
         $db->new_record($cidr, {type => 'static', 'Router' => $router, 'Description' => $desc, 'Device' => $device, 'Metric' => ''});
-        $rand++;
     }
+
+    '';
 }
