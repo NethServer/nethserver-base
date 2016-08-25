@@ -7,7 +7,9 @@ my $lineExists = 0;
 open (RD, "</etc/fstab") || die("Cannot open input file /etc/fstab: $!\n");
 while (<RD>)
 {
-    if ( $_ =~'/var/lib/nethserver/home.*/home.*none.*defaults,bind'){
+    next if ($_ =~ /^#/);
+    my @line = split(/\s+/);
+    if ( defined($line[1]) && $line[1] eq '/home' ){
         $lineExists = 1;
     }
 }
