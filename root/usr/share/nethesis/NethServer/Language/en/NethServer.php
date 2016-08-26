@@ -7,6 +7,7 @@ $L['Other modules'] = 'Other modules';
 $L['Security'] = 'Security';
 $L['Status'] = 'Status';
 $L['Gateway'] = 'Gateway';
+$L['Report'] = 'Reports';
 $L['UserProfile_Title'] = 'User\'s profile';
 $L['ChangePassword_Header'] = 'Change password for user `${0}`';
 $L['ChangePassword_label'] = 'Change password';
