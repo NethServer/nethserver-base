@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.5
+Version: 3.0.6
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Fri Aug 26 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.6-1
+- Fix log error message from admin-todos - NethServer/dev#5078
+
 * Thu Aug 25 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.5-1
 - Advanced static routes - NethServer/dev#5079
 - systemd: Failed to create mount unit file: home.mount - Bug NethServer/dev#5086
