@@ -38,12 +38,12 @@ interfaces = json.loads(out, 'UTF-8')
 warn = 0
 
 for i in interfaces:
-    if i['props']['role'] == 'green':
-        try:
+    try:
+        if i['props']['role'] == 'green':
             if i['props']['bootproto'] == 'dhcp':
                 warn = warn + 1
-        except:
-            continue
+    except:
+        continue
 
 if( warn > 0):
     gettext.textdomain('nethserver-base')
