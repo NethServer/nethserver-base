@@ -85,16 +85,40 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
         $p = $this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/yum-packages-to-remove ${@}', array('@'.$group));
         $packages = $p->getOutputArray();
 
+        if ( ! $packages[0]) {
+                return;
+        }
+
         return $packages;
+    }
+
+    private function getPackagesToKeep($group) {
+        static $packages;
+        if (isset($packages)) {
+                return $packages;
+        }
+	$p = $this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/yum-packages-to-keep ${@}', array('@'.$group));
+        $kpackages = $p->getOutputArray();
+
+        if ( ! $kpackages[0]) {
+                return;
+        }
+
+        foreach ($kpackages as $line) {
+                $packages[]=array_combine( array('keep', 'requiredBy'), explode(' ', $line) );
+        }
+
+	return $packages;
     }
 
     private function getTransactionOrder()
     {
-        $a = array('addGroups' => array(), 'removeGroups' => array(), 'addPackages' => array(), 'removePackages' => array());
+        $a = array('addGroups' => array(), 'removeGroups' => array(), 'addPackages' => array(), 'removePackages' => array(), 'keepPackages' => array());
 
         if ($this->parameters['removeGroup']) {
             $a['removeGroups'][] = $this->parameters['removeGroup'];
             $a['removePackages'] = $this->getPackagesToRemove($this->parameters['removeGroup']);
+            $a['keepPackages'] = $this->getPackagesToKeep($this->parameters['removeGroup']);
         } else {
             $order = $this->getPlatform()->getDatabase('SESSION')->getProp('NethServer\Module\PackageManager\Modules', 'groups');
         }
@@ -114,6 +138,7 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
             } elseif ($sel['action'] === 'remove') {
                 $a['removeGroups'][] = $grp;
                 $a['removePackages'] = array_merge($a['removePackages'], array());
+                //$a['keepPackages'] = array_merge($a['keepPackages'], array());
             }
             if (isset($sel['opackages_selected']) && is_array($sel['opackages_selected'])) {
                 $a['addPackages'] = array_merge($a['addPackages'], $sel['opackages_selected']);
@@ -136,6 +161,7 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
             $a['removeGroups?'] = count($a['removeGroups']) > 0;
             $a['addPackages?'] = count($a['addPackages']) > 0;
             $a['removePackages?'] = count($a['removePackages']) > 0;
+            $a['keepPackages?'] = count($a['keepPackages']) > 0;
 
             $view['messages'] = $a;
         } 
