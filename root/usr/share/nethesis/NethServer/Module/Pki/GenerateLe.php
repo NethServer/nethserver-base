@@ -83,7 +83,7 @@ class GenerateLe extends \Nethgui\Controller\AbstractController
             return;
         }
         /*Launch LetsEncrypt helper command*/
-        $p = $this->getPlatform()->exec("/usr/bin/sudo /usr/libexec/nethserver/letsencrypt-certs");
+        $p = $this->getPlatform()->exec("/usr/bin/sudo /usr/libexec/nethserver/letsencrypt-certs -f");
         $this->exitCode = $p->getExitCode();
         $this->output = $p->getOutput(true);
     }
