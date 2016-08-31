@@ -55,7 +55,7 @@ class GenerateLe extends \Nethgui\Controller\AbstractController
         }
 
         $hostnameValidator = $this->createValidator(Validate::HOSTNAME_FQDN);
-        $domains=array_map('trim',preg_split('/[\s,\t\n]+/',$this->parameters['LetsEncryptDomains']));
+        $domains = array_filter(preg_split('/[,\s]+/', $this->parameters['LetsEncryptDomains']));
         foreach ($domains as $domain){
             if( ! $hostnameValidator->evaluate($domain)) {
                 $report->addValidationErrorMessage($this, 'LetsEncryptDomains', "Domain $domain is not a valid domain FQDN");
