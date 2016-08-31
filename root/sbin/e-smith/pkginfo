@@ -112,6 +112,19 @@ def check_update(yb, clean_all = False):
 
     simplejson.dump({'updates': updates, 'changelog': changelog.decode('utf-8')}, sys.stdout)
 
+def parse_pkginfo_conf():
+    repos = []
+    try:
+        f = open('/etc/nethserver/pkginfo.conf')
+        for l in f.read().split("\n"):
+            if l != '' and l[0] != '#':
+                repos.append(l.strip())
+        f.close()
+    except Exception, e:
+        sys.stderr.write("Could not parse pkginfo.conf file: %s" % str(e))
+
+    return repos
+
 def main():
     if len(sys.argv) < 2:
         usage()
@@ -129,7 +142,11 @@ def main():
         ypbc.init_plugins = False
         yb = yum.YumBase()
         yb.preconf = ypbc
-        
+
+        for r in yb.repos.listGroupsEnabled():
+            if not r.id in parse_pkginfo_conf():
+                r.enablegroups = 0
+
         action = sys.argv[1]
         if action == 'grouplist' or action == 'compsdump':
            compsdump(yb)
