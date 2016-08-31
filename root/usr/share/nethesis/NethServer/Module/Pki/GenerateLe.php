@@ -86,6 +86,7 @@ class GenerateLe extends \Nethgui\Controller\AbstractController
         $p = $this->getPlatform()->exec("/usr/bin/sudo /usr/libexec/nethserver/letsencrypt-certs -f");
         $this->exitCode = $p->getExitCode();
         $this->output = $p->getOutput(true);
+        $this->getPlatform()->signalEvent('certificate-update &');
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
