@@ -72,8 +72,7 @@ class Review extends \Nethgui\Controller\Collection\AbstractAction
         }
 
         if (count($args) > 0) {
-            $this->getPlatform()->exec('/usr/bin/sudo /sbin/e-smith/pkgaction ${@}', $args, TRUE);
-            //$this->getLog()->warning('/usr/bin/sudo /sbin/e-smith/pkgaction ${@} ' . implode(' ', $args));
+            $this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/pkgaction ${@}', $args, TRUE);
         }
     }
 

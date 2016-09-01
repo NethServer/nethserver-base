@@ -110,7 +110,6 @@ event_actions('system-init', qw(
     initialize-default-databases      00
     nethserver-base-initialize-db     50
     nethserver-generate-certificate   55
-    init-repo                         60
     system-adjust                     90
     nethserver-base-interface-update  95
     nethserver-system-init-clear      98

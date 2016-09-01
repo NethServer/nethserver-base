@@ -52,6 +52,7 @@ rm -rf %{buildroot}
 (cd root   ; find . -depth -not -name '*.orig' -print  | cpio -dump %{buildroot})
 %{genfilelist} %{buildroot} | sed '
 \|^%{_sysconfdir}/sudoers.d/| d
+\|^%{_sysconfdir}/nethserver/pkginfo.conf| d
 ' > %{name}-%{version}-%{release}-filelist
 
 %files -f %{name}-%{version}-%{release}-filelist
@@ -69,6 +70,7 @@ rm -rf %{buildroot}
 %dir %{_nsdbconfdir}/accounts
 %dir %{_nsconfdir}/validators/myhostname
 %ghost %attr(0644,root,root) /etc/logviewer.conf
+%config(noreplace) %{_sysconfdir}/nethserver/pkginfo.conf
 
 %post
 %systemd_post nethserver-system-init.service NetworkManager.service firewalld.service nethserver-config-network.service

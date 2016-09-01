@@ -31,7 +31,7 @@ class Update extends \Nethgui\Controller\AbstractController implements \Nethgui\
     {
         parent::process();
         if ($this->getRequest()->isMutation()) {
-            $this->getPlatform()->exec('/usr/bin/sudo /sbin/e-smith/pkgaction --update \*', array(), TRUE);
+            $this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/pkgaction --update \*', array(), TRUE);
         }
     }
 

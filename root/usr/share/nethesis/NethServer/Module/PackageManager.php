@@ -55,7 +55,7 @@ class PackageManager extends \Nethgui\Controller\CompositeController implements 
     {
         static $data;
         if ( ! isset($data)) {
-            $process = $this->getPlatform()->exec("/usr/bin/sudo /sbin/e-smith/pkginfo grouplist");
+            $process = $this->getPlatform()->exec("/usr/bin/sudo /usr/libexec/nethserver/pkginfo compsdump");
             if ($process->getExitCode() !== 0) {
                 $this->getLog()->error($process->getOutput());
             }
