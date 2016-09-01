@@ -111,7 +111,7 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
         }
 
         $data = array();
-        $checkUpdateJob = $this->getPlatform()->exec('/usr/bin/sudo -n /sbin/e-smith/pkginfo check-update');
+        $checkUpdateJob = $this->getPlatform()->exec('/usr/bin/sudo -n /usr/libexec/nethserver/pkginfo check-update');
         if ($checkUpdateJob->getExitCode() !== 0) {
             $data = json_decode($checkUpdateJob->getOutput(), TRUE);
             $this->yumError = isset($data['error']) ? $data['error'] : '';
