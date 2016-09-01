@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.6
+Version: 3.0.7
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -79,6 +79,10 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Thu Sep 01 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.7-1
+- Default centos-release-scl  package - NethServer/dev#5089
+- Let's Encrypt: generated certificate is invalid - Bug NethServer/dev#5092
+
 * Fri Aug 26 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.6-1
 - Fix log error message from admin-todos - NethServer/dev#5078
 
