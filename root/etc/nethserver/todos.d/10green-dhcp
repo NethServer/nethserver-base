@@ -53,7 +53,7 @@ if( warn > 0):
             "url": '/NetworkAdapter'
         },
         "icon": "bolt",
-        "text": gettext.gettext('Using DHCP on green interfaces leads to inexpected behavior. Please, change the interface to static if possible')
+        "text": gettext.gettext('Using DHCP on green interfaces leads to unexpected behavior. Please, change the interface to static if possible')
     }
     json.dump(msg, sys.stdout)
 	    
