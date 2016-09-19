@@ -1,0 +1,4 @@
+#!/bin/bash
+LANG=C
+/usr/bin/yum -C --assumeno remove $@ | sed -r '/^--->.*: /!d;s/^-.*: |([-.][0-9]+)+[^ ]+//g;s/ .* / /'
+#/usr/bin/yum -C --assumeno remove $@ | sed '/^--->.*: /!d;s/^-.*: \|\([-.][0-9]\{1,\}\)\{1,\}[^ ]\{1,\}//g;s/ .* / /'
