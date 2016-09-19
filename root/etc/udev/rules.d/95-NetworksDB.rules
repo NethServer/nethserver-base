@@ -1,0 +1,4 @@
+#
+# Update NetworksDB 
+#
+SUBSYSTEM=="net", ACTION=="*", KERNEL=="*", RUN+="/usr/bin/systemctl start nethserver-config-network.service"

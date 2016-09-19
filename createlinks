@@ -52,6 +52,10 @@ event_templates('nethserver-base-update', qw(
     /etc/yum.conf
 ));
 
+event_services('nethserver-base-update', qw(
+    systemd-udevd restart
+));
+
 #--------------------------------------------------
 # actions for interface-update event #1532
 #--------------------------------------------------
