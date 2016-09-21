@@ -40,7 +40,6 @@ mkdir -p root%{perl_vendorlib}
 mv -v lib/perl/{NethServer,esmith} root%{perl_vendorlib}
 mkdir -p root/%{_nseventsdir}/organization-save
 mkdir -p root/%{_nseventsdir}/%{name}-update
-mkdir -p root/%{_nsconfdir}/validators/myhostname
 
 for _nsdb in configuration networks routes accounts; do
    mkdir -p root/%{_nsdbconfdir}/${_nsdb}/{migrate,force,defaults}
@@ -68,7 +67,6 @@ rm -rf %{buildroot}
 %dir %{_nsdbconfdir}/networks
 %dir %{_nsdbconfdir}/routes
 %dir %{_nsdbconfdir}/accounts
-%dir %{_nsconfdir}/validators/myhostname
 %ghost %attr(0644,root,root) /etc/logviewer.conf
 %config(noreplace) %{_sysconfdir}/nethserver/pkginfo.conf
 
