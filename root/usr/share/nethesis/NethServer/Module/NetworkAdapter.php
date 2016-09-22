@@ -47,8 +47,7 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
 
     public function getInterfaceRoles()
     {
-        $interfaces = $this->getPlatform()->getDatabase('configuration')->getProp('firewall', 'InterfaceRoleList');
-        return explode(',',$interfaces);
+        return array('green','red','blue','orange');
     }
 
     private function getProviderNames()
