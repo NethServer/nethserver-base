@@ -11,8 +11,12 @@ echo $view->fieldsetSwitch('bootproto', 'none', $view::FIELDSETSWITCH_EXPANDABLE
     ->insert($view->textInput('gateway'));
 
 echo $view->fieldset()->setAttribute('template', $T('multiwan_label'))
-     ->insert($view->textInput('ProviderName')->setAttribute('placeholder', $view['defaultProviderName']))
-     ->insert($view->textInput('Weight')->setAttribute('placeholder', $view['defaultWeight']));
+    ->insert($view->textInput('ProviderName')->setAttribute('placeholder', $view['defaultProviderName']))
+    ->insert($view->textInput('Weight')->setAttribute('placeholder', $view['defaultWeight']));
+
+echo $view->fieldset()->setAttribute('template', $T('trafficshaping_label'))
+    ->insert($view->textInput('FwInBandwidth'))
+    ->insert($view->textInput('FwOutBandwidth'));
 
 echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_CANCEL | $view::BUTTON_HELP);
 
@@ -47,6 +51,7 @@ $bootprotoId = $view->getClientEventTarget('bootproto');
 $gatewayId = $view->getUniqueId('gateway');
 $MultiwanNameId = $view->getUniqueId('ProviderName');
 $MultiwanWeightId = $view->getUniqueId('Weight');
+$TrafficShapingId = $view->getUniqueId('FwInBandwidth');
 $view->includeJavascript("
 (function ( $ ) {
     var updateFormState = function () {
@@ -64,11 +69,13 @@ $view->includeJavascript("
             $('.${bootprotoId}[value=dhcp]').prop('disabled', true).parent().hide();
         }
 
-        // show Multiwan parameters only for red role
+        // show Multiwan and TrafficShaping options parameters only for red role
         if ($('#${roleId}').val().indexOf('red') !== -1) {
             $('.${MultiwanNameId}').prop('disabled', false).parents('fieldset').first().show();
+            $('.${TrafficShapingId}').prop('disabled', false).parents('fieldset').first().show();
         } else {
             $('.${MultiwanNameId}').prop('disabled', true).parents('fieldset').first().hide();
+            $('.${TrafficShapingId}').prop('disabled', true).parents('fieldset').first().hide();
         }
     };
 

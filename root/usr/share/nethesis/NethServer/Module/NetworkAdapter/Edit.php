@@ -37,7 +37,6 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
 
 	$WeightAdapter = $this->getPlatform()->getMapAdapter(array($this, 'readWeight'), array($this, 'writeWeight'), array());
 	$ProviderNameAdapter = $this->getPlatform()->getMapAdapter(array($this, 'readProviderName'), array($this, 'writeProviderName'), array());
-
         $this->setSchema(array(
             array('device', Validate::ANYTHING, \Nethgui\Controller\Table\RowAbstractAction::KEY),
             array('role', $this->createValidator()->memberOf($this->getParent()->getInterfaceRoles()), \Nethgui\Controller\Table\RowAbstractAction::FIELD),
@@ -47,7 +46,10 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
             array('gateway', Validate::IP_OR_EMPTY, \Nethgui\Controller\Table\RowAbstractAction::FIELD),
 
             array('ProviderName', $this->createValidator()->maxLength(5)->minLength(1)->regexp('/^(?:(?!main).)*$/')->regexp('/^(?:(?!local).)*$/')->regexp('/^(?:(?!\s).)*$/'), $ProviderNameAdapter),
-            array('Weight', $this->createValidator()->integer()->greatThan(0)->lessThan(256), $WeightAdapter)
+            array('Weight', $this->createValidator()->integer()->greatThan(0)->lessThan(256), $WeightAdapter),
+
+            array('FwInBandwidth', $this->createValidator()->greatThan(10) , \Nethgui\Controller\Table\RowAbstractAction::FIELD),
+            array('FwOutBandwidth', Validate::NONNEGATIVE_INTEGER, \Nethgui\Controller\Table\RowAbstractAction::FIELD)
         ));
         parent::initialize();
     }

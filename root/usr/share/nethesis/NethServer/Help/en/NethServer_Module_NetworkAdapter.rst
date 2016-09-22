@@ -54,6 +54,13 @@ Link weight
      If the first provider has weight 100 and the second has weight 50,
      the traffic is always sent to the first provider. The second one will be used only if first provider goes down.
 
+
+Traffic Shaping
+===============
+
+For each red interface, is necessary to specify the maximum amount of bandwidth available in both outgoing and incoming directions to have Traffic Shaping correctly configured. It's imperative to use actual values, preferably measured with speed tests, in particular for the band in upload (outgoing).
+
+
 DNS servers
 ===========
 

@@ -1,0 +1,26 @@
+{
+  #
+  #
+
+  use esmith::NetworksDB;
+  use esmith::DB::db;
+
+  my $ndb = esmith::NetworksDB->open() || return '';
+  my $tdb = esmith::DB::db->open('tc') || return '';
+
+  foreach ($ndb->red()) {
+      # skip if FwInBandwidth and FwOutBandwidth are already configured
+      if ($_->prop('FwInBandwidth') && $_->prop('FwOutBandwidth')) 
+      {
+          next;
+      }
+      my $interface = $_->key;
+      my $in = $tdb->get_prop_and_delete($interface, 'In') || '';
+      my $out = $tdb->get_prop_and_delete($interface, 'Out') || '';
+      $ndb->set_prop($interface,'FwInBandwidth', $in);
+      $ndb->set_prop($interface,'FwOutBandwidth', $out);
+      $tdb->get($interface)->delete();
+  }
+
+  '';   
+}
