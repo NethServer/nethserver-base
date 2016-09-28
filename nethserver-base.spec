@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.8
+Version: 3.0.9
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Wed Sep 28 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.9-1
+- Enchance traffic shaping - NethServer/dev#5113
+
 * Fri Sep 23 2016 Davide Principi <davide.principi@nethesis.it> - 3.0.8-1
 - Unhandled USB ethernet plug events - Bug NethServer/dev#5109
 - Nsdc domain join fails with long hostname - Bug NethServer/dev#5110
