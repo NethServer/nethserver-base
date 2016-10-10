@@ -64,7 +64,7 @@ for card in ${cards[@]}; do
         continue
     fi
 
-    if [ -d /sys/class/net/${card}/master ]; then
+    if [ -d /sys/class/net/${card}/master ] && [ ! -d /sys/class/net/${card}/brport ]; then
         link=`/bin/readlink  /sys/class/net/${card}/master`
         bond=`basename $link`
         hwaddr=`/usr/libexec/nethserver/bond-slave-mac ${bond} ${card}`

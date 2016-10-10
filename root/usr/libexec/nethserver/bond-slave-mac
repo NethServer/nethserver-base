@@ -16,7 +16,7 @@ my $eth = $ARGV[1] || die(help);
 
 my $filename = "/proc/net/bonding/$bond";
 open(my $fh, '<', $filename)
-  or die "No such file: '$filename' $!";
+  or exit 1;
 
 my $found = 0;
 while (my $row = <$fh>) {
