@@ -46,6 +46,7 @@ class ChangePassword extends \Nethgui\Controller\Table\AbstractAction
     {
         parent::__construct($identifier);
         $this->stash = new \NethServer\Tool\PasswordStash();
+        $this->stash->setAutoUnlink(TRUE);
     }
 
     protected function setUserName($userName)
@@ -57,7 +58,7 @@ class ChangePassword extends \Nethgui\Controller\Table\AbstractAction
     public function initialize()
     {
         parent::initialize();
-        $this->declareParameter('newPassword', $this->getPlatform()->createValidator()->platform('password-strength', 'Users'));
+        $this->declareParameter('newPassword', Validate::ANYTHING);
         $this->declareParameter('confirmNewPassword', Validate::ANYTHING);
     }
 
@@ -86,6 +87,7 @@ class ChangePassword extends \Nethgui\Controller\Table\AbstractAction
             throw $response->asException(1354619038);
         } elseif ($request->isMutation()) {
             $this->getLog()->notice(sprintf("%s: %s is changing password to %s (%s). %s", __CLASS__, $currentUser, $resource, $this->userName, $response->getMessage()));
+            $this->stash->store($this->parameters['newPassword']);
         }
     }
 
@@ -93,18 +95,25 @@ class ChangePassword extends \Nethgui\Controller\Table\AbstractAction
     {
         parent::validate($report);
 
-        if ( ! $report->hasValidationErrors()) {
-            if ($this->parameters['newPassword'] !== $this->parameters['confirmNewPassword']) {
-                $report->addValidationErrorMessage($this, 'confirmNewPassword', 'ConfirmNoMatch_label');
-            }
+        if ($report->hasValidationErrors() || ! $this->getRequest()->isMutation()) {
+            return;
         }
+
+        $passwordValidator = $this->getPlatform()->createValidator()->platform('password-strength', 'Users');
+
+        if ($this->parameters['newPassword'] !== $this->parameters['confirmNewPassword']) {
+            $report->addValidationErrorMessage($this, 'confirmNewPassword', 'ConfirmNoMatch_label');
+        } elseif( ! $passwordValidator->evaluate($this->stash->getFilePath())) {
+            $report->addValidationError($this, 'newPassword', $passwordValidator);
+        }
+
     }
 
     public function process()
     {
         if ($this->getRequest()->isMutation()) {
-            $this->stash->store($this->parameters['newPassword']);
-            $this->getPlatform()->signalEvent('password-modify@post-process', array($this->userName, $this->stash->getFilePath()));
+            $this->stash->setAutoUnlink(FALSE);
+            $this->getPlatform()->signalEvent('password-modify', array($this->userName, $this->stash->getFilePath()));
         }
     }
 
