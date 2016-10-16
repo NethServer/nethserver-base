@@ -5,7 +5,7 @@ Organization contacts
 Values from these fields are shown on the Server Manager login screen.
 
 If the users and groups module is available, these field values are the default
-contact informations for the system users.
+contact information for the system users.
 
 Company
     Enter the company name.
@@ -13,7 +13,7 @@ Company
 City 
     Enter the city of the company.
 
-Office
+Department
     Enter the department or office whose members will have access
     the services of the server.
 

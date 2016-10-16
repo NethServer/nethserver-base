@@ -3,7 +3,7 @@ Static routes
 ==============
 
 This page can be used to configure static routes for the network traffic.
-For example, static routes cane used
+For example, static routes can be used
 to reach private networks connected via dedicated lines.
 
 Remember to add the same network to the :guilabel:`Trusted networks` panel,
@@ -21,10 +21,10 @@ Network address
 
 Router address
     Address of the gateway used to reach the specified network,
-    this field is not required.
+    this field is required.
 
 Device
-    If needed, select a evice to force the traffic into chosen network interface.
+    If needed, select a device to force the traffic into chosen network interface.
 
 Metric
     Metric is used to determine whether one route should be chosen over another.

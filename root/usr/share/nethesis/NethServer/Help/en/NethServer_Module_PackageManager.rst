@@ -62,7 +62,7 @@ Updates
 This page lists the available updates for the installed packages.  The
 list is updated periodically.
 
-More informations about the updates are shown by clicking on
+More information about the updates are shown by clicking on
 :guilabel:`Updates CHANGELOG`.
 
 By pushing :guilabel:`Download and install` the listed packages are
