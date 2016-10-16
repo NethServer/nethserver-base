@@ -5,13 +5,13 @@ Server certificate
 This page shows the currently installed X.509 certificates for TLS/SSL encrypted
 communications.
 
-The :guilabel:`Show` button allows to view certificate informations and to set a
+The :guilabel:`Show` button allows to view certificate information and to set a
 certificate as default.
 
 The :guilabel:`Upload certificate` button allows to upload certificate files.
 
 The :guilabel:`Request Let's Encrypt certificate` button changes the `Let's
-Encrypt`_ configuration and send out a new certificate request.
+Encrypt`_ configuration and sends out a new certificate request.
 
 The :guilabel:`Edit self-signed certificate` button allows changing the
 self-signed certificate, by generating a new one.
@@ -43,6 +43,6 @@ certificate. The necessary conditions are:
   http://www.canyouseeme.org/)
 
 * The domains that you want the certificate for, must be public domain names
-  associated to server own public IP. Make sure you have public DNS name
+  associated to server's own public IP. Make sure you have public DNS name
   pointing to your server (you can check with sites like http://viewdns.info/)
 
