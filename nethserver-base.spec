@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.9
+Version: 3.0.10
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,10 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Mon Oct 17 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.10-1
+- Clear-text password in /var/log/secure - Bug NethServer/dev#5130
+- Network page: missing mac address for bridged interfaces -  NethServer/dev#5123
+
 * Wed Sep 28 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.9-1
 - Enchance traffic shaping - NethServer/dev#5113
 
