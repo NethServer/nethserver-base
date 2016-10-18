@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.10
+Version: 3.0.11
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Tue Oct 18 2016 Davide Principi <davide.principi@nethesis.it> - 3.0.11-1
+- Let's Encrypt: missing chain file - Bug NethServer/dev#5134
+
 * Mon Oct 17 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.10-1
 - Clear-text password in /var/log/secure - Bug NethServer/dev#5130
 - Network page: missing mac address for bridged interfaces -  NethServer/dev#5123
