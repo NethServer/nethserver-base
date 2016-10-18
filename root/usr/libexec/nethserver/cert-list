@@ -198,6 +198,7 @@ sub check
         $key = "/etc/pki/tls/private/$n.key";
     } elsif($path =~ m|^/etc/letsencrypt/live|) {
         $key = $path . "privkey.pem";
+        $chain = $path . "chain.pem";
     } else {
         $key = undef;
     }
