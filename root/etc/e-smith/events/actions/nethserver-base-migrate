@@ -45,7 +45,7 @@ my $old = $srcConfigDb->get($service);
 my $new = $dstConfigDb->get($service) || $dstConfigDb->new_record($service);
 $new->merge_props($old->props);
 
-my @keys = ('MinUid', 'maxAcctNameLength', 'maxAcctNameLength', 'maxGroupNameLength', 'maxIbayNameLength');
+my @keys = ('MinUid', 'maxAcctNameLength', 'maxGroupNameLength', 'maxIbayNameLength');
 foreach my $key (@keys) {
     $old = $srcConfigDb->get($key);
     $new = $dstConfigDb->get($key) || $dstConfigDb->new_record($key);
