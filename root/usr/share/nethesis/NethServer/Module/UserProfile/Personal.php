@@ -40,7 +40,7 @@ class Personal extends \Nethgui\Controller\AbstractController implements \Nethgu
         parent::initialize();
     }
 
-    protected function onParametersSaved()
+    protected function onParametersSaved($changedParameters)
     {
         if($this->userName === 'root') {
             $this->getPlatform()->signalEvent('profile-modify@post-process', array('root'));
