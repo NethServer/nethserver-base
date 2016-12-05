@@ -15,11 +15,12 @@
           next;
       }
       my $interface = $_->key;
+      my $tmp = $tdb->get($interface) || next;
       my $in = $tdb->get_prop_and_delete($interface, 'In') || '';
       my $out = $tdb->get_prop_and_delete($interface, 'Out') || '';
       $ndb->set_prop($interface,'FwInBandwidth', $in);
       $ndb->set_prop($interface,'FwOutBandwidth', $out);
-      $tdb->get($interface)->delete();
+      $tmp->delete();
   }
 
   '';   
