@@ -1,0 +1,10 @@
+{
+    #
+    # 20certficate
+    #
+    push @cmnd_alias_httpd_admin, qw(
+        /etc/e-smith/events/actions/nethserver-generate-certificate
+    );
+    '';
+}
+
