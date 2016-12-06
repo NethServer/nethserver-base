@@ -122,9 +122,6 @@ event_actions('system-init', qw(
 #
 # certificate-update event
 #
-event_actions('certificate-update', qw(
-    nethserver-generate-certificate 02
-));
 templates2events('/etc/backup-config.d/nethserver-certificates.include', 'certificate-update');
 
 #
