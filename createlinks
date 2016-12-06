@@ -133,13 +133,6 @@ event_actions('system-init', qw(
 ));
 
 #
-# certificate-update event
-#
-event_actions('certificate-update', qw(
-    nethserver-generate-certificate 02
-));
-
-#
 # profile-modify event
 #
 event_actions('profile-modify', qw(

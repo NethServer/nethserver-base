@@ -129,6 +129,7 @@ class Generate extends \Nethgui\Controller\AbstractController
     {
         parent::process();
         if ($this->getRequest()->isMutation()) {
+            $this->getPlatform()->exec('/usr/bin/sudo /etc/e-smith/events/actions/nethserver-generate-certificate');
             $this->getPlatform()->signalEvent('certificate-update &');
         }
     }
