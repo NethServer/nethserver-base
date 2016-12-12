@@ -107,16 +107,6 @@ class PamValidator implements \Nethgui\System\ValidatorInterface, \Nethgui\Utili
         return $this->php;
     }
 
-    private function parseGroupList($data)
-    {
-        $suffix = '@' .  \Nethgui\array_end(explode('.', \gethostname(), 2));
-        $groupList = array();
-        foreach(explode("\x00", $data) as $groupName) {
-            $groupList[] = preg_replace(sprintf('/%s$/', preg_quote($suffix)), '', $groupName);
-        }
-        return $groupList;
-    }
-
     private function authenticate($username, $password, &$credentials)
     {
         $authenticated = $this->pamAuthenticate($username, $password);
@@ -126,12 +116,12 @@ class PamValidator implements \Nethgui\System\ValidatorInterface, \Nethgui\Utili
             $exitCode = 0;
             $output = array();
 
-            $command = sprintf('/usr/bin/id -G -z -n %s 2>&1', escapeshellarg($username));
+            $command = sprintf('/usr/bin/sudo /usr/libexec/nethserver/list-user-membership -s %s', escapeshellarg($username));
 
             $this->getPhpWrapper()->exec($command, $output, $exitCode);
 
             if ($exitCode === 0) {
-                $groups = $this->parseGroupList($output[0]);
+                $groups = json_decode($output[0]);
                 $this->getLog()->notice(sprintf('%s: additional %s groups: %s. Output: %s', __CLASS__, $username, implode(', ', $groups), var_export($output, TRUE)));
             } else {
                 $this->getLog()->warning(sprintf('%s: failed to execute %s command. Code %d. Output: %s', __CLASS__, $command, $exitCode, implode("\n", $output)));
