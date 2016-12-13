@@ -116,7 +116,7 @@ class PamValidator implements \Nethgui\System\ValidatorInterface, \Nethgui\Utili
             $exitCode = 0;
             $output = array();
 
-            $command = sprintf('/usr/bin/sudo /usr/libexec/nethserver/list-user-membership -s %s', escapeshellarg($username));
+            $command = sprintf('/usr/bin/sudo /usr/libexec/nethserver/list-user-membership -t 5 -s %s', escapeshellarg($username));
 
             $this->getPhpWrapper()->exec($command, $output, $exitCode);
 
