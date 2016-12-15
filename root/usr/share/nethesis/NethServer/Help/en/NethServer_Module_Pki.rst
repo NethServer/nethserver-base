@@ -22,7 +22,7 @@ Request a new Let's Encrypt certificate
 =======================================
 
 From this page, you can create a new Let's Encrypt (https://letsencrypt.org/)
-valid certificate. This certificate is automatically updated every 30 days.
+valid certificate. This certificate is automatically updated every 60 days.
 
 Notification email
     This email is used by Let's Encrypt for notifications about certificate.
@@ -31,11 +31,11 @@ Notification email
 
 Domains
     A single Let's Encrypt certificate can be valid for multiple domains and
-    alias. For instance, mail.nethserver.org, web.nethserver.org... wildcard
-    certificates (\*.nethserver.org) aren't supported.
+    alias. For instance, mail.nethserver.org, web.nethserver.org, etc. Wildcard
+    certificates (\*.nethserver.org) are not supported.
 
 When :guilabel:`REQUEST LET'S ENCRYPT CERTIFICATE` button is clicked, this
-server is tested by Let's Encrypt to ensure that you have the right to get a
+server is tested by Let's Encrypt to ensure that you have the rights to get a
 certificate. The necessary conditions are:
 
 * The server must be reachable from outside at port 80. Make sure your port 80
