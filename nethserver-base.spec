@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.11
+Version: 3.0.12
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,10 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Thu Dec 15 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.12-1
+- Default "admins" config DB record - NethServer/dev#5157
+- Invoke certificate-update event when a valid certificate is renewed - NethServer/dev#5174
+
 * Tue Oct 18 2016 Davide Principi <davide.principi@nethesis.it> - 3.0.11-1
 - Let's Encrypt: missing chain file - Bug NethServer/dev#5134
 
