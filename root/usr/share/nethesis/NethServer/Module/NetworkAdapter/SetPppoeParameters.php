@@ -55,6 +55,11 @@ class SetPppoeParameters extends \Nethgui\Controller\Table\AbstractAction
             if ($key === $eth && $role === '') {
                 $ndb->setProp($key, array('role' => 'pppoe'));
                 $ndb->setType('ppp0', 'xdsl');
+                //write provider for interface
+                $ndb->setKey($this->getDefaultProviderName(), 'provider', array('interface' => 'ppp0', 'weight'=>'1'));
+                //write FwInBandwidth FwOutBandwidth
+                $ndb->setProp('ppp0', array('FwInBandwidth' => ''));
+                $ndb->setProp('ppp0', array('FwOutBandwidth' => ''));
                 $changed = TRUE;
             }
             if ($key !== $eth && $role === 'pppoe') {
@@ -109,6 +114,15 @@ class SetPppoeParameters extends \Nethgui\Controller\Table\AbstractAction
             $this->parameters['PppoeUser'] = trim($request->getParameter('PppoeUser'));
             $this->parameters['PppoeProvider'] = trim($request->getParameter('PppoeProvider'));
             $this->parameters['PppoePassword']= trim($request->getParameter('PppoePassword'));
+        }
+    }
+
+    public function getDefaultProviderName(){
+        $providers = $this->getPlatform()->getDatabase('networks')->getAll();
+        for ($i=1; $i<=count($providers)+1; $i++){
+            if (!isset($providers['red'.$i])) {
+                return 'red'.$i ;
+            }
         }
     }
 
