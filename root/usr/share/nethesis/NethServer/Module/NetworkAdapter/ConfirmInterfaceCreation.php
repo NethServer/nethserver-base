@@ -63,6 +63,15 @@ class ConfirmInterfaceCreation extends \Nethgui\Controller\Table\AbstractAction
         return NULL;
     }
 
+    public function getDefaultProviderName(){
+        $providers = $this->getPlatform()->getDatabase('networks')->getAll();
+        for ($i=1; $i<=count($providers)+1; $i++){
+            if (!isset($providers['red'.$i])) {
+                return 'red'.$i ;
+            }
+        }
+    }
+
     private function getActionsText(\Nethgui\View\ViewInterface $view)
     {
         $data = $this->parameters->getArrayCopy();
@@ -142,6 +151,12 @@ class ConfirmInterfaceCreation extends \Nethgui\Controller\Table\AbstractAction
                 }
             }
             $this->getPlatform()->getDatabase('networks')->setKey($state['device'], $state['type'], $props);
+            //write provider for interface and FwInBandwidth FwOutBandwidth for reds
+            if ($props['role'] === 'red'){
+                $ndb->setKey($this->getDefaultProviderName(), 'provider', array('interface' => $state['device'], 'weight'=>'1'));
+                $ndb->setProp($state['device'], array('FwInBandwidth' => ''));
+                $ndb->setProp($state['device'], array('FwOutBandwidth' => ''));
+            }
             $this->getAdapter()->flush();
             $this->getPlatform()->signalEvent('interface-update &');
         }

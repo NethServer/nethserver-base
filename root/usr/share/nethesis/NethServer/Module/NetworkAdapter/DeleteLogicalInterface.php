@@ -127,6 +127,13 @@ class DeleteLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
                 $this->releasePppoeDevices();
             } else {
                 $this->getPlatform()->getDatabase('networks')->deleteKey($this->parameters['device']);
+                //Remove provider
+                $ndb = $this->getPlatform()->getDatabase('networks');
+                foreach ($ndb->getAll('provider') as $key => $props) {
+                    if (isset($props['interface']) && $props['interface'] === $this->parameters['device']){
+                        $ndb->deleteKey($key);
+                    }
+                }
             }
             $this->getAdapter()->flush();
             $this->getPlatform()->signalEvent('interface-update &');
@@ -140,6 +147,12 @@ class DeleteLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
         foreach ($ndb->getAll('ethernet') as $key => $props) {
             if (isset($props['role']) && $props['role'] === 'pppoe') {
                 $ndb->setProp($key, array('role' => ''));
+            }
+        }
+        //Remove provider
+        foreach ($ndb->getAll('provider') as $key => $props) {
+            if (isset($props['interface']) && $props['interface'] === 'ppp0'){
+                $ndb->deleteKey($key);
             }
         }
     }
