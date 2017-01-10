@@ -127,6 +127,13 @@ class DeleteLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
                 $this->releasePppoeDevices();
             } else {
                 $this->getPlatform()->getDatabase('networks')->deleteKey($this->parameters['device']);
+                //Remove provider
+                $ndb = $this->getPlatform()->getDatabase('networks');
+                foreach ($ndb->getAll('provider') as $key => $props) {
+                    if (isset($props['interface']) && $props['interface'] === $this->parameters['device']){
+                        $ndb->deleteKey($key);
+                    }
+                }
             }
             $this->getAdapter()->flush();
             $this->getPlatform()->signalEvent('interface-update &');
