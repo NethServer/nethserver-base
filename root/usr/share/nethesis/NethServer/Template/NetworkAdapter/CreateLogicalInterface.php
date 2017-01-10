@@ -18,7 +18,7 @@ $types = $view
     )
     ->insert($view->fieldsetSwitch('type', 'vlan', $view::FIELDSETSWITCH_EXPANDABLE)
         ->insert($view->textInput('vlanTag'))
-        ->insert($view->selector('vlan', $view::SELECTOR_DROPDOWN)->setAttribute('choices', 'bondDatasource'))
+        ->insert($view->selector('vlan', $view::SELECTOR_DROPDOWN))
     )
 ;
 

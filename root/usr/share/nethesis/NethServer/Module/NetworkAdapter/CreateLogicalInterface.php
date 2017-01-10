@@ -43,7 +43,7 @@ class CreateLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
         $this->declareParameter('bridge', $this->getMemberOfOrEmptyValidator($this->getBridgeParts()), array('SESSION', $this->sessionKey, 'bridge', ','));
         $this->declareParameter('bond', $this->getMemberOfOrEmptyValidator($this->getBondParts()), array('SESSION', $this->sessionKey, 'bond', ','));
         $this->declareParameter('bondMode', $this->createValidator()->memberOf($this->bondModeList),  array('SESSION', $this->sessionKey, 'bondMode'));
-        $this->declareParameter('vlan', $this->createValidator()->memberOf($this->getBondParts()), array('SESSION', $this->sessionKey, 'vlan'));
+        $this->declareParameter('vlan', $this->createValidator()->memberOf($this->getVlanParts()), array('SESSION', $this->sessionKey, 'vlan'));
         $this->declareParameter('vlanTag', $this->createValidator()->integer()->greatThan(-1)->lessThan(4095), array('SESSION', $this->sessionKey, 'vlanTag'));
     }
 
@@ -112,6 +112,18 @@ class CreateLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
         return $parts;
     }
 
+    private function getVlanParts()
+    {
+        $parts = array();
+        foreach ($this->getAdapter() as $key => $props) {
+            if ($props['type'] != "alias" && $props['type'] != "vlan" && strpos($props['type'],'xdsl') === false) {
+                $parts[] = $key;
+            }
+        }
+        return $parts;
+    }
+
+
     private function getBridgeParts()
     {
         $parts = array();
@@ -169,6 +181,7 @@ class CreateLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
             };
 
             $view['bondDatasource'] = array_map($dsMap, $this->getBondParts());
+            $view['vlanDatasource'] = array_map($dsMap, $this->getVlanParts());
             $view['bondModeDatasource'] = array_map(function ($x) use ($view) {
                 return array($x, $view->translate("BondMode_${x}_label"));
             }, $this->bondModeList);
