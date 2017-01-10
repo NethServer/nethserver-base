@@ -175,6 +175,11 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
 
         $role = isset($values['role']) ? $values['role'] : '';
 
+        $isLastChild = false;
+        if ( $this->hasParent($key) && !$this->hasSiblings($key) ) {
+            $isLastChild = true;
+        }
+
         $isPresent = isset($this->nicInfo[$key]);
         $isLogicalDevice = in_array($values['type'], array('alias', 'bridge', 'bond', 'vlan', 'xdsl'));
         $isPhysicalInterface = in_array($values['type'], array('ethernet'));
@@ -186,7 +191,7 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
             unset($cellView['DeleteLogicalInterface']);
         }
 
-        if ( ! $isPhysicalInterface || $role === '') {
+        if ( ! $isPhysicalInterface || $role === '' || $isLastChild ) {
             unset($cellView['ReleasePhysicalInterface']);
         }
 
