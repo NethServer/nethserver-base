@@ -62,7 +62,7 @@ if (scalar(@free_interfaces) == 1) {
     my $br_name = 'brdef';
     my %br = (
         'type' => 'bridge',
-        'bootproto' => 'static',
+        'bootproto' => 'none',
         'device' => $br_name,
         'onboot' => 'yes',
         'gateway' => '',
