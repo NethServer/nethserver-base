@@ -142,6 +142,12 @@ class DeleteLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
                 $ndb->setProp($key, array('role' => ''));
             }
         }
+        //Remove provider
+        foreach ($ndb->getAll('provider') as $key => $props) {
+            if (isset($props['interface']) && $props['interface'] === 'ppp0'){
+                $ndb->deleteKey($key);
+            }
+        }
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)

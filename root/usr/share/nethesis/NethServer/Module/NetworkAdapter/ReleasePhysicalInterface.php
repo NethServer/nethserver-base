@@ -70,6 +70,12 @@ class ReleasePhysicalInterface extends \Nethgui\Controller\Table\AbstractAction
             $ndb->setProp($this->parameters['device'], array('role' => ''));
             if($this->parameters['role'] === 'pppoe') {
                 $ndb->setType('ppp0', 'xdsl-disabled');
+                //Remove provider
+                foreach ($ndb->getAll('provider') as $key => $props) {
+                    if (isset($props['interface']) && $props['interface'] === 'ppp0'){
+                        $ndb->deleteKey($key);
+                    }
+                }
             }
             if($this->parameters['role'] === 'red'){
                 foreach ($ndb->getAll('provider') as $name=>$provider) {
