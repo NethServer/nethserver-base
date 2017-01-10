@@ -31,17 +31,10 @@ use Nethgui\System\PlatformInterface as Validate;
  */
 class Edit extends \Nethgui\Controller\Table\RowAbstractAction
 {
+    use ProviderTrait;
 
     public function initialize()
     {
-
-        $bandwidthValidator = $this->createValidator()->orValidator(
-            $this->createValidator()->integer()->greatThan(0),
-            $this->createValidator(Validate::EMPTYSTRING)
-        );
-
-	$WeightAdapter = $this->getPlatform()->getMapAdapter(array($this, 'readWeight'), array($this, 'writeWeight'), array());
-	$ProviderNameAdapter = $this->getPlatform()->getMapAdapter(array($this, 'readProviderName'), array($this, 'writeProviderName'), array());
         $this->setSchema(array(
             array('device', Validate::ANYTHING, \Nethgui\Controller\Table\RowAbstractAction::KEY),
             array('role', $this->createValidator()->memberOf($this->getParent()->getInterfaceRoles()), \Nethgui\Controller\Table\RowAbstractAction::FIELD),
@@ -50,62 +43,13 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
             array('netmask', Validate::IPv4_NETMASK, \Nethgui\Controller\Table\RowAbstractAction::FIELD),
             array('gateway', Validate::IP_OR_EMPTY, \Nethgui\Controller\Table\RowAbstractAction::FIELD),
 
-            array('ProviderName', $this->createValidator()->maxLength(5)->minLength(1)->regexp('/^(?:(?!main).)*$/')->regexp('/^(?:(?!local).)*$/')->regexp('/^(?:(?!\s).)*$/'), $ProviderNameAdapter),
-            array('Weight', $this->createValidator()->integer()->greatThan(0)->lessThan(256), $WeightAdapter),
+            array('ProviderName', $this->createProviderNameValidator(), $this->getProviderNameAdapter()),
+            array('Weight', $this->createWeightValidator(), $this->getWeightAdapter()),
 
-            array('FwInBandwidth', $bandwidthValidator, \Nethgui\Controller\Table\RowAbstractAction::FIELD),
-            array('FwOutBandwidth', $bandwidthValidator, \Nethgui\Controller\Table\RowAbstractAction::FIELD)
+            array('FwInBandwidth', $this->createBandwidthValidator(), \Nethgui\Controller\Table\RowAbstractAction::FIELD),
+            array('FwOutBandwidth', $this->createBandwidthValidator(), \Nethgui\Controller\Table\RowAbstractAction::FIELD)
         ));
         parent::initialize();
-    }
-
-    public function readProviderName()
-    {
-	foreach ($this->getPlatform()->getDatabase('networks')->getAll('provider') as $name=>$provider) {
-            if ($provider['interface'] === $this->parameters['device']){
-                return $name;
-            }
-        }
-    }
-
-    public function writeProviderName()
-    {
-        if ($this->parameters['role']!='red') {
-            $this->getPlatform()->getDatabase('networks')->deleteKey($name);
-            return TRUE;
-        }
-        foreach ($this->getPlatform()->getDatabase('networks')->getAll('provider') as $name=>$provider) {
-            if ($provider['interface'] === $this->parameters['device']){
-                if ($this->parameters['ProviderName']!=$name) {
-                     $this->getPlatform()->getDatabase('networks')->deleteKey($name);
-                } else {
-                    $this->getPlatform()->getDatabase('networks')->setProp($this->parameters['ProviderName'],array('interface'=>$this->parameters['device'],'weight'=>$this->parameters['Weight']));
-                    return TRUE;
-                }
-            }
-        }
-        $this->getPlatform()->getDatabase('networks')->setKey($this->parameters['ProviderName'],'provider',array());
-        $this->getPlatform()->getDatabase('networks')->setProp($this->parameters['ProviderName'],array('interface'=>$this->parameters['device'], 'weight'=>$this->parameters['Weight'] ));
-        return TRUE;
-    }
-
-    public function readWeight()
-    {
-        foreach ($this->getPlatform()->getDatabase('networks')->getAll('provider') as $name=>$provider) {
-            if ($provider['interface'] === $this->parameters['device']) {
-                return $provider['weight'];
-            }
-        }
-    }
-
-    public function writeWeight()
-    {
-        foreach ($this->getPlatform()->getDatabase('networks')->getAll('provider') as $name=>$provider) {
-            if ($provider['interface'] === $this->parameters['device']) {
-                $this->getPlatform()->getDatabase('networks')->setProp($name,array('weight'=>$this->parameters['Weight']));
-                return TRUE;
-            }
-        }
     }
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
@@ -204,12 +148,5 @@ class Edit extends \Nethgui\Controller\Table\RowAbstractAction
             return array($fmt, $view->translate($fmt . '_label'));
         }, $this->getParent()->getInterfaceRoles());
     }
-    public function getDefaultProviderName(){
-        $providers = $this->getPlatform()->getDatabase('networks')->getAll();
-        for ($i=1; $i<=count($providers)+1; $i++){
-            if (!isset($providers['red'.$i])) {
-                return 'red'.$i ;
-            }
-        }
-    }
+
 }
