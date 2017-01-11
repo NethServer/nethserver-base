@@ -28,6 +28,7 @@ use Nethgui\System\PlatformInterface as Validate;
  */
 class SetPppoeParameters extends \Nethgui\Controller\Table\AbstractAction
 {
+    use ProviderTrait;
 
     public function initialize()
     {
@@ -40,6 +41,16 @@ class SetPppoeParameters extends \Nethgui\Controller\Table\AbstractAction
         $this->declareParameter('PppoePassword', Validate::NOTEMPTY, array('networks', 'ppp0', 'Password'));
         $this->declareParameter('PppoeInterface', $this->createValidator()->memberOf($this->getValidInterfaces()), $adapter);
         $this->declareParameter('PppoeAuthType', $this->createValidator()->memberOf('auto', 'pap', 'chap'), array('networks', 'ppp0', 'AuthType'));
+
+        // Parameters required by ProviderTrait:
+        $this->declareParameter('device', FALSE);
+        $this->declareParameter('role', FALSE);
+
+        $this->declareParameter('ProviderName', $this->createProviderNameValidator(), $this->getProviderNameAdapter());
+        $this->declareParameter('Weight', $this->createWeightValidator(), $this->getWeightAdapter());
+        $this->declareParameter('FwInBandwidth', $this->createBandwidthValidator(), array('networks', 'ppp0', 'FwInBandwidth'));
+        $this->declareParameter('FwOutBandwidth', $this->createBandwidthValidator(), array('networks', 'ppp0', 'FwOutBandwidth'));
+
     }
 
     public function writeInterface($eth)
@@ -55,11 +66,6 @@ class SetPppoeParameters extends \Nethgui\Controller\Table\AbstractAction
             if ($key === $eth && $role === '') {
                 $ndb->setProp($key, array('role' => 'pppoe'));
                 $ndb->setType('ppp0', 'xdsl');
-                //write provider for interface
-                $ndb->setKey($this->getDefaultProviderName(), 'provider', array('interface' => 'ppp0', 'weight'=>'1'));
-                //write FwInBandwidth FwOutBandwidth
-                $ndb->setProp('ppp0', array('FwInBandwidth' => ''));
-                $ndb->setProp('ppp0', array('FwOutBandwidth' => ''));
                 $changed = TRUE;
             }
             if ($key !== $eth && $role === 'pppoe') {
@@ -94,12 +100,6 @@ class SetPppoeParameters extends \Nethgui\Controller\Table\AbstractAction
         return $parts;
     }
 
-    public function process()
-    {
-        parent::process();
-        $ndb = $this->getPlatform()->getDatabase('networks');
-    }
-
     protected function onParametersSaved($changedParameters)
     {
         $this->getPlatform()->signalEvent('interface-update &');
@@ -110,18 +110,19 @@ class SetPppoeParameters extends \Nethgui\Controller\Table\AbstractAction
     {
         parent::bind($request);
 
+        // Constant parameters required by ProviderTrait
+        $this->parameters['device'] = 'ppp0';
+        $this->parameters['role'] = 'red';
+
         if ($request->isMutation()) {
             $this->parameters['PppoeUser'] = trim($request->getParameter('PppoeUser'));
             $this->parameters['PppoeProvider'] = trim($request->getParameter('PppoeProvider'));
             $this->parameters['PppoePassword']= trim($request->getParameter('PppoePassword'));
-        }
-    }
-
-    public function getDefaultProviderName(){
-        $providers = $this->getPlatform()->getDatabase('networks')->getAll();
-        for ($i=1; $i<=count($providers)+1; $i++){
-            if (!isset($providers['red'.$i])) {
-                return 'red'.$i ;
+            if ($request->getParameter('ProviderName') === '') {
+                $this->parameters['ProviderName'] = $this->getDefaultProviderName();
+            }
+            if ($request->getParameter('Weight') === '') {
+                $this->parameters['Weight'] = '1';
             }
         }
     }
