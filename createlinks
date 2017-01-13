@@ -268,3 +268,7 @@ validator_actions('myhostname', qw(
     hostname-length 10
 ));
 
+event_actions('post-restore-config', qw(
+    hostname-set       01
+));
+

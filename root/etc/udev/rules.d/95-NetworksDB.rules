@@ -1,4 +1,4 @@
 #
 # Update NetworksDB 
 #
-SUBSYSTEM=="net", ACTION=="*", KERNEL=="*", RUN+="/usr/bin/systemctl start nethserver-config-network.service"
+SUBSYSTEM=="net", ACTION=="*", KERNEL=="*", RUN+="/sbin/e-smith/nethserver-config-network --update-db-only"

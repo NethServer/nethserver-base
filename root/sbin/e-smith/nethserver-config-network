@@ -26,7 +26,15 @@ use strict;
 
 my $ndb = esmith::NetworksDB->open();
 
+my $updateonly = 0;
+if ( defined($ARGV[0]) && $ARGV[0] eq '--update-db-only' ) {
+    $updateonly = 1;
+}
+
 update_network_db();
+if ($updateonly) {
+    exit(0);
+}
 
 my @lost_interfaces = read_lost_interfaces();
 
