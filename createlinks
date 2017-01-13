@@ -62,6 +62,7 @@ event_services('nethserver-base-update', qw(
 event_actions('interface-update', qw(
               network-stop               04
               interface-rename           20
+              adjust-fixnetwork-flag     21
               interface-config-reset     25
               interface-config-write     30
               network-start              70
