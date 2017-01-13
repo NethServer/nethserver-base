@@ -215,7 +215,7 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
             unset($cellView['SetPppoeParameters']);
         }
 
-        if (!$role) {
+        if (!$role && $isPresent) {
             $cellView['Configure'] = array('Configure', $cellView['Edit'][1]);
             unset($cellView['Edit']);
         }
