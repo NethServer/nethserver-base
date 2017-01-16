@@ -464,41 +464,6 @@ sub get_next_uid {
 
 =pod
 
-=head2 new_record ($key, \%props)
-
-This method is overridden from esmith::DB::db. We do an additional check
-for implicit accounts here - accounts that exist in /etc/passwd but not
-in the db. Otherwise it behaves just like the superclass method.
-
-=begin testing
-
-isnt($a->new_record("root", {type=>'system'}), "OK", 
-    "can't create existing account");
-is($a->get("nobody"), undef, "nobody doesn't exist in db");
-isnt($a->new_record("nobody", {type=>'system'}), "OK",
-    "can't create account in /etc/passwd");
-isnt($a->new_record("screwy", {type=>'user'}), undef, 
-    "created a regular user");
-
-=end testing
-
-=cut
-
-sub new_record
-{
-    my ($self, $key, $props) = @_;
-
-    if(getpwnam($key) || getgrnam($key))
-    {
-        warn "Attempt to create account '$key' which already exists ",
-            "in passwd";
-        return undef;
-    }
-    return $self->SUPER::new_record($key, $props);
-}
-
-=pod
-
 =head2 validate_account_name ($name)
 
 Check $name to see if it is a valid account name. Valid account names
