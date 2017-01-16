@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.13
+Version: 3.0.14
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,10 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Mon Jan 16 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.14-1
+- DC: restore configuration fails - Bug NethServer/dev#5188
+- Exhibit bad network configuration - NethServer/dev#5193
+
 * Wed Jan 11 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.13-1
 - Logical interfaces UI tweaks - NethServer/dev#5189
 - Traffic shaping for logical interfaces  - NethServer/dev#5187
