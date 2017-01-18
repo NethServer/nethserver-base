@@ -122,7 +122,7 @@ class PamValidator implements \Nethgui\System\ValidatorInterface, \Nethgui\Utili
 
             if ($exitCode === 0) {
                 $groups = json_decode($output[0]);
-                $this->getLog()->notice(sprintf('%s: additional %s groups: %s. Output: %s', __CLASS__, $username, implode(', ', $groups), var_export($output, TRUE)));
+                NETHGUI_DEBUG && $this->getLog()->notice(sprintf('%s: additional %s groups: %s. Output: %s', __CLASS__, $username, implode(', ', $groups), var_export($output, TRUE)));
             } else {
                 $this->getLog()->warning(sprintf('%s: failed to execute %s command. Code %d. Output: %s', __CLASS__, $command, $exitCode, implode("\n", $output)));
                 $groups = array();

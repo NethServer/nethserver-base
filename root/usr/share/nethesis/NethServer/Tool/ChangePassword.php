@@ -86,7 +86,7 @@ class ChangePassword extends \Nethgui\Controller\Table\AbstractAction
         if ($response->isDenied()) {
             throw $response->asException(1354619038);
         } elseif ($request->isMutation()) {
-            $this->getLog()->notice(sprintf("%s: %s is changing password to %s (%s). %s", __CLASS__, $currentUser, $resource, $this->userName, $response->getMessage()));
+            NETHGUI_DEBUG && $this->getLog()->notice(sprintf("%s: %s is changing password to %s (%s). %s", __CLASS__, $currentUser, $resource, $this->userName, $response->getMessage()));
             $this->stash->store($this->parameters['newPassword']);
         }
     }
