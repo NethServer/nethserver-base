@@ -86,7 +86,7 @@ class ChangePassword extends \Nethgui\Controller\Table\AbstractAction
         if ($response->isDenied()) {
             throw $response->asException(1354619038);
         } elseif ($request->isMutation()) {
-            $this->getLog()->notice(sprintf("%s: %s is changing password to %s (%s). %s", __CLASS__, $currentUser, $resource, $this->userName, $response->getMessage()));
+            NETHGUI_DEBUG && $this->getLog()->notice(sprintf("%s: %s is changing password to %s (%s). %s", __CLASS__, $currentUser, $resource, $this->userName, $response->getMessage()));
             $this->stash->store($this->parameters['newPassword']);
         }
     }
@@ -109,11 +109,24 @@ class ChangePassword extends \Nethgui\Controller\Table\AbstractAction
 
     }
 
+    private function getRealUser( $user )
+    {
+        $passwd = file('/etc/passwd');
+        foreach ($passwd as $line) {
+            if (preg_match("/^$user:/", $line)) { # the user is from passwd
+                return $user;
+            }
+        }
+        # return the full user name
+        return $user.'@'.$this->getPlatform()->getDatabase('configuration')->getType('DomainName');
+    }
+
     public function process()
     {
         if ($this->getRequest()->isMutation()) {
             $this->stash->setAutoUnlink(FALSE);
-            $this->getPlatform()->signalEvent('password-modify', array($this->userName, $this->stash->getFilePath()));
+            $user = $this->getRealUser($this->userName);
+            $this->getPlatform()->signalEvent('password-modify', array($user, $this->stash->getFilePath()));
         }
     }
 
