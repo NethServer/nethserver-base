@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.14
+Version: 3.0.15
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Thu Jan 19 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.15-1
+- Error on changing user's password when login with short-hand user format - NethServer/dev#5203
+
 * Mon Jan 16 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.14-1
 - DC: restore configuration fails - Bug NethServer/dev#5188
 - Exhibit bad network configuration - NethServer/dev#5193
