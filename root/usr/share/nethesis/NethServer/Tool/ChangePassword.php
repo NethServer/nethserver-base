@@ -111,6 +111,10 @@ class ChangePassword extends \Nethgui\Controller\Table\AbstractAction
 
     private function getRealUser( $user )
     {
+        if(strstr($user, '@')) {
+            return $user; // return full user name as-is
+        }
+
         $passwd = file('/etc/passwd');
         foreach ($passwd as $line) {
             if (preg_match("/^$user:/", $line)) { # the user is from passwd
