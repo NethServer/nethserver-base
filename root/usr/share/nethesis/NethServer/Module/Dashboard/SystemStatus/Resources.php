@@ -69,7 +69,7 @@ class Resources extends \Nethgui\Controller\AbstractController
     private function readDF() {
         $out = array();
         $ret = array();
-        exec('/bin/df -P -x tmpfs', $out);
+        exec('/bin/df -P /', $out);
         # Filesystem Size  Used Avail Use% Mount
         for ($i=0; $i<count($out); $i++) {
             if ($i == 0) {
