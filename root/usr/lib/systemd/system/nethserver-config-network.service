@@ -2,14 +2,14 @@
 Description=Reconfigure newtork interfaces
 Documentation=https://github.com/NethServer/nethserver-base
 ConditionPathExists=!/var/spool/first-boot
-After=nethserver-system-init.service
-Before=getty.target
+ConditionFileNotEmpty=/var/lib/nethserver/db/networks
+After=network-online.target
+RefuseManualStart=true
+RefuseManualStop=true
 
 [Service]
 Type=oneshot
 ExecStart=/sbin/e-smith/nethserver-config-network
-StandardOutput=tty
-TTYReset=yes
 
 [Install]
 WantedBy=multi-user.target
