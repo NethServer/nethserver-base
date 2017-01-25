@@ -23,7 +23,6 @@ use esmith::Build::CreateLinks  qw(:all);
 use File::Path;
 
 event_actions('trusted-networks-modify', qw(
-    legacy-call-network-create 10
     firewall-adjust 94
 ));
 
