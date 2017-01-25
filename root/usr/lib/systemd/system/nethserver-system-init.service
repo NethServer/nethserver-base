@@ -1,9 +1,12 @@
 [Unit]
 Description=Initialize NethServer configuration
 Documentation=https://github.com/nethesis/nethserver-base
-After=network.service
-Before=getty.target
 ConditionPathExists=/var/spool/first-boot
+After=network-online.target
+DefaultDependencies=false
+Conflicts=shutdown.target
+RefuseManualStart=true
+RefuseManualStop=true
 
 [Service]
 Type=oneshot
