@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.15
+Version: 3.0.16
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,11 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Thu Jan 26 2017 Davide Principi <davide.principi@nethesis.it> - 3.0.16-1
+- Fix service boot order -- NethServer/nethserver-base#81
+- Remove legacy call to network-create event -- NethServer/nethserver-base#78
+- Fix slow disk space calculations -- NethServer/nethserver-base d9a04df
+
 * Thu Jan 19 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.15-1
 - Error on changing user's password when login with short-hand user format - NethServer/dev#5203
 
