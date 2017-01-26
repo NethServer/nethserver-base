@@ -10,3 +10,6 @@ plugins=1
 installonly_limit=5
 bugtracker_url=https://github.com/NethServer/dev
 distroverpkg=centos-release
+remove_leaf_only=1
+groupremove_leaf_only=1
+clean_requirements_on_remove=1
