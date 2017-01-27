@@ -116,12 +116,17 @@ class PamValidator implements \Nethgui\System\ValidatorInterface, \Nethgui\Utili
             $exitCode = 0;
             $output = array();
 
-            $command = sprintf('/usr/bin/sudo /usr/libexec/nethserver/list-user-membership -t 5 -s %s', escapeshellarg($username));
+            $command = sprintf('/usr/bin/id -Gn -z %s', escapeshellarg($username));
 
             $this->getPhpWrapper()->exec($command, $output, $exitCode);
 
             if ($exitCode === 0) {
-                $groups = json_decode($output[0]);
+                $domain = \Nethgui\array_end(explode('.', \gethostname(), 2));
+                $map2admins = trim(exec('/usr/bin/sudo /sbin/e-smith/db configuration getprop admins group'));
+                $groups = preg_replace("/@$domain\$/", '', explode("\0", trim($output[0])));
+                if($map2admins && $map2admins !== 'administrators' && in_array($map2admins, $groups)) {
+                    $groups[] = 'administrators';
+                }
                 NETHGUI_DEBUG && $this->getLog()->notice(sprintf('%s: additional %s groups: %s. Output: %s', __CLASS__, $username, implode(', ', $groups), var_export($output, TRUE)));
             } else {
                 $this->getLog()->warning(sprintf('%s: failed to execute %s command. Code %d. Output: %s', __CLASS__, $command, $exitCode, implode("\n", $output)));
