@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.16
+Version: 3.0.17
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Mon Jan 30 2017 Davide Principi <davide.principi@nethesis.it> - 3.0.17-1
+- Domain admins members are not granted full server-manager access - Bug NethServer/dev#5209
+
 * Thu Jan 26 2017 Davide Principi <davide.principi@nethesis.it> - 3.0.16-1
 - Fix service boot order -- NethServer/nethserver-base#81
 - Remove legacy call to network-create event -- NethServer/nethserver-base#78
