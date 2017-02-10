@@ -93,7 +93,7 @@ for card in ${cards[@]}; do
 
     # Get more details for pci and usb devices
     if [ "$type" == "pci" ]; then
-	model=`lspci -s $(basename $(ls -l /sys/class/net/$card/device | awk '{print$NF}' )) | cut -d':' -f3 | cut -c 2-`
+	model=`/sbin/lspci -s $(basename $(ls -l /sys/class/net/$card/device | awk '{print$NF}' )) | cut -d':' -f3 | cut -c 2-`
     fi
     
     if [ "$type" == "usb" ]; then
@@ -102,15 +102,15 @@ for card in ${cards[@]}; do
 	# work around the base8 convert
 	let bus=`echo 1$bus`-1000
 	let dev=`echo 1$dev`-1000
-	model=`lsusb -s $bus:$dev | cut -d':' -f3 | cut -c 6-`
+	model=`/bin/lsusb -s $bus:$dev | cut -d':' -f3 | cut -c 6-`
     fi
 
     link=$(cat /sys/class/net/$card/carrier 2>/dev/null)
     if [ $? != 0 ]; then
-	ip link set $card up 2>/dev/null
+	/sbin/ip link set $card up 2>/dev/null
 	link=$(cat /sys/class/net/$card/carrier 2>/dev/null)
 	speed=$(cat /sys/class/net/$card/speed 2>/dev/null)
-	ip link set $card down 2>/dev/null
+	/sbin/ip link set $card down 2>/dev/null
     else
 	speed=$(cat /sys/class/net/$card/speed 2>/dev/null)
     fi
