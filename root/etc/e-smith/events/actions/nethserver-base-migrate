@@ -36,8 +36,10 @@ if( ! -d $sourceDir) {
 }
 
 my $srcConfigDb = esmith::DB::db->open_ro(join('', $sourceDir, $esmithDbDir, '/configuration')) || die("Could not open source configuration database in $sourceDir \n");
-
 my $dstConfigDb = esmith::DB::db->open('configuration') || die("Could not open destination account db\n");
+my $srcNetworkDb = esmith::DB::db->open_ro(join('', $sourceDir, $esmithDbDir, '/networks')) || die("Could not open source networks db in $sourceDir \n");
+my $dstNetworkDb = esmith::DB::db->open('networks') || die("Could not open destination networks db\n");
+my $routesDb = esmith::DB::db->open('routes') || die("Could not open destination routes db\n");
 
 
 my $service = 'passwordstrength';
@@ -109,10 +111,6 @@ if ($chain ne "") {
 #
 # BEGIN static routes and trusted networks migration
 #
-my $srcNetworkDb = esmith::DB::db->open_ro(join('', $sourceDir, $esmithDbDir, '/networks')) || die("Could not open source networks db in $sourceDir \n");
-
-my $dstNetworkDb = esmith::DB::db->open('networks') || die("Could not open destination networls db\n");
-my $routesDb = esmith::DB::db->open('routes') || die("Could not open destination routes db\n");
 
 my @srcNetworks = $srcNetworkDb->get_all_by_prop(type=>'network');
 
@@ -188,7 +186,7 @@ system('rm -rf /root/.ssh');
 
 NethServer::Migrate::migrateDir("$sourceDir/root","/root");
 
-# restore my.cnf posizion
+# restore my.cnf position
 if (-f "/tmp/my.cnf.bak") {
     move("/tmp/my.cnf.bak", "$sourceDir/root/.my.cnf")
 }
