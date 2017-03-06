@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.17
+Version: 3.0.18
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Mon Mar 06 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.18-1
+- Migration from sme8 - NethServer/dev#5196
+
 * Mon Jan 30 2017 Davide Principi <davide.principi@nethesis.it> - 3.0.17-1
 - Domain admins members are not granted full server-manager access - Bug NethServer/dev#5209
 
