@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.18
+Version: 3.0.19
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,10 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Thu Apr 20 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.19-1
+- Upgrade from NS 6 via backup and restore - NethServer/dev#5234
+- Ipaddr prop missing from green+DHCP interface - Bug NethServer/dev#5272
+
 * Mon Mar 06 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.18-1
 - Migration from sme8 - NethServer/dev#5196
 
