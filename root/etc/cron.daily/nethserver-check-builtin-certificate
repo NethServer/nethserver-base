@@ -36,9 +36,8 @@ exp=$(${pki_info} -e ${cert})
 must_renew() {
     perl -MDate::Parse -e '
 $oneday = str2time($ARGV[0]) < (time() + (24 * 3600));
-$auto = ! $ARGV[1];
-exit($oneday && $auto ? 0 : 1);
-' -- "${exp}" "${cert}"
+exit($oneday ? 0 : 1);
+' -- "${exp}"
 }
 
 #
