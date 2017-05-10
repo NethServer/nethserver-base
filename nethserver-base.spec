@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.19
+Version: 3.0.20
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Wed May 10 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.20-1
+- PKI: self-signed certificate not renewed - Bug NethServer/dev#5278
+
 * Thu Apr 20 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.19-1
 - Upgrade from NS 6 via backup and restore - NethServer/dev#5234
 - Ipaddr prop missing from green+DHCP interface - Bug NethServer/dev#5272
