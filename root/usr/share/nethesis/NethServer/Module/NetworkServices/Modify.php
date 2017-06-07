@@ -37,7 +37,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
         if ($this->zones) {
             return $this->zones;
         }
-        $invalid_roles = array('bridged', 'alias', 'slave', 'xdsl');
+        $invalid_roles = array('bridged', 'alias', 'slave', 'pppoe');
         $networks = $this->getPlatform()->getDatabase('networks')->getAll();
         $this->zones['red'] = ''; # always enable red
         foreach ($networks as $key => $values) {
