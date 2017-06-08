@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.21
+Version: 3.0.22
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Thu Jun 08 2017 Davide Principi <davide.principi@nethesis.it> - 3.0.22-1
+- Network Services: pppoe zone - Bug NethServer/dev#5310
+
 * Tue May 30 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.21-1
 - Add an example to FQDN validator - NethServer/dev#5297
 
