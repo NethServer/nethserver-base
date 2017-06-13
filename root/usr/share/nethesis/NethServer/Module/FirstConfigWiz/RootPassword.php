@@ -67,12 +67,12 @@ class RootPassword extends \NethServer\Tool\ChangePassword implements \Nethgui\C
         }
         $this->setUserName('root');
         parent::bind($request);
+        $this->stash->setAutoUnlink(FALSE);
     }
 
     public function process()
     {
         if ($this->getRequest()->isMutation()) {
-            $this->stash->setAutoUnlink(FALSE)->store($this->parameters['newPassword']);
             $this->getParent()->storeAction(array(
                 'message' => array(
                     'module' => $this->getIdentifier(),
