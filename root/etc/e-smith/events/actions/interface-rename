@@ -34,9 +34,7 @@ sub update_refs {
     my $new = shift;
 
     foreach (glob('/var/lib/nethserver/db/*')) {
-        if ($_ ne '/var/lib/nethserver/db/networks') {
-            system("sed -i 's/\b$old\b/$new/g' $_");
-        }
+        system("sed -i 's/\\b$old\\b/$new/g' $_");
     }
 }
 
