@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.22
+Version: 3.0.33
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,10 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Wed Jul 12 2017 Davide Principi <davide.principi@nethesis.it> - 3.0.33-1
+- AD account provider: web interface doesn't correctly display users with password expiration - Bug NethServer/dev#5318
+- Backup config history - NethServer/dev#5314
+
 * Thu Jun 08 2017 Davide Principi <davide.principi@nethesis.it> - 3.0.22-1
 - Network Services: pppoe zone - Bug NethServer/dev#5310
 
