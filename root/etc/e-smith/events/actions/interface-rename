@@ -25,7 +25,7 @@ while ($i < $argnum) {
         die("Empty parameters");
     }
 
-    rename_network_interface($old, $new);
+    update_refs($old, $new);
 }
 
 
@@ -33,23 +33,9 @@ sub update_refs {
     my $old = shift;
     my $new = shift;
 
+    warn "[NOTICE] Rename interface $old -> $new\n";
     foreach (glob('/var/lib/nethserver/db/*')) {
         system("sed -i 's/\\b$old\\b/$new/g' $_");
     }
 }
 
-sub rename_network_interface {
-    my $old = shift;
-    my $new = shift;
-
-    my $ndb = esmith::NetworksDB->open();
-    my $old_r = $ndb->get($old) || undef;
-    my $new_r = $ndb->get($new) || undef;
-    if ( ! defined($old_r) || ! defined($new_r) ) {
-        return;
-    }
-    print "Rename $old -> $new\n";
-    $new_r->merge_props($old_r->props);
-    $old_r->delete();
-    update_refs($old, $new);
-}
