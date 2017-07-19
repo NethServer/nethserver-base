@@ -1,5 +1,15 @@
 [
     {
+    "Id": 1500471060,
+    "Effect": "ALLOW",
+    "Subject": "*",
+    "Action": "*",
+    "Resource": "NethServer\\Module\\Login*",
+    "Description":
+        "Anonymous can use the Login module"
+    }
+    ,
+    {
         "Id": 1389104743,
         "Final": true,
         "Effect": "ALLOW",
