@@ -72,6 +72,14 @@ class CreateLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
             $this->getValidator('bridge')->notEmpty();
         }
 
+        if (($this->getRequest()->isMutation()) && ($this->parameters['type'] == 'bridge' || $this->parameters['type'] == 'bond')) {
+            $v = $this->createValidator();
+            call_user_func_array(array($this->createValidator(), 'platform'), array_merge(array('logical-interface-create'), iterator_to_array($this->parameters[$this->parameters['type']])));
+            if ( ! $v->evaluate($this->parameters['type'])) {
+                $report->addValidationError($this, 'type', $v);
+            }
+        }
+
         if ($this->getRequest()->isMutation() && $this->parameters['type'] == 'xdsl') {
             $hasXdsl = $this->getPlatform()->getDatabase('networks')->getType('ppp0') === 'xdsl';
             if ($hasXdsl) {
