@@ -40,23 +40,24 @@ class ConfirmInterfaceCreation extends \Nethgui\Controller\Table\AbstractAction
         $this->declareParameter('device', FALSE, array($this, 'getNewDeviceName'));
     }
 
-    private function countType($type)
+    private function generateDeviceName($type, $template)
     {
-        $counter = 0;
-        foreach ($this->getAdapter() as $key => $props) {
-            if ($props['type'] == $type) {
-                $counter += 1;
+        $interfaces = $this->getPlatform()->getDatabase('networks')->getAll($type);
+        for($i = 0; $i <= count($interfaces); $i++) {
+            $ifname = sprintf($template, $i);
+            if (!isset($interfaces[$ifname])) {
+                return $ifname;
             }
         }
-        return $counter;
+        return sprintf($template, 0);
     }
 
     public function getNewDeviceName()
     {
         if ($this->parameters['type'] === 'bridge') {
-            return sprintf('br%d', $this->countType('bridge'));
+            return $this->generateDeviceName('bridge', 'br%d');
         } elseif ($this->parameters['type'] === 'bond') {
-            return sprintf('bond%d', $this->countType('bond'));
+            return $this->generateDeviceName('bond', 'bond%d');
         } elseif ($this->parameters['type'] === 'vlan') {
             return sprintf('%s.%s', $this->parameters['vlan'], $this->parameters['vlanTag']);
         }
