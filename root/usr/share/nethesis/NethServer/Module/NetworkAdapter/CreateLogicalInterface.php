@@ -76,7 +76,7 @@ class CreateLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
             $v = $this->createValidator();
             call_user_func_array(array($v, 'platform'), array_merge(array('logical-interface-create'), iterator_to_array($this->parameters[$this->parameters['type']])));
             if ( ! $v->evaluate($this->parameters['type'])) {
-                $report->addValidationError($this, 'type', $v);
+                $report->addValidationError($this, $this->parameters['type'], $v);
             }
         }
 

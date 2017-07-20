@@ -122,3 +122,4 @@ $L['DNS_label'] = 'DNS servers';
 $L['trafficshaping_label'] = 'Traffic Shaping';
 $L['FwInBandwidth_label'] = 'Inbound bandwidth (kbps)';
 $L['FwOutBandwidth_label'] = 'Outbound bandwidth (kbps)';
+$L['valid_platform,logical-interface-create,dhcp-conflicts,3'] = 'Some interfaces have DHCP ranges associated: they must be fixed manually from the DHCP page';
