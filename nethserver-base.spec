@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.33
+Version: 3.0.34
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,11 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Fri Jul 21 2017 Davide Principi <davide.principi@nethesis.it> - 3.0.34-1
+- DHCP server breaks on new logical interface - Bug NethServer/dev#5331
+- Login page l10n is missing - Bug NethServer/dev#5335
+- NIC remapping lockout - Bug NethServer/dev#5334
+
 * Wed Jul 12 2017 Davide Principi <davide.principi@nethesis.it> - 3.0.33-1
 - AD account provider: web interface doesn't correctly display users with password expiration - Bug NethServer/dev#5318
 - Backup config history - NethServer/dev#5314
