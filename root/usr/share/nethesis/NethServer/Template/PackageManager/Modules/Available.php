@@ -112,7 +112,7 @@ $view->includeCss("
 .yumError .Controller, .yumSuccess .Controller {margin-top: 4px}
 ");
 
-$yumError = '<i class="fa fa-li fa-exclamation-triangle"></i><tt>{{message}}</tt><p>{{description}}</p><div class="Controller"><div class="Action"><form action="{{action}}" method="post"><button class="Button submit" type="submit">{{buttonLabel}}</button></form></div></div>';
+$yumError = '<i class="fa fa-li fa-exclamation-triangle"></i><tt>{{message}}</tt><p>{{description}}</p><div class="Controller"><div class="Action"><form action="{{action}}" method="post"><button class="Button submit" type="submit">{{buttonLabel}}</button><input name="csrfToken" type="hidden" value="' . htmlspecialchars($view->getModule()->csrfToken) . '"></form></div></div>';
 $view->getModule()->getParent()->notifications->defineTemplate('yumError', $yumError, 'yumError bg-red pre-fa');
 $yumSuccess = '<i class="fa fa-li fa-info-circle"></i><p>{{message}}</p><p>{{description}}</p><div class="Controller"><div class="Action"><button class="Button default" onclick=\'location.href="{{action}}";\'>{{buttonLabel}}</button></div></div>';
 $view->getModule()->getParent()->notifications->defineTemplate('yumSuccess', $yumSuccess, 'yumSuccess bg-green pre-fa');
