@@ -29,7 +29,7 @@ use Nethgui\System\PlatformInterface as Validate;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Available extends \Nethgui\Controller\Collection\AbstractAction implements \Nethgui\Component\DependencyConsumer
+class Available extends \Nethgui\Controller\Collection\AbstractAction implements \Nethgui\Component\DependencyConsumer, \Nethgui\Utility\SessionConsumerInterface
 {
 
     /**
@@ -37,6 +37,8 @@ class Available extends \Nethgui\Controller\Collection\AbstractAction implements
      * @var \Nethgui\Model\UserNotifications
      */
     private $notifications;
+    private $session;
+    public $csrfToken;
 
     public function initialize()
     {
@@ -167,4 +169,11 @@ class Available extends \Nethgui\Controller\Collection\AbstractAction implements
         return parent::nextPath();
     }
 
+    public function setSession(\Nethgui\Utility\SessionInterface $session)
+    {
+        $this->session = $session;
+        $security = $this->session->retrieve('SECURITY');
+        $this->csrfToken = $security['csrfToken'][0];
+        return $this;
+    }
 }
