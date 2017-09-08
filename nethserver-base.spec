@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.0.34
+Version: 3.0.35
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Fri Sep 08 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.0.35-1
+- CSRF and XSS vulnerabilities in server manager - Bug NethServer/dev#5345
+
 * Fri Jul 21 2017 Davide Principi <davide.principi@nethesis.it> - 3.0.34-1
 - DHCP server breaks on new logical interface - Bug NethServer/dev#5331
 - Login page l10n is missing - Bug NethServer/dev#5335
