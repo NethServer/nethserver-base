@@ -35,10 +35,16 @@ class ClearYumCache extends \Nethgui\Controller\AbstractController
         }
     }
 
+    public function prepareView(\Nethgui\View\ViewInterface $view)
+    {
+        parent::prepareView($view);
+        $this->absoluteModulePath = '/' . implode('/', array_slice($view->getModulePath(), 0, -1));
+    }
+
     public function nextPath()
     {
         if ($this->getRequest()->isMutation()) {
-            return '/PackageManager/Modules';
+            return $this->absoluteModulePath . '/Modules';
         }
         return FALSE;
     }
