@@ -37,3 +37,4 @@ $L['Changelog_label'] = 'Updates CHANGELOG';
 $L['ClearYumCache_label'] = 'Clear YUM cache';
 $L['ClearYumCache_description'] = 'The install/update may have failed due to metadata caching issues. Please clean the cache by clicking the button below and retry the install/update operation.';
 $L['An unknown installation error has occurred'] = 'An unknown installation error has occurred';
+$L['upgrade_available_message'] = 'The new distribution release ${nextRelease} is available. Review the updates before applying them!';
