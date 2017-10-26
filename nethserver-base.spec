@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.1.0
+Version: 3.1.1
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Thu Oct 26 2017 Davide Principi <davide.principi@nethesis.it> - 3.1.1-1
+- Bogus password strength validator - Bug NethServer/dev#5367
+
 * Tue Oct 10 2017 Davide Principi <davide.principi@nethesis.it> - 3.1.0-1
 - Software Center "clear yum cache" fix for Enterprise  - NethServer/dev#5357
 - Distro upgrade banner in Software Center page - NethServer/dev#5355
