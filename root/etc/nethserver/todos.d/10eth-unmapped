@@ -72,7 +72,7 @@ if(len(unmapped_interfaces) > 0):
                 "url": '/NetworkAdapter'
             },
             "icon": "bolt",
-            "text": gettext.gettext('A role must be assigned to an existing network card otherwise it must be released')
+            "text": gettext.gettext('A role must be assigned to an existing network card otherwise the role must be released')
         }
     json.dump(msg, sys.stdout)
 
