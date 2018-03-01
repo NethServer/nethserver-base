@@ -24,28 +24,55 @@ import gettext
 import json
 import os
 import sys
+import subprocess
 
-out = ''
+def get_free_interfaces():
+    interfaces = {}
+    with subprocess.Popen(['/usr/libexec/nethserver/nic-info'], stdout=subprocess.PIPE).stdout as nic_info:
+        for line in nic_info:
+            interfaces[line.split(',')[0]] = {}
+    
+    ndb = json.load(subprocess.Popen(['/sbin/e-smith/db', 'networks', 'getjson'], stdout=subprocess.PIPE).stdout, 'UTF-8')
+    for record in ndb:
+        if record['type'] == 'ethernet' \
+                and 'role' in record['props'] \
+                and record['props']['role'] \
+                and record['name'] in interfaces:
+            interfaces.pop(record['name'], None)
+
+    return list(interfaces.keys())
+
+out_unmapped = ''
 
 try:
-    out = os.popen('/usr/libexec/nethserver/eth-unmapped').read()
+    out_unmapped = subprocess.Popen(['/usr/libexec/nethserver/eth-unmapped'], stdout=subprocess.PIPE).stdout.read()
 except:	
     pass
 
-if(not out):
+if(not out_unmapped):
     exit(1)
 
-unmapped_interfaces = json.loads(out, 'UTF-8')
+unmapped_interfaces = json.loads(out_unmapped, 'UTF-8')
 
 if(len(unmapped_interfaces) > 0):
     gettext.textdomain('nethserver-base')
-    msg = {
-        "action": {
-            "label": gettext.ngettext('Assign role to network interface', 'Assign roles to network interfaces', len(unmapped_interfaces)).format(len(unmapped_interfaces)),
-            "url": '/NetworkAdapter?renameInterface'
-        },
-        "icon": "bolt",
-        "text": gettext.ngettext('A role must be assigned to a new network card', 'There are {0} roles to be assigned to network cards'  , len(unmapped_interfaces)).format(len(unmapped_interfaces))
-    }
+    if len(get_free_interfaces()) > 0:
+        msg = {
+            "action": {
+                "label": gettext.ngettext('Assign role to network interface', 'Assign roles to network interfaces', len(unmapped_interfaces)).format(len(unmapped_interfaces)),
+                "url": '/NetworkAdapter?renameInterface'
+            },
+            "icon": "bolt",
+            "text": gettext.ngettext('A role must be assigned to a new network card', 'There are {0} roles to be assigned to network cards'  , len(unmapped_interfaces)).format(len(unmapped_interfaces))
+        }
+    else:
+        msg = {
+            "action": {
+                "label": gettext.ngettext('Release role from old network interface', 'Release roles from old network interfaces', len(unmapped_interfaces)).format(len(unmapped_interfaces)),
+                "url": '/NetworkAdapter'
+            },
+            "icon": "bolt",
+            "text": gettext.gettext('A role must be assigned to an existing network card otherwise the role must be released')
+        }
     json.dump(msg, sys.stdout)
-	    
+

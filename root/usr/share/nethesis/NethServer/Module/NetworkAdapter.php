@@ -298,6 +298,9 @@ class NetworkAdapter extends \Nethgui\Controller\TableController
         parent::prepareView($view);
         if($this->getRequest()->hasParameter('renameSuccess')) {
             $view->getCommandList('read')->show();
+        } elseif($this->getRequest()->hasParameter('renameFailure')) {
+            $view->getCommandList('read')->show();
+            $view->getCommandList('read')->sendQuery($view->getModuleUrl('/AdminTodo?notifications'));
         }
     }
 }
