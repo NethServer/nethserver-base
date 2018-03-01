@@ -110,6 +110,11 @@ class RenameInterface extends \Nethgui\Controller\AbstractController implements 
                     'url' => $view->getModuleUrl('/NetworkAdapter?renameSuccess'),
                     'freeze' => TRUE,
             )));
+            $this->getPlatform()->setDetachedProcessCondition('failure', array(
+                'location' => array(
+                    'url' => $view->getModuleUrl('/NetworkAdapter?renameFailure'),
+                    'freeze' => TRUE,
+            )));
         }
     }
 
