@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.1.1
+Version: 3.1.2
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -77,6 +77,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Mon Mar 12 2018 Davide Principi <davide.principi@nethesis.it> - 3.1.2-1
+- Locked in network interface rename page - Bug NethServer/dev#5428
+
 * Thu Oct 26 2017 Davide Principi <davide.principi@nethesis.it> - 3.1.1-1
 - Bogus password strength validator - Bug NethServer/dev#5367
 
