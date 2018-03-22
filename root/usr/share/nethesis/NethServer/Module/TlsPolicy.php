@@ -40,7 +40,6 @@ class TlsPolicy extends \Nethgui\Controller\AbstractController
     {
         parent::initialize();
         $this->declareParameter('policy', Validate::ANYTHING, array('configuration', 'tls', 'policy'));
-        $this->declareParameter('HttpdAdminExemptionStatus', Validate::SERVICESTATUS, array('configuration', 'tls', 'HttpdAdminExemptionStatus'));
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
