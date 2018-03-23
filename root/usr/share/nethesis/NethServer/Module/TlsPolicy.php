@@ -51,7 +51,7 @@ class TlsPolicy extends \Nethgui\Controller\AbstractController
     }
     protected function onParametersSaved($changes)
     {
-        $this->getPlatform()->signalEvent('tls-policy-save');
+        $this->getPlatform()->signalEvent('tls-policy-save &');
     }
 
 }
