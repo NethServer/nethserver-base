@@ -145,3 +145,9 @@ source_lang = en
 type = PHP_ALT_ARRAY
 
 
+[nethserver.TlsPolicy]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_TlsPolicy.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+
