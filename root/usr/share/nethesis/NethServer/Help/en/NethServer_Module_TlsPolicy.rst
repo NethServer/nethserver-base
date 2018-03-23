@@ -2,6 +2,6 @@
 Transport Layer Security
 ========================
 
-TLS is a cryptographic protocols that provide communications security over a computer network. Several versions of the protocols find widespread use in applications such as web browsing, email, Internet faxing, instant messaging, and voice over IP (VoIP). The TLS protocol aims primarily to provide privacy and data integrity between two communicating computer applications.
+The UI reference is available online at
 
-You can enforce the TLS policy, or choose the legacy one if your clients are not supported/maintained anymore (Windows XP for example)
+http://docs.nethserver.org/en/v7/ui/TlsPolicy.html
