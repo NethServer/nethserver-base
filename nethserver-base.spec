@@ -40,6 +40,7 @@ mkdir -p root%{perl_vendorlib}
 mv -v lib/perl/{NethServer,esmith} root%{perl_vendorlib}
 mkdir -p root/%{_nseventsdir}/organization-save
 mkdir -p root/%{_nseventsdir}/%{name}-update
+mkdir -p root/%{_nseventsdir}/tls-policy-save
 
 for _nsdb in configuration networks routes accounts; do
    mkdir -p root/%{_nsdbconfdir}/${_nsdb}/{migrate,force,defaults}
