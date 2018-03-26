@@ -46,7 +46,7 @@ class TlsPolicy extends \Nethgui\Controller\AbstractController
     {
         parent::prepareView($view);
         $view['policyDatasource'] = \Nethgui\Renderer\AbstractRenderer::hashToDatasource(array(
-                'legacy' => $view->translate('LEGACY'),
+                '' => $view->translate('LEGACY'),
         ));
     }
     protected function onParametersSaved($changes)
