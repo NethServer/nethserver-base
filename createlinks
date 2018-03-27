@@ -237,7 +237,7 @@ event_actions('system-shutdown', qw(
 $event = "certificate-upload";
 
 event_actions($event, qw(
-    nethserver-certificate-upload	15
+    nethserver-certificate-upload 03
 ));
 
 templates2events('/etc/backup-config.d/nethserver-certificates.include', $event);
