@@ -1,6 +1,6 @@
-========================
-Transport Layer Security
-========================
+==========
+TLS policy
+==========
 
 The UI reference is available online at
 

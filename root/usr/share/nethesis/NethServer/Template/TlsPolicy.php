@@ -1,6 +1,6 @@
 <?php
 
-echo $view->header()->setAttribute('template', $T('TlsPolicy_Description'));
+echo $view->header()->setAttribute('template', $T('TlsPolicy_header'));
 
 echo $view->panel()
     ->insert($view->selector('policy', $view::SELECTOR_DROPDOWN))
