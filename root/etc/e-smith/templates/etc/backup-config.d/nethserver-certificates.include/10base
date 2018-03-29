@@ -5,5 +5,8 @@
     foreach my $file ( keys %{$certs}) {
          $OUT .= "$file\n";
          $OUT .=  ${$certs}{$file}{'key'}."\n";
+         if ( ${$certs}{$file}{'chain'} ne "" ) {
+             $OUT .=  ${$certs}{$file}{'chain'}."\n";
+         }
     }
 }
