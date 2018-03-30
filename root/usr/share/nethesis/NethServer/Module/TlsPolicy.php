@@ -46,8 +46,8 @@ class TlsPolicy extends \Nethgui\Controller\AbstractController
     {
         parent::prepareView($view);
         $view['PolicyDatasource'] = array(
-                array('', $view->translate('LEGACY')),
-                array('20180330', '2018-03-30'),
+                array('', $view->translate('Default_policy_label')),
+                array('20180330', $view->translate('Policy_item_label', array('2018-03-30'))),
         );
     }
 
