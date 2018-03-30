@@ -39,17 +39,18 @@ class TlsPolicy extends \Nethgui\Controller\AbstractController
     public function initialize()
     {
         parent::initialize();
-        $this->declareParameter('policy', Validate::ANYTHING, array('configuration', 'tls', 'policy'));
+        $this->declareParameter('Policy', $this->createValidator()->memberOf('', '20180330'), array('configuration', 'tls', 'policy'));
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
-        $view['policyDatasource'] = \Nethgui\Renderer\AbstractRenderer::hashToDatasource(array(
-                '' => $view->translate('LEGACY'),
-                '20180330' => '2018-03-30',
-        ));
+        $view['PolicyDatasource'] = array(
+                array('', $view->translate('Default_policy_label')),
+                array('20180330', $view->translate('Policy_item_label', array('2018-03-30'))),
+        );
     }
+
     protected function onParametersSaved($changes)
     {
         $this->getPlatform()->signalEvent('tls-policy-save &');
