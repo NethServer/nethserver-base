@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.1.2
+Version: 3.1.3
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -78,6 +78,12 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Tue Apr 03 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.1.3-1
+- Disable SSLv3 protocol and weak ciphers - NethServer/dev#5421
+- Hardening TLS policy 2018-03-30 - NethServer/dev#5438
+- RPM DB corrupted error - Bug NethServer/dev#5440
+- Restore of uploaded SSL certificate fails - Bug NethServer/dev#5442
+
 * Mon Mar 12 2018 Davide Principi <davide.principi@nethesis.it> - 3.1.2-1
 - Locked in network interface rename page - Bug NethServer/dev#5428
 
