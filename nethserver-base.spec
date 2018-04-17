@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.1.3
+Version: 3.1.4
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -78,6 +78,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Tue Apr 17 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.1.4-1
+- Let's Encrypt: registration mail address not fully validated - Bug NethServer/dev#5455
+
 * Tue Apr 03 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.1.3-1
 - Disable SSLv3 protocol and weak ciphers - NethServer/dev#5421
 - Hardening TLS policy 2018-03-30 - NethServer/dev#5438
