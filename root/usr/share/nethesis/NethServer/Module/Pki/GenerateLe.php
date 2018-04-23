@@ -63,13 +63,8 @@ class GenerateLe extends \Nethgui\Controller\AbstractController
         }
         if (! $report->hasValidationErrors()){
             //test with LetsEncrypt script. Use -d DOMAINS because LetsEncryptDomains isn't written yet
-            $mailopt = "";
-            if (isset($this->parameters['LetsEncryptMail']) && $this->parameters['LetsEncryptMail']) {
-                $mailopt = "-e {$this->parameters['LetsEncryptMail']}";
-            }
-            $cmd="/usr/bin/sudo /usr/libexec/nethserver/letsencrypt-certs $mailopt -t -d ".join(",",$domains);
-            $this->getPlatform()->getLog()->notice("Testing LetsEncrypt: $cmd");
-            $p = $this->getPlatform()->exec($cmd);
+            $cmd='/usr/bin/sudo /usr/libexec/nethserver/letsencrypt-certs -e ${1} -t -d ${2}';
+            $p = $this->getPlatform()->exec($cmd,array($this->parameters['LetsEncryptMail'],join(",",$domains)));
             $stderr=$p->getErrorOutput();
             $stdout=$p->getOutput();
             $ret=$p->getexitCode();
