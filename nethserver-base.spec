@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.1.4
+Version: 3.1.5
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -78,6 +78,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Thu Apr 26 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.1.5-1
+- Let's Encrypt certificate not requested if mail field is empty - Bug NethServer/dev#5465
+
 * Tue Apr 17 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.1.4-1
 - Let's Encrypt: registration mail address not fully validated - Bug NethServer/dev#5455
 
