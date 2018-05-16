@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.1.5
+Version: 3.2.0
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -78,6 +78,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Wed May 16 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.2.0-1
+- Change of defaults for NS 7.5 - NethServer/dev#5490
+
 * Thu Apr 26 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.1.5-1
 - Let's Encrypt certificate not requested if mail field is empty - Bug NethServer/dev#5465
 
