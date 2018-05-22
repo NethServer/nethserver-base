@@ -261,3 +261,14 @@ event_actions('post-restore-config', qw(
     hostname-set       01
 ));
 
+
+#--------------------------------------------------
+# actions for software-repos-save event
+#--------------------------------------------------
+event_actions('software-repos-save', qw(
+    nethserver-base-software-repos 20
+));
+
+event_templates('software-repos-save', qw(
+    /etc/nethserver/eorepo.conf
+));
