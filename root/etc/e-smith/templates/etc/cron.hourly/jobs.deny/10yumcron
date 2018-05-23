@@ -1,0 +1,6 @@
+#
+# 10yumcron
+#
+# WARNING: run-parts does not allow spaces around the values!
+#
+0yum-hourly.cron

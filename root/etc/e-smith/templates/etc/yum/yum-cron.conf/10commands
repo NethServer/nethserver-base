@@ -1,0 +1,30 @@
+[commands]
+#  What kind of update to use:
+# default                            = yum upgrade
+# security                           = yum --security upgrade
+# security-severity:Critical         = yum --sec-severity=Critical upgrade
+# minimal                            = yum --bugfix update-minimal
+# minimal-security                   = yum --security update-minimal
+# minimal-security-severity:Critical =  --sec-severity=Critical update-minimal
+update_cmd = default
+
+# Whether a message should be emitted when updates are available,
+# were downloaded, or applied.
+update_messages = {${'yum-cron'}{'messages'} || 'yes'}
+
+# Whether updates should be downloaded when they are available.
+download_updates = {${'yum-cron'}{'download'} || 'yes'}
+
+# Whether updates should be applied when they are available.  Note
+# that download_updates must also be yes for the update to be applied.
+apply_updates = {${'yum-cron'}{'applyUpdate'} || 'no'}
+
+# Maximum amout of time to randomly sleep, in minutes.  The program
+# will sleep for a random amount of time between 0 and random_sleep
+# minutes before running.  This is useful for e.g. staggering the
+# times that multiple systems will access update servers.  If
+# random_sleep is 0 or negative, the program will run immediately.
+# 6*60 = 360
+random_sleep = {${'yum-cron'}{'randomWait'}||'360'}
+
+

@@ -1,0 +1,23 @@
+[email]
+# The address to send email messages from.
+# NOTE: 'localhost' will be replaced with the value of system_name.
+email_from = root@{$DomainName}
+
+# List of addresses to send messages to.
+{
+    use Email::Valid;
+    my @customMail;
+    foreach my $email (split(/,/, (${'yum-cron'}{'customMail'} || ''))) {
+    push @customMail , $email if (Email::Valid->address($email));
+    #sort email array
+    %seen = ();
+    @customMail = sort (grep { ! $seen{ $_ }++ } (@customMail));
+    }
+
+    $OUT .= "email_to = root\@$SystemName.$DomainName " . join (' ',@customMail);
+}
+
+# Name of the host to connect to to send email messages.
+email_host = localhost
+
+
