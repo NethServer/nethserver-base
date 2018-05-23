@@ -1,0 +1,13 @@
+#
+# This is the list of YUM repositories that have their groups listed
+# on the Software Center UI page, through the pkginfo helper.
+#
+# One repository identifier per line
+#
+{
+    #
+    # 50print_list
+    #
+    $OUT = join("\n", @repo_list);
+}
+
