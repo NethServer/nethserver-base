@@ -76,6 +76,7 @@ rm -rf %{buildroot}
 %dir %{_nsdbconfdir}/accounts
 %ghost %attr(0644,root,root) /etc/logviewer.conf
 %config(noreplace) %{_sysconfdir}/nethserver/pkginfo.conf
+%config(noreplace) %{_sysconfdir}/nethserver/eorepo.conf
 
 %post
 %systemd_post nethserver-system-init.service NetworkManager.service firewalld.service nethserver-config-network.service

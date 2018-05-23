@@ -48,6 +48,8 @@ event_templates('nethserver-base-update', qw(
     /etc/yum.conf
     /etc/yum/yum-cron.conf
     /etc/cron.hourly/jobs.deny
+    /etc/yum/vars/nsrelease
+    /etc/nethserver/eorepo.conf
 ));
 
 event_services('nethserver-base-update', qw(
@@ -272,6 +274,7 @@ event_actions('software-repos-save', qw(
 ));
 
 event_templates('software-repos-save', qw(
+    /etc/yum/vars/nsrelease
     /etc/nethserver/eorepo.conf
     /etc/yum/yum-cron.conf
 ));
