@@ -4,7 +4,6 @@
 
 echo $view->buttonList()
     ->insert($view->button('Packages', $view::BUTTON_LINK)->setAttribute('value', $view->getModuleUrl('../../Packages')))
-    ->insert($view->button('Help', $view::BUTTON_HELP))
 ;
 
 $cssUrl = $view->getPathUrl() . 'css';

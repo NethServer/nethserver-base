@@ -38,6 +38,7 @@ class Available extends \Nethgui\Controller\Collection\AbstractAction implements
      */
     private $notifications;
     private $session;
+    public $csrfToken;
 
     public function initialize()
     {
@@ -118,8 +119,6 @@ class Available extends \Nethgui\Controller\Collection\AbstractAction implements
 
         $view['groups'] = $this->getGroupsViewValue($view);
         $view['categories'] = $this->getCategoriesViewValue($view);
-        $security = $this->session->retrieve('SECURITY');
-        $this->csrfToken = $security['csrfToken'];
 
         if ($this->getRequest()->isValidated()) {
             $view->getCommandList()->show();
@@ -173,6 +172,8 @@ class Available extends \Nethgui\Controller\Collection\AbstractAction implements
     public function setSession(\Nethgui\Utility\SessionInterface $session)
     {
         $this->session = $session;
+        $security = $this->session->retrieve('SECURITY');
+        $this->csrfToken = $security['csrfToken'][0];
         return $this;
     }
 }

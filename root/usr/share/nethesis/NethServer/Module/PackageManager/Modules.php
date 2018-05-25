@@ -87,6 +87,8 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
                 'action' => $view->getModuleUrl('../ClearYumCache')
             ));
         }
+
+        $view['Configure'] = $view->getModuleUrl('../Configuration');
     }
 
     public function getYumCategories()
@@ -111,7 +113,9 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
         }
 
         $data = array();
-        $checkUpdateJob = $this->getPlatform()->exec('/usr/bin/sudo -n /usr/libexec/nethserver/pkginfo check-update');
+        $db = $this->getPlatform()->getDatabase('configuration');
+        $nsReleaseLock = $db->getProp('sysconfig', 'NsReleaseLock');
+        $checkUpdateJob = $this->getPlatform()->exec('/usr/bin/sudo -n /usr/libexec/nethserver/pkginfo ${1}', array($nsReleaseLock == 'enabled' ? 'check-strict-update' : 'check-update'));
         if ($checkUpdateJob->getExitCode() !== 0) {
             $data = json_decode($checkUpdateJob->getOutput(), TRUE);
             $this->yumError = isset($data['error']) ? $data['error'] : '';
@@ -150,6 +154,7 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
 
         $panel = $view->panel()->setAttribute('class', 'ModulesWrapped')->setAttribute('id', 'PackageManager');
         $header = $view->header()->setAttribute('template', $view->translate('Modules_header'));
+        $buttons = $view->buttonList($view::BUTTON_HELP)->insert($view->button('Configure', $view::BUTTON_LINK));
 
         $tabs = $view->tabs()->setAttribute('receiver', '');
 
@@ -174,11 +179,12 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
             $tabs->insert($action);
         }
 
-        $element  = json_encode($view->getUniqueId());
-        $url = json_encode($view->getModuleUrl());
-        $view->includeJavascript(sprintf('(function($){$(function(){$.Nethgui.Server.ajaxMessage({url:%s, freezeElement:$("#" + %s)})})})(jQuery);', $url, $element));
-
-        return $panel->insert($header)->insert($tabs);
+        if(\Nethgui\array_head($this->getParent()->getChildren()) === $this) {
+            $element  = json_encode($view->getUniqueId());
+            $url = json_encode($view->getModuleUrl());
+            $view->includeJavascript(sprintf('(function($){$(function(){$.Nethgui.Server.ajaxMessage({url:%s, freezeElement:$("#" + %s)})})})(jQuery);', $url, $element));
+        }
+        return $panel->insert($header)->insert($buttons)->insert($tabs);
     }
 
     public function setUserNotifications(\Nethgui\Model\UserNotifications $n)

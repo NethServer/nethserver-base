@@ -27,11 +27,15 @@ namespace NethServer\Module\PackageManager\Modules;
 class Update extends \Nethgui\Controller\AbstractController implements \Nethgui\Component\DependencyConsumer
 {
 
+    public $notifications;
+
     public function process()
     {
         parent::process();
         if ($this->getRequest()->isMutation()) {
-            $this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/pkgaction --update \*', array(), TRUE);
+            $db = $this->getPlatform()->getDatabase('configuration');
+            $nsReleaseLock = $db->getProp('sysconfig', 'NsReleaseLock');
+            $this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/pkgaction ${1} \*', array($nsReleaseLock == 'enabled' ? '--strict-update' : '--update'), TRUE);
         }
     }
 
@@ -64,7 +68,11 @@ class Update extends \Nethgui\Controller\AbstractController implements \Nethgui\
         $nextRelease = $this->findDistroUpgrade($view['updates']);
 
         if(is_string($nextRelease)) {
-            $this->notifications->nextRelease($view->translate('upgrade_available_message', array('nextRelease' => $nextRelease)));
+            $this->notifications->nextRelease(array(
+                'message' => $view->translate('upstream_upgrade_available_message', array('nextRelease' => $nextRelease)),
+                'buttonLabel' => $view->translate('Configuration_label'),
+                'link' => $view->getModuleUrl('../../Configuration'),
+            ));
         } elseif ($view['updates_count'] > 0) {
             $this->notifications->warning($view->translate('updates_available_message', array('updates_count' => $view['updates_count'])));
         }
@@ -84,8 +92,6 @@ class Update extends \Nethgui\Controller\AbstractController implements \Nethgui\
     public function setUserNotifications(\Nethgui\Model\UserNotifications $n)
     {
         $this->notifications = $n;
-        $nextReleaseTemplate = '<i class="fa fa-li fa-eye" aria-hidden="true"></i>{{.}}';
-        $this->notifications->defineTemplate('nextRelease', $nextReleaseTemplate, 'nextRelease bg-yellow');
         return $this;
     }
 

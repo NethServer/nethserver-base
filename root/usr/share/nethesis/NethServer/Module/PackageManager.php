@@ -27,14 +27,8 @@ namespace NethServer\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class PackageManager extends \Nethgui\Controller\CompositeController implements \Nethgui\Component\DependencyConsumer
+class PackageManager extends \Nethgui\Controller\CompositeController
 {
-
-    /**
-     *
-     * @var string
-     */
-    private $language = 'en';
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $attributes)
     {
@@ -43,6 +37,7 @@ class PackageManager extends \Nethgui\Controller\CompositeController implements 
 
     public function initialize()
     {
+        $this->addChild(new \NethServer\Module\PackageManager\Configuration());
         $this->addChild(new \NethServer\Module\PackageManager\Modules());
         $this->addChild(new \NethServer\Module\PackageManager\Review());
         $this->addChild(new \NethServer\Module\PackageManager\Packages());
@@ -50,6 +45,34 @@ class PackageManager extends \Nethgui\Controller\CompositeController implements 
         $this->addChild(new \NethServer\Module\PackageManager\ClearYumCache());
         parent::initialize();
     }
+
+    public function bind(\Nethgui\Controller\RequestInterface $request)
+    {
+        $firstModuleIdentifier = 'Modules';
+        $db = $this->getPlatform()->getDatabase('configuration');
+        $nsReleaseLock = $db->getProp('sysconfig', 'NsReleaseLock');
+        if( ! $nsReleaseLock) {
+            $firstModuleIdentifier = 'Configuration';
+        }
+
+        $this->sortChildren(function ($a, $b) use ($firstModuleIdentifier) {
+            if($a->getIdentifier() === $firstModuleIdentifier) {
+                $c = -1;
+            } elseif($b->getIdentifier() === $firstModuleIdentifier) {
+                $c = 1;
+            } else {
+                $c = 0;
+            }
+            return $c;
+        });
+
+        parent::bind($request);
+        if (is_null($this->currentAction) && $firstModuleIdentifier != 'Modules') {
+            $action = $this->getAction($firstModuleIdentifier);
+            $action->bind($request->spawnRequest($firstModuleIdentifier));
+        }
+    }
+
 
     private function readYumCompsDump()
     {
@@ -120,29 +143,9 @@ class PackageManager extends \Nethgui\Controller\CompositeController implements 
         return $loader;
     }
 
-    public function setTranslator(\Nethgui\View\TranslatorInterface $t)
-    {
-        $this->language = $t->getLanguageCode();
-        return $this;
-    }
-
-    public function setUserNotifications(\Nethgui\Model\UserNotifications $n)
-    {
-        $this->notifications = $n;
-        return $this;
-    }
-
-    public function getDependencySetters()
-    {
-        return array(
-            'Translator' => array($this, 'setTranslator'),
-            'UserNotifications' => array($this, 'setUserNotifications')
-        );
-    }
-
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
-        if ($this->getRequest()->isMutation()) {
+        if ($this->getRequest()->isMutation() && $this->currentAction && in_array($this->currentAction->getIdentifier(), array('Review', 'EditModule', 'Modules'))) {
             $this->getPlatform()->setDetachedProcessCondition('success', array(
                 'location' => array(
                     'url' => $view->getModuleUrl('Modules?installSuccess'),
