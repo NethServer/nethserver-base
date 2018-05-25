@@ -37,8 +37,9 @@ class PackageManager extends \Nethgui\Controller\CompositeController
 
     public function initialize()
     {
-        $this->addChild(new \NethServer\Module\PackageManager\Configuration());
         $this->addChild(new \NethServer\Module\PackageManager\Modules());
+        $this->addChild(new \NethServer\Module\PackageManager\Configuration());
+        $this->addChild(new \NethServer\Module\PackageManager\DistroUpgrade());
         $this->addChild(new \NethServer\Module\PackageManager\Review());
         $this->addChild(new \NethServer\Module\PackageManager\Packages());
         $this->addChild(new \NethServer\Module\PackageManager\EditModule());
@@ -51,8 +52,12 @@ class PackageManager extends \Nethgui\Controller\CompositeController
         $firstModuleIdentifier = 'Modules';
         $db = $this->getPlatform()->getDatabase('configuration');
         $nsReleaseLock = $db->getProp('sysconfig', 'NsReleaseLock');
+        $nsVersion = $db->getProp('sysconfig', 'Version');
+        $sbVersion = $db->getProp('subscription', 'NsRelease');
         if( ! $nsReleaseLock) {
             $firstModuleIdentifier = 'Configuration';
+        } elseif($nsVersion && $sbVersion && version_compare($sbVersion, $nsVersion, '>') && $nsReleaseLock == 'enabled') {
+            $firstModuleIdentifier = 'DistroUpgrade';
         }
 
         $this->sortChildren(function ($a, $b) use ($firstModuleIdentifier) {

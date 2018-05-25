@@ -280,3 +280,10 @@ event_templates('software-repos-save', qw(
     /etc/nethserver/pkginfo.conf
     /etc/yum/yum-cron.conf
 ));
+
+#--------------------------------------------------
+# actions for software-repos-upgrade event
+#--------------------------------------------------
+event_actions('software-repos-upgrade', qw(
+    nethserver-base-distro-upgrade 20
+));
