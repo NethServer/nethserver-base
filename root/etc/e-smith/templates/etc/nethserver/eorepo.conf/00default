@@ -1,0 +1,25 @@
+#
+# This file is read by software-repos-save event
+#
+# Listed repositories will be enabled, everything else will be disabled
+#
+# Blank lines and lines beginning with "#" are ignored
+#
+{
+    #
+    # 00default
+    #
+    our @repos = (
+        "base",
+        "updates",
+        "extras",
+        "epel",
+        "centos-sclo-rh",
+        "centos-sclo-sclo",
+        "nethserver-base",
+        "nethserver-updates",
+        "nethforge"
+    );
+
+    '';
+}

@@ -103,12 +103,16 @@ def compsdump(yb):
 
     print( simplejson.dumps(comps) )
 
-def check_update(yb, clean_all = False):
+def check_update(yb, clean_all = False, strict = False):
     if clean_all:
         subprocess.call(["/usr/bin/yum", "clean", "all"], stdout=open(os.devnull, "w"), stderr=subprocess.STDOUT)
+        yb.conf.reposdir = '/etc/nethserver/yum-update.d/'
     updates = map(lambda i: {'name': i[0], 'arch': i[1], 'epoch': i[2], 'version': i[3], 'release': i[4]}, yb.up.getUpdatesList())
 
-    changelog = subprocess.Popen(['/usr/bin/yum', 'changelog', '1', 'updates'], stdout=subprocess.PIPE, shell=False, env={'LANG': 'en_US.UTF-8'}).communicate()[0];
+    if strict:
+        changelog = subprocess.Popen(['/usr/bin/yum', 'changelog', '1', 'updates', '--setopt=reposdir=/etc/nethserver/yum-update.d/'], stdout=subprocess.PIPE, shell=False, env={'LANG': 'en_US.UTF-8'}).communicate()[0];
+    else:
+        changelog = subprocess.Popen(['/usr/bin/yum', 'changelog', '1', 'updates'], stdout=subprocess.PIPE, shell=False, env={'LANG': 'en_US.UTF-8'}).communicate()[0];
 
     simplejson.dump({'updates': updates, 'changelog': changelog.decode('utf-8')}, sys.stdout)
 
@@ -128,7 +132,7 @@ def parse_pkginfo_conf():
 def main():
     if len(sys.argv) < 2:
         usage()
-    if not sys.argv[1] in ["grouplist", "info", "compsdump", "check-update"]:
+    if not sys.argv[1] in ["grouplist", "info", "compsdump", "check-update", "check-strict-update"]:
         usage()
     if sys.argv[1] == "info" and len(sys.argv) < 3:
         usage()
@@ -143,17 +147,25 @@ def main():
         yb = yum.YumBase()
         yb.preconf = ypbc
 
+        action = sys.argv[1]
+        # force repository configuration now,
+        # it will not work if invoked after listGroupsEnabled()
+        if action == 'check-strict-update':
+            yb.conf.reposdir = '/etc/nethserver/yum-update.d/'
+
         for r in yb.repos.listGroupsEnabled():
             if not r.id in parse_pkginfo_conf():
                 r.enablegroups = 0
 
-        action = sys.argv[1]
         if action == 'grouplist' or action == 'compsdump':
            compsdump(yb)
         elif action == 'info':
            pkginfo(yb,sys.argv[2])
         elif action == 'check-update':
-           check_update(yb) 
+           check_update(yb)
+        elif action == 'check-strict-update':
+           check_update(yb, strict = True)
+
 
     except Exception, e:
         print simplejson.dumps({'error':"%s"%e})

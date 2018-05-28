@@ -1,0 +1,14 @@
+{
+   #
+   # 00default
+   # No nsrelease set - rolling release configuration
+   #
+   our $defaultRelease = do {
+       open my $nsh, "<", '/etc/e-smith/db/configuration/force/sysconfig/Version';
+       <$nsh>;
+   };
+
+   our $release = '';
+
+   '';
+}

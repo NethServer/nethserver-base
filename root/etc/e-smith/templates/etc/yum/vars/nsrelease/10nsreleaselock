@@ -1,0 +1,8 @@
+{
+    $lock = $sysconfig{'NsReleaseLock'} || 'disabled';
+    if ($lock eq 'enabled') {
+        $release = $defaultRelease;
+    }
+
+    '';
+}

@@ -1,0 +1,34 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2018 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+set -e
+
+yum clean all
+rm -rf /var/cache/yum
+nsrelease=$(/sbin/e-smith/config getprop subscription NsRelease)
+echo "${nsrelease}" > /etc/yum/vars/nsrelease
+yum update -y \* @nethserver-iso | /usr/libexec/nethserver/ptrack-yum-update
+if [[ ${PIPESTATUS[0]} != 0 ]]; then
+    echo "[ERROR] yum update failed" 1>&2
+    exit 1
+fi
+/sbin/e-smith/expand-template /etc/yum/vars/nsrelease

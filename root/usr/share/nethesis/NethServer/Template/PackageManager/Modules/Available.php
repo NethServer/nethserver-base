@@ -5,7 +5,6 @@
 
 echo $view->buttonList()
     ->insert($view->button('Add', $view::BUTTON_SUBMIT))
-    ->insert($view->button('Help', $view::BUTTON_HELP))
 ;
 
 $cssUrl = $view->getPathUrl() . 'css';

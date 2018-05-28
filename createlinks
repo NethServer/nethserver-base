@@ -46,6 +46,11 @@ event_templates('nethserver-base-update', qw(
     /etc/logrotate.conf
     /etc/backup-config.d/nethserver-certificates.include
     /etc/yum.conf
+    /etc/yum/yum-cron.conf
+    /etc/cron.hourly/jobs.deny
+    /etc/yum/vars/nsrelease
+    /etc/nethserver/eorepo.conf
+    /etc/nethserver/pkginfo.conf
 ));
 
 event_services('nethserver-base-update', qw(
@@ -261,3 +266,24 @@ event_actions('post-restore-config', qw(
     hostname-set       01
 ));
 
+
+#--------------------------------------------------
+# actions for software-repos-save event
+#--------------------------------------------------
+event_actions('software-repos-save', qw(
+    nethserver-base-software-repos 20
+));
+
+event_templates('software-repos-save', qw(
+    /etc/yum/vars/nsrelease
+    /etc/nethserver/eorepo.conf
+    /etc/nethserver/pkginfo.conf
+    /etc/yum/yum-cron.conf
+));
+
+#--------------------------------------------------
+# actions for software-repos-upgrade event
+#--------------------------------------------------
+event_actions('software-repos-upgrade', qw(
+    nethserver-base-distro-upgrade 20
+));

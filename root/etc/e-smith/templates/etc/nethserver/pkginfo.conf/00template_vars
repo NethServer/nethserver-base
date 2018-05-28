@@ -1,0 +1,10 @@
+{
+    #
+    # 00template_vars
+    #
+    our @repo_list = qw(
+            nethserver-updates
+            nethforge
+        );
+    '';
+}

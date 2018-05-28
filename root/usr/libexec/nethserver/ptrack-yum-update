@@ -1,0 +1,53 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2018 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use NethServer::TrackerClient;
+
+my $tracker = NethServer::TrackerClient->new();
+
+my %tasks = (
+  'deps' => $tracker->declare_task('Resolve dependencies'),
+  'download' => $tracker->declare_task('Download RPMs'),
+  'installing' => $tracker->declare_task('Install RPMs'),
+  'verifying' => $tracker->declare_task('Verifying RPMs'),
+);
+
+while (<STDIN>) {
+    print $_;
+    chomp $_;
+    if($_ =~ /^Dependencies Resolved/) {
+        $tracker->set_task_done($tasks{'deps'}, $_, 0);
+    } elsif ($_ =~ /^Total download size/) {
+        $tracker->set_task_progress($tasks{'download'}, 0.1, $_);
+    } elsif ($_ =~ /^Running transaction check/) {
+        $tracker->set_task_done($tasks{'download'}, $_, 0);
+    } elsif ($_ =~ m| Installing *: .* +(\d+)/(\d+)|) {
+        $tracker->set_task_progress($tasks{'installing'}, $1 / $2, $_);
+    } elsif  ($_ =~ m| Verifying *: .* +(\d+)/(\d+)|) {
+        $tracker->set_task_progress($tasks{'verifying'}, $1 / $2, $_);
+    } elsif ($_ =~ /^Complete!/) {
+        $tracker->set_task_done($tasks{'installing'}, $_, 0);
+        $tracker->set_task_done($tasks{'verifying'}, $_, 0);
+    }
+}
+
