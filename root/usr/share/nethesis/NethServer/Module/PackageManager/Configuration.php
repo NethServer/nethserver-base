@@ -23,7 +23,7 @@
 namespace NethServer\Module\PackageManager;
 use Nethgui\System\PlatformInterface as Validate;
 
-class Configuration extends \Nethgui\Controller\Collection\AbstractAction implements \Nethgui\Component\DependencyConsumer
+class Configuration extends \Nethgui\Controller\Collection\AbstractAction
 {
     public function initialize()
     {
@@ -80,11 +80,6 @@ class Configuration extends \Nethgui\Controller\Collection\AbstractAction implem
         }
         if($this->getRequest()->isValidated()) {
             $view->getCommandList()->show();
-            $db = $this->getPlatform()->getDatabase('configuration');
-            $nsReleaseLock = $db->getProp('sysconfig', 'NsReleaseLock');
-            if( ! $nsReleaseLock) {
-                $this->notifications->warning($view->translate('NsReleaseLock_policy_warning'));
-            }
         }
         if ($this->getRequest()->isMutation()) {
             $this->getPlatform()->setDetachedProcessCondition('success', array(
@@ -95,14 +90,4 @@ class Configuration extends \Nethgui\Controller\Collection\AbstractAction implem
         }
     }
 
-    public function setUserNotifications(\Nethgui\Model\UserNotifications $n)
-    {
-        $this->notifications = $n;
-        return $this;
-    }
-
-    public function getDependencySetters()
-    {
-        return array('UserNotifications' => array($this, 'setUserNotifications'));
-    }
 }

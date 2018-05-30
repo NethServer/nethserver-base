@@ -48,7 +48,6 @@ $L['NsReleaseLock_enabled_label'] = 'Locked';
 $L['NsReleaseLock_enabled_description'] = 'Limit updates to repositories specific to version ${0}. Other repositories are considered only when new modules are installed';
 $L['BackToModules_label'] = 'Back';
 $L['Save_label'] = 'Save';
-$L['NsReleaseLock_policy_warning'] = 'Choose the software updates origin';
 $L['DistroUpgrade_header'] = 'Software center - distro upgrade';
 $L['DistroUpgradeAvailable_warning'] = '${product} ${version} is available';
 $L['DistroUpgrade_label'] = 'Upgrade';
