@@ -51,12 +51,9 @@ class PackageManager extends \Nethgui\Controller\CompositeController
     {
         $firstModuleIdentifier = 'Modules';
         $db = $this->getPlatform()->getDatabase('configuration');
-        $nsReleaseLock = $db->getProp('sysconfig', 'NsReleaseLock');
         $nsVersion = $db->getProp('sysconfig', 'Version');
         $sbVersion = $db->getProp('subscription', 'NsRelease');
-        if( ! $nsReleaseLock) {
-            $firstModuleIdentifier = 'Configuration';
-        } elseif($nsVersion && $sbVersion && version_compare($sbVersion, $nsVersion, '>') && $nsReleaseLock == 'enabled') {
+        if($nsVersion && $sbVersion && version_compare($sbVersion, $nsVersion, '>')) {
             $firstModuleIdentifier = 'DistroUpgrade';
         }
 
