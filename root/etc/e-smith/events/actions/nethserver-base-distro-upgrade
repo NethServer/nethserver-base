@@ -31,4 +31,7 @@ if [[ ${PIPESTATUS[0]} != 0 ]]; then
     echo "[ERROR] yum update failed" 1>&2
     exit 1
 fi
-/sbin/e-smith/expand-template /etc/yum/vars/nsrelease
+
+echo "[NOTICE] Disabling NsReleaseLock"
+/sbin/e-smith/config setprop sysconfig NsReleaseLock disabled
+/sbin/e-smith/signal-event software-repos-save
