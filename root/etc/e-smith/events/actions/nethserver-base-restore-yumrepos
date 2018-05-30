@@ -1,0 +1,52 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2018 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+#
+# Extract the configuration DB from backup to a temporary dir, and use it 
+# to restore the yum repositories configuration
+#
+
+configdb=/var/lib/nethserver/db/configuration
+tmpdir=$(mktemp -d /tmp/restore-yumrepos.XXXXXXX)
+tmpdb=$(mktemp -u /var/lib/nethserver/db/configuration.XXXXXXXX)
+trap "mv -vf ${tmpdb} ${configdb} ; rm -rf ${tmpdir}" EXIT
+
+tar -x -C "${tmpdir}" -f /var/lib/nethserver/backup/backup-config.tar.xz  var/lib/nethserver/db/configuration
+
+# rename current db
+mv -f ${configdb} ${tmpdb}
+
+# copy db from backup
+cp -a "${tmpdir}/var/lib/nethserver/db/configuration" ${configdb}
+
+systemId=$(/sbin/e-smith/config getprop subscription SystemId)
+if [[ -z ${systemId} ]]; then
+    systemId=$(/sbin/e-smith/config getprop nethupdate SystemID)
+fi
+
+echo "[NOTICE] Restoring YUM repository configuration"
+if [[ -n ${systemId} ]]; then
+   echo "[NOTICE] This system is subscribed as ${systemId}"
+fi
+
+/sbin/e-smith/signal-event software-repos-save
+

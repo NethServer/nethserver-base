@@ -287,3 +287,11 @@ event_templates('software-repos-save', qw(
 event_actions('software-repos-upgrade', qw(
     nethserver-base-distro-upgrade 20
 ));
+
+#
+# pre-restore-config event
+#
+event_actions('pre-restore-config', qw(
+    nethserver-base-restore-yumrepos 20
+));
+
