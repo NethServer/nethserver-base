@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.2.0
+Version: 3.3.0
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -85,6 +85,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Wed May 30 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.3.0-1
+- Software update policy API - NethServer/dev#5505
+
 * Wed May 16 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.2.0-1
 - Change of defaults for NS 7.5 - NethServer/dev#5490
 
