@@ -40,9 +40,12 @@ if [ $? -gt 0 ]; then
 fi
 
 openssl rsa -in $KEY -text -noout &>/dev/null
-if [ $? -gt 0 ]; then
-    echo "[ERROR]: invalid private key '$KEY'"
-    exit 1
+if [[ $? != 0 ]]; then
+    openssl ecparam -in $KEY -text -noout &>/dev/null
+    if [[ $? != 0 ]]; then
+        echo "[ERROR]: invalid private key '$KEY'"
+        exit 1
+    fi
 fi
 
 cp -f $CRT $DST/certs/$NAME.crt
