@@ -46,7 +46,7 @@ fi
 umask 0077
 openssl rsa -in $KEY 2>/dev/null >${DST}/private/${NAME}.key
 if [[ $? != 0 ]]; then
-    openssl ecparam -in $KEY 2>/dev/null >${DST}/private/${NAME}.key
+    openssl ec -in $KEY 2>/dev/null >${DST}/private/${NAME}.key
     if [[ $? != 0 ]]; then
         echo "[ERROR]: invalid private key '$KEY'"
         exit 1

@@ -24,7 +24,7 @@ FILE=$1
 
 openssl rsa -in $FILE -text -noout &>/dev/null
 if [[ $? != 0 ]]; then
-    openssl ecparam -in $FILE -text -noout &>/dev/null
+    openssl ec -in $FILE -noout &>/dev/null
     if [[ $? != 0 ]]; then
         exit 1
     fi
