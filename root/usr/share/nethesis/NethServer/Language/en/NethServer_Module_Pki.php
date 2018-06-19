@@ -47,5 +47,6 @@ $L['UploadName_label'] = 'Name';
 
 $L['valid_platform,pem-certificate,pem-certificate,1'] = 'X.509 certificate (PEM encoding)';
 $L['valid_platform,rsa-key,rsa-key,1'] = 'RSA or EC private key (PEM encoding)';
-
 $L['vaild_UploadName_file_exists'] = 'The file already exists';
+$L['cert_safetyguard_label'] = 'Default certificate selection';
+$L['valid_platform,tlspolicy-safetyguard,tlspolicy-ecdsa-cert,3'] = 'The TLS policy is not compatible with the system ECC certificate';

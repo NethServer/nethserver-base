@@ -42,6 +42,12 @@ class TlsPolicy extends \Nethgui\Controller\AbstractController
         $this->declareParameter('Policy', $this->createValidator()->memberOf('', '20180330', '20180621'), array('configuration', 'tls', 'policy'));
     }
 
+    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
+    {
+        $this->getValidator('Policy')->platform('tlspolicy-safetyguard', $this->getPlatform()->getDatabase('configuration')->getProp('pki', 'KeyFile'));
+        parent::validate($report);
+    }
+
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
