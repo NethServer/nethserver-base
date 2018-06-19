@@ -52,7 +52,7 @@ class Upload extends \Nethgui\Controller\Table\AbstractAction
             $report->addValidationError($this, 'UploadKey', $keyValidator);
         }
 
-        if( ! $crtValidator->evaluate($_FILES['chain']['tmp_name'])) {
+        if($_FILES['chain']['tmp_name'] && ! $crtValidator->evaluate($_FILES['chain']['tmp_name'])) {
             $report->addValidationError($this, 'UploadChain', $crtValidator);
         }
 
