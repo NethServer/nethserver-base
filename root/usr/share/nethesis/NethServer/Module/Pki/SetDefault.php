@@ -36,9 +36,32 @@ class SetDefault extends \Nethgui\Controller\Table\RowAbstractAction
         $this->setSchema($parameterSchema);
     }
 
+    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
+    {
+        parent::validate($report);
+        $certificates = $this->getCertificates();
+        $key = $this->getCertPath();
+        if(isset($certificates[$key]['key'])) {
+            $tlsPolicy = $this->getPlatform()->getDatabase('configuration')->getProp('tls', 'policy');
+            $validator = $this->createValidator()->platform('tlspolicy-safetyguard', $certificates[$key]['key']);
+            if( ! $validator->evaluate($tlsPolicy)) {
+                $report->addValidationError($this, 'cert_safetyguard', $validator);
+            }
+        }
+    }
+
     private function getCertPath()
     {
         return '/' . implode('/', $this->getRequest()->getPath());
+    }
+    
+    private function getCertificates()
+    {
+        static $certificates;
+        if( ! isset($certificates)) {
+            $certificates = json_decode($this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/cert-list')->getOutput(), TRUE);
+        }
+        return $certificates;
     }
 
     public function process()
@@ -46,8 +69,7 @@ class SetDefault extends \Nethgui\Controller\Table\RowAbstractAction
         if ( $this->getRequest()->isMutation()) {
             $db = $this->getPlatform()->getDatabase('configuration');
             $name = $this->getCertPath();
-            $certificates = json_decode($this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/cert-list')->getOutput(), TRUE);
-            foreach ($certificates as $key => $props) {
+            foreach ($this->getCertificates() as $key => $props) {
                  if ($key == $name) {
                       $db->setProp('pki', array('CrtFile' => $props['file'], 'KeyFile' => $props['key'], 'ChainFile' => $props['chain']));
                       $this->getPlatform()->signalEvent('certificate-update &');

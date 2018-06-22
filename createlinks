@@ -250,6 +250,14 @@ validator_actions('rsa-key',
                   'rsa-key' => '10');
 
 #--------------------------------------------------
+# check the certificate compatibility with
+# current TLS policy
+#--------------------------------------------------
+validator_actions('tlspolicy-safetyguard', qw(
+    tlspolicy-ecdsa-cert 10
+));
+
+#--------------------------------------------------
 # actions for proxy-modify event
 #--------------------------------------------------
 event_templates('proxy-modify', qw(
