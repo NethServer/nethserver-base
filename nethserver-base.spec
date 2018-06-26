@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.3.0
+Version: 3.4.0
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -85,6 +85,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Tue Jun 26 2018 Davide Principi <davide.principi@nethesis.it> - 3.4.0-1
+- Allow Elliptic Curve Criptography (ECC) certificate - NethServer/dev#5509
+
 * Wed May 30 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.3.0-1
 - Software update policy API - NethServer/dev#5505
 
