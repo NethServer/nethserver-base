@@ -3,23 +3,20 @@
     # include chain file
     #
 
-    my $chainFile = $pki{ChainFile} || "";
-    if ($chainFile eq "") {
-        return "";
-    }
-
     $OUT = '';
 
-    if( ! open(FH, '<', $chainFile)) {
-        warn ("Could not open $chainFile: $!\n");
+    my $file = $pki{ChainFile} || "";
+
+    if( ! $file) {
         return '';
     }
 
-    while (<FH>) {
-        $OUT .= $_;
-    }
+    # Perlish way to slurp a text file:
+    $OUT = do {
+        local $/ = undef;
+        open my $fh, "<", $file
+            or warn "[WARNING] could not open SSL chain file $file: $!\n";
+        <$fh>;
+    };
 
-    close(FH);
-
-    $OUT;
 }
