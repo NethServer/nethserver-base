@@ -91,8 +91,15 @@ class Resources extends \Nethgui\Controller\AbstractController
                 $ret++;
             }
         }
-        $tmp = explode(':',$f[4]);
-
+        // find cpu model name (x86_64 4th, arm 2th line) 
+        foreach ($f as $linenumber => $line) { 
+            if (strpos($line, 'model name') !== false) { 
+              $linemumber++; 
+              break; 
+            } 
+        } 
+        $tmp = explode(':',$f[$linenumber]);
+        
         return array('model' => trim($tmp[1]), 'n' => $ret);
     }
 
