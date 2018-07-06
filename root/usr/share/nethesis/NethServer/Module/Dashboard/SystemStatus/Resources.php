@@ -100,6 +100,9 @@ class Resources extends \Nethgui\Controller\AbstractController
     {
         if (file_exists("/sys/devices/virtual/dmi/id/$id")) {
             return file_get_contents("/sys/devices/virtual/dmi/id/$id");
+        // also try to fetch info for devicetree based (arm)devices
+        } elseif (file_exists("/sys/firmware/devicetree/base/model")) {
+            return file_get_contents("/sys/firmware/devicetree/base/model");
         } else {
             return "-";
         }
