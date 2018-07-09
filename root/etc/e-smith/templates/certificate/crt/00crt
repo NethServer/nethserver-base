@@ -3,20 +3,30 @@
     # public certificate expansion
     #
 
-    my $crtFile = $pki{CrtFile} || "/etc/pki/tls/certs/NSRV.crt";
-
     $OUT = '';
+    my $errors = 0;
 
-    if( ! open(FH, '<', $crtFile)) {
-	warn ("Could not open $crtFile: $!\n");
-	return '';
+    foreach my $file ($pki{'CrtFile'}, '/etc/pki/tls/certs/NSRV.crt') {
+
+        if( ! $file) {
+            next;
+        }
+
+        # Perlish way to slurp a text file:
+        $OUT = do {
+            local $/ = undef;
+            open my $fh, "<", $file
+                or ++$errors;
+            <$fh>;
+        };
+
+        if($OUT) {
+            last;
+        }
+
     }
- 
-    while (<FH>) {
-	$OUT .= $_;
+
+    if(!$OUT || $errors) {
+        die("[ERROR] SSL certificate expansion failed!\n");
     }
-
-    close(FH);
-
-    $OUT;
 }

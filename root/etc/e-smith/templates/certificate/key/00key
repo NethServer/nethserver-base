@@ -3,20 +3,30 @@
     # private key expansion
     #
 
-    my $keyFile = $pki{KeyFile} || "/etc/pki/tls/private/NSRV.key";
-
     $OUT = '';
+    my $errors = 0;
 
-    if( ! open(FH, '<', $keyFile)) {
-	warn ("Could not open $keyFile: $!\n");
-	return '';
+    foreach my $file ($pki{'KeyFile'}, '/etc/pki/tls/private/NSRV.key') {
+
+        if( ! $file) {
+            next;
+        }
+
+        # Perlish way to slurp a text file:
+        $OUT = do {
+            local $/ = undef;
+            open my $fh, "<", $file
+                or ++$errors;
+            <$fh>;
+        };
+
+        if($OUT) {
+            last;
+        }
+
     }
- 
-    while (<FH>) {
-	$OUT .= $_;
+
+    if(!$OUT || $errors) {
+        die("[ERROR] SSL private key expansion failed!\n");
     }
-
-    close(FH);
-
-    $OUT;
 }
