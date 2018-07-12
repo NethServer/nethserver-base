@@ -56,7 +56,8 @@ sub update_refs {
 
     warn "[NOTICE] Rename interface $old -> $new\n";
     foreach (glob('/var/lib/nethserver/db/*')) {
-        system("sed -i 's/\\b$old\\b/$new/g' $_");
+        # Replace strings inside the db, except for MAC address reservation records
+        system("sed -i '/MacAddress/! {s/\\b$old\\b/$new/g}' $_");
     }
 }
 
