@@ -8,7 +8,7 @@
 
     foreach my $file ($pki{'CrtFile'}, '/etc/pki/tls/certs/NSRV.crt') {
 
-        if( ! $file) {
+        if(! $file || ! -f $file) {
             next;
         }
 

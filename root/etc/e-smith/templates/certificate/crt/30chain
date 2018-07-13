@@ -7,7 +7,7 @@
 
     my $file = $pki{ChainFile} || "";
 
-    if( ! $file) {
+    if(! $file || ! -f $file ) {
         return '';
     }
 
