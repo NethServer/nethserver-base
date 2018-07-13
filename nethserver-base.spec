@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.4.0
+Version: 3.4.1
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -85,6 +85,10 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Fri Jul 13 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.4.1-1
+- Interface-rename action with short eth names - Bug NethServer/dev#5547
+- Upgrade ns6 fails with missing custom SSL certificate - Bug NethServer/dev#5542
+
 * Tue Jun 26 2018 Davide Principi <davide.principi@nethesis.it> - 3.4.0-1
 - Allow Elliptic Curve Criptography (ECC) certificate - NethServer/dev#5509
 
