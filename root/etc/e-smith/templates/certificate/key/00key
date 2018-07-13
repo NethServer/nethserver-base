@@ -8,7 +8,7 @@
 
     foreach my $file ($pki{'KeyFile'}, '/etc/pki/tls/private/NSRV.key') {
 
-        if( ! $file) {
+        if(! $file || ! -f $file) {
             next;
         }
 
