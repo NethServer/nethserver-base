@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.11.3
+Version: 2.11.4
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -69,6 +69,9 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 
 %changelog
+* Fri Jul 20 2018 Davide Principi <davide.principi@nethesis.it> - 2.11.4-1
+- Backport of Nethgui CSRF fixes and Session expiry - Enhancement #3445 [NethServer 6]
+
 * Mon Dec 19 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.11.3-1
 - Avoid certificate generation in certificate-update event - Enhancement #3435
 
