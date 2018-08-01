@@ -27,7 +27,7 @@ shift; # skip event name
 
 my $argnum = @ARGV;
 
-if ($argnum <= 1) {
+if ($argnum == 0) {
     # Nothing to do
     exit 0;
 }
