@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.4.1
+Version: 3.4.2
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -85,6 +85,10 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Thu Aug 09 2018 Davide Principi <davide.principi@nethesis.it> - 3.4.2-1
+- Enhancement: (un)mask password fields - NethServer/dev#5554
+- Fix [interface-rename] exit code if wrong args are given - NethServer/nethserver-base#130
+
 * Fri Jul 13 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.4.1-1
 - Interface-rename action with short eth names - Bug NethServer/dev#5547
 - Upgrade ns6 fails with missing custom SSL certificate - Bug NethServer/dev#5542
