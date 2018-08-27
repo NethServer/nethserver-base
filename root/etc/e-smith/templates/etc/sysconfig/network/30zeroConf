@@ -1,0 +1,3 @@
+{
+$OUT .= "NOZEROCONF=yes\n" if (($sysconfig{'ZeroConf'}||'') eq 'disabled';
+}
