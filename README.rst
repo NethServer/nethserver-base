@@ -129,9 +129,6 @@ the script: ``/usr/libexec/nethserver/update-networks-db`` .
 
 The *networks* database is updated Whenever an interface is plugged into the system.
 
-Best practices
---------------
-
 DHCP on red interfaces
 ----------------------
 
@@ -229,6 +226,14 @@ configuration by following these steps.
 
 6. Open the web interface and reconfigure accordingly to your needs
 
+Zeroconf network
+----------------
+
+Zeroconf network (http://www.zeroconf.org/) shouldn't be usefull on a server.
+It can be safely disabled using these commands: ::
+
+  config setprop sysconfig ZeroConf disabled
+  signal-event interface-update
 
 Log retention and rotation
 ==========================
