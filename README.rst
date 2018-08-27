@@ -290,6 +290,7 @@ Main repositories are:
 * ``updates``: updated packages from CentOS. Enabled by default.
 * ``centos-sclo-rh`` and ``centos-sclo-sclo``: SCL repositories. Both enabled by default.
 * ``extras``: extra RPMs. Enabled by default.
+* ``epel``: Extra Packages for Enterprise Linux. Enabled by default.
 
 A standard installation should have the following enabled repositories:
 
@@ -301,6 +302,7 @@ A standard installation should have the following enabled repositories:
 * centos-sclo-rh
 * centos-sclo-sclo
 * extras
+* epel
 
 Packages published in above repositories should always allow a non-disruptive automatic update.
 
@@ -310,7 +312,7 @@ NS Release Lock
 As default |product| is configured to access latest upstream repositories using the
 "Rolling release" approach.
 
-It is possibile to lock repositories to che current minor release using ``NS release lock`` feature: ::
+It is possible to lock repositories to the current minor release using ``NS release lock`` feature: ::
 
   config setprop sysconfig NsReleaseLock enabled
   signal-event software-repos-save
