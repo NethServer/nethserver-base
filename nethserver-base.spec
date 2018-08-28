@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.4.2
+Version: 3.4.3
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -85,6 +85,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Tue Aug 28 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.4.3-1
+- Disable zeroconf - NethServer/dev#5521
+
 * Thu Aug 09 2018 Davide Principi <davide.principi@nethesis.it> - 3.4.2-1
 - Enhancement: (un)mask password fields - NethServer/dev#5554
 - Fix [interface-rename] exit code if wrong args are given - NethServer/nethserver-base#130
