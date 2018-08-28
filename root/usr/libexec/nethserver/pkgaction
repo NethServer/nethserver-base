@@ -209,6 +209,7 @@ def main():
 
         current_task_id = task_chn_id
 
+        yb._limit_installonly_pkgs()
         yb.processTransaction(
             callback   = TransactionCallback(yb.repos, tracker_client, task_chn_id),
             rpmDisplay = TrackerClientCallBack(tracker_client, task_chn_id)
