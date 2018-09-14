@@ -94,6 +94,7 @@ class Installed extends \Nethgui\Controller\Collection\AbstractAction implements
             $groupsState[$id]['id'] = $yumGroup['id'];
             $groupsState[$id]['name'] = $yumGroup['name'];
             $groupsState[$id]['description'] = $yumGroup['description'];
+            $groupsState[$id]['mpackages'] = array_keys($yumGroup['mpackages']);
             $groupsState[$id]['Edit'] = array($view->getModuleUrl('../../EditModule/' . $id), $view->translate('Edit_label'));
             $groupsState[$id]['Remove'] = array($view->getModuleUrl('../../Review?removeGroup=' . $id), $view->translate('Remove_label'));
         }
