@@ -23,6 +23,9 @@ echo $view->objectsCollection('groups')
                             ->insert($view->textLabel('description'))
                             ->insert($view->textList('categories')
                                         ->setAttribute('tag', 'div/span/span')
+                                        ->setAttribute('separator', ', '))
+                            ->insert($view->textList('mpackages')
+                                        ->setAttribute('tag', 'div/span/span')
                                         ->setAttribute('separator', ', ')))
                     ->insert($view->buttonList($view::BUTTONSET)->setAttribute('class', 'Buttonset')
                             ->insert($view->button('Remove', $view::BUTTON_LINK))
@@ -43,8 +46,8 @@ $view->includeCss("
 .${groupsTarget} .row {display: flex; align-items: flex-start; border: 1px solid #d3d3d3; border-radius: 4px; margin-bottom: .5em}
 .${groupsTarget} .row .ui-buttonset {margin: 0; position: relative; top: -1px; right: 0; flex-shrink: 0}
 .${groupsTarget} .name {font-size: 1.2em; display: block}
+.${groupsTarget} .mpackages {font-size: .8em; display: block; margin-left: 1.2em }
 .${groupsTarget} .categories {font-size: .8em; display: block; margin-left: 1.2em }
 .${groupsTarget} .description { display: block; margin-top: 0.5em; margin-left: 1em}
 .${groupsTarget} .module { padding: .5em; flex-grow: 1; border-radius: 4px; }
 ");
-
