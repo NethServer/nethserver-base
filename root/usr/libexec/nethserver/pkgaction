@@ -32,6 +32,15 @@ import yum.callbacks
 import yum.Errors
 import yum.i18n # exception2msg
 import re
+import json
+
+# If True, generate JSON output for cockpit
+json_output = False
+
+def joutput(data):
+    global json_output
+    if json_output:
+        print(json.dumps(data))
 
 def warning(*objs):
     print(*objs, file=sys.stderr)
@@ -47,6 +56,8 @@ class TransactionCallback( yum.callbacks.ProcessTransNoOutputCallback ):
            and not data is None 
            and len(data) > 0):
             self.trackDownloads(data)
+        if state in yum.callbacks.PT_MESSAGES:
+            joutput({'event': yum.callbacks.PT_MESSAGES[state], 'state': 'running', 'steps' : -1})
             
     def trackDownloads(self, pkgs):            
         # If there is at least one download, declare Download task:
@@ -122,6 +133,8 @@ class DownloadCallback(  yum.callbacks.DownloadBaseCallback ):
         if(not progress is None):
             self.tracker_client.set_task_progress(task_id, progress, message)
 
+        joutput({'event': 'Downloading - %s' % name, 'state': 'running', 'steps': -1})
+
 class TrackerClientCallBack(yum.rpmtrans.RPMBaseCallback):
     def __init__(self, tracker_client, parent_task_id):
         yum.rpmtrans.RPMBaseCallback.__init__(self)
@@ -145,16 +158,18 @@ class TrackerClientCallBack(yum.rpmtrans.RPMBaseCallback):
         p = min(1.0, (float(ts_current) - 1.0 + c) / float(ts_total))
         message = "%s %s" % (package, self._get_action_name(action))
         self.tracker_client.set_task_progress(self.task_id, p, message)
+        joutput({'event': "%s %s" % (self._get_action_name(action), package), 'state': 'running', 'steps': -1})
 
 def usage():
     warning("Usage: %s {<command> {PACKAGE|@GROUP}}..." % sys.argv[0])
-    warning("    command: [--install|--update|--strict-update|--remove]")
+    warning("    command: [--install|--update|--strict-update|--remove] [--json]")
     sys.exit(1)
 
 def main():
+    global json_output
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], '', ['install=','strict-update=','update=','remove='])
+        opts, args = getopt.getopt(sys.argv[1:], '', ['install=','strict-update=','update=','remove=','json'])
     except getopt.GetoptError as err:
         usage()
 
@@ -171,7 +186,10 @@ def main():
        strict = True
 
     for key, val in opts:
-        map(lambda x: actions[key[2:]].append(x), val.split(','))
+        if key == '--json':
+            json_output = True
+        else:
+            map(lambda x: actions[key[2:]].append(x), val.split(','))
 
     syslog.openlog('pkgaction',syslog.LOG_PID);
     tracker_client = nethserver.ptrack.TrackerClient()
@@ -189,6 +207,7 @@ def main():
         if strict:
             yb.conf.reposdir = '/etc/nethserver/yum-update.d/'
 
+        joutput({'event': 'Initialization', 'state': 'running', 'steps': -1})
         task_dep_id = tracker_client.declare_task("Initialization", 0, 4.0)
         task_chn_id = tracker_client.declare_task("Applying changes", 0, 96.0)
         task_sys_id = tracker_client.declare_task("System configuration", task_chn_id, 50.0)
@@ -204,6 +223,7 @@ def main():
                 getattr(yb, action)(pattern=pkg)
 
         tracker_client.set_task_progress(task_dep_id, 0.5, 'Resolving RPM dependencies')
+        joutput({'event': 'Resolving RPM dependencies', 'state': 'running', 'steps': -1})
         yb.resolveDeps()
         tracker_client.set_task_done(task_dep_id)
 
@@ -235,10 +255,14 @@ def main():
             message = "[%s] %s" % (e.__class__.__name__, e)
 
         tracker_client.set_task_done(current_task_id, message, 1)
-        warning(message)
+        if json_output:
+            joutput({'event': None, 'message': message, 'status': 'failed', 'steps': -1})
+        else:
+            warning(message)
         syslog.syslog(syslog.LOG_ERR, message)
         sys.exit(1)
     
+    joutput({'event': 'Transaction end', 'status': 'success', 'steps' : -1})
     sys.exit(exitcode);
 
 if __name__ == "__main__":
