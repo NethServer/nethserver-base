@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.4.4
+Version: 3.5.0
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -85,6 +85,10 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Fri Sep 28 2018 Davide Principi <davide.principi@nethesis.it> - 3.5.0-1
+- Show all parts of installed packages in software center - NethServer/dev#5585
+- TLS policy and ejabberd: new policy 2018-10-01 - NethServer/dev#5580
+
 * Tue Aug 28 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.4.4-1
 - Updates from UI doesn't respect installonly_limit option - NethServer/dev#5574
 
