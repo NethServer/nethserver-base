@@ -41,6 +41,7 @@ def joutput(data):
     global json_output
     if json_output:
         print(json.dumps(data))
+        sys.stdout.flush()
 
 def warning(*objs):
     print(*objs, file=sys.stderr)
