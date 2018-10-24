@@ -401,3 +401,28 @@ Database example: ::
     messages=no
     randomWait=360
     status=enabled
+
+Notifications
+=============
+
+Mail for root user can be forwarded to external addresses.
+
+Properties:
+
+- `EmailAddress`: comma-separated list of mail addresses; messages sent to root user will be forwarded to listed addresses
+- `KeepMessageCopy`: can be `yes` or `no`; if set to `yes`, messages will be always delivered also to local root mail folder
+- `SenderAddress`: a valid mail address; if not empty, messages sent by root (like cron notifications) will be sent using
+  the specified address. A good value could be: `no-reply@<domain>` (where `<domain>` is the domain of the server).
+  If not set, messages will be sent using `root@<fqdn>` as sender address.
+
+Database example: ::
+
+ root=configuration
+    EmailAddress=myuser@nethserver.org
+    KeepMessageCopy=yes
+    SenderAddress=no-reply@nethserver.org
+
+Usage: ::
+
+ config setprop root EmailAddress myuser@nethserver.org SenderAddress no-reply@nethserver.org
+ signal-event notifications-save
