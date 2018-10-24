@@ -7,7 +7,6 @@ Source: %{name}-%{version}.tar.gz
 BuildArch: noarch
 URL: %{url_prefix}/%{name}
 
-Requires: smartmontools
 Requires: bridge-utils
 Requires: sudo
 Requires: nc
