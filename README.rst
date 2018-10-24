@@ -424,5 +424,5 @@ Database example: ::
 
 Usage: ::
 
- config setprop root Emailaddress myuser@nethserver.org SenderAddress no-reply@nethserver.org
- signal-event nethserver-mail-smarthost-save
+ config setprop root EmailAddress myuser@nethserver.org SenderAddress no-reply@nethserver.org
+ signal-event notifications-save

@@ -303,3 +303,10 @@ event_actions('pre-restore-config', qw(
     nethserver-base-restore-yumrepos 20
 ));
 
+#--------------------------------------------------
+# actions for notifications-save event
+#--------------------------------------------------
+event_actions('notifications-save', qw(
+    nethserver-base-mail-aliases      50
+));
+
