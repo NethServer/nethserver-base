@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.5.0
+Version: 3.5.1
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -84,6 +84,11 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Mon Nov 05 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.5.1-1
+- Integration of arm specific requirements - NethServer/dev#5610
+- Email notification API - NethServer/dev#5614
+- pkgaction: add support for json output
+
 * Fri Sep 28 2018 Davide Principi <davide.principi@nethesis.it> - 3.5.0-1
 - Show all parts of installed packages in software center - NethServer/dev#5585
 - TLS policy and ejabberd: new policy 2018-10-01 - NethServer/dev#5580
