@@ -20,7 +20,7 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-echo $1 | grep -q "localhost"
+echo $1 | grep -qi "localhost"
 
 if [ $? -eq 0 ]; then
     exit 1
