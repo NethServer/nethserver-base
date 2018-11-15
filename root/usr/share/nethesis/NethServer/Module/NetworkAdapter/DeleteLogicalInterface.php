@@ -116,8 +116,19 @@ class DeleteLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
     {
         parent::process();
         if ($this->getRequest()->isMutation()) {
+            // this condition is going to change: store it at this point!
+            $hasParent = $this->getParent()->hasParent($this->parameters['device']);
+
+            if($hasParent) {
+                $eventArgs = array($this->parameters['device'], $this->getParentDevice($this->parameters['device']));
+            } elseif ($this->parameters['successor']) {
+                $eventArgs = array($this->parameters['device'], $this->parameters['successor']);
+            } else {
+                $eventArgs = array();
+            }
+
             foreach ($this->getDeviceParts($this->parameters['device']) as $partKey) {
-                if ($this->getParent()->hasParent($this->parameters['device'])) {
+                if ($hasParent) {
                     $this->movePartToParent($partKey);
                 } else {
                     $this->releasePart($partKey);
@@ -136,8 +147,23 @@ class DeleteLogicalInterface extends \Nethgui\Controller\Table\AbstractAction
                 }
             }
             $this->getAdapter()->flush();
-            $this->getPlatform()->signalEvent('interface-update &');
+            $this->getPlatform()->signalEvent('interface-update &', $eventArgs);
         }
+    }
+
+    public function getParentDevice($device)
+    {
+        $ndb = $this->getPlatform()->getDatabase('networks');
+        $props = $ndb->getKey($device);
+        if ($props['role'] === 'slave') {
+            $parent = $props['bond'];
+        } elseif ($props['role'] === 'bridged') {
+            $parent = $props['bridge'];
+        }
+        if(!$parent || !$ndb->getKey($parent)) {
+            throw new \RuntimeException(sprintf("%s: inconsistent parent device reference in record '%s' of networks DB ", __CLASS__, $device), 1542281179);
+        }
+        return $parent;
     }
 
     private function releasePppoeDevices()
