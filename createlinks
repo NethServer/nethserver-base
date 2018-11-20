@@ -268,6 +268,7 @@ event_templates('proxy-modify', qw(
 
 validator_actions('myhostname', qw(
     hostname-length 10
+    hostname-localhost 20
 ));
 
 event_actions('post-restore-config', qw(

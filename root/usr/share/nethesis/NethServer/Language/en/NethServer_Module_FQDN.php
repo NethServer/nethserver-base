@@ -13,3 +13,4 @@ $L['valid_platform,myhostname,failifjoin,1'] = 'Users and groups provider alread
 $L['valid_platform,myhostname,hostname-length,3'] = 'The host name part length must be up to 15 characters long';
 $L['valid_platform,myhostname,hostname-length,4'] = 'Only letters, digits and hyphens are allowed in the host name part';
 $L['valid_hostname_fqdn_long'] = 'must contain at least two dots, like "myhost.example.com"';
+$L['valid_platform,myhostname,hostname-localhost,1'] = 'The FQDN cannot contain "localhost"';
