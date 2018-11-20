@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.5.1
+Version: 3.5.2
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -84,6 +84,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Tue Nov 20 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.5.2-1
+- Server unreachable after creating a logical interface - Bug NethServer/dev#5637
+
 * Mon Nov 05 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.5.1-1
 - Integration of arm specific requirements - NethServer/dev#5610
 - Email notification API - NethServer/dev#5614
