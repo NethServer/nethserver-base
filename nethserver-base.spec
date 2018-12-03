@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.5.2
+Version: 3.6.0
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -84,6 +84,12 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Mon Dec 03 2018 Davide Principi <davide.principi@nethesis.it> - 3.6.0-1
+- Zeroconf: disable by default - NethServer/dev#5628
+- New TLS policy default 2018-10-01 - NethServer/dev#5661
+- Hostname validator: do not allow 'localhost' as valid hostname - NethServer/dev#5634
+- Log retention: increase default value - NethServer/dev#5629
+
 * Tue Nov 20 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.5.2-1
 - Server unreachable after creating a logical interface - Bug NethServer/dev#5637
 
