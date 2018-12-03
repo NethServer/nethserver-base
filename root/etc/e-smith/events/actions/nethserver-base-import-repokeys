@@ -1,0 +1,52 @@
+#!/usr/bin/bash
+
+#
+# Copyright (C) 2018 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+major_version=7
+basearch="$(uname -m)"
+base_persistdir="/var/lib/yum/repos/${basearch}/${major_version}"
+umask 077
+
+gpg_tmpdir=$(mktemp -d)
+trap "rm -rf ${gpg_tmpdir}" EXIT
+
+function generate_gpgtemplatedir
+{
+    cat /etc/pki/rpm-gpg/RPM-GPG-KEY-* | gpg --homedir "${gpg_tmpdir}" --import
+    gpg --homedir "${gpg_tmpdir}" --import-ownertrust <<EOF
+6341AB2753D78A78A7C27BB124C6A8A7F4A80EB5:6:
+C4DBD535B1FBBA14F8BA64A84EB84E71F2EE9D55:6:
+91E97D7C4A5E96F17F3E888F6A2FAEA2352C64E5:6:
+594C3FD8FAE18FF532FEAE239CB28EA039BAF5C1:6:
+EOF
+}
+
+for repo in $(grep -i '^[a-z0-9]' /etc/nethserver/eorepo.conf); do
+    gpg_homedir="${base_persistdir}/${repo}/gpgdir"
+    if [[ ! -d "${gpg_homedir}" ]]; then
+        if [[ ! -f ${gpg_tmpdir}/pubring.gpg ]]; then
+            generate_gpgtemplatedir
+        fi
+        mkdir -p "${gpg_homedir}"
+        cp -af ${gpg_tmpdir}/* "${gpg_homedir}"
+        cp -af "${gpg_homedir}" "${base_persistdir}/${repo}/gpgdir-ro"
+    fi
+done
