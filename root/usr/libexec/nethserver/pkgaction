@@ -207,6 +207,7 @@ def main():
         yb.conf.assumeyes = 1
         if strict:
             yb.conf.reposdir = '/etc/nethserver/yum-update.d/'
+        yb.doLock()
 
         joutput({'event': 'Initialization', 'state': 'running', 'steps': -1})
         task_dep_id = tracker_client.declare_task("Initialization", 0, 4.0)
@@ -262,6 +263,8 @@ def main():
             warning(message)
         syslog.syslog(syslog.LOG_ERR, message)
         sys.exit(1)
+    finally:
+        yb.doUnlock()
     
     joutput({'event': 'Transaction end', 'status': 'success', 'steps' : -1})
     sys.exit(exitcode);
