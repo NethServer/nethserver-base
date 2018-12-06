@@ -103,17 +103,16 @@ def compsdump(yb):
 
     print( simplejson.dumps(comps) )
 
-def check_update(yb, clean_all = False, strict = False):
-    if clean_all:
-        subprocess.call(["/usr/bin/yum", "clean", "all"], stdout=open(os.devnull, "w"), stderr=subprocess.STDOUT)
-        yb.conf.reposdir = '/etc/nethserver/yum-update.d/'
+def check_update(yb, strict = False):
     updates = map(lambda i: {'name': i[0], 'arch': i[1], 'epoch': i[2], 'version': i[3], 'release': i[4]}, yb.up.getUpdatesList())
+    yb.doUnlock()
 
     if strict:
         changelog = subprocess.Popen(['/usr/bin/yum', 'changelog', '1', 'updates', '--setopt=reposdir=/etc/nethserver/yum-update.d/'], stdout=subprocess.PIPE, shell=False, env={'LANG': 'en_US.UTF-8'}).communicate()[0];
     else:
         changelog = subprocess.Popen(['/usr/bin/yum', 'changelog', '1', 'updates'], stdout=subprocess.PIPE, shell=False, env={'LANG': 'en_US.UTF-8'}).communicate()[0];
 
+    yb.doLock()
     simplejson.dump({'updates': updates, 'changelog': changelog.decode('utf-8')}, sys.stdout)
 
 def parse_pkginfo_conf():
