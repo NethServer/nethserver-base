@@ -146,6 +146,7 @@ def main():
         ypbc.init_plugins = False
         yb = yum.YumBase()
         yb.preconf = ypbc
+        yb.doLock()
 
         action = sys.argv[1]
         # force repository configuration now,
@@ -171,6 +172,8 @@ def main():
         print simplejson.dumps({'error':"%s"%e})
         sys.exit(1)
 
+    finally:
+        yb.doUnlock()
 
 if __name__ == "__main__":
     main()
