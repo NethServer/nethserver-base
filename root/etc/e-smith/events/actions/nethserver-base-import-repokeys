@@ -56,12 +56,24 @@ EOF
 
 for repo in $(grep -i '^[a-z0-9]' /etc/nethserver/eorepo.conf); do
     gpg_homedir="${base_persistdir}/${repo}/gpgdir"
+    gpgro_homedir="${base_persistdir}/${repo}/gpgdir-ro"
     if [[ ! -d "${gpg_homedir}" ]]; then
         if [[ ! -f ${gpg_tmpdir}/pubring.gpg ]]; then
             generate_gpgtemplatedir
         fi
         mkdir -p "${gpg_homedir}"
         cp -af ${gpg_tmpdir}/* "${gpg_homedir}"
-        cp -af "${gpg_homedir}" "${base_persistdir}/${repo}/gpgdir-ro"
+        touch "${gpg_homedir}/gpg.conf"
+
+        cp -af "${gpg_homedir}" "${gpgro_homedir}"
+        cat - > "${gpgro_homedir}/gpg.conf" <<EOF
+lock-never
+no-auto-check-trustdb
+trust-model direct
+no-expensive-trust-checks
+no-permission-warning
+preserve-permission
+EOF
+        chmod -R a+rx "${gpgro_homedir}"
     fi
 done
