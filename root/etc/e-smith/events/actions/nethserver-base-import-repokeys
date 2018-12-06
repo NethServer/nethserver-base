@@ -23,14 +23,29 @@
 major_version=7
 basearch="$(uname -m)"
 base_persistdir="/var/lib/yum/repos/${basearch}/${major_version}"
-umask 077
 
 gpg_tmpdir=$(mktemp -d)
 trap "rm -rf ${gpg_tmpdir}" EXIT
 
 function generate_gpgtemplatedir
 {
+    # Import ALL stored keys:
     cat /etc/pki/rpm-gpg/RPM-GPG-KEY-* | gpg --homedir "${gpg_tmpdir}" --import
+
+    #
+    # Now set GPG trust for only well-known keys
+    # pub  4096R/F4A80EB5 2014-06-23 CentOS-7 Key (CentOS 7 Official Signing Key) <security@centos.org>
+    # pub  2048R/F2EE9D55 2015-10-01 CentOS SoftwareCollections SIG (https://wiki.centos.org/SpecialInterestGroup/SCLo) <security@centos.org>
+    # pub  4096R/352C64E5 2013-12-16 Fedora EPEL (7) <epel@fedoraproject.org>
+    # pub  4096R/39BAF5C1 2016-02-10 NethServer 7 (NethServer 7 Official Signing Key) <security@nethserver.org>
+    #
+    # To see the key id of a file run:
+    #     gpg /etc/pki/rpm-gpg/RPM-GPG-KEY-NethServer-7
+    #     ...
+    #     pub  4096R/39BAF5C1
+    #
+    # Compare the key id with the last 8 chars of the keys below:
+    #
     gpg --homedir "${gpg_tmpdir}" --import-ownertrust <<EOF
 6341AB2753D78A78A7C27BB124C6A8A7F4A80EB5:6:
 C4DBD535B1FBBA14F8BA64A84EB84E71F2EE9D55:6:
