@@ -281,6 +281,7 @@ event_actions('post-restore-config', qw(
 #--------------------------------------------------
 event_actions('software-repos-save', qw(
     nethserver-base-software-repos 20
+    nethserver-base-import-repokeys 21
 ));
 
 event_templates('software-repos-save', qw(
