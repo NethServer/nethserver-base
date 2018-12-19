@@ -22,6 +22,9 @@
 
 major_version=7
 basearch="$(uname -m)"
+if [[ ${basearch} = armv7* ]]; then
+    basearch="armhfp"
+fi
 base_persistdir="/var/lib/yum/repos/${basearch}/${major_version}"
 
 gpg_tmpdir=$(mktemp -d)
