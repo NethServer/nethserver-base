@@ -11,7 +11,9 @@
             $OUT .= $proxy_user.':'.$proxy_pass.'@';
         }
         $OUT .= "$proxy_host:$proxy_port\"\n";
+        $OUT .= "https_proxy=\$http_proxy\n";
         $OUT .= "export http_proxy\n";
+        $OUT .= "export https_proxy\n";
     }
 }
 
