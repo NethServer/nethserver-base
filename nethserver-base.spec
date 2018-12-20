@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.6.1
+Version: 3.6.2
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -84,6 +84,10 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Thu Dec 20 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.6.2-1
+- ARM arch 7.6.1810 beta release - NethServer/dev#5675
+- Global proxy is not honored for https requests - Bug NethServer/dev#5678
+
 * Fri Dec 07 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.6.1-1
 - Repository metadata GPG signature - NethServer/dev#5664
 - Installing packages from "software center" doesn't create proper yum lock - Bug NethServer/dev#5667
