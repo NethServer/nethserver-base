@@ -34,6 +34,7 @@ event_actions('nethserver-base-update', qw(
     nethserver-base-selinux-setup     10
     nethserver-base-conf              40
     nethserver-base-mail-aliases      50
+    nethserver-base-fixrepos          98
 ));
 
 event_templates('nethserver-base-update', qw(
