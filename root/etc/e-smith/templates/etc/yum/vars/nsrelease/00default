@@ -8,7 +8,7 @@
        <$nsh>;
    };
 
-   our $release = '';
+   our $release = $defaultRelease;
 
    '';
 }

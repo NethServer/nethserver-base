@@ -32,6 +32,3 @@ if [[ ${PIPESTATUS[0]} != 0 ]]; then
     exit 1
 fi
 
-echo "[NOTICE] Disabling NsReleaseLock"
-/sbin/e-smith/config setprop sysconfig NsReleaseLock disabled
-/sbin/e-smith/signal-event software-repos-save
