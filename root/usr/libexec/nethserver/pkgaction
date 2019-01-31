@@ -163,28 +163,23 @@ class TrackerClientCallBack(yum.rpmtrans.RPMBaseCallback):
 
 def usage():
     warning("Usage: %s {<command> {PACKAGE|@GROUP}}..." % sys.argv[0])
-    warning("    command: [--install|--update|--strict-update|--remove] [--json]")
+    warning("    command: [--install|--update|--remove] [--json]")
     sys.exit(1)
 
 def main():
     global json_output
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], '', ['install=','strict-update=','update=','remove=','json'])
+        opts, args = getopt.getopt(sys.argv[1:], '', ['install=','update=','remove=','json'])
     except getopt.GetoptError as err:
         usage()
 
     if(len(args) > 0 or len(opts) == 0):
         usage()
-            
-    actions = {'install': [], 'update': [], 'strict-update': [], 'remove': []}
+
+    actions = {'install': [], 'update': [], 'remove': []}
     tracker_client = None
     exitcode = 0
-    strict = False
-
-    if opts[0][0] == '--strict-update':
-       opts[0] = ('--update',opts[0][1]) # map to correct yum action
-       strict = True
 
     for key, val in opts:
         if key == '--json':
@@ -205,8 +200,6 @@ def main():
         yb = yum.YumBase()
         yb.preconf = ypbc
         yb.conf.assumeyes = 1
-        if strict:
-            yb.conf.reposdir = '/etc/nethserver/yum-update.d/'
         yb.doLock()
 
         joutput({'event': 'Initialization', 'state': 'running', 'steps': -1})
