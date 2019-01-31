@@ -34,8 +34,7 @@ class Update extends \Nethgui\Controller\AbstractController implements \Nethgui\
         parent::process();
         if ($this->getRequest()->isMutation()) {
             $db = $this->getPlatform()->getDatabase('configuration');
-            $nsReleaseLock = $db->getProp('sysconfig', 'NsReleaseLock');
-            $this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/pkgaction ${1} \*', array($nsReleaseLock == 'enabled' ? '--strict-update' : '--update'), TRUE);
+            $this->getPlatform()->exec('/usr/bin/sudo /usr/libexec/nethserver/pkgaction ${1} \*', array('--update'), TRUE);
         }
     }
 
