@@ -30,6 +30,7 @@ fi
 if [[ ${#repositories[@]} -gt 0 ]]; then
     echo "[NOTICE] eorepo ${repositories[*]}"
     /sbin/e-smith/eorepo ${repositories[*]}
-    yum clean all
-    rm -rf /var/cache/yum
+    yum --setopt=exit_on_lock=1 clean all && rm -rf /var/cache/yum/*
 fi
+
+exit 0
