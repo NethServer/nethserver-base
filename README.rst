@@ -339,16 +339,6 @@ The EPEL repository does not support accessing RPMs using a minor release like
     When a subscription is enabled the default repositories are disabled. See
     :file:`/etc/yum.repos.d/subscription.repo`
 
-Repository GPG signature check
-------------------------------
-
-The prop ``sysconfig/RepoGpgCheckStatus`` enables the metadata GPG signature
-check. Some YUM repositories may not support GPG signature of metadata and can
-ignore this setting. To enable the signature check run the following commands: ::
-
-    config setprop sysconfig RepoGpgCheckStatus enabled
-    signal-event software-repos-save
-
 
 Third party repositories
 ------------------------
