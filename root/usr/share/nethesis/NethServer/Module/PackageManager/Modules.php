@@ -114,8 +114,7 @@ class Modules extends \Nethgui\Controller\CollectionController implements \Nethg
 
         $data = array();
         $db = $this->getPlatform()->getDatabase('configuration');
-        $nsReleaseLock = $db->getProp('sysconfig', 'NsReleaseLock');
-        $checkUpdateJob = $this->getPlatform()->exec('/usr/bin/sudo -n /usr/libexec/nethserver/pkginfo ${1}', array($nsReleaseLock == 'enabled' ? 'check-strict-update' : 'check-update'));
+        $checkUpdateJob = $this->getPlatform()->exec('/usr/bin/sudo -n /usr/libexec/nethserver/pkginfo ${1}', array('check-update'));
         if ($checkUpdateJob->getExitCode() !== 0) {
             $data = json_decode($checkUpdateJob->getOutput(), TRUE);
             $this->yumError = isset($data['error']) ? $data['error'] : '';

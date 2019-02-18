@@ -27,7 +27,6 @@ class Configuration extends \Nethgui\Controller\Collection\AbstractAction
 {
     public function initialize()
     {
-        $this->declareParameter('NsReleaseLock', $this->createValidator()->notEmpty()->memberOf('enabled', 'disabled'), array('configuration', 'sysconfig', 'NsReleaseLock'));
         $this->declareParameter('messages', Validate::YES_NO, array('configuration', 'yum-cron', 'messages'));
         $this->declareParameter('download', Validate::YES_NO, array('configuration', 'yum-cron', 'download'));
         $this->declareParameter('applyUpdate', Validate::YES_NO, array('configuration', 'yum-cron', 'applyUpdate'));
@@ -73,7 +72,6 @@ class Configuration extends \Nethgui\Controller\Collection\AbstractAction
         parent::prepareView($view);
         $db = $this->getPlatform()->getDatabase('configuration');
         $view['Version'] = $db->getProp('sysconfig', 'Version');
-        $view['PolicyDisabled'] = (bool) $db->getProp('subscription', 'SystemId') || @file_exists('/etc/e-smith/db/configuration/force/sysconfig/NsReleaseLock');
         $view['BackToModules'] = $view->getModuleUrl('../Modules');
         if(isset($this->parameters['customMail'])) {
             $view['customMail'] = implode("\r\n", explode(',', $this->parameters['customMail']));

@@ -12,10 +12,3 @@ mdpolicy = group:main
 
 # Uncomment to auto-import new gpg keys (dangerous)
 # assumeyes = True
-
-{
-   $lock = $sysconfig{'NsReleaseLock'} || 'disabled';
-   if ($lock eq 'enabled') {
-       $OUT .= "reposdir=/etc/nethserver/yum-update.d/"
-   }
-}

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# Copyright (C) 2018 Nethesis S.r.l.
+# Copyright (C) 2019 Nethesis S.r.l.
 # http://www.nethesis.it - nethserver@nethesis.it
 #
 # This script is part of NethServer.
@@ -20,15 +20,12 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-set -e
+ns_release_lock="$(/sbin/e-smith/config getprop sysconfig NsReleaseLock)"
 
-yum clean all
-rm -rf /var/cache/yum
-nsrelease=$(/sbin/e-smith/config getprop subscription NsRelease)
-echo "${nsrelease}" > /etc/yum/vars/nsrelease
-yum update -y \* @nethserver-iso | /usr/libexec/nethserver/ptrack-yum-update
-if [[ ${PIPESTATUS[0]} != 0 ]]; then
-    echo "[ERROR] yum update failed" 1>&2
-    exit 1
+if [[ -z ${ns_release_lock} ]]; then
+    exit 0
 fi
 
+echo '[NOTICE] applying new YUM repository configuration'
+/sbin/e-smith/config delprop sysconfig NsReleaseLock
+exec /sbin/e-smith/signal-event software-repos-save

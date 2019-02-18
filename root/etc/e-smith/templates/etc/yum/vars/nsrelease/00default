@@ -1,14 +1,11 @@
 {
    #
-   # 00default
-   # No nsrelease set - rolling release configuration
+   # 00default -- version number from nethserver-release package
+   #              can be overridden to implement automatic upgrades
+   #              known implementors: nethserver-subscription
    #
-   our $defaultRelease = do {
-       open my $nsh, "<", '/etc/e-smith/db/configuration/force/sysconfig/Version';
-       <$nsh>;
-   };
 
-   our $release = '';
+   our $release = $sysconfig{'Version'};
 
    '';
 }

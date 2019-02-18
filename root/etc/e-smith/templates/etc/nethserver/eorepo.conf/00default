@@ -9,16 +9,16 @@
     #
     # 00default
     #
-    our @repos = (
-        "base",
-        "updates",
-        "extras",
-        "epel",
-        "centos-sclo-rh",
-        "centos-sclo-sclo",
-        "nethserver-base",
-        "nethserver-updates",
-        "nethforge"
+    our @repos = qw(
+        ce-base
+        ce-updates
+        ce-extras
+        ce-sclo-rh
+        ce-sclo-sclo
+        epel
+        nethserver-base
+        nethserver-updates
+        nethforge
     );
 
     '';

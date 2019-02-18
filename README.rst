@@ -285,79 +285,59 @@ The event to expand the templates of all rpm which use TLS is ``tls-policy-save`
 Repositories
 ============
 
-Main repositories are:
+The default YUM repository set of NethServer is composed of
 
 * ``nethserver-base``: it contains packages and dependencies from core modules. It is updated when a new milestone is released. Enabled by default.
 * ``nethserver-updates``: it contains updated packages. If needed, these updates can be applied without requiring manual intervention. Enabled by default.
 * ``nethforge``: communty provided modules for NethServer. Enabled by default.
 * ``nethserver-testing``: contains packages under QA process. Disabled by default.
-* ``base``: base packages from CentOS. Enabled by default.
-* ``updates``: updated packages from CentOS. Enabled by default.
-* ``centos-sclo-rh`` and ``centos-sclo-sclo``: SCL repositories. Both enabled by default.
-* ``extras``: extra RPMs. Enabled by default.
+* ``ce-base``: (``ce-`` stands for CentOS) base packages from CentOS. Enabled by default.
+* ``ce-updates``: updated packages from CentOS. Enabled by default.
+* ``ce-sclo-rh`` and ``ce-sclo-sclo``: SCL repositories. Both enabled by default.
+* ``ce-extras``: extra RPMs. Enabled by default.
 * ``epel``: Extra Packages for Enterprise Linux. Enabled by default.
-
-A standard installation should have the following enabled repositories:
-
-* base
-* updates
-* nethserver-base
-* nethserver-updates
-* nethforge
-* centos-sclo-rh
-* centos-sclo-sclo
-* extras
-* epel
 
 Packages published in above repositories should always allow a non-disruptive automatic update.
 
-NS Release Lock
----------------
+YUM repositories configuration
+------------------------------
 
-As default |product| is configured to access latest upstream repositories using the
-"Rolling release" approach.
-
-It is possible to lock repositories to the current minor release using ``NS release lock`` feature: ::
-
-  config setprop sysconfig NsReleaseLock enabled
-  signal-event software-repos-save
-
-
-When NS Release Lock is enabled, the following repositories are available (where ``ce`` stands for CentOS):
-
-- ``ce-base``
-- ``ce-updates``
-- ``ce-extras``
-
-These repositories point to a fixed CentOS release, the configuration is stored inside :file:`/etc/yum.repos.d/NsReleaseLock.repo`.
-
-Configuration of enabled repositories is stored inside:
+Two special ``.conf`` files control how NethServer configures and invokes YUM:
 
 - :file:`/etc/nethserver/pkginfo.conf`: list of YUM repositories that have their groups listed
    on the Software Center
 - :file:`/etc/nethserver/eorepo.conf`: list of YUM repositories enabled by ``software-repos-save``
   event, every non-listed repository will be disabled
 
-Please note that *NS Release Lock* is mutually exclusive with subscription:
-when a subscription is enabled, ``NSReleaseLock`` will be disabled.
+This is the list of ``.repo`` files providing the default repositories
+configuration:
 
-Some *third-party repositories* don't support accessing RPMs using a minor release like ``7.5.1804``
-but only using a major release like ``7``.
-Actually, this limitation is present for:
+* :file:`/etc/yum.repos.d/NethServer.repo`
+    - ``ce-base``
+    - ``ce-updates``
+    - ``ce-extras``
+    - ``ce-sclo-sclo``
+    - ``ce-sclo-rh``
+    - ``nethserver-base``
+    - ``nethserver-updates``
 
-- ``epel``
-- ``centos-sclo-rh``
-- ``centos-sclo-sclo``
+* :file:`/etc/yum.repos.d/epel.repo`
+    - ``epel``
 
+* :file:`/etc/yum.repos.d/NethForge.repo`
+    - ``nethforge``
 
-When ``NsReleaseLock`` is set to ``enabled``:
+``ce-*``, ``nethserver-*`` and ``nethforge`` repositories are accessed with a
+full release number (e.g. 7.6.1810), preventing unwanted upgrades to the next
+minor release version. See the ``software-repos-upgrade`` event for details.
 
-- installation from the Software Center will enable all upstream repositories otherwise
-  YUM will not be able to resolve package dependencies
-- updates from the Software Center will disable repositories which doesn't support locking to minor
-- updates from the command line will enable all upstream repositories
-- ``yum-cron`` has access to a special repository configuration stored inside :file:`/etc/nethserver/yum-update.d/`
-  and enabled using ``reposdir`` options inside ``/etc/yum/yum-cron.conf``
+The EPEL repository does not support accessing RPMs using a minor release like
+``7.5.1804`` but only using a major release like ``7``.
+
+.. warning::
+
+    When a subscription is enabled the default repositories are disabled. See
+    :file:`/etc/yum.repos.d/subscription.repo`
 
 
 Third party repositories
