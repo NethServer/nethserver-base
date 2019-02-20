@@ -139,7 +139,7 @@ sub update_network_db
 {
     my @fields = qw(name type model driver speed link);
     my @free = ();
-    open(LH, '/usr/libexec/nethserver/nic-info |');
+    open(LH, '/usr/libexec/nethserver/nic-info -n|');
     while(my $line = decode('UTF-8', <LH>)) {
         chomp $line;
         my %H = ();
@@ -175,7 +175,7 @@ sub read_free_interfaces
 {
     my @fields = qw(name type model driver speed link);
     my @free = ();
-    open(LH, '/usr/libexec/nethserver/nic-info |');    
+    open(LH, '/usr/libexec/nethserver/nic-info -n|');
     while(my $line = decode('UTF-8', <LH>)) {
 	chomp $line;
 	my %H = ();
