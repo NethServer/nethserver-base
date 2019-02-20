@@ -9,6 +9,7 @@ RefuseManualStop=true
 
 [Service]
 Type=oneshot
+Environment=SKIPCARRIER=1
 ExecStart=/sbin/e-smith/nethserver-config-network
 
 [Install]
