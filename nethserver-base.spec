@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.6.2
+Version: 3.7.0
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -84,6 +84,10 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Fri Feb 22 2019 Davide Principi <davide.principi@nethesis.it> - 3.7.0-1
+- Ethernet cards down on boot - Bug NethServer/dev#5714
+- Ultimate software origin policy - NethServer/dev#5704
+
 * Thu Dec 20 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.6.2-1
 - ARM arch 7.6.1810 beta release - NethServer/dev#5675
 - Global proxy is not honored for https requests - Bug NethServer/dev#5678
