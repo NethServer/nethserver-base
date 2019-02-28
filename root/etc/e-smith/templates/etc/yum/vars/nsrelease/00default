@@ -5,7 +5,14 @@
    #              known implementors: nethserver-subscription
    #
 
-   our $release = $sysconfig{'Version'};
+   our $release = do {
+        # Read from filesystem because the config DB can be overridden
+        # by the "pre-restore-config" event:
+        open my $nsh, "<", '/etc/e-smith/db/configuration/force/sysconfig/Version';
+        <$nsh>;
+   };
+
+   chomp $release;
 
    '';
 }
