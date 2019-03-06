@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.7.0
+Version: 3.7.1
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -84,6 +84,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Wed Mar 06 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.7.1-1
+- Restore config regression with ultimate software origin policy - Bug NethServer/dev#5724
+
 * Fri Feb 22 2019 Davide Principi <davide.principi@nethesis.it> - 3.7.0-1
 - Ethernet cards down on boot - Bug NethServer/dev#5714
 - Ultimate software origin policy - NethServer/dev#5704
