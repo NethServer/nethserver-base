@@ -28,7 +28,12 @@ my $ndb = esmith::NetworksDB->open();
 
 my $updateonly = 0;
 if ( defined($ARGV[0]) && $ARGV[0] eq '--update-db-only' ) {
-    $updateonly = 1;
+    if( -f '/var/run/.nethserver-fixnetwork' ) {
+        warn("[NOTICE] the networks DB cannot be altered now.\n");
+        exit(0);
+    } else {
+        $updateonly = 1;
+    }
 }
 
 update_network_db();
