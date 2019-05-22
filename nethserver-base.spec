@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.7.1
+Version: 3.7.2
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -84,6 +84,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Wed May 22 2019 Davide Principi <davide.principi@nethesis.it> - 3.7.2-1
+- Lock out after restore-config with VPN - Bug NethServer/dev#5763
+
 * Wed Mar 06 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.7.1-1
 - Restore config regression with ultimate software origin policy - Bug NethServer/dev#5724
 
