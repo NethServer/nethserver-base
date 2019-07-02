@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 2.11.5
+Version: 2.11.6
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -69,6 +69,9 @@ mkdir -p $RPM_BUILD_ROOT/etc/e-smith/events/organization-save
 
 
 %changelog
+* Tue Jul 02 2019 Davide Principi <davide.principi@nethesis.it> - 2.11.6-1
+- Migrate YUM repositories hosting to Porthos - nethesis/dev#5641
+
 * Tue Jan 08 2019 Davide Principi <davide.principi@nethesis.it> - 2.11.5-1
 - Backport of logical interface integrity checks - Bug #3447 [NethServer 6]
 - Start rename-interface on interface deletion - NethServer/nethserver-base#144
