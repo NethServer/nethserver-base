@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.7.2
+Version: 3.7.3
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -84,6 +84,10 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Tue Jul 02 2019 Davide Principi <davide.principi@nethesis.it> - 3.7.3-1
+- Migrate YUM repositories hosting to Porthos - nethesis/dev#5641
+- Add proxy environment variables in uppercase (#160)
+
 * Wed May 22 2019 Davide Principi <davide.principi@nethesis.it> - 3.7.2-1
 - Lock out after restore-config with VPN - Bug NethServer/dev#5763
 
