@@ -41,9 +41,6 @@ function generate_gpgtemplatedir
     # pub  2048R/F2EE9D55 2015-10-01 CentOS SoftwareCollections SIG (https://wiki.centos.org/SpecialInterestGroup/SCLo) <security@centos.org>
     # pub  4096R/352C64E5 2013-12-16 Fedora EPEL (7) <epel@fedoraproject.org>
     # pub  4096R/39BAF5C1 2016-02-10 NethServer 7 (NethServer 7 Official Signing Key) <security@nethserver.org>
-    # Extra armhfp /aarch64 keys
-    # pub  2048R/62505FE6 2015-11-27 CentOS AltArch SIG - Arm32 (https://wiki.centos.org/SpecialInterestGroup/AltArch/Arm32) <security@centos.org>
-    # pub  2048R/305D49D6 2015-07-28 CentOS AltArch SIG - AArch64 (http://wiki.centos.org/SpecialInterestGroup/AltArch/AArch64) <security@centos.org>
     #
     # To see the key id of a file run:
     #     gpg /etc/pki/rpm-gpg/RPM-GPG-KEY-NethServer-7
@@ -57,8 +54,6 @@ function generate_gpgtemplatedir
 C4DBD535B1FBBA14F8BA64A84EB84E71F2EE9D55:6:
 91E97D7C4A5E96F17F3E888F6A2FAEA2352C64E5:6:
 594C3FD8FAE18FF532FEAE239CB28EA039BAF5C1:6:
-4D9E39F1499CA21DD28977F8CAFEF11B62505FE6:6:
-EF8F3CA66EFDF32B36CDADF76C7CB6EF305D49D6:6:
 EOF
 }
 
