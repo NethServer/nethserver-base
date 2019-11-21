@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.7.3
+Version: 3.7.4
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -84,6 +84,10 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Thu Nov 21 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.7.4-1
+- gpg-keys import can fail at system-init - Bug NethServer/arm-dev#33
+- Password change: handle backslash - Bug NethServer/dev#5927
+
 * Tue Jul 02 2019 Davide Principi <davide.principi@nethesis.it> - 3.7.3-1
 - Migrate YUM repositories hosting to Porthos - nethesis/dev#5641
 - Add proxy environment variables in uppercase (#160)
