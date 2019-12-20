@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.7.4
+Version: 3.7.5
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -84,6 +84,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Fri Dec 20 2019 Davide Principi <davide.principi@nethesis.it> - 3.7.5-1
+- Cockpit disconnection breaks yum transactions - Bug NethServer/dev#6002
+
 * Thu Nov 21 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.7.4-1
 - gpg-keys import can fail at system-init - Bug NethServer/arm-dev#33
 - Password change: handle backslash - Bug NethServer/dev#5927
