@@ -40,8 +40,11 @@ json_output = False
 def joutput(data):
     global json_output
     if json_output:
-        print(json.dumps(data))
-        sys.stdout.flush()
+        try:
+            json.dump(data, sys.stdout)
+            sys.stdout.flush()
+        except:
+            pass
 
 def warning(*objs):
     print(*objs, file=sys.stderr)
