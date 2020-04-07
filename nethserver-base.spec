@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.7.5
+Version: 3.7.6
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -84,6 +84,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Tue Apr 07 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.7.6-1
+- Restore configuration without network override - NethServer/dev#6099
+
 * Fri Dec 20 2019 Davide Principi <davide.principi@nethesis.it> - 3.7.5-1
 - Cockpit disconnection breaks yum transactions - Bug NethServer/dev#6002
 
