@@ -39,7 +39,7 @@ class TlsPolicy extends \Nethgui\Controller\AbstractController
     public function initialize()
     {
         parent::initialize();
-        $this->declareParameter('Policy', $this->createValidator()->memberOf('', '20180330', '20180621','20181001'), array('configuration', 'tls', 'policy'));
+        $this->declareParameter('Policy', $this->createValidator()->memberOf('', '20180330', '20180621','20181001','20200510'), array('configuration', 'tls', 'policy'));
     }
 
     public function validate(\Nethgui\Controller\ValidationReportInterface $report)
@@ -56,6 +56,7 @@ class TlsPolicy extends \Nethgui\Controller\AbstractController
                 array('20180330', $view->translate('Policy_item_label', array('2018-03-30'))),
                 array('20180621', $view->translate('Policy_item_label', array('2018-06-21'))),
                 array('20181001', $view->translate('Policy_item_label', array('2018-10-01'))),
+                array('20200510', $view->translate('Policy_item_label', array('2020-05-10 only TLS 1.2'))),
         );
     }
 
