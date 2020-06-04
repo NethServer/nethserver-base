@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.7.6
+Version: 3.7.7
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -84,6 +84,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Thu Jun 04 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.7.7-1
+- Remove TLS 1.0 and TLS 1.1 - NethServer/dev#6170
+
 * Tue Apr 07 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.7.6-1
 - Restore configuration without network override - NethServer/dev#6099
 
