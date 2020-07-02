@@ -36,13 +36,18 @@ import json
 
 # If True, generate JSON output for cockpit
 json_output = False
+last_json_output = ""
 
 def joutput(data):
     global json_output
+    global last_json_output
     if json_output:
         try:
-            json.dump(data, sys.stdout)
-            sys.stdout.flush()
+            out = json.dumps(data)
+            if out != last_json_output:
+                json.dump(data, sys.stdout)
+                sys.stdout.flush()
+                last_json_output = json.dumps(data)
         except:
             pass
 
