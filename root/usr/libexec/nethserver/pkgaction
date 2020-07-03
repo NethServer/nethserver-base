@@ -47,7 +47,7 @@ def joutput(data):
             if out != last_json_output:
                 json.dump(data, sys.stdout)
                 sys.stdout.flush()
-                last_json_output = json.dumps(data)
+                last_json_output = out
         except:
             pass
 
