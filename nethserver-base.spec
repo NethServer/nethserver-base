@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.7.8
+Version: 3.7.9
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -84,6 +84,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Thu Nov 26 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.7.9-1
+- Set TLS policy default to 20200510 - NethServer/dev#6348
+
 * Wed Nov 18 2020 Davide Principi <davide.principi@nethesis.it> - 3.7.8-1
 - pkgaction: do not print duplicated lines (NethServer/base#170)
 
