@@ -157,7 +157,7 @@ sub check
         {
           $cn = $1;
         }
-        elsif($line =~ /Issuer:.*CN=([^\/\n]+)/)
+        elsif($line =~ /Issuer:\s+(.*)$/)
         {
           $issuer= $1;
         }
