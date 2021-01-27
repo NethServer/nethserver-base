@@ -4,3 +4,4 @@
 /etc/e-smith/templates-user-custom
 /etc/hostname
 /etc/localtime
+/etc/letsencrypt
