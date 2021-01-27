@@ -24,6 +24,12 @@ Requires: perl-Email-Valid
 Provides: nethserver-yum-cron
 Obsoletes: nethserver-yum-cron
 
+# letsencrypt dependencies
+Requires: httpd
+Requires: certbot
+Provides: nethserver-letsencrypt
+Obsoletes: nethserver-letsencrypt
+
 BuildRequires: nethserver-devtools
 Requires(post): systemd
 Requires(postun): systemd
@@ -46,6 +52,7 @@ mv -v lib/perl/{NethServer,esmith} root%{perl_vendorlib}
 mkdir -p root/%{_nseventsdir}/organization-save
 mkdir -p root/%{_nseventsdir}/%{name}-update
 mkdir -p root/%{_nseventsdir}/tls-policy-save
+mkdir -p root/var/www/html/.well-known/acme-challenge
 
 for _nsdb in configuration networks routes accounts; do
    mkdir -p root/%{_nsdbconfdir}/${_nsdb}/{migrate,force,defaults}
@@ -58,6 +65,7 @@ rm -rf %{buildroot}
 %{genfilelist} %{buildroot} | sed '
 \|^%{_sysconfdir}/sudoers.d/| d
 \|^%{_sysconfdir}/nethserver/pkginfo.conf| d
+\|/var/www/html/.well-known/acme-challenge| d
 ' > %{name}-%{version}-%{release}-filelist
 
 %files -f %{name}-%{version}-%{release}-filelist
@@ -76,6 +84,7 @@ rm -rf %{buildroot}
 %ghost %attr(0644,root,root) /etc/logviewer.conf
 %config(noreplace) %{_sysconfdir}/nethserver/pkginfo.conf
 %config(noreplace) %{_sysconfdir}/nethserver/eorepo.conf
+%dir /var/www/html/.well-known/acme-challenge/
 
 %post
 %systemd_post nethserver-system-init.service NetworkManager.service firewalld.service nethserver-config-network.service
