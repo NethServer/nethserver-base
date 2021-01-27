@@ -1,0 +1,9 @@
+{
+    #
+    # remove unused Let's Encrypt properties
+    #
+
+    $DB->get_prop_and_delete('pki','LetsEncryptRenewDays');
+    $DB->get_prop_and_delete('pki','LetsEncrypt');
+    '';
+}
