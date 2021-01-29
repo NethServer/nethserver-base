@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.7.9
+Version: 3.8.0
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -93,6 +93,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Fri Jan 29 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.8.0-1
+- Let's Encrypt renewal does not fire certificate-update event - Bug NethServer/dev#6403
+
 * Thu Nov 26 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.7.9-1
 - Set TLS policy default to 20200510 - NethServer/dev#6348
 
