@@ -96,7 +96,7 @@ sub fetch_ifcfg_props
         my($id, $dev, $family, $cidr, $brd_family, $brd_address, $scope_lbl, $scope, $dynamic, $end) = split(/\s+/, $_, 10);
         my $dhclient_running = (system("ps -A -o cmd | grep -E '(/| )dhclient .' | grep -q $ifname") == 0);
 
-        if ($dhclient_running || $dynamic =~ 'dynamic') {
+        if ($dhclient_running || $dynamic =~ 'dynamic' || $end =~ 'dynamic') {
             $props{'bootproto'} = 'dhcp';
             $props{'gateway'} = '';
         } else {
