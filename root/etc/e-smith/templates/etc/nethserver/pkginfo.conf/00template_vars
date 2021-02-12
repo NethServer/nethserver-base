@@ -6,5 +6,9 @@
             nethserver-updates
             nethforge
         );
+    if ($subscription{'ExtraRepositories'}) {
+        my @ExtraRepositories = split(',',$subscription{'ExtraRepositories'});
+        push (@repo_list, @ExtraRepositories);
+    }
     '';
 }
