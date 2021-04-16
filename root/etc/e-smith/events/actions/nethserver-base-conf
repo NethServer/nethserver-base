@@ -37,3 +37,7 @@ foreach (qw(
     }
 }
 
+#
+# Always use nmap-netcat
+#
+system("/usr/sbin/alternatives --set nmap /usr/bin/ncat")
