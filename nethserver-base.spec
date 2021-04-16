@@ -9,7 +9,7 @@ URL: %{url_prefix}/%{name}
 
 Requires: bridge-utils
 Requires: sudo
-Requires: nc
+Requires: nmap-ncat
 Requires: net-tools
 # perl-TimeDate is needed for certificate renew
 Requires: perl-TimeDate
