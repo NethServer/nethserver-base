@@ -167,6 +167,6 @@ if ($challenge =~ m/^dns/) {
 }
 
 # Renew certificate for all domains
-renew(\@domains, $challenge, $tmp ? $tmp->filename : undef, $short_chain);
+renew(\@domains, $challenge, $tmp ? $tmp->filename : undef, ($short_chain eq 'enabled'));
 
 exit 0;
