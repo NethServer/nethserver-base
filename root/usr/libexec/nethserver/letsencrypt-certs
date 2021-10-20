@@ -21,6 +21,7 @@ our $modified = 0;
 # Certificate for FQDN
 our @domains = ();
 my $challenge = $cdb->get_prop('pki', 'LetsEncryptChallenge') || 'http';
+my $short_chain = $cdb->get_prop('pki', 'LetsEncryptShortChain') || 'disabled';
 my $tmp;
 
 $SIG{INT}  = \&restore;
@@ -41,6 +42,7 @@ sub renew {
     my $domains = shift;
     my $challenge = shift;
     my $config = shift || '';
+    my $short_chain = shift || 0;
 
     my $opts = " certonly --text --non-interactive --agree-tos ";
     if (!$mail) {
@@ -68,6 +70,10 @@ sub renew {
     if ($testing) {
         $cmd .= " --test-cert ";
     }
+
+    if ($short_chain) {
+        $cmd .= " --preferred-chain 'ISRG Root X1' "
+    };
 
     if (!$verbose) {
         $cmd .= " --quiet >/dev/null";
@@ -161,6 +167,6 @@ if ($challenge =~ m/^dns/) {
 }
 
 # Renew certificate for all domains
-renew(\@domains, $challenge, $tmp ? $tmp->filename : undef);
+renew(\@domains, $challenge, $tmp ? $tmp->filename : undef, $short_chain);
 
 exit 0;

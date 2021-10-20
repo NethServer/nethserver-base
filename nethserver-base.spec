@@ -26,7 +26,7 @@ Obsoletes: nethserver-yum-cron
 
 # letsencrypt dependencies
 Requires: httpd
-Requires: certbot
+Requires: certbot >= 1.11.0-2.el7
 Provides: nethserver-letsencrypt
 Obsoletes: nethserver-letsencrypt
 
