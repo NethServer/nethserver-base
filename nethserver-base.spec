@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.8.2
+Version: 3.9.0
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -93,6 +93,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Mon Oct 25 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.9.0-1
+- Let's Encrypt: support short chain - NethServer/dev#6584
+
 * Fri Apr 16 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.8.2-1
 - nethserver-install hangs on CentOS 7 - Bug NethServer/dev#6485
 
