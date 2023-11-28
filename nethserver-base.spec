@@ -1,6 +1,6 @@
 Name: nethserver-base
 Summary: NethServer basic configuration
-Version: 3.9.0
+Version: 3.9.1
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -93,6 +93,9 @@ rm -rf %{buildroot}
 %systemd_postun
 
 %changelog
+* Tue Nov 28 2023 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.9.1-1
+- Alias removal successful but ip remains  - Bug NethServer/dev#6773
+
 * Mon Oct 25 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 3.9.0-1
 - Let's Encrypt: support short chain - NethServer/dev#6584
 
